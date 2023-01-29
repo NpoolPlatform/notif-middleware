@@ -1,11 +1,11 @@
-//nolint:dupl
 package readstate
 
 import (
 	"context"
 	"fmt"
-	mgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/announcement/readstate"
 	"time"
+
+	mgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/announcement/readstate"
 
 	grpc2 "github.com/NpoolPlatform/go-service-framework/pkg/grpc"
 

@@ -4,6 +4,7 @@ package notif
 import (
 	"context"
 	"fmt"
+
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 
 	mgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/notif"

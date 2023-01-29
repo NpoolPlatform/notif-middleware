@@ -20,7 +20,8 @@ import (
 
 	"github.com/NpoolPlatform/notif-middleware/pkg/testinit"
 
-	npool "github.com/NpoolPlatform/message/npool/notif/mgr/v1/notif"
+	mgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/notif"
+	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/google/uuid"
@@ -41,7 +42,7 @@ var data = &npool.Notif{
 	UserID:      uuid.NewString(),
 	AlreadyRead: true,
 	LangID:      uuid.NewString(),
-	EventType:   npool.EventType_KycReviewApproved,
+	EventType:   mgrpb.EventType_KycReviewApproved,
 	UseTemplate: true,
 	Title:       uuid.NewString(),
 	Content:     uuid.NewString(),
@@ -49,7 +50,7 @@ var data = &npool.Notif{
 	EmailSend:   true,
 }
 
-var dataReq = &npool.NotifReq{
+var dataReq = &mgrpb.NotifReq{
 	ID:          &data.ID,
 	AppID:       &data.AppID,
 	UserID:      &data.UserID,
@@ -72,67 +73,6 @@ func createNotif(t *testing.T) {
 	}
 }
 
-func updateNotif(t *testing.T) {
-	info, err := UpdateNotif(context.Background(), dataReq)
-	if assert.Nil(t, err) {
-		data.UpdatedAt = info.UpdatedAt
-		assert.Equal(t, data, info)
-	}
-}
-
-func createNotifs(t *testing.T) {
-	datas := []npool.Notif{
-		{
-			ID:          uuid.NewString(),
-			AppID:       uuid.NewString(),
-			UserID:      uuid.NewString(),
-			AlreadyRead: true,
-			LangID:      uuid.NewString(),
-			EventType:   npool.EventType_KycReviewApproved,
-			UseTemplate: true,
-			Title:       uuid.NewString(),
-			Content:     uuid.NewString(),
-			Channels:    []channel.NotifChannel{channel.NotifChannel_ChannelSMS, channel.NotifChannel_ChannelEmail},
-			EmailSend:   true,
-		},
-		{
-			ID:          uuid.NewString(),
-			AppID:       uuid.NewString(),
-			UserID:      uuid.NewString(),
-			AlreadyRead: true,
-			LangID:      uuid.NewString(),
-			EventType:   npool.EventType_KycReviewApproved,
-			UseTemplate: true,
-			Title:       uuid.NewString(),
-			Content:     uuid.NewString(),
-			Channels:    []channel.NotifChannel{channel.NotifChannel_ChannelSMS, channel.NotifChannel_ChannelEmail},
-			EmailSend:   true,
-		},
-	}
-
-	apps := []*npool.NotifReq{}
-	for key := range datas {
-		apps = append(apps, &npool.NotifReq{
-			ID:          &datas[key].ID,
-			AppID:       &datas[key].AppID,
-			UserID:      &datas[key].UserID,
-			AlreadyRead: &datas[key].AlreadyRead,
-			LangID:      &datas[key].LangID,
-			EventType:   &datas[key].EventType,
-			UseTemplate: &datas[key].UseTemplate,
-			Title:       &datas[key].Title,
-			Content:     &datas[key].Content,
-			Channels:    datas[key].Channels,
-			EmailSend:   &datas[key].EmailSend,
-		})
-	}
-
-	infos, err := CreateNotifs(context.Background(), apps)
-	if assert.Nil(t, err) {
-		assert.Equal(t, len(infos), 2)
-	}
-}
-
 func getNotif(t *testing.T) {
 	info, err := GetNotif(context.Background(), data.ID)
 	if assert.Nil(t, err) {
@@ -141,7 +81,7 @@ func getNotif(t *testing.T) {
 }
 
 func getNotifs(t *testing.T) {
-	infos, total, err := GetNotifs(context.Background(), &npool.Conds{
+	infos, total, err := GetNotifs(context.Background(), &mgrpb.Conds{
 		ID: &valuedef.StringVal{
 			Op:    cruder.EQ,
 			Value: data.ID,
@@ -154,7 +94,7 @@ func getNotifs(t *testing.T) {
 }
 
 func getNotifOnly(t *testing.T) {
-	info, err := GetNotifOnly(context.Background(), &npool.Conds{
+	info, err := GetNotifOnly(context.Background(), &mgrpb.Conds{
 		ID: &valuedef.StringVal{
 			Op:    cruder.EQ,
 			Value: data.ID,
@@ -164,36 +104,6 @@ func getNotifOnly(t *testing.T) {
 		assert.Equal(t, info, data)
 	}
 }
-
-func existAppGood(t *testing.T) {
-	exist, err := ExistNotif(context.Background(), data.ID)
-	if assert.Nil(t, err) {
-		assert.Equal(t, exist, true)
-	}
-}
-
-func existAppGoodConds(t *testing.T) {
-	exist, err := ExistNotifConds(context.Background(), &npool.Conds{
-		ID: &valuedef.StringVal{
-			Op:    cruder.EQ,
-			Value: data.ID,
-		},
-	})
-	if assert.Nil(t, err) {
-		assert.Equal(t, exist, true)
-	}
-}
-
-func deleteNotif(t *testing.T) {
-	info, err := DeleteNotif(context.Background(), data.ID)
-	if assert.Nil(t, err) {
-		assert.Equal(t, data, info)
-	}
-
-	_, err = GetNotif(context.Background(), info.ID)
-	assert.NotNil(t, err)
-}
-
 func TestClient(t *testing.T) {
 	if runByGithubAction, err := strconv.ParseBool(os.Getenv("RUN_BY_GITHUB_ACTION")); err == nil && runByGithubAction {
 		return
@@ -206,12 +116,7 @@ func TestClient(t *testing.T) {
 	})
 
 	t.Run("createNotif", createNotif)
-	t.Run("createNotifs", createNotifs)
 	t.Run("getNotif", getNotif)
 	t.Run("getNotifs", getNotifs)
 	t.Run("getNotifOnly", getNotifOnly)
-	t.Run("updateNotif", updateNotif)
-	t.Run("existAppGood", existAppGood)
-	t.Run("existAppGoodConds", existAppGoodConds)
-	t.Run("deleteNotif", deleteNotif)
 }

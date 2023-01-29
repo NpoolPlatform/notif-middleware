@@ -2,10 +2,12 @@ package readstate
 
 import (
 	"context"
-	"entgo.io/ent/dialect/sql"
-	mgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/announcement/readstate"
+	"encoding/json"
 
+	"entgo.io/ent/dialect/sql"
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
+	mgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/announcement/readstate"
+	channelpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/channel"
 	"github.com/NpoolPlatform/notif-manager/pkg/db"
 	"github.com/google/uuid"
 
@@ -39,10 +41,11 @@ func GetReadState(ctx context.Context, announcementID, userID string) (*npool.Re
 		return nil, nil
 	}
 
-	if infos[0].UserID != "" {
-		infos[0].AlreadyRead = true
+	infos, err = expand(infos)
+	if err != nil {
+		logger.Sugar().Errorw("GetReadState", "err", err)
+		return nil, err
 	}
-
 	return infos[0], nil
 }
 
@@ -90,10 +93,11 @@ func GetReadStates(ctx context.Context, conds *mgrpb.Conds, offset, limit int32)
 	if len(infos) == 0 {
 		return nil, 0, nil
 	}
-	for key := range infos {
-		if infos[key].UserID != "" {
-			infos[key].AlreadyRead = true
-		}
+
+	infos, err = expand(infos)
+	if err != nil {
+		logger.Sugar().Errorw("GetReadState", "err", err)
+		return nil, 0, err
 	}
 
 	return infos, total, nil
@@ -102,12 +106,14 @@ func GetReadStates(ctx context.Context, conds *mgrpb.Conds, offset, limit int32)
 func join(stm *ent.AnnouncementQuery, userID *string) *ent.AnnouncementSelect {
 	return stm.Select().Modify(func(s *sql.Selector) {
 		s.Select(
-			entannouncement.FieldID,
-			entannouncement.FieldAppID,
-			entannouncement.FieldTitle,
-			entannouncement.FieldContent,
-			entannouncement.FieldChannels,
-			entannouncement.FieldEmailSend,
+			sql.As(s.C(entannouncement.FieldID), "announcement_id"),
+			s.C(entannouncement.FieldAppID),
+			s.C(entannouncement.FieldTitle),
+			s.C(entannouncement.FieldContent),
+			s.C(entannouncement.FieldChannels),
+			s.C(entannouncement.FieldEmailSend),
+			s.C(entannouncement.FieldCreatedAt),
+			s.C(entannouncement.FieldUpdatedAt),
 		)
 		t1 := sql.Table(entreadannouncement.Table)
 		s.
@@ -124,7 +130,27 @@ func join(stm *ent.AnnouncementQuery, userID *string) *ent.AnnouncementSelect {
 		}
 		s.
 			AppendSelect(
-				entreadannouncement.FieldUserID,
+				t1.C(entreadannouncement.FieldUserID),
 			)
 	})
+}
+
+func expand(infos []*npool.ReadState) ([]*npool.ReadState, error) {
+	for key, info := range infos {
+		if info.UserID != "" {
+			infos[key].AlreadyRead = true
+		}
+
+		channelsStr := []string{}
+		err := json.Unmarshal([]byte(infos[0].ChannelsStr), &channelsStr)
+		if err != nil {
+			return nil, err
+		}
+		channels := []channelpb.NotifChannel{}
+		for _, channel := range channelsStr {
+			channels = append(channels, channelpb.NotifChannel(channelpb.NotifChannel_value[channel]))
+		}
+		infos[key].Channels = channels
+	}
+	return infos, nil
 }

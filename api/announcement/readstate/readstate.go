@@ -3,6 +3,7 @@ package readstate
 
 import (
 	"context"
+
 	mgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/announcement/readstate"
 
 	readstate1 "github.com/NpoolPlatform/notif-middleware/pkg/announcement/readstate"

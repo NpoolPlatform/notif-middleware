@@ -3,10 +3,11 @@ package readstate
 import (
 	"context"
 	"fmt"
-	"github.com/google/uuid"
 	"os"
 	"strconv"
 	"testing"
+
+	"github.com/google/uuid"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	valuedef "github.com/NpoolPlatform/message/npool"
@@ -45,6 +46,7 @@ var data = npool.ReadState{
 	UserID:         uuid.NewString(),
 	Title:          uuid.NewString(),
 	Content:        uuid.NewString(),
+	ChannelsStr:    `["ChannelEmail", "ChannelSMS"]`,
 	Channels:       []channelpb.NotifChannel{channelpb.NotifChannel_ChannelEmail, channelpb.NotifChannel_ChannelSMS},
 	EmailSend:      true,
 	AlreadyRead:    true,
@@ -66,10 +68,13 @@ func getReadState(t *testing.T) {
 		UserID:         &data.UserID,
 		AnnouncementID: &data.AnnouncementID,
 	})
+	assert.Nil(t, err)
 
 	info, err := GetReadState(context.Background(), data.AnnouncementID, data.UserID)
 	if assert.Nil(t, err) {
-		assert.Equal(t, data, info)
+		data.CreatedAt = info.CreatedAt
+		data.UpdatedAt = info.UpdatedAt
+		assert.Equal(t, &data, info)
 	}
 }
 
@@ -90,7 +95,9 @@ func getReadStates(t *testing.T) {
 	}, 0, 1)
 	if assert.Nil(t, err) {
 		assert.Equal(t, total, uint32(1))
-		assert.Equal(t, infos[0], data)
+		data.CreatedAt = infos[0].CreatedAt
+		data.UpdatedAt = infos[0].UpdatedAt
+		assert.Equal(t, infos[0], &data)
 	}
 }
 

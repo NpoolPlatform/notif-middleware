@@ -1,3 +1,3 @@
 package servicename
 
-const ServiceName = "Notif Manager"
+const ServiceName = "Notif Middleware"

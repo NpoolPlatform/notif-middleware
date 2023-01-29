@@ -2,6 +2,7 @@ package notif
 
 import (
 	"context"
+
 	mgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/notif"
 	mgrcli "github.com/NpoolPlatform/notif-manager/pkg/client/notif"
 
@@ -13,21 +14,7 @@ func CreateNotif(ctx context.Context, req *mgrpb.NotifReq) (*npool.Notif, error)
 	if err != nil {
 		return nil, err
 	}
-	return &npool.Notif{
-		ID:          info.ID,
-		AppID:       info.AppID,
-		UserID:      info.UserID,
-		AlreadyRead: info.AlreadyRead,
-		LangID:      info.LangID,
-		EventType:   info.EventType,
-		UseTemplate: info.UseTemplate,
-		Title:       info.Title,
-		Content:     info.Content,
-		Channels:    info.Channels,
-		EmailSend:   info.EmailSend,
-		CreatedAt:   info.CreatedAt,
-		UpdatedAt:   info.UpdatedAt,
-	}, nil
+	return expand(info), nil
 }
 
 func GetNotif(ctx context.Context, id string) (*npool.Notif, error) {
@@ -35,47 +22,19 @@ func GetNotif(ctx context.Context, id string) (*npool.Notif, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &npool.Notif{
-		ID:          info.ID,
-		AppID:       info.AppID,
-		UserID:      info.UserID,
-		AlreadyRead: info.AlreadyRead,
-		LangID:      info.LangID,
-		EventType:   info.EventType,
-		UseTemplate: info.UseTemplate,
-		Title:       info.Title,
-		Content:     info.Content,
-		Channels:    info.Channels,
-		EmailSend:   info.EmailSend,
-		CreatedAt:   info.CreatedAt,
-		UpdatedAt:   info.UpdatedAt,
-	}, nil
+	return expand(info), nil
 }
 
 func GetNotifs(ctx context.Context, conds *mgrpb.Conds, offset, limit int32) ([]*npool.Notif, uint32, error) {
-	infos, total, err := mgrcli.GetNotifs(ctx, conds, offset, limit)
+	rows, total, err := mgrcli.GetNotifs(ctx, conds, offset, limit)
 	if err != nil {
 		return nil, 0, err
 	}
-	infos1 := []*npool.Notif{}
-	for _, info := range infos {
-		infos1 = append(infos1, &npool.Notif{
-			ID:          info.ID,
-			AppID:       info.AppID,
-			UserID:      info.UserID,
-			AlreadyRead: info.AlreadyRead,
-			LangID:      info.LangID,
-			EventType:   info.EventType,
-			UseTemplate: info.UseTemplate,
-			Title:       info.Title,
-			Content:     info.Content,
-			Channels:    info.Channels,
-			EmailSend:   info.EmailSend,
-			CreatedAt:   info.CreatedAt,
-			UpdatedAt:   info.UpdatedAt,
-		})
+	infos := []*npool.Notif{}
+	for _, info := range rows {
+		infos = append(infos, expand(info))
 	}
-	return infos1, total, nil
+	return infos, total, nil
 }
 
 func GetNotifOnly(ctx context.Context, conds *mgrpb.Conds) (*npool.Notif, error) {
@@ -83,6 +42,10 @@ func GetNotifOnly(ctx context.Context, conds *mgrpb.Conds) (*npool.Notif, error)
 	if err != nil {
 		return nil, err
 	}
+	return expand(info), nil
+}
+
+func expand(info *mgrpb.Notif) *npool.Notif {
 	return &npool.Notif{
 		ID:          info.ID,
 		AppID:       info.AppID,
@@ -97,5 +60,5 @@ func GetNotifOnly(ctx context.Context, conds *mgrpb.Conds) (*npool.Notif, error)
 		EmailSend:   info.EmailSend,
 		CreatedAt:   info.CreatedAt,
 		UpdatedAt:   info.UpdatedAt,
-	}, nil
+	}
 }

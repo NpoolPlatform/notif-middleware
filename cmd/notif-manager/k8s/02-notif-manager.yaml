@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notif-middleware
+  namespace: kube-system
+  annotations:
+    "sidecar.jaegertracing.io/inject": "true"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: notif-middleware
+  template:
+    metadata:
+      labels:
+        app: notif-middleware
+    spec:
+      containers:
+        - name: notif-middleware
+          image: uhub.service.ucloud.cn/entropypool/notif-middleware:latest
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: service-config
+              mountPath: /etc/G11nManager
+          env:
+            - name: ENV_ENVIRONMENT_TARGET
+              valueFrom:
+                configMapKeyRef:
+                  name: system-environment
+                  key: environment.target
+            - name: ENV_CONSUL_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: system-environment
+                  key: environment.consul_host
+            - name: ENV_CONSUL_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: system-environment
+                  key: environment.consul_port
+            - name: ENV_CLUSTER_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+      volumes:
+        - name: service-config
+          configMap:
+            name: notif-middleware-config
+            items:
+              - key: service-conf
+                path: G11nManager.viper.yaml
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notif-middleware
+  namespace: kube-system
+spec:
+  ports:
+    - name: http
+      port: 50690
+      targetPort: 50690
+    - name: grpc
+      port: 50691
+      targetPort: 50691
+    - name: healthz
+      port: 50692
+      targetPort: 50692
+    - name: prometheus
+      port: 50693
+      targetPort: 50693
+  selector:
+    app: notif-middleware

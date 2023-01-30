@@ -43,12 +43,11 @@ func validate(in *mgrpb.NotifReq) error {
 	}
 
 	switch in.GetEventType() {
-	case mgrpb.EventType_KycReviewApproved:
-	case mgrpb.EventType_KycReviewRejected:
-	case mgrpb.EventType_WithdrawReviewApproved:
-	case mgrpb.EventType_WithdrawReviewRejected:
-	case mgrpb.EventType_WithdrawAddressReviewApproved:
-	case mgrpb.EventType_WithdrawAddressReviewRejected:
+	case mgrpb.EventType_WithdrawalRequest:
+	case mgrpb.EventType_WithdrawalCompleted:
+	case mgrpb.EventType_DepositReceived:
+	case mgrpb.EventType_KYCApproved:
+	case mgrpb.EventType_KYCRejected:
 	default:
 		return fmt.Errorf("EventType is invalid")
 	}
@@ -161,12 +160,11 @@ func validateConds(in *mgrpb.Conds) error {
 	}
 	if in.EventType != nil {
 		switch in.GetEventType().GetValue() {
-		case uint32(mgrpb.EventType_KycReviewApproved):
-		case uint32(mgrpb.EventType_KycReviewRejected):
-		case uint32(mgrpb.EventType_WithdrawReviewApproved):
-		case uint32(mgrpb.EventType_WithdrawReviewRejected):
-		case uint32(mgrpb.EventType_WithdrawAddressReviewApproved):
-		case uint32(mgrpb.EventType_WithdrawAddressReviewRejected):
+		case uint32(mgrpb.EventType_WithdrawalRequest):
+		case uint32(mgrpb.EventType_WithdrawalCompleted):
+		case uint32(mgrpb.EventType_DepositReceived):
+		case uint32(mgrpb.EventType_KYCApproved):
+		case uint32(mgrpb.EventType_KYCRejected):
 		default:
 			return fmt.Errorf("EventType is invalid")
 		}

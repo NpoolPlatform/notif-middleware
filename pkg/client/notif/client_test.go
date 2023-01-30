@@ -42,7 +42,7 @@ var data = &npool.Notif{
 	UserID:      uuid.NewString(),
 	AlreadyRead: true,
 	LangID:      uuid.NewString(),
-	EventType:   mgrpb.EventType_KycReviewApproved,
+	EventType:   mgrpb.EventType_KYCApproved,
 	UseTemplate: true,
 	Title:       uuid.NewString(),
 	Content:     uuid.NewString(),

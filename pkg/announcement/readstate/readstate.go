@@ -3,6 +3,7 @@ package readstate
 import (
 	"context"
 	"encoding/json"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
@@ -58,13 +59,20 @@ func GetReadStates(ctx context.Context, conds *mgrpb.Conds, offset, limit int32)
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
 		stm := cli.
 			Announcement.
-			Query()
+			Query().
+			Where(
+				entannouncement.EndAtGT(uint32(time.Now().Unix())),
+			)
 		if conds != nil {
 			if conds.AnnouncementID != nil {
-				stm.Where(entannouncement.ID(uuid.MustParse(conds.GetAnnouncementID().GetValue())))
+				stm.Where(
+					entannouncement.ID(uuid.MustParse(conds.GetAnnouncementID().GetValue())),
+				)
 			}
 			if conds.AppID != nil {
-				stm.Where(entannouncement.AppID(uuid.MustParse(conds.GetAppID().GetValue())))
+				stm.Where(
+					entannouncement.AppID(uuid.MustParse(conds.GetAppID().GetValue())),
+				)
 			}
 
 			if conds.UserID != nil {
@@ -111,7 +119,6 @@ func join(stm *ent.AnnouncementQuery, userID *string) *ent.AnnouncementSelect {
 			s.C(entannouncement.FieldTitle),
 			s.C(entannouncement.FieldContent),
 			s.C(entannouncement.FieldChannels),
-			s.C(entannouncement.FieldEmailSend),
 			s.C(entannouncement.FieldCreatedAt),
 			s.C(entannouncement.FieldUpdatedAt),
 		)

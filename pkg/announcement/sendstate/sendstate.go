@@ -49,6 +49,7 @@ func GetSendStates(
 	var userID *string
 	var channel *string
 	var userIDs []string
+	var alreadySend *bool
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
 		stm := cli.
@@ -81,6 +82,11 @@ func GetSendStates(
 				channelStr := channelpb.NotifChannel(val).String()
 				channel = &channelStr
 			}
+
+			if conds.AlreadySend != nil {
+				val := conds.GetAlreadySend().GetValue()
+				alreadySend = &val
+			}
 		}
 
 		n, err := stm.Count(_ctx)
@@ -93,7 +99,7 @@ func GetSendStates(
 			Offset(int(offset)).
 			Limit(int(limit))
 
-		return join(stm, userID, channel, userIDs).
+		return join(stm, userID, channel, userIDs, alreadySend).
 			Scan(_ctx, &infos)
 	})
 	if err != nil {
@@ -113,7 +119,7 @@ func GetSendStates(
 	return infos, total, nil
 }
 
-func join(stm *ent.AnnouncementQuery, userID, channel *string, userIDs []string) *ent.AnnouncementSelect {
+func join(stm *ent.AnnouncementQuery, userID, channel *string, userIDs []string, alreadySend *bool) *ent.AnnouncementSelect {
 	return stm.Select().Modify(func(s *sql.Selector) {
 		s.Select(
 			sql.As(s.C(entannouncement.FieldID), "announcement_id"),

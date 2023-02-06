@@ -89,18 +89,19 @@ func GetSendStates(
 			}
 		}
 
-		n, err := stm.Count(_ctx)
+		sel := join(stm, userID, channel, userIDs, alreadySend)
+		_total, err := sel.Count(ctx)
 		if err != nil {
 			return err
 		}
-		total = uint32(n)
 
-		stm.
+		total = uint32(_total)
+		return sel.
 			Offset(int(offset)).
-			Limit(int(limit))
-
-		return join(stm, userID, channel, userIDs, alreadySend).
-			Scan(_ctx, &infos)
+			Limit(int(limit)).
+			Modify(func(s *sql.Selector) {
+			}).
+			Scan(ctx, &infos)
 	})
 	if err != nil {
 		logger.Sugar().Errorw("GetSendState", "err", err)

@@ -3,6 +3,7 @@ package readstate
 import (
 	"context"
 	"encoding/json"
+
 	"entgo.io/ent/dialect/sql"
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 	mgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/announcement/readstate"

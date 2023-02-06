@@ -23,7 +23,6 @@ import (
 	"github.com/NpoolPlatform/notif-middleware/pkg/testinit"
 
 	announcementmgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/announcement"
-	sendstatemgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/announcement/sendstate"
 	channelpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/channel"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/sendstate"
 	"github.com/stretchr/testify/assert"
@@ -66,7 +65,7 @@ func getSendStates(t *testing.T) {
 	err = CreateSendState(context.Background(), data.AppID, data.UserID, data.AnnouncementID, data.Channel)
 	assert.Nil(t, err)
 
-	infos, total, err := GetSendStates(context.Background(), &sendstatemgrpb.Conds{
+	infos, total, err := GetSendStates(context.Background(), &npool.Conds{
 		AppID: &valuedef.StringVal{
 			Op:    cruder.EQ,
 			Value: data.AppID,

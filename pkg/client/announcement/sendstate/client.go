@@ -7,8 +7,6 @@ import (
 
 	"github.com/NpoolPlatform/message/npool/notif/mgr/v1/channel"
 
-	mgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/announcement/sendstate"
-
 	grpc2 "github.com/NpoolPlatform/go-service-framework/pkg/grpc"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
@@ -57,7 +55,7 @@ func CreateSendState(ctx context.Context, appID, userID, announcementID string, 
 	return nil
 }
 
-func GetSendStates(ctx context.Context, conds *mgrpb.Conds, offset, limit int32) ([]*npool.SendState, uint32, error) {
+func GetSendStates(ctx context.Context, conds *npool.Conds, offset, limit int32) ([]*npool.SendState, uint32, error) {
 	var total uint32
 	infos, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.GetSendStates(ctx, &npool.GetSendStatesRequest{

@@ -2,7 +2,6 @@ package sendstate
 
 import (
 	"context"
-	"time"
 
 	mgrcli "github.com/NpoolPlatform/notif-manager/pkg/client/announcement/sendstate"
 
@@ -37,7 +36,7 @@ func CreateSendState(
 }
 func GetSendStates(
 	ctx context.Context,
-	conds *mgrpb.Conds,
+	conds *npool.Conds,
 	offset, limit int32,
 ) (
 	[]*npool.SendState,
@@ -49,14 +48,12 @@ func GetSendStates(
 	var err error
 	var userID *string
 	var channel *string
+	var userIDs []string
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
 		stm := cli.
 			Announcement.
-			Query().
-			Where(
-				entannouncement.EndAtGT(uint32(time.Now().Unix())),
-			)
+			Query()
 		if conds != nil {
 			if conds.AnnouncementID != nil {
 				stm.Where(
@@ -66,6 +63,11 @@ func GetSendStates(
 			if conds.AppID != nil {
 				stm.Where(
 					entannouncement.AppID(uuid.MustParse(conds.GetAppID().GetValue())),
+				)
+			}
+			if conds.EndAt != nil {
+				stm.Where(
+					entannouncement.EndAt(conds.GetEndAt().GetValue()),
 				)
 			}
 
@@ -91,7 +93,7 @@ func GetSendStates(
 			Offset(int(offset)).
 			Limit(int(limit))
 
-		return join(stm, userID, channel).
+		return join(stm, userID, channel, userIDs).
 			Scan(_ctx, &infos)
 	})
 	if err != nil {
@@ -111,7 +113,7 @@ func GetSendStates(
 	return infos, total, nil
 }
 
-func join(stm *ent.AnnouncementQuery, userID, channel *string) *ent.AnnouncementSelect {
+func join(stm *ent.AnnouncementQuery, userID, channel *string, userIDs []string) *ent.AnnouncementSelect {
 	return stm.Select().Modify(func(s *sql.Selector) {
 		s.Select(
 			sql.As(s.C(entannouncement.FieldID), "announcement_id"),
@@ -132,6 +134,12 @@ func join(stm *ent.AnnouncementQuery, userID, channel *string) *ent.Announcement
 			s.
 				OnP(
 					sql.EQ(t1.C(entsendannouncement.FieldUserID), *userID),
+				)
+		}
+		if len(userIDs) > 0 {
+			s.
+				OnP(
+					sql.In(t1.C(entsendannouncement.FieldUserID), userIDs),
 				)
 		}
 		if channel != nil {

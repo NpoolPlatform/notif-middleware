@@ -29,7 +29,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func validateConds(in *mgrpb.Conds) error {
+func validateConds(in *npool.Conds) error {
 	if in.ID != nil {
 		if _, err := uuid.Parse(in.GetID().GetValue()); err != nil {
 			logger.Sugar().Errorw("validateConds", "ID", in.GetID().GetValue(), "error", err)
@@ -60,6 +60,14 @@ func validateConds(in *mgrpb.Conds) error {
 		case uint32(channel.NotifChannel_ChannelSMS):
 		default:
 			return fmt.Errorf("channel is invalid")
+		}
+	}
+	if in.UserIDs != nil {
+		for _, v := range in.GetUserIDs().GetValue() {
+			if _, err := uuid.Parse(v); err != nil {
+				logger.Sugar().Errorw("validateConds", "UserID", v, "error", err)
+				return err
+			}
 		}
 	}
 	return nil

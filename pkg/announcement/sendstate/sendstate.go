@@ -154,6 +154,19 @@ func join(stm *ent.AnnouncementQuery, userID, channel *string, userIDs []string,
 					sql.EQ(t1.C(entsendannouncement.FieldChannel), *channel),
 				)
 		}
+		if alreadySend != nil {
+			if *alreadySend {
+				s.
+					OnP(
+						sql.NEQ(t1.C(entsendannouncement.FieldUserID), ""),
+					)
+			} else {
+				s.
+					OnP(
+						sql.EQ(t1.C(entsendannouncement.FieldUserID), ""),
+					)
+			}
+		}
 		s.
 			AppendSelect(
 				t1.C(entsendannouncement.FieldUserID),

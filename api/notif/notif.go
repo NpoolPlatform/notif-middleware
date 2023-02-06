@@ -23,6 +23,10 @@ import (
 )
 
 func validate(in *mgrpb.NotifReq) error {
+	if in == nil {
+		logger.Sugar().Errorw("validate", "in", in, "error", "invalid info")
+		return fmt.Errorf("invalid info")
+	}
 	if in.ID != nil {
 		if _, err := uuid.Parse(in.GetID()); err != nil {
 			logger.Sugar().Errorw("validate", "ID", in.GetID(), "error", err)

@@ -4,6 +4,9 @@ package sendstate
 import (
 	"context"
 	"fmt"
+	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
+	valuedef "github.com/NpoolPlatform/message/npool"
+	mgrcli "github.com/NpoolPlatform/notif-manager/pkg/client/announcement/sendstate"
 
 	"github.com/NpoolPlatform/message/npool/notif/mgr/v1/channel"
 
@@ -129,6 +132,33 @@ func (s *Server) CreateSendState(ctx context.Context, in *npool.CreateSendStateR
 		return &npool.CreateSendStateResponse{}, status.Error(codes.InvalidArgument, "channel is invalid")
 	}
 	span = commontracer.TraceInvoker(span, "announcement/sendstate", "crud", "Rows")
+
+	exist, err := mgrcli.ExistSendStateConds(ctx, &mgrpb.Conds{
+		AppID: &valuedef.StringVal{
+			Op:    cruder.EQ,
+			Value: in.GetAppID(),
+		},
+		UserID: &valuedef.StringVal{
+			Op:    cruder.EQ,
+			Value: in.GetUserID(),
+		},
+		AnnouncementID: &valuedef.StringVal{
+			Op:    cruder.EQ,
+			Value: in.GetAnnouncementID(),
+		},
+		Channel: &valuedef.Uint32Val{
+			Op:    cruder.EQ,
+			Value: uint32(in.GetChannel().Number()),
+		},
+	})
+	if err != nil {
+		logger.Sugar().Errorw("CreateSendState", "err", err.Error())
+		return &npool.CreateSendStateResponse{}, status.Error(codes.Internal, err.Error())
+	}
+	if exist {
+		logger.Sugar().Errorw("CreateSendState", "err", "send state already exist")
+		return &npool.CreateSendStateResponse{}, status.Error(codes.InvalidArgument, "send state already exist")
+	}
 
 	err = sendstate1.CreateSendState(
 		ctx,

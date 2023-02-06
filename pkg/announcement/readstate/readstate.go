@@ -3,8 +3,6 @@ package readstate
 import (
 	"context"
 	"encoding/json"
-	"time"
-
 	"entgo.io/ent/dialect/sql"
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 	mgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/announcement/readstate"
@@ -59,10 +57,7 @@ func GetReadStates(ctx context.Context, conds *mgrpb.Conds, offset, limit int32)
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
 		stm := cli.
 			Announcement.
-			Query().
-			Where(
-				entannouncement.EndAtGT(uint32(time.Now().Unix())),
-			)
+			Query()
 		if conds != nil {
 			if conds.AnnouncementID != nil {
 				stm.Where(

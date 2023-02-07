@@ -118,6 +118,7 @@ func join(stm *ent.AnnouncementQuery, userID, channel *string, userIDs []string,
 			s.C(entannouncement.FieldContent),
 			s.C(entannouncement.FieldCreatedAt),
 			s.C(entannouncement.FieldUpdatedAt),
+			s.C(entannouncement.FieldEndAt),
 		)
 		t1 := sql.Table(entsendannouncement.Table)
 		t2 := sql.Table(entreadannouncement.Table)

@@ -44,7 +44,7 @@ func CreateNotif(ctx context.Context, in *mgrpb.NotifReq) (*npool.Notif, error) 
 		if err != nil {
 			return nil, fmt.Errorf("fail create notif: %v", err)
 		}
-		return resp.GetInfo(), nil
+		return resp.Info, nil
 	})
 	if err != nil {
 		return nil, fmt.Errorf("fail create notif: %v", err)
@@ -60,12 +60,30 @@ func UpdateNotif(ctx context.Context, in *mgrpb.NotifReq) (*npool.Notif, error) 
 		if err != nil {
 			return nil, fmt.Errorf("fail create notif: %v", err)
 		}
-		return resp.GetInfo(), nil
+		return resp.Info, nil
 	})
 	if err != nil {
 		return nil, fmt.Errorf("fail create notif: %v", err)
 	}
 	return info.(*npool.Notif), nil
+}
+
+func UpdateNotifs(ctx context.Context, ids []string, emailSend, alreadyRead *bool) ([]*npool.Notif, error) {
+	info, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		resp, err := cli.UpdateNotifs(ctx, &npool.UpdateNotifsRequest{
+			IDs:         ids,
+			EmailSend:   emailSend,
+			AlreadyRead: alreadyRead,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("fail create notif: %v", err)
+		}
+		return resp.Infos, nil
+	})
+	if err != nil {
+		return nil, fmt.Errorf("fail create notif: %v", err)
+	}
+	return info.([]*npool.Notif), nil
 }
 
 func GetNotif(ctx context.Context, id string) (*npool.Notif, error) {
@@ -76,7 +94,7 @@ func GetNotif(ctx context.Context, id string) (*npool.Notif, error) {
 		if err != nil {
 			return nil, fmt.Errorf("fail get notif: %v", err)
 		}
-		return resp.GetInfo(), nil
+		return resp.Info, nil
 	})
 	if err != nil {
 		return nil, fmt.Errorf("fail get notif: %v", err)
@@ -92,7 +110,7 @@ func GetNotifOnly(ctx context.Context, conds *mgrpb.Conds) (*npool.Notif, error)
 		if err != nil {
 			return nil, fmt.Errorf("fail get notif: %v", err)
 		}
-		return resp.GetInfo(), nil
+		return resp.Info, nil
 	})
 	if err != nil {
 		return nil, fmt.Errorf("fail get notif: %v", err)
@@ -112,7 +130,7 @@ func GetNotifs(ctx context.Context, conds *mgrpb.Conds, offset, limit int32) ([]
 			return nil, fmt.Errorf("fail get notifs: %v", err)
 		}
 		total = resp.GetTotal()
-		return resp.GetInfos(), nil
+		return resp.Infos, nil
 	})
 	if err != nil {
 		return nil, 0, fmt.Errorf("fail get notifs: %v", err)

@@ -123,12 +123,11 @@ func (s *Server) UpdateNotif(ctx context.Context, in *npool.UpdateNotifRequest) 
 		return &npool.UpdateNotifResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
-	if in.Info.ID != nil {
-		if _, err := uuid.Parse(in.GetInfo().GetID()); err != nil {
-			logger.Sugar().Errorw("validate", "ID", in.GetInfo().GetID(), "error", err)
-			return &npool.UpdateNotifResponse{}, status.Error(codes.Internal, err.Error())
-		}
+	if _, err := uuid.Parse(in.GetInfo().GetID()); err != nil {
+		logger.Sugar().Errorw("validate", "ID", in.GetInfo().GetID(), "error", err)
+		return &npool.UpdateNotifResponse{}, status.Error(codes.Internal, err.Error())
 	}
+
 	if in.Info.AppID != nil {
 		if _, err := uuid.Parse(in.GetInfo().GetAppID()); err != nil {
 			logger.Sugar().Errorw("validate", "AppID", in.GetInfo().GetAppID(), "error", err)
@@ -182,6 +181,40 @@ func (s *Server) UpdateNotif(ctx context.Context, in *npool.UpdateNotifRequest) 
 
 	return &npool.UpdateNotifResponse{
 		Info: info,
+	}, nil
+}
+
+//nolint:funlen,gocyclo
+func (s *Server) UpdateNotifs(ctx context.Context, in *npool.UpdateNotifsRequest) (*npool.UpdateNotifsResponse, error) {
+	var err error
+
+	_, span := otel.Tracer(constant.ServiceName).Start(ctx, "UpdatesNotif")
+	defer span.End()
+
+	defer func() {
+		if err != nil {
+			span.SetStatus(scodes.Error, err.Error())
+			span.RecordError(err)
+		}
+	}()
+
+	span = commontracer.TraceInvoker(span, "notif", "crud", "Updates")
+
+	for _, id := range in.GetIDs() {
+		if _, err := uuid.Parse(id); err != nil {
+			logger.Sugar().Errorw("validate", "ID", id, "error", err)
+			return &npool.UpdateNotifsResponse{}, status.Error(codes.Internal, err.Error())
+		}
+	}
+
+	infos, _, err := notif1.UpdateNotifs(ctx, in.GetIDs(), in.EmailSend, in.AlreadyRead)
+	if err != nil {
+		logger.Sugar().Errorw("UpdatesNotif", "error", err)
+		return &npool.UpdateNotifsResponse{}, status.Error(codes.Internal, err.Error())
+	}
+
+	return &npool.UpdateNotifsResponse{
+		Infos: infos,
 	}, nil
 }
 

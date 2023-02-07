@@ -39,6 +39,7 @@ func init() {
 }
 
 var (
+	endAt  = uint32(time.Now().Add(1 * time.Hour).Unix())
 	userID = uuid.NewString()
 	data   = npool.Announcement{
 		AnnouncementID: uuid.NewString(),
@@ -51,11 +52,11 @@ var (
 		AlreadySend:    true,
 		ReadUserID:     userID,
 		AlreadyRead:    true,
+		EndAt:          endAt,
 	}
 )
 
 func getAnnouncements(t *testing.T) {
-	endAt := uint32(time.Now().Add(1 * time.Hour).Unix())
 	_, err := announcementcrud.Create(context.Background(), &announcementmgrpb.AnnouncementReq{
 		ID:       &data.AnnouncementID,
 		AppID:    &data.AppID,

@@ -59,13 +59,13 @@ func GetSendStates(
 	var total uint32
 
 	err := db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		stm := cli.
+		stm := cli.Debug().
 			SendAnnouncement.
 			Query()
 		if conds != nil {
 			if conds.AnnouncementID != nil {
 				stm.Where(
-					entsendannouncement.ID(uuid.MustParse(conds.GetAnnouncementID().GetValue())),
+					entsendannouncement.AnnouncementID(uuid.MustParse(conds.GetAnnouncementID().GetValue())),
 				)
 			}
 			if conds.AppID != nil {

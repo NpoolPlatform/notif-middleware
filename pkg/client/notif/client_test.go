@@ -40,7 +40,7 @@ var data = &npool.Notif{
 	ID:          uuid.NewString(),
 	AppID:       uuid.NewString(),
 	UserID:      uuid.NewString(),
-	AlreadyRead: false,
+	AlreadyRead: true,
 	LangID:      uuid.NewString(),
 	EventType:   mgrpb.EventType_KYCApproved,
 	UseTemplate: true,
@@ -78,6 +78,16 @@ func updateNotif(t *testing.T) {
 	if assert.Nil(t, err) {
 		data.CreatedAt = info.CreatedAt
 		data.UpdatedAt = info.UpdatedAt
+		assert.Equal(t, data, info)
+	}
+}
+
+func updateNotifs(t *testing.T) {
+	b := true
+	info, err := UpdateNotifs(context.Background(), []string{data.ID}, &b, &b)
+	if assert.Nil(t, err) {
+		data.CreatedAt = info[0].CreatedAt
+		data.UpdatedAt = info[0].UpdatedAt
 		assert.Equal(t, data, info)
 	}
 }
@@ -126,6 +136,7 @@ func TestClient(t *testing.T) {
 
 	t.Run("createNotif", createNotif)
 	t.Run("updateNotif", updateNotif)
+	t.Run("updateNotifs", updateNotifs)
 	t.Run("getNotif", getNotif)
 	t.Run("getNotifs", getNotifs)
 	t.Run("getNotifOnly", getNotifOnly)

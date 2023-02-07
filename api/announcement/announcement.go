@@ -3,8 +3,6 @@ package announcement
 
 import (
 	"context"
-	"fmt"
-
 	announcement1 "github.com/NpoolPlatform/notif-middleware/pkg/announcement"
 
 	commontracer "github.com/NpoolPlatform/notif-middleware/pkg/tracer"
@@ -43,7 +41,6 @@ func (s *Server) GetAnnouncements(ctx context.Context, in *npool.GetAnnouncement
 		return &npool.GetAnnouncementsResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
-	fmt.Println(rows)
 	return &npool.GetAnnouncementsResponse{
 		Infos: rows,
 		Total: total,

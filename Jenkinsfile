@@ -15,7 +15,17 @@ pipeline {
 
     stage('Prepare') {
       steps {
+        sh 'rm -rf ./output/*'
         sh 'make deps'
+      }
+    }
+
+    stage('Linting') {
+      when {
+        expression { BUILD_TARGET == 'true' }
+      }
+      steps {
+        sh 'make verify'
       }
     }
 

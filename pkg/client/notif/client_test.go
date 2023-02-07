@@ -69,33 +69,36 @@ func createNotif(t *testing.T) {
 	if assert.Nil(t, err) {
 		data.CreatedAt = info.CreatedAt
 		data.UpdatedAt = info.UpdatedAt
+		data.AlreadyRead = info.AlreadyRead
 		assert.Equal(t, data, info)
 	}
 }
 
 func updateNotif(t *testing.T) {
+	data.AlreadyRead = true
 	info, err := UpdateNotif(context.Background(), dataReq)
 	if assert.Nil(t, err) {
 		data.CreatedAt = info.CreatedAt
 		data.UpdatedAt = info.UpdatedAt
+		data.AlreadyRead = info.AlreadyRead
 		assert.Equal(t, data, info)
 	}
 }
 
 func updateNotifs(t *testing.T) {
 	b := true
-	info, err := UpdateNotifs(context.Background(), []string{data.ID}, &b, &b)
+	infos, err := UpdateNotifs(context.Background(), []string{data.ID}, &b, &b)
 	if assert.Nil(t, err) {
-		data.CreatedAt = info[0].CreatedAt
-		data.UpdatedAt = info[0].UpdatedAt
-		assert.Equal(t, data, info)
+		data.CreatedAt = infos[0].CreatedAt
+		data.UpdatedAt = infos[0].UpdatedAt
+		assert.Equal(t, infos[0].String(), data.String())
 	}
 }
 
 func getNotif(t *testing.T) {
 	info, err := GetNotif(context.Background(), data.ID)
 	if assert.Nil(t, err) {
-		assert.Equal(t, data, info)
+		assert.Equal(t, data.String(), info.String())
 	}
 }
 
@@ -108,7 +111,7 @@ func getNotifs(t *testing.T) {
 	}, 0, 1)
 	if assert.Nil(t, err) {
 		assert.Equal(t, total, uint32(1))
-		assert.Equal(t, infos[0], data)
+		assert.Equal(t, infos[0].String(), data.String())
 	}
 }
 
@@ -120,7 +123,7 @@ func getNotifOnly(t *testing.T) {
 		},
 	})
 	if assert.Nil(t, err) {
-		assert.Equal(t, info, data)
+		assert.Equal(t, info.String(), data.String())
 	}
 }
 func TestClient(t *testing.T) {

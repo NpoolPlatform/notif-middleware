@@ -2,7 +2,6 @@ package notif
 
 import (
 	"context"
-
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 
 	npool2 "github.com/NpoolPlatform/message/npool"

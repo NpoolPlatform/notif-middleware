@@ -2,6 +2,7 @@ package sendstate
 
 import (
 	"context"
+	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 
 	entreadannouncement "github.com/NpoolPlatform/notif-manager/pkg/db/ent/readannouncement"
 
@@ -51,9 +52,12 @@ func GetAnnouncements(
 				)
 			}
 			if conds.EndAt != nil {
-				stm.Where(
-					entannouncement.EndAt(conds.GetEndAt().GetValue()),
-				)
+				switch conds.GetEndAt().GetOp() {
+				case cruder.GT:
+					stm.Where(
+						entannouncement.EndAtGT(conds.GetEndAt().GetValue()),
+					)
+				}
 			}
 
 			if conds.UserID != nil {

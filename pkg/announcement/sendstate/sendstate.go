@@ -34,6 +34,18 @@ func CreateSendState(
 	}
 	return nil
 }
+
+func CreateSendStates(
+	ctx context.Context,
+	infos []*mgrpb.SendStateReq,
+) error {
+	_, err := mgrcli.CreateSendStates(ctx, infos)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func GetSendStates(
 	ctx context.Context,
 	conds *npool.Conds,
@@ -45,51 +57,38 @@ func GetSendStates(
 ) {
 	var infos []*npool.SendState
 	var total uint32
-	var err error
-	var userID *string
-	var channel *string
-	var userIDs []string
-	var alreadySend *bool
 
-	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		stm := cli.Debug().
-			Announcement.
+	err := db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
+		stm := cli.
+			SendAnnouncement.
 			Query()
 		if conds != nil {
 			if conds.AnnouncementID != nil {
 				stm.Where(
-					entannouncement.ID(uuid.MustParse(conds.GetAnnouncementID().GetValue())),
+					entsendannouncement.ID(uuid.MustParse(conds.GetAnnouncementID().GetValue())),
 				)
 			}
 			if conds.AppID != nil {
 				stm.Where(
-					entannouncement.AppID(uuid.MustParse(conds.GetAppID().GetValue())),
+					entsendannouncement.AppID(uuid.MustParse(conds.GetAppID().GetValue())),
 				)
 			}
-			if conds.EndAt != nil {
-				stm.Where(
-					entannouncement.EndAt(conds.GetEndAt().GetValue()),
-				)
-			}
-
 			if conds.UserID != nil {
-				val := conds.GetUserID().GetValue()
-				userID = &val
+				stm.Where(
+					entsendannouncement.UserID(uuid.MustParse(conds.GetUserID().GetValue())),
+				)
 			}
 
 			if conds.Channel != nil {
 				val := conds.GetChannel().GetValue()
 				channelStr := channelpb.NotifChannel(val).String()
-				channel = &channelStr
-			}
-
-			if conds.AlreadySend != nil {
-				val := conds.GetAlreadySend().GetValue()
-				alreadySend = &val
+				stm.Where(
+					entsendannouncement.Channel(channelStr),
+				)
 			}
 		}
 
-		sel := join(stm, userID, channel, userIDs, alreadySend)
+		sel := join(stm)
 		_total, err := sel.Count(ctx)
 		if err != nil {
 			return err
@@ -120,68 +119,30 @@ func GetSendStates(
 	return infos, total, nil
 }
 
-func join(stm *ent.AnnouncementQuery, userID, channel *string, userIDs []string, alreadySend *bool) *ent.AnnouncementSelect {
+func join(stm *ent.SendAnnouncementQuery) *ent.SendAnnouncementSelect {
 	return stm.Select().Modify(func(s *sql.Selector) {
 		s.Select(
-			sql.As(s.C(entannouncement.FieldID), "announcement_id"),
-			s.C(entannouncement.FieldAppID),
-			s.C(entannouncement.FieldTitle),
-			s.C(entannouncement.FieldContent),
-			s.C(entannouncement.FieldCreatedAt),
-			s.C(entannouncement.FieldUpdatedAt),
+			s.C(entsendannouncement.FieldAppID),
+			s.C(entsendannouncement.FieldUserID),
+			s.C(entsendannouncement.FieldChannel),
 		)
-		t1 := sql.Table(entsendannouncement.Table)
+		t1 := sql.Table(entannouncement.Table)
 		s.
 			LeftJoin(t1).
 			On(
-				s.C(entannouncement.FieldID),
-				t1.C(entsendannouncement.FieldAnnouncementID),
-			)
-		if userID != nil {
-			s.
-				OnP(
-					sql.EQ(t1.C(entsendannouncement.FieldUserID), *userID),
-				)
-		}
-		if len(userIDs) > 0 {
-			s.
-				OnP(
-					sql.In(t1.C(entsendannouncement.FieldUserID), userIDs),
-				)
-		}
-		if channel != nil {
-			s.
-				OnP(
-					sql.EQ(t1.C(entsendannouncement.FieldChannel), *channel),
-				)
-		}
-		if alreadySend != nil {
-			if *alreadySend {
-				s.
-					OnP(
-						sql.NEQ(t1.C(entsendannouncement.FieldUserID), ""),
-					)
-			} else {
-				s.
-					OnP(
-						sql.EQ(t1.C(entsendannouncement.FieldUserID), ""),
-					)
-			}
-		}
-		s.
+				s.C(entsendannouncement.FieldAnnouncementID),
+				t1.C(entannouncement.FieldID),
+			).
 			AppendSelect(
-				t1.C(entsendannouncement.FieldUserID),
-				t1.C(entsendannouncement.FieldChannel),
+				sql.As(t1.C(entannouncement.FieldID), "announcement_id"),
+				t1.C(entannouncement.FieldTitle),
+				t1.C(entannouncement.FieldContent),
 			)
 	})
 }
 
 func expand(infos []*npool.SendState) []*npool.SendState {
-	for key, info := range infos {
-		if info.UserID != "" {
-			infos[key].AlreadySend = true
-		}
-
+	for key := range infos {
 		infos[key].Channel = channelpb.NotifChannel(channelpb.NotifChannel_value[infos[key].ChannelStr])
 	}
 	return infos

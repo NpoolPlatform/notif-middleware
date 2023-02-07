@@ -22,16 +22,39 @@ func GetReadState(ctx context.Context, announcementID, userID string) (*npool.Re
 	var err error
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		stm := cli.
+		return cli.
 			Announcement.
 			Query().
 			Where(
 				entannouncement.ID(uuid.MustParse(announcementID)),
 			).
-			Limit(1)
-
-		return join(stm, &userID).
-			Scan(_ctx, &infos)
+			Limit(1).
+			Select().
+			Modify(func(s *sql.Selector) {
+				s.Select(
+					sql.As(s.C(entannouncement.FieldID), "announcement_id"),
+					s.C(entannouncement.FieldAppID),
+					s.C(entannouncement.FieldTitle),
+					s.C(entannouncement.FieldContent),
+					s.C(entannouncement.FieldChannels),
+					s.C(entannouncement.FieldCreatedAt),
+					s.C(entannouncement.FieldUpdatedAt),
+				)
+				t1 := sql.Table(entreadannouncement.Table)
+				s.
+					LeftJoin(t1).
+					On(
+						s.C(entannouncement.FieldID),
+						t1.C(entreadannouncement.FieldAnnouncementID),
+					).
+					OnP(
+						sql.EQ(t1.C(entreadannouncement.FieldUserID), userID),
+					)
+				s.
+					AppendSelect(
+						t1.C(entreadannouncement.FieldUserID),
+					)
+			}).Scan(_ctx, &infos)
 	})
 	if err != nil {
 		logger.Sugar().Errorw("GetReadState", "err", err)
@@ -53,31 +76,35 @@ func GetReadStates(ctx context.Context, conds *mgrpb.Conds, offset, limit int32)
 	var infos []*npool.ReadState
 	var total uint32
 	var err error
-	var userID *string
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
 		stm := cli.
-			Announcement.
+			ReadAnnouncement.
 			Query()
 		if conds != nil {
-			if conds.AnnouncementID != nil {
+			if conds.ID != nil {
 				stm.Where(
-					entannouncement.ID(uuid.MustParse(conds.GetAnnouncementID().GetValue())),
+					entreadannouncement.ID(uuid.MustParse(conds.GetAnnouncementID().GetValue())),
 				)
 			}
 			if conds.AppID != nil {
 				stm.Where(
-					entannouncement.AppID(uuid.MustParse(conds.GetAppID().GetValue())),
+					entreadannouncement.AppID(uuid.MustParse(conds.GetAppID().GetValue())),
 				)
 			}
-
 			if conds.UserID != nil {
-				val := conds.GetUserID().GetValue()
-				userID = &val
+				stm.Where(
+					entreadannouncement.UserID(uuid.MustParse(conds.GetUserID().GetValue())),
+				)
+			}
+			if conds.AnnouncementID != nil {
+				stm.Where(
+					entreadannouncement.AnnouncementID(uuid.MustParse(conds.GetAnnouncementID().GetValue())),
+				)
 			}
 		}
 
-		sel := join(stm, userID)
+		sel := join(stm)
 		_total, err := sel.Count(ctx)
 		if err != nil {
 			return err
@@ -108,43 +135,33 @@ func GetReadStates(ctx context.Context, conds *mgrpb.Conds, offset, limit int32)
 	return infos, total, nil
 }
 
-func join(stm *ent.AnnouncementQuery, userID *string) *ent.AnnouncementSelect {
+func join(stm *ent.ReadAnnouncementQuery) *ent.ReadAnnouncementSelect {
 	return stm.Select().Modify(func(s *sql.Selector) {
 		s.Select(
-			sql.As(s.C(entannouncement.FieldID), "announcement_id"),
-			s.C(entannouncement.FieldAppID),
-			s.C(entannouncement.FieldTitle),
-			s.C(entannouncement.FieldContent),
-			s.C(entannouncement.FieldChannels),
-			s.C(entannouncement.FieldCreatedAt),
-			s.C(entannouncement.FieldUpdatedAt),
+			sql.As(s.C(entreadannouncement.FieldAnnouncementID), "announcement_id"),
+			s.C(entreadannouncement.FieldAppID),
+			s.C(entreadannouncement.FieldUserID),
+			s.C(entreadannouncement.FieldCreatedAt),
+			s.C(entreadannouncement.FieldUpdatedAt),
 		)
-		t1 := sql.Table(entreadannouncement.Table)
+		t1 := sql.Table(entannouncement.Table)
 		s.
 			LeftJoin(t1).
 			On(
-				s.C(entannouncement.FieldID),
-				t1.C(entreadannouncement.FieldAnnouncementID),
+				s.C(entreadannouncement.FieldAnnouncementID),
+				t1.C(entannouncement.FieldID),
 			)
-		if userID != nil {
-			s.
-				OnP(
-					sql.EQ(t1.C(entreadannouncement.FieldUserID), *userID),
-				)
-		}
 		s.
 			AppendSelect(
-				t1.C(entreadannouncement.FieldUserID),
+				t1.C(entannouncement.FieldTitle),
+				t1.C(entannouncement.FieldContent),
+				t1.C(entannouncement.FieldChannels),
 			)
 	})
 }
 
 func expand(infos []*npool.ReadState) ([]*npool.ReadState, error) {
-	for key, info := range infos {
-		if info.UserID != "" {
-			infos[key].AlreadyRead = true
-		}
-
+	for key := range infos {
 		channelsStr := []string{}
 		err := json.Unmarshal([]byte(infos[0].ChannelsStr), &channelsStr)
 		if err != nil {

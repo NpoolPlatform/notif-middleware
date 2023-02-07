@@ -29,7 +29,11 @@ import (
 	"github.com/google/uuid"
 )
 
+//nolint:gocyclo
 func validateConds(in *npool.Conds) error {
+	if in == nil {
+		return nil
+	}
 	if in.ID != nil {
 		if _, err := uuid.Parse(in.GetID().GetValue()); err != nil {
 			logger.Sugar().Errorw("validateConds", "ID", in.GetID().GetValue(), "error", err)
@@ -182,4 +186,52 @@ func (s *Server) CreateSendState(ctx context.Context, in *npool.CreateSendStateR
 	}
 
 	return &npool.CreateSendStateResponse{}, nil
+}
+
+func (s *Server) CreateSendStates(ctx context.Context, in *npool.CreateSendStatesRequest) (*npool.CreateSendStatesResponse, error) {
+	var err error
+
+	_, span := otel.Tracer(constant.ServiceName).Start(ctx, "GetSendStates")
+	defer span.End()
+
+	defer func() {
+		if err != nil {
+			span.SetStatus(scodes.Error, err.Error())
+			span.RecordError(err)
+		}
+	}()
+
+	for _, info := range in.GetInfos() {
+		if _, err := uuid.Parse(info.GetAppID()); err != nil {
+			logger.Sugar().Errorw("CreateSendState", "AppID", info.GetAppID(), "error", err)
+			return &npool.CreateSendStatesResponse{}, status.Error(codes.InvalidArgument, err.Error())
+		}
+		if _, err := uuid.Parse(info.GetUserID()); err != nil {
+			logger.Sugar().Errorw("CreateSendState", "UserID", info.GetUserID(), "error", err)
+			return &npool.CreateSendStatesResponse{}, status.Error(codes.InvalidArgument, err.Error())
+		}
+		if _, err := uuid.Parse(info.GetAnnouncementID()); err != nil {
+			logger.Sugar().Errorw("CreateSendState", "AnnouncementID", info.GetAnnouncementID(), "error", err)
+			return &npool.CreateSendStatesResponse{}, status.Error(codes.InvalidArgument, err.Error())
+		}
+
+		switch info.GetChannel() {
+		case channel.NotifChannel_ChannelEmail:
+		case channel.NotifChannel_ChannelSMS:
+		default:
+			logger.Sugar().Errorw("CreateSendState", "Channel", info.GetChannel())
+			return &npool.CreateSendStatesResponse{}, status.Error(codes.InvalidArgument, "channel is invalid")
+		}
+		span = commontracer.TraceInvoker(span, "announcement/sendstate", "crud", "Rows")
+	}
+	err = sendstate1.CreateSendStates(
+		ctx,
+		in.GetInfos(),
+	)
+	if err != nil {
+		logger.Sugar().Errorw("GetSendStates", "error", err)
+		return &npool.CreateSendStatesResponse{}, status.Error(codes.Internal, err.Error())
+	}
+
+	return &npool.CreateSendStatesResponse{}, nil
 }

@@ -1,3 +1,4 @@
+//nolint:dupl
 package readstate
 
 import (
@@ -49,7 +50,6 @@ var data = npool.ReadState{
 	Content:        uuid.NewString(),
 	ChannelsStr:    `["ChannelEmail", "ChannelSMS"]`,
 	Channels:       []channelpb.NotifChannel{channelpb.NotifChannel_ChannelEmail, channelpb.NotifChannel_ChannelSMS},
-	AlreadyRead:    true,
 }
 
 func getReadState(t *testing.T) {

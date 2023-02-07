@@ -102,6 +102,89 @@ func (s *Server) CreateNotif(ctx context.Context, in *npool.CreateNotifRequest) 
 	}, nil
 }
 
+//nolint:funlen,gocyclo
+func (s *Server) UpdateNotif(ctx context.Context, in *npool.UpdateNotifRequest) (*npool.UpdateNotifResponse, error) {
+	var err error
+
+	_, span := otel.Tracer(constant.ServiceName).Start(ctx, "UpdateNotif")
+	defer span.End()
+
+	defer func() {
+		if err != nil {
+			span.SetStatus(scodes.Error, err.Error())
+			span.RecordError(err)
+		}
+	}()
+
+	span = commontracer.TraceInvoker(span, "notif", "crud", "Update")
+
+	if in.Info == nil {
+		logger.Sugar().Errorw("validate", "in", in, "error", "invalid info")
+		return &npool.UpdateNotifResponse{}, status.Error(codes.Internal, err.Error())
+	}
+
+	if in.Info.ID != nil {
+		if _, err := uuid.Parse(in.GetInfo().GetID()); err != nil {
+			logger.Sugar().Errorw("validate", "ID", in.GetInfo().GetID(), "error", err)
+			return &npool.UpdateNotifResponse{}, status.Error(codes.Internal, err.Error())
+		}
+	}
+	if in.Info.AppID != nil {
+		if _, err := uuid.Parse(in.GetInfo().GetAppID()); err != nil {
+			logger.Sugar().Errorw("validate", "AppID", in.GetInfo().GetAppID(), "error", err)
+			return &npool.UpdateNotifResponse{}, status.Error(codes.Internal, err.Error())
+		}
+	}
+	if in.Info.UserID != nil {
+		if _, err := uuid.Parse(in.GetInfo().GetUserID()); err != nil {
+			logger.Sugar().Errorw("validate", "UserID", in.GetInfo().GetUserID(), "error", err)
+			return &npool.UpdateNotifResponse{}, status.Error(codes.Internal, err.Error())
+		}
+	}
+	if in.Info.LangID != nil {
+		if _, err := uuid.Parse(in.GetInfo().GetLangID()); err != nil {
+			logger.Sugar().Errorw("validate", "LangID", in.GetInfo().GetLangID(), "error", err)
+			return &npool.UpdateNotifResponse{}, status.Error(codes.Internal, err.Error())
+		}
+	}
+
+	if in.Info.EventType != nil {
+		switch in.GetInfo().GetEventType() {
+		case mgrpb.EventType_WithdrawalRequest:
+		case mgrpb.EventType_WithdrawalCompleted:
+		case mgrpb.EventType_DepositReceived:
+		case mgrpb.EventType_KYCApproved:
+		case mgrpb.EventType_KYCRejected:
+		default:
+			logger.Sugar().Errorw("validate", "error", "EventType is invalid")
+			return &npool.UpdateNotifResponse{}, status.Error(codes.InvalidArgument, "EventType is invalid")
+		}
+	}
+
+	if in.GetInfo().GetTitle() == "" && in.Info.Title != nil {
+		logger.Sugar().Errorw("validate", "Title", in.GetInfo().GetTitle())
+		return &npool.UpdateNotifResponse{}, status.Error(codes.InvalidArgument, "title is invalid")
+	}
+	if in.GetInfo().GetContent() == "" && in.Info.Content != nil {
+		logger.Sugar().Errorw("validate", "Content", in.GetInfo().GetContent())
+		return &npool.UpdateNotifResponse{}, status.Error(codes.InvalidArgument, "content is invalid")
+	}
+	if len(in.GetInfo().GetChannels()) == 0 {
+		logger.Sugar().Errorw("validate", "Channels", in.GetInfo().GetChannels())
+		return &npool.UpdateNotifResponse{}, status.Error(codes.InvalidArgument, "channels is invalid")
+	}
+
+	info, err := notif1.UpdateNotif(ctx, in.GetInfo())
+	if err != nil {
+		logger.Sugar().Errorw("UpdateNotif", "error", err)
+		return &npool.UpdateNotifResponse{}, status.Error(codes.Internal, err.Error())
+	}
+
+	return &npool.UpdateNotifResponse{
+		Info: info,
+	}, nil
+}
+
 func (s *Server) GetNotif(ctx context.Context, in *npool.GetNotifRequest) (*npool.GetNotifResponse, error) {
 	var err error
 

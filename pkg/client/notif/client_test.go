@@ -73,6 +73,15 @@ func createNotif(t *testing.T) {
 	}
 }
 
+func updateNotif(t *testing.T) {
+	info, err := UpdateNotif(context.Background(), dataReq)
+	if assert.Nil(t, err) {
+		data.CreatedAt = info.CreatedAt
+		data.UpdatedAt = info.UpdatedAt
+		assert.Equal(t, data, info)
+	}
+}
+
 func getNotif(t *testing.T) {
 	info, err := GetNotif(context.Background(), data.ID)
 	if assert.Nil(t, err) {
@@ -116,6 +125,7 @@ func TestClient(t *testing.T) {
 	})
 
 	t.Run("createNotif", createNotif)
+	t.Run("updateNotif", updateNotif)
 	t.Run("getNotif", getNotif)
 	t.Run("getNotifs", getNotifs)
 	t.Run("getNotifOnly", getNotifOnly)

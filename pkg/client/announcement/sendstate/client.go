@@ -3,6 +3,7 @@ package sendstate
 import (
 	"context"
 	"fmt"
+
 	"time"
 
 	"github.com/NpoolPlatform/message/npool/notif/mgr/v1/channel"
@@ -11,6 +12,7 @@ import (
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 
+	mgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/announcement/sendstate"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/sendstate"
 
 	constant "github.com/NpoolPlatform/notif-middleware/pkg/message/const"
@@ -51,6 +53,22 @@ func CreateSendState(ctx context.Context, appID, userID, announcementID string, 
 	})
 	if err != nil {
 		return fmt.Errorf("fail get sendstates: %v", err)
+	}
+	return nil
+}
+
+func CreateSendStates(ctx context.Context, infos []*mgrpb.SendStateReq) error {
+	_, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		_, err := cli.CreateSendStates(ctx, &npool.CreateSendStatesRequest{
+			Infos: infos,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("fail creates sendstates: %v", err)
+		}
+		return nil, nil
+	})
+	if err != nil {
+		return fmt.Errorf("fail creates sendstates: %v", err)
 	}
 	return nil
 }

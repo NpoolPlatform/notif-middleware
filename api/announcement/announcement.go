@@ -3,8 +3,9 @@ package announcement
 
 import (
 	"context"
+	"fmt"
 
-	mgrcli "github.com/NpoolPlatform/notif-manager/pkg/client/announcement"
+	announcement1 "github.com/NpoolPlatform/notif-middleware/pkg/announcement"
 
 	commontracer "github.com/NpoolPlatform/notif-middleware/pkg/tracer"
 
@@ -36,12 +37,13 @@ func (s *Server) GetAnnouncements(ctx context.Context, in *npool.GetAnnouncement
 
 	span = commontracer.TraceInvoker(span, "announcement/announcement", "crud", "Rows")
 
-	rows, total, err := mgrcli.GetAnnouncements(ctx, in.GetConds(), in.GetOffset(), in.GetLimit())
+	rows, total, err := announcement1.GetAnnouncements(ctx, in.GetConds(), in.GetOffset(), in.GetLimit())
 	if err != nil {
 		logger.Sugar().Errorw("GetAnnouncements", "error", err)
 		return &npool.GetAnnouncementsResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
+	fmt.Println(rows)
 	return &npool.GetAnnouncementsResponse{
 		Infos: rows,
 		Total: total,

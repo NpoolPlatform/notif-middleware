@@ -17,6 +17,14 @@ func CreateNotif(ctx context.Context, req *mgrpb.NotifReq) (*npool.Notif, error)
 	return expand(info), nil
 }
 
+func UpdateNotif(ctx context.Context, req *mgrpb.NotifReq) (*npool.Notif, error) {
+	info, err := mgrcli.UpdateNotif(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return expand(info), nil
+}
+
 func GetNotif(ctx context.Context, id string) (*npool.Notif, error) {
 	info, err := mgrcli.GetNotif(ctx, id)
 	if err != nil {

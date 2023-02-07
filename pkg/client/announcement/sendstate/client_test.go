@@ -47,7 +47,6 @@ var data = npool.SendState{
 	Content:        uuid.NewString(),
 	ChannelStr:     channelpb.NotifChannel_ChannelEmail.String(),
 	Channel:        channelpb.NotifChannel_ChannelEmail,
-	AlreadySend:    true,
 }
 
 func getSendStates(t *testing.T) {

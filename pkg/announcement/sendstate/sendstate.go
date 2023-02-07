@@ -52,7 +52,7 @@ func GetSendStates(
 	var alreadySend *bool
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		stm := cli.
+		stm := cli.Debug().
 			Announcement.
 			Query()
 		if conds != nil {

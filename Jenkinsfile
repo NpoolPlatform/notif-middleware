@@ -19,14 +19,6 @@ pipeline {
       }
     }
 
-    stage('Output Cleanup') {
-      steps {
-        dir ('./output') {
-          deleteDir()
-        }
-      }
-    }
-
     stage('Linting') {
       when {
         expression { BUILD_TARGET == 'true' }

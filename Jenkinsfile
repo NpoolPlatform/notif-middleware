@@ -15,8 +15,15 @@ pipeline {
 
     stage('Prepare') {
       steps {
-        sh 'rm ./output/* -rf'
         sh 'make deps'
+      }
+    }
+
+    stage('Output Cleanup') {
+      steps {
+        dir ('./output') {
+          deleteDir()
+        }
       }
     }
 

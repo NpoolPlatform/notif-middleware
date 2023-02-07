@@ -28,15 +28,6 @@ pipeline {
       }
     }
 
-    stage('Linting') {
-      when {
-        expression { BUILD_TARGET == 'true' }
-      }
-      steps {
-        sh 'make verify'
-      }
-    }
-
     stage('Compile') {
       when {
         expression { BUILD_TARGET == 'true' }

@@ -52,6 +52,7 @@ func validate(in *mgrpb.NotifReq) error {
 	case mgrpb.EventType_DepositReceived:
 	case mgrpb.EventType_KYCApproved:
 	case mgrpb.EventType_KYCRejected:
+	case mgrpb.EventType_Announcement:
 	default:
 		return fmt.Errorf("EventType is invalid")
 	}
@@ -154,6 +155,7 @@ func (s *Server) UpdateNotif(ctx context.Context, in *npool.UpdateNotifRequest) 
 		case mgrpb.EventType_DepositReceived:
 		case mgrpb.EventType_KYCApproved:
 		case mgrpb.EventType_KYCRejected:
+		case mgrpb.EventType_Announcement:
 		default:
 			logger.Sugar().Errorw("validate", "error", "EventType is invalid")
 			return &npool.UpdateNotifResponse{}, status.Error(codes.InvalidArgument, "EventType is invalid")
@@ -285,6 +287,8 @@ func validateConds(in *mgrpb.Conds) error {
 		case uint32(mgrpb.EventType_DepositReceived):
 		case uint32(mgrpb.EventType_KYCApproved):
 		case uint32(mgrpb.EventType_KYCRejected):
+		case uint32(mgrpb.EventType_Announcement):
+
 		default:
 			return fmt.Errorf("EventType is invalid")
 		}

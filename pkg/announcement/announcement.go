@@ -2,6 +2,8 @@ package sendstate
 
 import (
 	"context"
+	"fmt"
+
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 
 	entreadannouncement "github.com/NpoolPlatform/notif-manager/pkg/db/ent/readannouncement"
@@ -37,7 +39,7 @@ func GetAnnouncements(
 	var alreadyRead *bool
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		stm := cli.
+		stm := cli.Debug().
 			Announcement.
 			Query()
 		if conds != nil {
@@ -57,6 +59,8 @@ func GetAnnouncements(
 					stm.Where(
 						entannouncement.EndAtGT(conds.GetEndAt().GetValue()),
 					)
+				default:
+					return fmt.Errorf("EndAt op is invalid")
 				}
 			}
 
@@ -78,7 +82,7 @@ func GetAnnouncements(
 
 			if conds.AlreadyRead != nil {
 				val := conds.GetAlreadySend().GetValue()
-				alreadySend = &val
+				alreadyRead = &val
 			}
 		}
 

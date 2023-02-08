@@ -56,7 +56,7 @@ var (
 	}
 )
 
-func getAnnouncements(t *testing.T) {
+func getAnnouncementStates(t *testing.T) {
 	_, err := announcementcrud.Create(context.Background(), &announcementmgrpb.AnnouncementReq{
 		ID:       &data.AnnouncementID,
 		AppID:    &data.AppID,
@@ -82,7 +82,7 @@ func getAnnouncements(t *testing.T) {
 	})
 	assert.Nil(t, err)
 
-	infos, total, err := GetAnnouncements(context.Background(), &npool.Conds{
+	infos, total, err := GetAnnouncementStates(context.Background(), &npool.Conds{
 		AppID: &valuedef.StringVal{
 			Op:    cruder.EQ,
 			Value: data.AppID,
@@ -114,5 +114,5 @@ func TestClient(t *testing.T) {
 	monkey.Patch(grpc2.GetGRPCConn, func(service string, tags ...string) (*grpc.ClientConn, error) {
 		return grpc.Dial(fmt.Sprintf("localhost:%v", gport), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	})
-	t.Run("getAnnouncements", getAnnouncements)
+	t.Run("getAnnouncementStates", getAnnouncementStates)
 }

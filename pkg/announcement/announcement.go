@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"strings"
 
+	mgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/announcement"
+	mgrcli "github.com/NpoolPlatform/notif-manager/pkg/client/announcement"
+
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 
 	entreadannouncement "github.com/NpoolPlatform/notif-manager/pkg/db/ent/readannouncement"
@@ -22,6 +25,41 @@ import (
 )
 
 func GetAnnouncements(
+	ctx context.Context,
+	conds *mgrpb.Conds,
+	offset, limit int32,
+) (
+	[]*npool.Announcement,
+	uint32,
+	error,
+) {
+	rows, total, err := mgrcli.GetAnnouncements(ctx, conds, offset, limit)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	infos := []*npool.Announcement{}
+	for _, val := range rows {
+		infos = append(infos, &npool.Announcement{
+			AnnouncementID: val.ID,
+			AppID:          val.AppID,
+			UserID:         "",
+			Title:          val.Title,
+			Content:        val.Content,
+			ChannelStr:     "",
+			Channel:        0,
+			AlreadySend:    false,
+			CreatedAt:      0,
+			UpdatedAt:      0,
+			ReadUserID:     "",
+			AlreadyRead:    false,
+			EndAt:          val.EndAt,
+		})
+	}
+	return infos, total, err
+}
+
+func GetAnnouncementStates(
 	ctx context.Context,
 	conds *npool.Conds,
 	offset, limit int32,

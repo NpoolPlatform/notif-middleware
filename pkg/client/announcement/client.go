@@ -1,9 +1,12 @@
+//nolint:dupl
 package announcements
 
 import (
 	"context"
 	"fmt"
 	"time"
+
+	mgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/announcement"
 
 	grpc2 "github.com/NpoolPlatform/go-service-framework/pkg/grpc"
 
@@ -34,10 +37,30 @@ func withCRUD(ctx context.Context, handler handler) (cruder.Any, error) {
 	return handler(_ctx, cli)
 }
 
-func GetAnnouncements(ctx context.Context, conds *npool.Conds, offset, limit int32) ([]*npool.Announcement, uint32, error) {
+func GetAnnouncements(ctx context.Context, conds *mgrpb.Conds, offset, limit int32) ([]*npool.Announcement, uint32, error) {
 	var total uint32
 	infos, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.GetAnnouncements(ctx, &npool.GetAnnouncementsRequest{
+			Conds:  conds,
+			Limit:  limit,
+			Offset: offset,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("fail get announcementss: %v", err)
+		}
+		total = resp.GetTotal()
+		return resp.GetInfos(), nil
+	})
+	if err != nil {
+		return nil, 0, fmt.Errorf("fail get announcementss: %v", err)
+	}
+	return infos.([]*npool.Announcement), total, nil
+}
+
+func GetAnnouncementStates(ctx context.Context, conds *npool.Conds, offset, limit int32) ([]*npool.Announcement, uint32, error) {
+	var total uint32
+	infos, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		resp, err := cli.GetAnnouncementStates(ctx, &npool.GetAnnouncementStatesRequest{
 			Conds:  conds,
 			Limit:  limit,
 			Offset: offset,

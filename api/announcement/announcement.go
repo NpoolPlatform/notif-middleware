@@ -28,12 +28,6 @@ func validateConds(in *npool.Conds) error {
 	if in == nil {
 		return nil
 	}
-	if in.ID != nil {
-		if _, err := uuid.Parse(in.GetID().GetValue()); err != nil {
-			logger.Sugar().Errorw("validateConds", "ID", in.GetID().GetValue(), "error", err)
-			return err
-		}
-	}
 	if in.AppID != nil {
 		if _, err := uuid.Parse(in.GetAppID().GetValue()); err != nil {
 			logger.Sugar().Errorw("validateConds", "AppID", in.GetAppID().GetValue(), "error", err)
@@ -71,7 +65,13 @@ func validateConds(in *npool.Conds) error {
 	return nil
 }
 
-func (s *Server) GetAnnouncements(ctx context.Context, in *npool.GetAnnouncementsRequest) (*npool.GetAnnouncementsResponse, error) {
+func (s *Server) GetAnnouncementStates(
+	ctx context.Context,
+	in *npool.GetAnnouncementStatesRequest,
+) (
+	*npool.GetAnnouncementStatesResponse,
+	error,
+) {
 	var err error
 
 	_, span := otel.Tracer(constant.ServiceName).Start(ctx, "GetAnnouncements")
@@ -91,8 +91,37 @@ func (s *Server) GetAnnouncements(ctx context.Context, in *npool.GetAnnouncement
 	err = validateConds(in.GetConds())
 	if err != nil {
 		logger.Sugar().Errorw("GetAnnouncements", "error", err)
-		return &npool.GetAnnouncementsResponse{}, status.Error(codes.InvalidArgument, err.Error())
+		return &npool.GetAnnouncementStatesResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
+
+	rows, total, err := announcement1.GetAnnouncementStates(ctx, in.GetConds(), in.GetOffset(), in.GetLimit())
+	if err != nil {
+		logger.Sugar().Errorw("GetAnnouncements", "error", err)
+		return &npool.GetAnnouncementStatesResponse{}, status.Error(codes.Internal, err.Error())
+	}
+
+	return &npool.GetAnnouncementStatesResponse{
+		Infos: rows,
+		Total: total,
+	}, nil
+}
+
+func (s *Server) GetAnnouncements(ctx context.Context, in *npool.GetAnnouncementsRequest) (*npool.GetAnnouncementsResponse, error) {
+	var err error
+
+	_, span := otel.Tracer(constant.ServiceName).Start(ctx, "GetAnnouncements")
+	defer span.End()
+
+	defer func() {
+		if err != nil {
+			span.SetStatus(scodes.Error, err.Error())
+			span.RecordError(err)
+		}
+	}()
+
+	span = commontracer.TraceOffsetLimit(span, int(in.GetOffset()), int(in.GetLimit()))
+
+	span = commontracer.TraceInvoker(span, "announcement/announcement", "crud", "Rows")
 
 	rows, total, err := announcement1.GetAnnouncements(ctx, in.GetConds(), in.GetOffset(), in.GetLimit())
 	if err != nil {

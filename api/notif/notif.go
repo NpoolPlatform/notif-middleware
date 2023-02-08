@@ -22,6 +22,7 @@ import (
 	notif1 "github.com/NpoolPlatform/notif-middleware/pkg/notif"
 )
 
+//nolint:gocyclo
 func validate(in *mgrpb.NotifReq) error {
 	if in == nil {
 		logger.Sugar().Errorw("validate", "in", in, "error", "invalid info")

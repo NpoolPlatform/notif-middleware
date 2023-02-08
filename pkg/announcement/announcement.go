@@ -3,6 +3,7 @@ package sendstate
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 
@@ -39,7 +40,7 @@ func GetAnnouncements(
 	var alreadyRead *bool
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		stm := cli.Debug().
+		stm := cli.
 			Announcement.
 			Query()
 		if conds != nil {
@@ -83,6 +84,10 @@ func GetAnnouncements(
 			if conds.AlreadyRead != nil {
 				val := conds.GetAlreadySend().GetValue()
 				alreadyRead = &val
+			}
+
+			if conds.UserIDs != nil {
+				userIDs = conds.GetUserIDs().GetValue()
 			}
 		}
 
@@ -135,67 +140,48 @@ func join(stm *ent.AnnouncementQuery, userID, channel *string, userIDs []string,
 			On(
 				s.C(entannouncement.FieldID),
 				t1.C(entsendannouncement.FieldAnnouncementID),
-			).
+			)
+		if userID != nil {
+			s.OnP(sql.EQ(t1.C(entsendannouncement.FieldUserID), *userID))
+		}
+
+		if len(userIDs) > 0 {
+			s.OnP(sql.In(t1.C(entsendannouncement.FieldUserID), strings.Join(userIDs, ",")))
+		}
+		if channel != nil {
+			s.OnP(sql.EQ(t1.C(entsendannouncement.FieldChannel), *channel))
+		}
+		if alreadySend != nil {
+			if *alreadySend {
+				s.OnP(sql.NEQ(t1.C(entsendannouncement.FieldUserID), ""))
+			} else {
+				s.OnP(sql.EQ(t1.C(entsendannouncement.FieldUserID), ""))
+			}
+		}
+		s.
 			LeftJoin(t2).
 			On(
 				s.C(entannouncement.FieldID),
 				t2.C(entreadannouncement.FieldAnnouncementID),
 			)
+		if userID != nil {
+			s.OnP(sql.EQ(t2.C(entreadannouncement.FieldUserID), *userID))
+		}
+		if len(userIDs) > 0 {
+			s.OnP(sql.In(t2.C(entreadannouncement.FieldUserID), strings.Join(userIDs, ",")))
+		}
+		if alreadyRead != nil {
+			if *alreadyRead {
+				s.OnP(sql.NEQ(t1.C(entreadannouncement.FieldUserID), ""))
+			} else {
+				s.OnP(sql.EQ(t1.C(entreadannouncement.FieldUserID), ""))
+			}
+		}
 		s.AppendSelect(
 			sql.As(t1.C(entsendannouncement.FieldUserID), "user_id"),
 			sql.As(t2.C(entreadannouncement.FieldUserID), "read_user_id"),
 			t1.C(entsendannouncement.FieldChannel),
 		)
-		if userID != nil {
-			s.
-				OnP(
-					sql.EQ(t1.C(entsendannouncement.FieldUserID), *userID),
-				).
-				OnP(
-					sql.EQ(t2.C(entreadannouncement.FieldUserID), *userID),
-				)
-		}
-		if len(userIDs) > 0 {
-			s.
-				OnP(
-					sql.In(t1.C(entsendannouncement.FieldUserID), userIDs),
-				).
-				OnP(
-					sql.In(t2.C(entreadannouncement.FieldUserID), userIDs),
-				)
-		}
-		if channel != nil {
-			s.
-				OnP(
-					sql.EQ(t1.C(entsendannouncement.FieldChannel), *channel),
-				)
-		}
-		if alreadySend != nil {
-			if *alreadySend {
-				s.
-					OnP(
-						sql.NEQ(t1.C(entsendannouncement.FieldUserID), ""),
-					)
-			} else {
-				s.
-					OnP(
-						sql.EQ(t1.C(entsendannouncement.FieldUserID), ""),
-					)
-			}
-		}
-		if alreadyRead != nil {
-			if *alreadyRead {
-				s.
-					OnP(
-						sql.NEQ(t1.C(entreadannouncement.FieldUserID), ""),
-					)
-			} else {
-				s.
-					OnP(
-						sql.EQ(t1.C(entreadannouncement.FieldUserID), ""),
-					)
-			}
-		}
 	})
 }
 

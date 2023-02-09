@@ -44,17 +44,36 @@ func (s *Server) GetAnnouncementStates(
 
 	span = commontracer.TraceInvoker(span, "announcement/announcement", "crud", "Rows")
 
-	if _, err := uuid.Parse(in.GetAppID()); err != nil {
-		logger.Sugar().Errorw("validateConds", "AppID", in.GetAppID(), "error", err)
+	if in.Conds == nil {
+		logger.Sugar().Errorw("validateConds", "Conds", in.GetConds(), "error", err)
+		return &npool.GetAnnouncementStatesResponse{}, status.Error(codes.InvalidArgument, "Conds is empty")
+	}
+	if in.GetConds().AppID == nil {
+		logger.Sugar().Errorw("validateConds", "AppID", in.GetConds().GetAppID(), "error", err)
+		return &npool.GetAnnouncementStatesResponse{}, status.Error(codes.InvalidArgument, "Conds AppID is empty")
+	}
+	if in.GetConds().UserID == nil {
+		logger.Sugar().Errorw("validateConds", "UserID", in.GetConds().GetUserID(), "error", err)
+		return &npool.GetAnnouncementStatesResponse{}, status.Error(codes.InvalidArgument, "Conds UserID is empty")
+	}
+
+	if _, err := uuid.Parse(in.GetConds().GetAppID().GetValue()); err != nil {
+		logger.Sugar().Errorw("validateConds", "AppID", in.GetConds().GetAppID().GetValue(), "error", err)
 		return &npool.GetAnnouncementStatesResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	if _, err := uuid.Parse(in.GetUserID()); err != nil {
-		logger.Sugar().Errorw("validateConds", "UserID", in.GetUserID(), "error", err)
+	if _, err := uuid.Parse(in.GetConds().GetUserID().GetValue()); err != nil {
+		logger.Sugar().Errorw("validateConds", "UserID", in.GetConds().GetAppID().GetValue(), "error", err)
 		return &npool.GetAnnouncementStatesResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	rows, total, err := announcement1.GetAnnouncementStates(ctx, in.GetAppID(), in.GetUserID(), in.GetOffset(), in.GetLimit())
+	rows, total, err := announcement1.GetAnnouncementStates(
+		ctx,
+		in.GetConds().GetAppID().GetValue(),
+		in.GetConds().GetUserID().GetValue(),
+		in.GetOffset(),
+		in.GetLimit(),
+	)
 	if err != nil {
 		logger.Sugar().Errorw("GetAnnouncements", "error", err)
 		return &npool.GetAnnouncementStatesResponse{}, status.Error(codes.Internal, err.Error())

@@ -3,6 +3,8 @@ package announcements
 import (
 	"context"
 	"fmt"
+	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
+	valuedef "github.com/NpoolPlatform/message/npool"
 	"os"
 	"strconv"
 	"testing"
@@ -103,7 +105,16 @@ func getAnnouncementStates(t *testing.T) {
 	})
 	assert.Nil(t, err)
 
-	infos, total, err := GetAnnouncementStates(context.Background(), data.AppID, userID, 0, 10)
+	infos, total, err := GetAnnouncementStates(context.Background(), &npool.Conds{
+		AppID: &valuedef.StringVal{
+			Op:    cruder.EQ,
+			Value: data.AppID,
+		},
+		UserID: &valuedef.StringVal{
+			Op:    cruder.EQ,
+			Value: userID,
+		},
+	}, 0, 10)
 	if assert.Nil(t, err) {
 		data.CreatedAt = infos[0].CreatedAt
 		data.UpdatedAt = infos[0].UpdatedAt
@@ -111,7 +122,16 @@ func getAnnouncementStates(t *testing.T) {
 		assert.Equal(t, &data, infos[0])
 	}
 
-	_, total, err = GetAnnouncementStates(context.Background(), data.AppID, userID1, 0, 10)
+	_, total, err = GetAnnouncementStates(context.Background(), &npool.Conds{
+		AppID: &valuedef.StringVal{
+			Op:    cruder.EQ,
+			Value: data.AppID,
+		},
+		UserID: &valuedef.StringVal{
+			Op:    cruder.EQ,
+			Value: userID,
+		},
+	}, 0, 10)
 	if assert.Nil(t, err) {
 		assert.NotEqual(t, total, 2)
 	}

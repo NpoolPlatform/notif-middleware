@@ -3,8 +3,6 @@ package announcements
 import (
 	"context"
 	"fmt"
-	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
-	valuedef "github.com/NpoolPlatform/message/npool"
 	"os"
 	"strconv"
 	"testing"
@@ -14,6 +12,9 @@ import (
 	"github.com/NpoolPlatform/go-service-framework/pkg/config"
 	grpc2 "github.com/NpoolPlatform/go-service-framework/pkg/grpc"
 	readstatemgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/announcement/readstate"
+
+	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
+	valuedef "github.com/NpoolPlatform/message/npool"
 
 	channelpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/channel"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement"

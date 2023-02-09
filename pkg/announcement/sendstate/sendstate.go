@@ -2,7 +2,10 @@ package sendstate
 
 import (
 	"context"
+	"fmt"
 
+	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
+	valuedef "github.com/NpoolPlatform/message/npool"
 	mgrcli "github.com/NpoolPlatform/notif-manager/pkg/client/announcement/sendstate"
 
 	"entgo.io/ent/dialect/sql"
@@ -23,7 +26,32 @@ func CreateSendState(
 	appID, userID, announcementID string,
 	channel channelpb.NotifChannel,
 ) error {
-	_, err := mgrcli.CreateSendState(ctx, &mgrpb.SendStateReq{
+	exist, err := mgrcli.ExistSendStateConds(ctx, &mgrpb.Conds{
+		AppID: &valuedef.StringVal{
+			Op:    cruder.EQ,
+			Value: appID,
+		},
+		UserID: &valuedef.StringVal{
+			Op:    cruder.EQ,
+			Value: userID,
+		},
+		AnnouncementID: &valuedef.StringVal{
+			Op:    cruder.EQ,
+			Value: announcementID,
+		},
+		Channel: &valuedef.Uint32Val{
+			Op:    cruder.EQ,
+			Value: uint32(channel.Number()),
+		},
+	})
+	if err != nil {
+		return err
+	}
+	if exist {
+		return fmt.Errorf("send state already exist")
+	}
+
+	_, err = mgrcli.CreateSendState(ctx, &mgrpb.SendStateReq{
 		AppID:          &appID,
 		UserID:         &userID,
 		AnnouncementID: &announcementID,

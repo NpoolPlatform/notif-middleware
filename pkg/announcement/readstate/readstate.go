@@ -163,10 +163,13 @@ func join(stm *ent.ReadAnnouncementQuery) *ent.ReadAnnouncementSelect {
 func expand(infos []*npool.ReadState) ([]*npool.ReadState, error) {
 	for key := range infos {
 		channelsStr := []string{}
-		err := json.Unmarshal([]byte(infos[0].ChannelsStr), &channelsStr)
-		if err != nil {
-			return nil, err
+		if infos[key].ChannelsStr != "" {
+			err := json.Unmarshal([]byte(infos[key].ChannelsStr), &channelsStr)
+			if err != nil {
+				return nil, err
+			}
 		}
+
 		channels := []channelpb.NotifChannel{}
 		for _, channel := range channelsStr {
 			channels = append(channels, channelpb.NotifChannel(channelpb.NotifChannel_value[channel]))

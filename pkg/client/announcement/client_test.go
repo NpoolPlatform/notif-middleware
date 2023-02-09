@@ -118,6 +118,10 @@ func getAnnouncementStates(t *testing.T) {
 			Op:    cruder.EQ,
 			Value: userID,
 		},
+		LangID: &valuedef.StringVal{
+			Op:    cruder.EQ,
+			Value: data.LangID,
+		},
 	}, 0, 10)
 	if assert.Nil(t, err) {
 		data.CreatedAt = infos[0].CreatedAt

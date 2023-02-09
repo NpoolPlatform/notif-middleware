@@ -92,6 +92,7 @@ func GetAnnouncementStates(
 				sql.As(s.C(entannouncement.FieldID), "announcement_id"),
 				s.C(entannouncement.FieldAppID),
 				t2.C(entuserannouncement.FieldUserID),
+				s.C(entannouncement.FieldLangID),
 				s.C(entannouncement.FieldTitle),
 				s.C(entannouncement.FieldContent),
 				s.C(entannouncement.FieldCreatedAt),

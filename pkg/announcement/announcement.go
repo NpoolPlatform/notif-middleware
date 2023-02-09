@@ -2,26 +2,21 @@ package sendstate
 
 import (
 	"context"
-	"fmt"
-	"strings"
 
 	mgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/announcement"
 	mgrcli "github.com/NpoolPlatform/notif-manager/pkg/client/announcement"
-
-	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 
 	entreadannouncement "github.com/NpoolPlatform/notif-manager/pkg/db/ent/readannouncement"
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
-	channelpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/channel"
 	"github.com/NpoolPlatform/notif-manager/pkg/db"
 	"github.com/google/uuid"
 
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement"
 	"github.com/NpoolPlatform/notif-manager/pkg/db/ent"
 	entannouncement "github.com/NpoolPlatform/notif-manager/pkg/db/ent/announcement"
-	entsendannouncement "github.com/NpoolPlatform/notif-manager/pkg/db/ent/sendannouncement"
+	entuserannouncement "github.com/NpoolPlatform/notif-manager/pkg/db/ent/userannouncement"
 )
 
 func GetAnnouncements(
@@ -41,19 +36,12 @@ func GetAnnouncements(
 	infos := []*npool.Announcement{}
 	for _, val := range rows {
 		infos = append(infos, &npool.Announcement{
-			AnnouncementID: val.ID,
-			AppID:          val.AppID,
-			UserID:         "",
-			Title:          val.Title,
-			Content:        val.Content,
-			ChannelStr:     "",
-			Channel:        0,
-			AlreadySend:    false,
-			CreatedAt:      0,
-			UpdatedAt:      0,
-			ReadUserID:     "",
-			AlreadyRead:    false,
-			EndAt:          val.EndAt,
+			AnnouncementID:   val.ID,
+			AppID:            val.AppID,
+			Title:            val.Title,
+			Content:          val.Content,
+			EndAt:            val.EndAt,
+			AnnouncementType: val.AnnouncementType,
 		})
 	}
 	return infos, total, err
@@ -61,7 +49,7 @@ func GetAnnouncements(
 
 func GetAnnouncementStates(
 	ctx context.Context,
-	conds *npool.Conds,
+	appID, userID string,
 	offset, limit int32,
 ) (
 	[]*npool.Announcement,
@@ -70,73 +58,54 @@ func GetAnnouncementStates(
 ) {
 	var infos []*npool.Announcement
 	var total uint32
-	var err error
-	var userID *string
-	var channel *string
-	var userIDs []string
-	var alreadySend *bool
-	var alreadyRead *bool
 
-	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
+	err := db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
 		stm := cli.
 			Announcement.
-			Query()
-		if conds != nil {
-			if conds.AnnouncementID != nil {
-				stm.Where(
-					entannouncement.ID(uuid.MustParse(conds.GetAnnouncementID().GetValue())),
+			Query().
+			Where(
+				entannouncement.AppID(uuid.MustParse(appID)),
+			)
+		stm.Select().Modify(func(s *sql.Selector) {
+			t1 := sql.Table(entreadannouncement.Table)
+			t2 := sql.Table(entuserannouncement.Table)
+			s.
+				LeftJoin(t1).
+				On(
+					s.C(entannouncement.FieldID),
+					t1.C(entreadannouncement.FieldAnnouncementID),
+				).
+				OnP(
+					sql.EQ(t1.C(entreadannouncement.FieldUserID), userID),
 				)
-			}
-			if conds.AppID != nil {
-				stm.Where(
-					entannouncement.AppID(uuid.MustParse(conds.GetAppID().GetValue())),
+			s.
+				LeftJoin(t2).
+				On(
+					s.C(entannouncement.FieldID),
+					t2.C(entuserannouncement.FieldAnnouncementID),
+				).
+				OnP(
+					sql.EQ(t2.C(entuserannouncement.FieldUserID), userID),
 				)
-			}
-			if conds.EndAt != nil {
-				switch conds.GetEndAt().GetOp() {
-				case cruder.GT:
-					stm.Where(
-						entannouncement.EndAtGT(conds.GetEndAt().GetValue()),
-					)
-				default:
-					return fmt.Errorf("EndAt op is invalid")
-				}
-			}
-
-			if conds.UserID != nil {
-				val := conds.GetUserID().GetValue()
-				userID = &val
-			}
-
-			if conds.Channel != nil {
-				val := conds.GetChannel().GetValue()
-				channelStr := channelpb.NotifChannel(val).String()
-				channel = &channelStr
-			}
-
-			if conds.AlreadySend != nil {
-				val := conds.GetAlreadySend().GetValue()
-				alreadySend = &val
-			}
-
-			if conds.AlreadyRead != nil {
-				val := conds.GetAlreadySend().GetValue()
-				alreadyRead = &val
-			}
-
-			if conds.UserIDs != nil {
-				userIDs = conds.GetUserIDs().GetValue()
-			}
-		}
-
-		sel := join(stm, userID, channel, userIDs, alreadySend, alreadyRead)
-		_total, err := sel.Count(ctx)
+			s.Select(
+				sql.As(s.C(entannouncement.FieldID), "announcement_id"),
+				s.C(entannouncement.FieldAppID),
+				t2.C(entuserannouncement.FieldUserID),
+				s.C(entannouncement.FieldTitle),
+				s.C(entannouncement.FieldContent),
+				s.C(entannouncement.FieldCreatedAt),
+				s.C(entannouncement.FieldUpdatedAt),
+				s.C(entannouncement.FieldEndAt),
+				s.C(entannouncement.FieldType),
+				sql.As(t1.C(entreadannouncement.FieldUserID), "read_user_id"),
+			)
+		})
+		_total, err := stm.Count(ctx)
 		if err != nil {
 			return err
 		}
-
 		total = uint32(_total)
-		return sel.
+		return stm.
 			Offset(int(offset)).
 			Limit(int(limit)).
 			Modify(func(s *sql.Selector) {
@@ -160,79 +129,21 @@ func GetAnnouncementStates(
 	return infos, total, nil
 }
 
-func join(stm *ent.AnnouncementQuery, userID, channel *string, userIDs []string, alreadySend, alreadyRead *bool) *ent.AnnouncementSelect {
-	return stm.Select().Modify(func(s *sql.Selector) {
-		s.Select(
-			sql.As(s.C(entannouncement.FieldID), "announcement_id"),
-			s.C(entannouncement.FieldAppID),
-			s.C(entannouncement.FieldTitle),
-			s.C(entannouncement.FieldContent),
-			s.C(entannouncement.FieldCreatedAt),
-			s.C(entannouncement.FieldUpdatedAt),
-			s.C(entannouncement.FieldEndAt),
-		)
-		t1 := sql.Table(entsendannouncement.Table)
-		t2 := sql.Table(entreadannouncement.Table)
-		s.
-			LeftJoin(t1).
-			On(
-				s.C(entannouncement.FieldID),
-				t1.C(entsendannouncement.FieldAnnouncementID),
-			)
-		if userID != nil {
-			s.OnP(sql.EQ(t1.C(entsendannouncement.FieldUserID), *userID))
-		}
-
-		if len(userIDs) > 0 {
-			s.OnP(sql.In(t1.C(entsendannouncement.FieldUserID), strings.Join(userIDs, ",")))
-		}
-		if channel != nil {
-			s.OnP(sql.EQ(t1.C(entsendannouncement.FieldChannel), *channel))
-		}
-		if alreadySend != nil {
-			if *alreadySend {
-				s.OnP(sql.NEQ(t1.C(entsendannouncement.FieldUserID), ""))
-			} else {
-				s.OnP(sql.EQ(t1.C(entsendannouncement.FieldUserID), ""))
-			}
-		}
-		s.
-			LeftJoin(t2).
-			On(
-				s.C(entannouncement.FieldID),
-				t2.C(entreadannouncement.FieldAnnouncementID),
-			)
-		if userID != nil {
-			s.OnP(sql.EQ(t2.C(entreadannouncement.FieldUserID), *userID))
-		}
-		if len(userIDs) > 0 {
-			s.OnP(sql.In(t2.C(entreadannouncement.FieldUserID), strings.Join(userIDs, ",")))
-		}
-		if alreadyRead != nil {
-			if *alreadyRead {
-				s.OnP(sql.NEQ(t1.C(entreadannouncement.FieldUserID), ""))
-			} else {
-				s.OnP(sql.EQ(t1.C(entreadannouncement.FieldUserID), ""))
-			}
-		}
-		s.AppendSelect(
-			sql.As(t1.C(entsendannouncement.FieldUserID), "user_id"),
-			sql.As(t2.C(entreadannouncement.FieldUserID), "read_user_id"),
-			t1.C(entsendannouncement.FieldChannel),
-		)
-	})
-}
-
 func expand(infos []*npool.Announcement) []*npool.Announcement {
-	for key, info := range infos {
-		if info.UserID != "" {
-			infos[key].AlreadySend = true
-		}
+	retInfos := []*npool.Announcement{}
+	for _, info := range infos {
 		if info.ReadUserID != "" {
-			infos[key].AlreadyRead = true
+			info.AlreadyRead = true
 		}
 
-		infos[key].Channel = channelpb.NotifChannel(channelpb.NotifChannel_value[infos[key].ChannelStr])
+		info.AnnouncementType = mgrpb.AnnouncementType(mgrpb.AnnouncementType_value[info.AnnouncementTypeStr])
+
+		if info.AnnouncementType == mgrpb.AnnouncementType_AllUsers {
+			retInfos = append(retInfos, info)
+		}
+		if info.AnnouncementType == mgrpb.AnnouncementType_AppointUsers && info.UserID != "" {
+			retInfos = append(retInfos, info)
+		}
 	}
-	return infos
+	return retInfos
 }

@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	announcementpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/announcement"
+
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	valuedef "github.com/NpoolPlatform/message/npool"
 	mgrcli "github.com/NpoolPlatform/notif-manager/pkg/client/announcement/sendstate"
@@ -151,12 +153,14 @@ func join(stm *ent.SendAnnouncementQuery) *ent.SendAnnouncementSelect {
 				sql.As(t1.C(entannouncement.FieldID), "announcement_id"),
 				t1.C(entannouncement.FieldTitle),
 				t1.C(entannouncement.FieldContent),
+				t1.C(entannouncement.FieldType),
 			)
 	})
 }
 
 func expand(infos []*npool.SendState) []*npool.SendState {
 	for key := range infos {
+		infos[key].AnnouncementType = announcementpb.AnnouncementType(announcementpb.AnnouncementType_value[infos[key].AnnouncementTypeStr])
 		infos[key].Channel = channelpb.NotifChannel(channelpb.NotifChannel_value[infos[key].ChannelStr])
 	}
 	return infos

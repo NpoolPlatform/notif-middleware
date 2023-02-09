@@ -11,16 +11,18 @@ import (
 	"bou.ke/monkey"
 	"github.com/NpoolPlatform/go-service-framework/pkg/config"
 	grpc2 "github.com/NpoolPlatform/go-service-framework/pkg/grpc"
-	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
-	valuedef "github.com/NpoolPlatform/message/npool"
-	announcementmgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/announcement"
 	readstatemgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/announcement/readstate"
-	sendstatemgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/announcement/sendstate"
+
 	channelpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/channel"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement"
 	announcementcrud "github.com/NpoolPlatform/notif-manager/pkg/crud/announcement"
 	readstatecrud "github.com/NpoolPlatform/notif-manager/pkg/crud/announcement/readstate"
-	sendstatecrud "github.com/NpoolPlatform/notif-manager/pkg/crud/announcement/sendstate"
+
+	userstatemgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/announcement/user"
+	userstatecrud "github.com/NpoolPlatform/notif-manager/pkg/crud/announcement/user"
+
+	mgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/announcement"
+
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/grpc"
@@ -41,66 +43,77 @@ func init() {
 var (
 	endAt  = uint32(time.Now().Add(1 * time.Hour).Unix())
 	userID = uuid.NewString()
+	aType  = mgrpb.AnnouncementType_AllUsers
 	data   = npool.Announcement{
-		AnnouncementID: uuid.NewString(),
-		AppID:          uuid.NewString(),
-		UserID:         userID,
-		Title:          uuid.NewString(),
-		Content:        uuid.NewString(),
-		ChannelStr:     channelpb.NotifChannel_ChannelEmail.String(),
-		Channel:        channelpb.NotifChannel_ChannelEmail,
-		AlreadySend:    true,
-		ReadUserID:     userID,
-		AlreadyRead:    true,
-		EndAt:          endAt,
+		AnnouncementID:      uuid.NewString(),
+		AppID:               uuid.NewString(),
+		Title:               uuid.NewString(),
+		Content:             uuid.NewString(),
+		AlreadyRead:         true,
+		EndAt:               endAt,
+		AnnouncementTypeStr: aType.String(),
+		AnnouncementType:    aType,
+		ReadUserID:          userID,
 	}
 )
 
 func getAnnouncementStates(t *testing.T) {
-	_, err := announcementcrud.Create(context.Background(), &announcementmgrpb.AnnouncementReq{
-		ID:       &data.AnnouncementID,
-		AppID:    &data.AppID,
-		Title:    &data.Title,
-		Content:  &data.Content,
-		Channels: []channelpb.NotifChannel{channelpb.NotifChannel_ChannelEmail},
-		EndAt:    &endAt,
+	_, err := announcementcrud.Create(context.Background(), &mgrpb.AnnouncementReq{
+		ID:               &data.AnnouncementID,
+		AppID:            &data.AppID,
+		Title:            &data.Title,
+		Content:          &data.Content,
+		Channels:         []channelpb.NotifChannel{channelpb.NotifChannel_ChannelEmail},
+		EndAt:            &endAt,
+		AnnouncementType: &aType,
+	})
+	assert.Nil(t, err)
+
+	userID1 := uuid.NewString()
+	aType1 := mgrpb.AnnouncementType_AppointUsers
+	_, err = announcementcrud.Create(context.Background(), &mgrpb.AnnouncementReq{
+		ID:               &userID,
+		AppID:            &data.AppID,
+		Title:            &data.Title,
+		Content:          &data.Content,
+		Channels:         []channelpb.NotifChannel{channelpb.NotifChannel_ChannelEmail},
+		EndAt:            &endAt,
+		AnnouncementType: &aType1,
 	})
 	assert.Nil(t, err)
 
 	_, err = readstatecrud.Create(context.Background(), &readstatemgrpb.ReadStateReq{
 		AppID:          &data.AppID,
-		UserID:         &data.UserID,
+		UserID:         &userID,
 		AnnouncementID: &data.AnnouncementID,
 	})
 	assert.Nil(t, err)
 
-	_, err = sendstatecrud.Create(context.Background(), &sendstatemgrpb.SendStateReq{
+	_, err = readstatecrud.Create(context.Background(), &readstatemgrpb.ReadStateReq{
 		AppID:          &data.AppID,
-		UserID:         &data.UserID,
+		UserID:         &userID,
 		AnnouncementID: &data.AnnouncementID,
-		Channel:        &data.Channel,
 	})
 	assert.Nil(t, err)
 
-	infos, total, err := GetAnnouncementStates(context.Background(), &npool.Conds{
-		AppID: &valuedef.StringVal{
-			Op:    cruder.EQ,
-			Value: data.AppID,
-		},
-		UserID: &valuedef.StringVal{
-			Op:    cruder.EQ,
-			Value: data.UserID,
-		},
-		AnnouncementID: &valuedef.StringVal{
-			Op:    cruder.EQ,
-			Value: data.AnnouncementID,
-		},
-	}, 0, 1)
+	_, err = userstatecrud.Create(context.Background(), &userstatemgrpb.UserReq{
+		AppID:          &data.AppID,
+		UserID:         &userID1,
+		AnnouncementID: &data.AnnouncementID,
+	})
+	assert.Nil(t, err)
+
+	infos, total, err := GetAnnouncementStates(context.Background(), data.AppID, userID, 0, 10)
 	if assert.Nil(t, err) {
 		data.CreatedAt = infos[0].CreatedAt
 		data.UpdatedAt = infos[0].UpdatedAt
-		assert.NotEqual(t, total, 0)
+		assert.NotEqual(t, total, 1)
 		assert.Equal(t, &data, infos[0])
+	}
+
+	_, total, err = GetAnnouncementStates(context.Background(), data.AppID, userID1, 0, 10)
+	if assert.Nil(t, err) {
+		assert.NotEqual(t, total, 2)
 	}
 }
 

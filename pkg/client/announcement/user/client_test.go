@@ -1,13 +1,16 @@
-package sendstate
+package user
 
 import (
 	"context"
 	"fmt"
+
 	"os"
 	"strconv"
 	"testing"
 	"time"
 
+	announcementcrud "github.com/NpoolPlatform/notif-manager/pkg/crud/announcement"
+	userstatecrud "github.com/NpoolPlatform/notif-manager/pkg/crud/announcement/user"
 	"github.com/google/uuid"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
@@ -23,11 +26,10 @@ import (
 	"github.com/NpoolPlatform/notif-middleware/pkg/testinit"
 
 	announcementmgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/announcement"
+	usermgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/announcement/user"
 	channelpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/channel"
-	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/sendstate"
+	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/user"
 	"github.com/stretchr/testify/assert"
-
-	announcementcrud "github.com/NpoolPlatform/notif-manager/pkg/crud/announcement"
 )
 
 func init() {
@@ -41,36 +43,42 @@ func init() {
 
 var (
 	aType = announcementmgrpb.AnnouncementType_AppointUsers
-	data  = npool.SendState{
+	data  = npool.User{
+		ID:                  uuid.NewString(),
 		AnnouncementID:      uuid.NewString(),
 		AppID:               uuid.NewString(),
 		UserID:              uuid.NewString(),
 		Title:               uuid.NewString(),
 		Content:             uuid.NewString(),
-		ChannelStr:          channelpb.NotifChannel_ChannelEmail.String(),
-		Channel:             channelpb.NotifChannel_ChannelEmail,
+		ChannelsStr:         `["ChannelEmail", "ChannelSMS"]`,
+		Channels:            []channelpb.NotifChannel{channelpb.NotifChannel_ChannelEmail, channelpb.NotifChannel_ChannelSMS},
 		AnnouncementTypeStr: aType.String(),
 		AnnouncementType:    aType,
 	}
 )
 
-func getSendStates(t *testing.T) {
+func getUsers(t *testing.T) {
 	endAt := uint32(time.Now().Add(1 * time.Hour).Unix())
 	_, err := announcementcrud.Create(context.Background(), &announcementmgrpb.AnnouncementReq{
 		ID:               &data.AnnouncementID,
 		AppID:            &data.AppID,
 		Title:            &data.Title,
 		Content:          &data.Content,
-		Channels:         []channelpb.NotifChannel{channelpb.NotifChannel_ChannelEmail},
+		Channels:         data.Channels,
 		EndAt:            &endAt,
 		AnnouncementType: &aType,
 	})
 	assert.Nil(t, err)
 
-	err = CreateSendState(context.Background(), data.AppID, data.UserID, data.AnnouncementID, data.Channel)
+	_, err = userstatecrud.Create(context.Background(), &usermgrpb.UserReq{
+		ID:             &data.ID,
+		AppID:          &data.AppID,
+		UserID:         &data.UserID,
+		AnnouncementID: &data.AnnouncementID,
+	})
 	assert.Nil(t, err)
 
-	infos, total, err := GetSendStates(context.Background(), &npool.Conds{
+	infos, total, err := GetUsers(context.Background(), &usermgrpb.Conds{
 		AppID: &valuedef.StringVal{
 			Op:    cruder.EQ,
 			Value: data.AppID,
@@ -82,10 +90,6 @@ func getSendStates(t *testing.T) {
 		AnnouncementID: &valuedef.StringVal{
 			Op:    cruder.EQ,
 			Value: data.AnnouncementID,
-		},
-		Channel: &valuedef.Uint32Val{
-			Op:    cruder.EQ,
-			Value: uint32(channelpb.NotifChannel_ChannelEmail),
 		},
 	}, 0, 1)
 	if assert.Nil(t, err) {
@@ -106,5 +110,5 @@ func TestClient(t *testing.T) {
 	monkey.Patch(grpc2.GetGRPCConn, func(service string, tags ...string) (*grpc.ClientConn, error) {
 		return grpc.Dial(fmt.Sprintf("localhost:%v", gport), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	})
-	t.Run("getSendStates", getSendStates)
+	t.Run("getUsers", getUsers)
 }

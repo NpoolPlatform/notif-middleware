@@ -41,25 +41,31 @@ func init() {
 	}
 }
 
-var data = npool.ReadState{
-	AnnouncementID: uuid.NewString(),
-	AppID:          uuid.NewString(),
-	UserID:         uuid.NewString(),
-	Title:          uuid.NewString(),
-	Content:        uuid.NewString(),
-	ChannelsStr:    `["ChannelEmail", "ChannelSMS"]`,
-	Channels:       []channelpb.NotifChannel{channelpb.NotifChannel_ChannelEmail, channelpb.NotifChannel_ChannelSMS},
-}
+var (
+	aType = announcementmgrpb.AnnouncementType_AppointUsers
+	data  = npool.ReadState{
+		AnnouncementID:      uuid.NewString(),
+		AppID:               uuid.NewString(),
+		UserID:              uuid.NewString(),
+		Title:               uuid.NewString(),
+		Content:             uuid.NewString(),
+		ChannelsStr:         `["ChannelEmail", "ChannelSMS"]`,
+		Channels:            []channelpb.NotifChannel{channelpb.NotifChannel_ChannelEmail, channelpb.NotifChannel_ChannelSMS},
+		AnnouncementTypeStr: aType.String(),
+		AnnouncementType:    aType,
+	}
+)
 
 func getReadState(t *testing.T) {
 	endAt := uint32(time.Now().Add(1 * time.Hour).Unix())
 	_, err := announcementcrud.Create(context.Background(), &announcementmgrpb.AnnouncementReq{
-		ID:       &data.AnnouncementID,
-		AppID:    &data.AppID,
-		Title:    &data.Title,
-		Content:  &data.Content,
-		Channels: data.Channels,
-		EndAt:    &endAt,
+		ID:               &data.AnnouncementID,
+		AppID:            &data.AppID,
+		Title:            &data.Title,
+		Content:          &data.Content,
+		Channels:         data.Channels,
+		EndAt:            &endAt,
+		AnnouncementType: &aType,
 	})
 	assert.Nil(t, err)
 
@@ -74,6 +80,8 @@ func getReadState(t *testing.T) {
 	if assert.Nil(t, err) {
 		data.CreatedAt = info.CreatedAt
 		data.UpdatedAt = info.UpdatedAt
+		data.AnnouncementTypeStr = info.AnnouncementTypeStr
+		data.AnnouncementType = info.AnnouncementType
 		assert.Equal(t, &data, info)
 	}
 }

@@ -1,4 +1,3 @@
-//nolint:dupl
 package announcements
 
 import (
@@ -57,13 +56,14 @@ func GetAnnouncements(ctx context.Context, conds *mgrpb.Conds, offset, limit int
 	return infos.([]*npool.Announcement), total, nil
 }
 
-func GetAnnouncementStates(ctx context.Context, conds *npool.Conds, offset, limit int32) ([]*npool.Announcement, uint32, error) {
+func GetAnnouncementStates(ctx context.Context, appID, userID string, offset, limit int32) ([]*npool.Announcement, uint32, error) {
 	var total uint32
 	infos, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.GetAnnouncementStates(ctx, &npool.GetAnnouncementStatesRequest{
-			Conds:  conds,
-			Limit:  limit,
+			AppID:  appID,
+			UserID: userID,
 			Offset: offset,
+			Limit:  limit,
 		})
 		if err != nil {
 			return nil, fmt.Errorf("fail get announcementss: %v", err)

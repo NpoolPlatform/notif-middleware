@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 
+	announcementpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/announcement"
+
 	"entgo.io/ent/dialect/sql"
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 	mgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/announcement/readstate"
@@ -39,6 +41,7 @@ func GetReadState(ctx context.Context, announcementID, userID string) (*npool.Re
 					s.C(entannouncement.FieldChannels),
 					s.C(entannouncement.FieldCreatedAt),
 					s.C(entannouncement.FieldUpdatedAt),
+					s.C(entannouncement.FieldType),
 				)
 				t1 := sql.Table(entreadannouncement.Table)
 				s.
@@ -156,6 +159,7 @@ func join(stm *ent.ReadAnnouncementQuery) *ent.ReadAnnouncementSelect {
 				t1.C(entannouncement.FieldTitle),
 				t1.C(entannouncement.FieldContent),
 				t1.C(entannouncement.FieldChannels),
+				t1.C(entannouncement.FieldType),
 			)
 	})
 }
@@ -175,6 +179,8 @@ func expand(infos []*npool.ReadState) ([]*npool.ReadState, error) {
 			channels = append(channels, channelpb.NotifChannel(channelpb.NotifChannel_value[channel]))
 		}
 		infos[key].Channels = channels
+
+		infos[key].AnnouncementType = announcementpb.AnnouncementType(announcementpb.AnnouncementType_value[infos[key].AnnouncementTypeStr])
 	}
 	return infos, nil
 }

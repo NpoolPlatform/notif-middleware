@@ -9,7 +9,7 @@ require (
 	github.com/NpoolPlatform/go-service-framework v0.0.0-20221102072657-7fcc5e6f1012
 	github.com/NpoolPlatform/libent-cruder v0.0.0-20221109023947-366125b690fb
 	github.com/NpoolPlatform/message v0.0.0-20230209074436-e3b9e6795a0d
-	github.com/NpoolPlatform/notif-manager v0.0.0-20230209085604-b2fdacf30e26
+	github.com/NpoolPlatform/notif-manager v0.0.0-20230209090452-49c26cba0cec
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/google/uuid v1.3.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.10.0

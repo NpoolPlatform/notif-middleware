@@ -50,6 +50,7 @@ var (
 	data   = npool.Announcement{
 		AnnouncementID:      uuid.NewString(),
 		AppID:               uuid.NewString(),
+		LangID:              uuid.NewString(),
 		Title:               uuid.NewString(),
 		Content:             uuid.NewString(),
 		AlreadyRead:         true,
@@ -64,6 +65,7 @@ func getAnnouncementStates(t *testing.T) {
 	_, err := announcementcrud.Create(context.Background(), &mgrpb.AnnouncementReq{
 		ID:               &data.AnnouncementID,
 		AppID:            &data.AppID,
+		LangID:           &data.LangID,
 		Title:            &data.Title,
 		Content:          &data.Content,
 		Channels:         []channelpb.NotifChannel{channelpb.NotifChannel_ChannelEmail},
@@ -77,6 +79,7 @@ func getAnnouncementStates(t *testing.T) {
 	_, err = announcementcrud.Create(context.Background(), &mgrpb.AnnouncementReq{
 		ID:               &userID,
 		AppID:            &data.AppID,
+		LangID:           &data.LangID,
 		Title:            &data.Title,
 		Content:          &data.Content,
 		Channels:         []channelpb.NotifChannel{channelpb.NotifChannel_ChannelEmail},
@@ -131,6 +134,10 @@ func getAnnouncementStates(t *testing.T) {
 		UserID: &valuedef.StringVal{
 			Op:    cruder.EQ,
 			Value: userID,
+		},
+		LangID: &valuedef.StringVal{
+			Op:    cruder.EQ,
+			Value: data.LangID,
 		},
 	}, 0, 10)
 	if assert.Nil(t, err) {

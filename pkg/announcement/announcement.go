@@ -49,7 +49,7 @@ func GetAnnouncements(
 
 func GetAnnouncementStates(
 	ctx context.Context,
-	appID, userID string,
+	appID, userID, langID string,
 	offset, limit int32,
 ) (
 	[]*npool.Announcement,
@@ -65,6 +65,7 @@ func GetAnnouncementStates(
 			Query().
 			Where(
 				entannouncement.AppID(uuid.MustParse(appID)),
+				entannouncement.LangID(uuid.MustParse(langID)),
 			)
 		stm.Select().Modify(func(s *sql.Selector) {
 			t1 := sql.Table(entreadannouncement.Table)
@@ -106,6 +107,7 @@ func GetAnnouncementStates(
 		}
 		total = uint32(_total)
 		return stm.
+			Order(ent.Desc(entannouncement.FieldCreatedAt)).
 			Offset(int(offset)).
 			Limit(int(limit)).
 			Modify(func(s *sql.Selector) {

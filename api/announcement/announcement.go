@@ -56,6 +56,10 @@ func (s *Server) GetAnnouncementStates(
 		logger.Sugar().Errorw("validateConds", "UserID", in.GetConds().GetUserID(), "error", err)
 		return &npool.GetAnnouncementStatesResponse{}, status.Error(codes.InvalidArgument, "Conds UserID is empty")
 	}
+	if in.GetConds().LangID == nil {
+		logger.Sugar().Errorw("validateConds", "LangID", in.GetConds().GetLangID(), "error", err)
+		return &npool.GetAnnouncementStatesResponse{}, status.Error(codes.InvalidArgument, "Conds LangID is empty")
+	}
 
 	if _, err := uuid.Parse(in.GetConds().GetAppID().GetValue()); err != nil {
 		logger.Sugar().Errorw("validateConds", "AppID", in.GetConds().GetAppID().GetValue(), "error", err)
@@ -67,10 +71,16 @@ func (s *Server) GetAnnouncementStates(
 		return &npool.GetAnnouncementStatesResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
+	if _, err := uuid.Parse(in.GetConds().GetLangID().GetValue()); err != nil {
+		logger.Sugar().Errorw("validateConds", "UserID", in.GetConds().GetAppID().GetValue(), "error", err)
+		return &npool.GetAnnouncementStatesResponse{}, status.Error(codes.InvalidArgument, err.Error())
+	}
+
 	rows, total, err := announcement1.GetAnnouncementStates(
 		ctx,
 		in.GetConds().GetAppID().GetValue(),
 		in.GetConds().GetUserID().GetValue(),
+		in.GetConds().GetLangID().GetValue(),
 		in.GetOffset(),
 		in.GetLimit(),
 	)

@@ -12,13 +12,15 @@ import (
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 	mgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/announcement/sendstate"
 	channelpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/channel"
+
 	"github.com/NpoolPlatform/notif-manager/pkg/db"
-	"github.com/google/uuid"
 
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/sendstate"
 	"github.com/NpoolPlatform/notif-manager/pkg/db/ent"
 	entannouncement "github.com/NpoolPlatform/notif-manager/pkg/db/ent/announcement"
 	entsendannouncement "github.com/NpoolPlatform/notif-manager/pkg/db/ent/sendannouncement"
+
+	crud "github.com/NpoolPlatform/notif-manager/pkg/crud/announcement/sendstate"
 )
 
 func CreateSendState(
@@ -87,33 +89,17 @@ func GetSendStates(
 	var total uint32
 
 	err := db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		stm := cli.Debug().
-			SendAnnouncement.
-			Query()
-		if conds != nil {
-			if conds.AnnouncementID != nil {
-				stm.Where(
-					entsendannouncement.AnnouncementID(uuid.MustParse(conds.GetAnnouncementID().GetValue())),
-				)
-			}
-			if conds.AppID != nil {
-				stm.Where(
-					entsendannouncement.AppID(uuid.MustParse(conds.GetAppID().GetValue())),
-				)
-			}
-			if conds.UserID != nil {
-				stm.Where(
-					entsendannouncement.UserID(uuid.MustParse(conds.GetUserID().GetValue())),
-				)
-			}
-
-			if conds.Channel != nil {
-				val := conds.GetChannel().GetValue()
-				channelStr := channelpb.NotifChannel(val).String()
-				stm.Where(
-					entsendannouncement.Channel(channelStr),
-				)
-			}
+		stm, err := crud.SetQueryConds(&mgrpb.Conds{
+			ID:             conds.ID,
+			AppID:          conds.AppID,
+			UserID:         conds.UserID,
+			AnnouncementID: conds.AnnouncementID,
+			Channel:        conds.Channel,
+			EndAt:          conds.EndAt,
+			UserIDs:        conds.UserIDs,
+		}, cli)
+		if err != nil {
+			return err
 		}
 
 		sel := join(stm)

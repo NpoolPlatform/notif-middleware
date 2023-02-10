@@ -236,6 +236,10 @@ func (s *Server) UpdateNotifs(ctx context.Context, in *npool.UpdateNotifsRequest
 
 	span = commontracer.TraceInvoker(span, "notif", "crud", "Updates")
 
+	if len(in.GetIDs()) == 0 {
+		return &npool.UpdateNotifsResponse{}, status.Error(codes.Internal, "IDs is invalid")
+	}
+
 	for _, id := range in.GetIDs() {
 		if _, err := uuid.Parse(id); err != nil {
 			logger.Sugar().Errorw("validate", "ID", id, "error", err)

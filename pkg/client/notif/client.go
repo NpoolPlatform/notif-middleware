@@ -52,6 +52,22 @@ func CreateNotif(ctx context.Context, in *mgrpb.NotifReq) (*npool.Notif, error) 
 	return info.(*npool.Notif), nil
 }
 
+func CreateNotifs(ctx context.Context, in []*mgrpb.NotifReq) (*npool.Notif, error) {
+	info, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		resp, err := cli.CreateNotifs(ctx, &npool.CreateNotifsRequest{
+			Infos: in,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("fail create notifs: %v", err)
+		}
+		return resp.Infos, nil
+	})
+	if err != nil {
+		return nil, fmt.Errorf("fail create notifs: %v", err)
+	}
+	return info.(*npool.Notif), nil
+}
+
 func UpdateNotif(ctx context.Context, in *mgrpb.NotifReq) (*npool.Notif, error) {
 	info, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.UpdateNotif(ctx, &npool.UpdateNotifRequest{

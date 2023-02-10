@@ -140,13 +140,6 @@ func expand(infos []*npool.Announcement) []*npool.Announcement {
 		}
 
 		info.AnnouncementType = mgrpb.AnnouncementType(mgrpb.AnnouncementType_value[info.AnnouncementTypeStr])
-
-		if info.AnnouncementType == mgrpb.AnnouncementType_AllUsers {
-			retInfos = append(retInfos, info)
-		}
-		if info.AnnouncementType == mgrpb.AnnouncementType_AppointUsers && info.UserID != "" {
-			retInfos = append(retInfos, info)
-		}
 	}
 	return retInfos
 }

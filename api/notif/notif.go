@@ -104,6 +104,39 @@ func (s *Server) CreateNotif(ctx context.Context, in *npool.CreateNotifRequest) 
 	}, nil
 }
 
+func (s *Server) CreateNotifs(ctx context.Context, in *npool.CreateNotifsRequest) (*npool.CreateNotifsResponse, error) {
+	var err error
+
+	_, span := otel.Tracer(constant.ServiceName).Start(ctx, "CreateNotifs")
+	defer span.End()
+
+	defer func() {
+		if err != nil {
+			span.SetStatus(scodes.Error, err.Error())
+			span.RecordError(err)
+		}
+	}()
+
+	span = commontracer.TraceInvoker(span, "notif", "crud", "Create")
+
+	for _, val := range in.GetInfos() {
+		if err = validate(val); err != nil {
+			logger.Sugar().Errorw("CreateNotifs", "error", err)
+			return &npool.CreateNotifsResponse{}, status.Error(codes.Internal, err.Error())
+		}
+	}
+
+	infos, err := notif1.CreateNotifs(ctx, in.GetInfos())
+	if err != nil {
+		logger.Sugar().Errorw("CreateNotifs", "error", err)
+		return &npool.CreateNotifsResponse{}, status.Error(codes.Internal, err.Error())
+	}
+
+	return &npool.CreateNotifsResponse{
+		Infos: infos,
+	}, nil
+}
+
 //nolint:funlen,gocyclo
 func (s *Server) UpdateNotif(ctx context.Context, in *npool.UpdateNotifRequest) (*npool.UpdateNotifResponse, error) {
 	var err error

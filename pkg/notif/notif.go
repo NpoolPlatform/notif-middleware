@@ -26,6 +26,18 @@ func CreateNotif(ctx context.Context, req *mgrpb.NotifReq) (*npool.Notif, error)
 	return expand(info), nil
 }
 
+func CreateNotifs(ctx context.Context, req []*mgrpb.NotifReq) ([]*npool.Notif, error) {
+	rows, err := mgrcli.CreateNotifs(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	infos := []*npool.Notif{}
+	for _, val := range rows {
+		infos = append(infos, expand(val))
+	}
+	return infos, nil
+}
+
 func UpdateNotifs(ctx context.Context, ids []string, emailSend, alreadyRead *bool) ([]*npool.Notif, uint32, error) {
 	uIDs := []uuid.UUID{}
 	for _, val := range ids {

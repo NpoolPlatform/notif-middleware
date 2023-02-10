@@ -49,7 +49,7 @@ func GetUsers(ctx context.Context, conds *mgrpb.Conds, offset, limit int32) ([]*
 					ids = append(ids, id)
 				}
 				stm.Where(
-					entuserannouncement.UserIDIn(ids...),
+					entuserannouncement.IDIn(ids...),
 				)
 			}
 			if conds.AnnouncementID != nil {

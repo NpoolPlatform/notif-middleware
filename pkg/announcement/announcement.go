@@ -16,7 +16,6 @@ import (
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement"
 	"github.com/NpoolPlatform/notif-manager/pkg/db/ent"
 	entannouncement "github.com/NpoolPlatform/notif-manager/pkg/db/ent/announcement"
-	entuserannouncement "github.com/NpoolPlatform/notif-manager/pkg/db/ent/userannouncement"
 )
 
 func GetAnnouncements(
@@ -67,9 +66,13 @@ func GetAnnouncementStates(
 				entannouncement.AppID(uuid.MustParse(appID)),
 				entannouncement.LangID(uuid.MustParse(langID)),
 			)
+		_total, err := stm.Count(ctx)
+		if err != nil {
+			return err
+		}
+		total = uint32(_total)
 		stm.Select().Modify(func(s *sql.Selector) {
 			t1 := sql.Table(entreadannouncement.Table)
-			t2 := sql.Table(entuserannouncement.Table)
 			s.
 				LeftJoin(t1).
 				On(
@@ -79,19 +82,9 @@ func GetAnnouncementStates(
 				OnP(
 					sql.EQ(t1.C(entreadannouncement.FieldUserID), userID),
 				)
-			s.
-				LeftJoin(t2).
-				On(
-					s.C(entannouncement.FieldID),
-					t2.C(entuserannouncement.FieldAnnouncementID),
-				).
-				OnP(
-					sql.EQ(t2.C(entuserannouncement.FieldUserID), userID),
-				)
 			s.Select(
 				sql.As(s.C(entannouncement.FieldID), "announcement_id"),
 				s.C(entannouncement.FieldAppID),
-				t2.C(entuserannouncement.FieldUserID),
 				s.C(entannouncement.FieldLangID),
 				s.C(entannouncement.FieldTitle),
 				s.C(entannouncement.FieldContent),
@@ -102,11 +95,6 @@ func GetAnnouncementStates(
 				sql.As(t1.C(entreadannouncement.FieldUserID), "read_user_id"),
 			)
 		})
-		_total, err := stm.Count(ctx)
-		if err != nil {
-			return err
-		}
-		total = uint32(_total)
 		return stm.
 			Order(ent.Desc(entannouncement.FieldCreatedAt)).
 			Offset(int(offset)).

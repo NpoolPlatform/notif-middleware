@@ -133,7 +133,6 @@ func GetAnnouncementStates(
 }
 
 func expand(infos []*npool.Announcement) []*npool.Announcement {
-	retInfos := []*npool.Announcement{}
 	for _, info := range infos {
 		if info.ReadUserID != "" {
 			info.AlreadyRead = true
@@ -141,5 +140,5 @@ func expand(infos []*npool.Announcement) []*npool.Announcement {
 
 		info.AnnouncementType = mgrpb.AnnouncementType(mgrpb.AnnouncementType_value[info.AnnouncementTypeStr])
 	}
-	return retInfos
+	return infos
 }

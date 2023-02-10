@@ -39,6 +39,19 @@ func GetUsers(ctx context.Context, conds *mgrpb.Conds, offset, limit int32) ([]*
 					entuserannouncement.UserID(uuid.MustParse(conds.GetUserID().GetValue())),
 				)
 			}
+			if len(conds.GetIDs().GetValue()) > 0 {
+				ids := []uuid.UUID{}
+				for _, idStr := range conds.GetIDs().GetValue() {
+					id, err := uuid.Parse(idStr)
+					if err != nil {
+						return err
+					}
+					ids = append(ids, id)
+				}
+				stm.Where(
+					entuserannouncement.UserIDIn(ids...),
+				)
+			}
 			if conds.AnnouncementID != nil {
 				stm.Where(
 					entuserannouncement.AnnouncementID(uuid.MustParse(conds.GetAnnouncementID().GetValue())),

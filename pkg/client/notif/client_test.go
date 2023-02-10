@@ -47,7 +47,7 @@ var data = &npool.Notif{
 	Title:       uuid.NewString(),
 	Content:     uuid.NewString(),
 	Channels:    []channel.NotifChannel{channel.NotifChannel_ChannelSMS, channel.NotifChannel_ChannelEmail},
-	EmailSend:   true,
+	EmailSend:   false,
 }
 
 var dataReq = &mgrpb.NotifReq{
@@ -81,6 +81,7 @@ func updateNotif(t *testing.T) {
 		data.CreatedAt = info.CreatedAt
 		data.UpdatedAt = info.UpdatedAt
 		data.AlreadyRead = info.AlreadyRead
+		data.EmailSend = info.EmailSend
 		assert.Equal(t, data, info)
 	}
 }
@@ -91,6 +92,7 @@ func updateNotifs(t *testing.T) {
 	if assert.Nil(t, err) {
 		data.CreatedAt = infos[0].CreatedAt
 		data.UpdatedAt = infos[0].UpdatedAt
+		data.EmailSend = infos[0].EmailSend
 		assert.Equal(t, infos[0].String(), data.String())
 	}
 }

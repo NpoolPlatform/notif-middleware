@@ -55,10 +55,10 @@ github.com/NpoolPlatform/go-service-framework v0.0.0-20221102072657-7fcc5e6f1012
 github.com/NpoolPlatform/go-service-framework v0.0.0-20221102072657-7fcc5e6f1012/go.mod h1:/sor3E0i0XR8BaKInJwWC85aXLmbMFRNLdIuw+ed+ig=
 github.com/NpoolPlatform/libent-cruder v0.0.0-20221109023947-366125b690fb h1:IAQOJ0xQWdJS1BnimNdM6GZMLgTL/FnIa8C8K4xffUA=
 github.com/NpoolPlatform/libent-cruder v0.0.0-20221109023947-366125b690fb/go.mod h1:zvvqlRwbOdTUauPQ9dFDhDuxa91ILV0CQfVdPBZj+eA=
-github.com/NpoolPlatform/message v0.0.0-20230210042234-efa92a49e417 h1:bNQpFuNsKgW5nEdR/SdoKhcZQf8IYI2cCtAITJPZNL0=
-github.com/NpoolPlatform/message v0.0.0-20230210042234-efa92a49e417/go.mod h1:rjcy4JIYNxopG3TRl9C9hf1iJjAIit+iUKASn48UWks=
-github.com/NpoolPlatform/notif-manager v0.0.0-20230209103829-57a2ea77c743 h1:5/hoqInSQZ/Pb/uD17XfIzUgoxRiFP/9oJTMv+aGqwQ=
-github.com/NpoolPlatform/notif-manager v0.0.0-20230209103829-57a2ea77c743/go.mod h1:SsTGqrjtIDZPBHyPpSPd6jTtXZlLVswQxf/B38tBlyM=
+github.com/NpoolPlatform/message v0.0.0-20230210125318-4a7396efa471 h1:by+fXiyieDpN0RuP+CUVOeZ+4PySm6cWzmCbsDNxTbg=
+github.com/NpoolPlatform/message v0.0.0-20230210125318-4a7396efa471/go.mod h1:d63CvFXD9TP7NjuB/W0rIHfftfVwrdTNOzV4Fiv56E8=
+github.com/NpoolPlatform/notif-manager v0.0.0-20230210155410-74f06256b55b h1:UeZ2Z/42SWZcpbR67eHNpLRmoaOgK7PuzLEETjcGgvo=
+github.com/NpoolPlatform/notif-manager v0.0.0-20230210155410-74f06256b55b/go.mod h1:oLWfDq7l8b9jZuKkngP43iLiYJ3QwmOY5HUpqjaf8YU=
 github.com/OneOfOne/xxhash v1.2.2 h1:KMrpdQIwFcEqXDklaen+P1axHaj9BSKzvpUUfnHldSE=
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
 github.com/Shonminh/apollo-client v0.4.0 h1:AXGp4wOahrEKjheMXehgsG9B8dEfLQHttRLHeEefvus=

@@ -84,12 +84,11 @@ func UpdateNotif(ctx context.Context, in *mgrpb.NotifReq) (*npool.Notif, error) 
 	return info.(*npool.Notif), nil
 }
 
-func UpdateNotifs(ctx context.Context, ids []string, emailSend, alreadyRead *bool) ([]*npool.Notif, error) {
+func UpdateNotifs(ctx context.Context, ids []string, notified bool) ([]*npool.Notif, error) {
 	info, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.UpdateNotifs(ctx, &npool.UpdateNotifsRequest{
-			IDs:         ids,
-			EmailSend:   emailSend,
-			AlreadyRead: alreadyRead,
+			IDs:      ids,
+			Notified: &notified,
 		})
 		if err != nil {
 			return nil, fmt.Errorf("fail create notif: %v", err)

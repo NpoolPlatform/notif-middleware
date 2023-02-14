@@ -5,7 +5,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/NpoolPlatform/message/npool/third/mgr/v1/usedfor"
+	channel "github.com/NpoolPlatform/message/npool/notif/mgr/v1/channel"
+	usedfor "github.com/NpoolPlatform/message/npool/third/mgr/v1/usedfor"
 
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 
@@ -60,6 +61,15 @@ func validate(in *mgrpb.NotifReq) error {
 		return fmt.Errorf("EventType is invalid")
 	}
 
+	switch in.GetChannel() {
+	case channel.NotifChannel_ChannelFrontend:
+	case channel.NotifChannel_ChannelEmail:
+	case channel.NotifChannel_ChannelSMS:
+	default:
+		logger.Sugar().Errorw("validate", "Channel", in.GetChannel(), "error", "invalid channel")
+		return fmt.Errorf("channel is invalid")
+	}
+
 	if in.GetTitle() == "" {
 		logger.Sugar().Errorw("validate", "Title", in.GetTitle())
 		return fmt.Errorf("title is invalid")
@@ -67,10 +77,6 @@ func validate(in *mgrpb.NotifReq) error {
 	if in.GetContent() == "" {
 		logger.Sugar().Errorw("validate", "Content", in.GetContent())
 		return fmt.Errorf("title is invalid")
-	}
-	if len(in.GetChannels()) == 0 {
-		logger.Sugar().Errorw("validate", "Channels", in.GetChannels())
-		return fmt.Errorf("channels is invalid")
 	}
 	return nil
 }
@@ -206,10 +212,6 @@ func (s *Server) UpdateNotif(ctx context.Context, in *npool.UpdateNotifRequest) 
 		logger.Sugar().Errorw("validate", "Content", in.GetInfo().GetContent())
 		return &npool.UpdateNotifResponse{}, status.Error(codes.InvalidArgument, "content is invalid")
 	}
-	if len(in.GetInfo().GetChannels()) == 0 {
-		logger.Sugar().Errorw("validate", "Channels", in.GetInfo().GetChannels())
-		return &npool.UpdateNotifResponse{}, status.Error(codes.InvalidArgument, "channels is invalid")
-	}
 
 	info, err := notif1.UpdateNotif(ctx, in.GetInfo())
 	if err != nil {
@@ -249,7 +251,7 @@ func (s *Server) UpdateNotifs(ctx context.Context, in *npool.UpdateNotifsRequest
 		}
 	}
 
-	infos, _, err := notif1.UpdateNotifs(ctx, in.GetIDs(), in.EmailSend, in.AlreadyRead)
+	infos, _, err := notif1.UpdateNotifs(ctx, in.GetIDs(), in.Notified)
 	if err != nil {
 		logger.Sugar().Errorw("UpdatesNotif", "error", err)
 		return &npool.UpdateNotifsResponse{}, status.Error(codes.Internal, err.Error())
@@ -332,9 +334,14 @@ func validateConds(in *mgrpb.Conds) error {
 			return fmt.Errorf("EventType is invalid")
 		}
 	}
-	if in.Channels != nil {
-		if len(in.GetChannels().GetValue()) == 0 {
-			return fmt.Errorf("channels is invalid")
+	if in.Channel != nil {
+		switch in.GetChannel().GetValue() {
+		case uint32(channel.NotifChannel_ChannelFrontend):
+		case uint32(channel.NotifChannel_ChannelEmail):
+		case uint32(channel.NotifChannel_ChannelSMS):
+		default:
+			logger.Sugar().Errorw("validate", "Channel", in.GetChannel(), "error", "invalid channel")
+			return fmt.Errorf("channel is invalid")
 		}
 	}
 	return nil

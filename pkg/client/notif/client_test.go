@@ -42,28 +42,26 @@ var data = &npool.Notif{
 	ID:          uuid.NewString(),
 	AppID:       uuid.NewString(),
 	UserID:      uuid.NewString(),
-	AlreadyRead: true,
+	Notified:    true,
 	LangID:      uuid.NewString(),
 	EventType:   usedfor.UsedFor_KYCApproved,
 	UseTemplate: true,
 	Title:       uuid.NewString(),
 	Content:     uuid.NewString(),
-	Channels:    []channel.NotifChannel{channel.NotifChannel_ChannelSMS, channel.NotifChannel_ChannelEmail},
-	EmailSend:   false,
+	Channel:     channel.NotifChannel_ChannelSMS,
 }
 
 var dataReq = &mgrpb.NotifReq{
 	ID:          &data.ID,
 	AppID:       &data.AppID,
 	UserID:      &data.UserID,
-	AlreadyRead: &data.AlreadyRead,
+	Notified:    &data.Notified,
 	LangID:      &data.LangID,
 	EventType:   &data.EventType,
 	UseTemplate: &data.UseTemplate,
 	Title:       &data.Title,
 	Content:     &data.Content,
-	Channels:    data.Channels,
-	EmailSend:   &data.EmailSend,
+	Channel:     &data.Channel,
 }
 
 func createNotif(t *testing.T) {
@@ -71,30 +69,28 @@ func createNotif(t *testing.T) {
 	if assert.Nil(t, err) {
 		data.CreatedAt = info.CreatedAt
 		data.UpdatedAt = info.UpdatedAt
-		data.AlreadyRead = info.AlreadyRead
+		data.Notified = info.Notified
 		assert.Equal(t, data, info)
 	}
 }
 
 func updateNotif(t *testing.T) {
-	data.AlreadyRead = true
+	data.Notified = true
 	info, err := UpdateNotif(context.Background(), dataReq)
 	if assert.Nil(t, err) {
 		data.CreatedAt = info.CreatedAt
 		data.UpdatedAt = info.UpdatedAt
-		data.AlreadyRead = info.AlreadyRead
-		data.EmailSend = info.EmailSend
+		data.Notified = info.Notified
 		assert.Equal(t, data, info)
 	}
 }
 
 func updateNotifs(t *testing.T) {
 	b := true
-	infos, err := UpdateNotifs(context.Background(), []string{data.ID}, &b, &b)
+	infos, err := UpdateNotifs(context.Background(), []string{data.ID}, b)
 	if assert.Nil(t, err) {
 		data.CreatedAt = infos[0].CreatedAt
 		data.UpdatedAt = infos[0].UpdatedAt
-		data.EmailSend = infos[0].EmailSend
 		assert.Equal(t, infos[0].String(), data.String())
 	}
 }

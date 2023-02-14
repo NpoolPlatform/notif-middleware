@@ -38,7 +38,7 @@ func CreateNotifs(ctx context.Context, req []*mgrpb.NotifReq) ([]*npool.Notif, e
 	return infos, nil
 }
 
-func UpdateNotifs(ctx context.Context, ids []string, emailSend, alreadyRead *bool) ([]*npool.Notif, uint32, error) {
+func UpdateNotifs(ctx context.Context, ids []string, notified *bool) ([]*npool.Notif, uint32, error) {
 	uIDs := []uuid.UUID{}
 	for _, val := range ids {
 		id, err := uuid.Parse(val)
@@ -54,11 +54,9 @@ func UpdateNotifs(ctx context.Context, ids []string, emailSend, alreadyRead *boo
 			Where(
 				entnotif.IDIn(uIDs...),
 			)
-		if emailSend != nil {
-			stm = stm.SetEmailSend(*emailSend)
-		}
-		if alreadyRead != nil {
-			stm = stm.SetAlreadyRead(*alreadyRead)
+
+		if notified != nil {
+			stm = stm.SetNotified(*notified)
 		}
 		_, err := stm.Save(ctx)
 		return err
@@ -115,14 +113,13 @@ func expand(info *mgrpb.Notif) *npool.Notif {
 		ID:          info.ID,
 		AppID:       info.AppID,
 		UserID:      info.UserID,
-		AlreadyRead: info.AlreadyRead,
+		Notified:    info.Notified,
 		LangID:      info.LangID,
 		EventType:   info.EventType,
 		UseTemplate: info.UseTemplate,
 		Title:       info.Title,
 		Content:     info.Content,
-		Channels:    info.Channels,
-		EmailSend:   info.EmailSend,
+		Channel:     info.Channel,
 		CreatedAt:   info.CreatedAt,
 		UpdatedAt:   info.UpdatedAt,
 	}

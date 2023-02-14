@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/NpoolPlatform/message/npool/third/mgr/v1/usedfor"
+
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	valuedef "github.com/NpoolPlatform/message/npool"
 	"github.com/NpoolPlatform/message/npool/notif/mgr/v1/channel"
@@ -42,7 +44,7 @@ var data = &npool.Notif{
 	UserID:      uuid.NewString(),
 	AlreadyRead: true,
 	LangID:      uuid.NewString(),
-	EventType:   mgrpb.EventType_KYCApproved,
+	EventType:   usedfor.UsedFor_KYCApproved,
 	UseTemplate: true,
 	Title:       uuid.NewString(),
 	Content:     uuid.NewString(),

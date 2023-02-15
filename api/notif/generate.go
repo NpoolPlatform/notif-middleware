@@ -12,13 +12,14 @@ import (
 	constant "github.com/NpoolPlatform/notif-middleware/pkg/message/const"
 	commontracer "github.com/NpoolPlatform/notif-middleware/pkg/tracer"
 
-	"github.com/google/uuid"
 	"go.opentelemetry.io/otel"
 	scodes "go.opentelemetry.io/otel/codes"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	notif1 "github.com/NpoolPlatform/notif-middleware/pkg/notif"
+
+	"github.com/google/uuid"
 )
 
 //nolint:funlen,gocyclo

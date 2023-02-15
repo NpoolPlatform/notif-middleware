@@ -2,6 +2,7 @@ package template
 
 import (
 	"context"
+	"fmt"
 
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/template"
@@ -20,14 +21,12 @@ import (
 	sms "github.com/NpoolPlatform/notif-middleware/pkg/template/sms"
 )
 
-func FillTemplate(
+func GenerateNotifs(
 	ctx context.Context,
 	appID, userID string,
 	usedFor basetypes.UsedFor,
 	vars *npool.TemplateVars,
-) (
-	[]*notifmgrpb.NotifReq, error,
-) {
+) ([]*notifmgrpb.NotifReq, error) {
 	const maxChannels = int32(100)
 
 	chans, _, err := notifchanmgrcli.GetChannels(ctx, &notifchanmgrpb.Conds{
@@ -52,19 +51,19 @@ func FillTemplate(
 	for _, ch := range chans {
 		switch ch.Channel {
 		case chanmgrpb.NotifChannel_ChannelEmail:
-			_reqs, err := email.FillTemplate(ctx, appID, userID, usedFor, vars)
+			_reqs, err := email.GenerateNotifs(ctx, appID, userID, usedFor, vars)
 			if err != nil {
 				return nil, err
 			}
 			reqs = append(reqs, _reqs...)
 		case chanmgrpb.NotifChannel_ChannelSMS:
-			_reqs, err := sms.FillTemplate(ctx, appID, userID, usedFor, vars)
+			_reqs, err := sms.GenerateNotifs(ctx, appID, userID, usedFor, vars)
 			if err != nil {
 				return nil, err
 			}
 			reqs = append(reqs, _reqs...)
 		case chanmgrpb.NotifChannel_ChannelFrontend:
-			_reqs, err := frontend.FillTemplate(ctx, appID, userID, usedFor, vars)
+			_reqs, err := frontend.GenerateNotifs(ctx, appID, userID, usedFor, vars)
 			if err != nil {
 				return nil, err
 			}
@@ -73,4 +72,23 @@ func FillTemplate(
 	}
 
 	return reqs, nil
+}
+
+func GenerateText(
+	ctx context.Context,
+	appID, langID string,
+	usedFor basetypes.UsedFor,
+	channel chanmgrpb.NotifChannel,
+	vars *npool.TemplateVars,
+) (*npool.TextInfo, error) {
+	switch channel {
+	case chanmgrpb.NotifChannel_ChannelEmail:
+		return email.GenerateText(ctx, appID, langID, usedFor, vars)
+	case chanmgrpb.NotifChannel_ChannelSMS:
+		return sms.GenerateText(ctx, appID, langID, usedFor, vars)
+	case chanmgrpb.NotifChannel_ChannelFrontend:
+		return frontend.GenerateText(ctx, appID, langID, usedFor, vars)
+	}
+
+	return nil, fmt.Errorf("unknown channel")
 }

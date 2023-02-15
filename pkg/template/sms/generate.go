@@ -1,4 +1,4 @@
-package email
+package sms
 
 import (
 	"context"
@@ -9,8 +9,8 @@ import (
 	chanmgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/channel"
 	notifmgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/notif"
 
-	emailtmplmgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/template/email"
-	emailtmplmgrcli "github.com/NpoolPlatform/notif-manager/pkg/client/template/email"
+	smstmplmgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/template/sms"
+	smstmplmgrcli "github.com/NpoolPlatform/notif-manager/pkg/client/template/sms"
 
 	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	commonpb "github.com/NpoolPlatform/message/npool"
@@ -18,17 +18,15 @@ import (
 	tmplreplace "github.com/NpoolPlatform/notif-middleware/pkg/template/replace"
 )
 
-func FillTemplate(
+func GenerateNotifs(
 	ctx context.Context,
 	appID, userID string,
 	usedFor basetypes.UsedFor,
 	vars *npool.TemplateVars,
-) (
-	[]*notifmgrpb.NotifReq, error,
-) {
+) ([]*notifmgrpb.NotifReq, error) {
 	const maxTemplates = int32(100)
 
-	tmpls, _, err := emailtmplmgrcli.GetEmailTemplates(ctx, &emailtmplmgrpb.Conds{
+	tmpls, _, err := smstmplmgrcli.GetSMSTemplates(ctx, &smstmplmgrpb.Conds{
 		AppID: &commonpb.StringVal{
 			Op:    cruder.EQ,
 			Value: appID,
@@ -48,9 +46,9 @@ func FillTemplate(
 	reqs := []*notifmgrpb.NotifReq{}
 	for _, tmpl := range tmpls {
 		title := tmplreplace.ReplaceAll(tmpl.Subject, vars)
-		content := tmplreplace.ReplaceAll(tmpl.Body, vars)
+		content := tmplreplace.ReplaceAll(tmpl.Message, vars)
 		useTemplate := true
-		channel1 := chanmgrpb.NotifChannel_ChannelEmail
+		channel1 := chanmgrpb.NotifChannel_ChannelSMS
 
 		reqs = append(reqs, &notifmgrpb.NotifReq{
 			AppID:       &appID,
@@ -65,4 +63,40 @@ func FillTemplate(
 	}
 
 	return reqs, nil
+}
+
+func GenerateText(
+	ctx context.Context,
+	appID, langID string,
+	usedFor basetypes.UsedFor,
+	vars *npool.TemplateVars,
+) (*npool.TextInfo, error) {
+	tmpl, err := smstmplmgrcli.GetSMSTemplateOnly(ctx, &smstmplmgrpb.Conds{
+		AppID: &commonpb.StringVal{
+			Op:    cruder.EQ,
+			Value: appID,
+		},
+		LangID: &commonpb.StringVal{
+			Op:    cruder.EQ,
+			Value: langID,
+		},
+		UsedFor: &commonpb.Int32Val{
+			Op:    cruder.EQ,
+			Value: int32(usedFor),
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+	if tmpl == nil {
+		return nil, nil
+	}
+
+	title := tmplreplace.ReplaceAll(tmpl.Subject, vars)
+	content := tmplreplace.ReplaceAll(tmpl.Message, vars)
+
+	return &npool.TextInfo{
+		Subject: title,
+		Content: content,
+	}, nil
 }

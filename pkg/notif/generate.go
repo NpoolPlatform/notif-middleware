@@ -21,7 +21,7 @@ func GenerateNotifs(
 ) (
 	[]*npool.Notif, error,
 ) {
-	reqs, err := template.FillTemplate(ctx, appID, userID, usedFor, vars)
+	reqs, err := template.GenerateNotifs(ctx, appID, userID, usedFor, vars)
 	if err != nil {
 		return nil, err
 	}

@@ -10,6 +10,7 @@ import (
 	"github.com/NpoolPlatform/notif-middleware/api/notif"
 	"github.com/NpoolPlatform/notif-middleware/api/notif/channel"
 	"github.com/NpoolPlatform/notif-middleware/api/notif/tx"
+	"github.com/NpoolPlatform/notif-middleware/api/template"
 
 	v1 "github.com/NpoolPlatform/message/npool/notif/mw/v1"
 
@@ -24,6 +25,7 @@ type Server struct {
 func Register(server grpc.ServiceRegistrar) {
 	v1.RegisterMiddlewareServer(server, &Server{})
 	notif.Register(server)
+	template.Register(server)
 	readstate.Register(server)
 	sendstate.Register(server)
 	announcement.Register(server)

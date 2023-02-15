@@ -22,7 +22,7 @@ import (
 
 func FillTemplate(
 	ctx context.Context,
-	appID string,
+	appID, userID string,
 	usedFor basetypes.UsedFor,
 	vars *npool.TemplateVars,
 ) (
@@ -52,19 +52,19 @@ func FillTemplate(
 	for _, ch := range chans {
 		switch ch.Channel {
 		case chanmgrpb.NotifChannel_ChannelEmail:
-			_reqs, err := email.FillTemplate(ctx, appID, usedFor, vars)
+			_reqs, err := email.FillTemplate(ctx, appID, userID, usedFor, vars)
 			if err != nil {
 				return nil, err
 			}
 			reqs = append(reqs, _reqs...)
 		case chanmgrpb.NotifChannel_ChannelSMS:
-			_reqs, err := sms.FillTemplate(ctx, appID, usedFor, vars)
+			_reqs, err := sms.FillTemplate(ctx, appID, userID, usedFor, vars)
 			if err != nil {
 				return nil, err
 			}
 			reqs = append(reqs, _reqs...)
 		case chanmgrpb.NotifChannel_ChannelFrontend:
-			_reqs, err := frontend.FillTemplate(ctx, appID, usedFor, vars)
+			_reqs, err := frontend.FillTemplate(ctx, appID, userID, usedFor, vars)
 			if err != nil {
 				return nil, err
 			}

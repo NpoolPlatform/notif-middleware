@@ -11,7 +11,7 @@ import (
 
 func FillTemplate(
 	ctx context.Context,
-	appID string,
+	appID, userID string,
 	usedFor basetypes.UsedFor,
 	vars *npool.TemplateVars,
 ) (

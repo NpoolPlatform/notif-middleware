@@ -15,13 +15,13 @@ import (
 
 func GenerateNotifs(
 	ctx context.Context,
-	appID string,
+	appID, userID string,
 	usedFor basetypes.UsedFor,
 	vars *tmplmwpb.TemplateVars,
 ) (
 	[]*npool.Notif, error,
 ) {
-	reqs, err := template.FillTemplate(ctx, appID, usedFor, vars)
+	reqs, err := template.FillTemplate(ctx, appID, userID, usedFor, vars)
 	if err != nil {
 		return nil, err
 	}

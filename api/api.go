@@ -3,17 +3,13 @@ package api
 import (
 	"context"
 
-	"github.com/NpoolPlatform/notif-middleware/api/notif/notifchannel"
-
-	"github.com/NpoolPlatform/notif-middleware/api/notif/txnotifstate"
-
-	"github.com/NpoolPlatform/notif-middleware/api/announcement/user"
-
 	"github.com/NpoolPlatform/notif-middleware/api/announcement"
-	"github.com/NpoolPlatform/notif-middleware/api/announcement/sendstate"
-
 	"github.com/NpoolPlatform/notif-middleware/api/announcement/readstate"
+	"github.com/NpoolPlatform/notif-middleware/api/announcement/sendstate"
+	"github.com/NpoolPlatform/notif-middleware/api/announcement/user"
 	"github.com/NpoolPlatform/notif-middleware/api/notif"
+	"github.com/NpoolPlatform/notif-middleware/api/notif/channel"
+	"github.com/NpoolPlatform/notif-middleware/api/notif/tx"
 
 	v1 "github.com/NpoolPlatform/message/npool/notif/mw/v1"
 
@@ -32,8 +28,8 @@ func Register(server grpc.ServiceRegistrar) {
 	sendstate.Register(server)
 	announcement.Register(server)
 	user.Register(server)
-	txnotifstate.Register(server)
-	notifchannel.Register(server)
+	tx.Register(server)
+	channel.Register(server)
 }
 
 func RegisterGateway(mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) error {

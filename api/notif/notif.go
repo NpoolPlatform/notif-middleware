@@ -5,8 +5,8 @@ import (
 	"context"
 	"fmt"
 
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	channel "github.com/NpoolPlatform/message/npool/notif/mgr/v1/channel"
-	usedfor "github.com/NpoolPlatform/message/npool/third/mgr/v1/usedfor"
 
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 
@@ -51,12 +51,12 @@ func validate(in *mgrpb.NotifReq) error {
 	}
 
 	switch in.GetEventType() {
-	case usedfor.UsedFor_WithdrawalRequest:
-	case usedfor.UsedFor_WithdrawalCompleted:
-	case usedfor.UsedFor_DepositReceived:
-	case usedfor.UsedFor_KYCApproved:
-	case usedfor.UsedFor_KYCRejected:
-	case usedfor.UsedFor_Announcement:
+	case basetypes.UsedFor_WithdrawalRequest:
+	case basetypes.UsedFor_WithdrawalCompleted:
+	case basetypes.UsedFor_DepositReceived:
+	case basetypes.UsedFor_KYCApproved:
+	case basetypes.UsedFor_KYCRejected:
+	case basetypes.UsedFor_Announcement:
 	default:
 		return fmt.Errorf("EventType is invalid")
 	}
@@ -192,12 +192,12 @@ func (s *Server) UpdateNotif(ctx context.Context, in *npool.UpdateNotifRequest) 
 
 	if in.Info.EventType != nil {
 		switch in.GetInfo().GetEventType() {
-		case usedfor.UsedFor_WithdrawalRequest:
-		case usedfor.UsedFor_WithdrawalCompleted:
-		case usedfor.UsedFor_DepositReceived:
-		case usedfor.UsedFor_KYCApproved:
-		case usedfor.UsedFor_KYCRejected:
-		case usedfor.UsedFor_Announcement:
+		case basetypes.UsedFor_WithdrawalRequest:
+		case basetypes.UsedFor_WithdrawalCompleted:
+		case basetypes.UsedFor_DepositReceived:
+		case basetypes.UsedFor_KYCApproved:
+		case basetypes.UsedFor_KYCRejected:
+		case basetypes.UsedFor_Announcement:
 		default:
 			logger.Sugar().Errorw("validate", "EventType", in.GetInfo().GetEventType())
 			return &npool.UpdateNotifResponse{}, status.Error(codes.InvalidArgument, "EventType is invalid")
@@ -324,12 +324,12 @@ func validateConds(in *mgrpb.Conds) error {
 	}
 	if in.EventType != nil {
 		switch in.GetEventType().GetValue() {
-		case uint32(usedfor.UsedFor_WithdrawalRequest):
-		case uint32(usedfor.UsedFor_WithdrawalCompleted):
-		case uint32(usedfor.UsedFor_DepositReceived):
-		case uint32(usedfor.UsedFor_KYCApproved):
-		case uint32(usedfor.UsedFor_KYCRejected):
-		case uint32(usedfor.UsedFor_Announcement):
+		case uint32(basetypes.UsedFor_WithdrawalRequest):
+		case uint32(basetypes.UsedFor_WithdrawalCompleted):
+		case uint32(basetypes.UsedFor_DepositReceived):
+		case uint32(basetypes.UsedFor_KYCApproved):
+		case uint32(basetypes.UsedFor_KYCRejected):
+		case uint32(basetypes.UsedFor_Announcement):
 		default:
 			return fmt.Errorf("EventType is invalid")
 		}

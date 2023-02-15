@@ -42,7 +42,7 @@ func init() {
 }
 
 var (
-	aType = announcementmgrpb.AnnouncementType_AppointUsers
+	aType = announcementmgrpb.AnnouncementType_Multicast
 	data  = npool.User{
 		ID:                  uuid.NewString(),
 		AnnouncementID:      uuid.NewString(),
@@ -50,8 +50,8 @@ var (
 		UserID:              uuid.NewString(),
 		Title:               uuid.NewString(),
 		Content:             uuid.NewString(),
-		ChannelsStr:         `["ChannelEmail", "ChannelSMS"]`,
-		Channels:            []channelpb.NotifChannel{channelpb.NotifChannel_ChannelEmail, channelpb.NotifChannel_ChannelSMS},
+		ChannelStr:          "ChannelEmail",
+		Channel:             channelpb.NotifChannel_ChannelEmail,
 		AnnouncementTypeStr: aType.String(),
 		AnnouncementType:    aType,
 	}
@@ -64,7 +64,7 @@ func getUsers(t *testing.T) {
 		AppID:            &data.AppID,
 		Title:            &data.Title,
 		Content:          &data.Content,
-		Channels:         data.Channels,
+		Channel:          &data.Channel,
 		EndAt:            &endAt,
 		AnnouncementType: &aType,
 	})

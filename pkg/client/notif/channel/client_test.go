@@ -1,4 +1,4 @@
-package notifchannel
+package channel
 
 import (
 	"context"
@@ -7,9 +7,10 @@ import (
 	"strconv"
 	"testing"
 
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	"github.com/NpoolPlatform/message/npool/notif/mgr/v1/channel"
-	"github.com/NpoolPlatform/message/npool/third/mgr/v1/usedfor"
-	crud "github.com/NpoolPlatform/notif-manager/pkg/crud/notif/notifchannel"
+
+	crud "github.com/NpoolPlatform/notif-manager/pkg/crud/notif/channel"
 
 	"github.com/NpoolPlatform/go-service-framework/pkg/config"
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
@@ -22,7 +23,7 @@ import (
 
 	"github.com/NpoolPlatform/notif-middleware/pkg/testinit"
 
-	mgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/notif/notifchannel"
+	mgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/notif/channel"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/google/uuid"
@@ -38,9 +39,9 @@ func init() {
 }
 
 var (
-	eventType = usedfor.UsedFor_KYCApproved
+	eventType = basetypes.UsedFor_KYCApproved
 	channel1  = channel.NotifChannel_ChannelFrontend
-	data      = &mgrpb.NotifChannel{
+	data      = &mgrpb.Channel{
 		ID:        uuid.NewString(),
 		AppID:     uuid.NewString(),
 		EventType: eventType,
@@ -48,18 +49,18 @@ var (
 	}
 )
 
-var dataReq = &mgrpb.NotifChannelReq{
+var dataReq = &mgrpb.ChannelReq{
 	ID:        &data.ID,
 	AppID:     &data.AppID,
 	EventType: &data.EventType,
 	Channel:   &data.Channel,
 }
 
-func getNotifChannels(t *testing.T) {
+func getChannels(t *testing.T) {
 	_, err := crud.Create(context.Background(), dataReq)
 	assert.Nil(t, err)
 
-	infos, total, err := GetNotifChannels(context.Background(), &mgrpb.Conds{
+	infos, total, err := GetChannels(context.Background(), &mgrpb.Conds{
 		ID: &valuedef.StringVal{
 			Op:    cruder.EQ,
 			Value: data.ID,
@@ -73,8 +74,8 @@ func getNotifChannels(t *testing.T) {
 	}
 }
 
-func getNotifChannelOnly(t *testing.T) {
-	info, err := GetNotifChannelOnly(context.Background(), &mgrpb.Conds{
+func getChannelOnly(t *testing.T) {
+	info, err := GetChannelOnly(context.Background(), &mgrpb.Conds{
 		ID: &valuedef.StringVal{
 			Op:    cruder.EQ,
 			Value: data.ID,
@@ -97,6 +98,6 @@ func TestClient(t *testing.T) {
 		return grpc.Dial(fmt.Sprintf("localhost:%v", gport), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	})
 
-	t.Run("getNotifChannels", getNotifChannels)
-	t.Run("getNotifChannelOnly", getNotifChannelOnly)
+	t.Run("getChannels", getChannels)
+	t.Run("getChannelOnly", getChannelOnly)
 }

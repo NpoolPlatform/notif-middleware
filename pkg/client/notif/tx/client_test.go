@@ -1,4 +1,4 @@
-package txnotifstate
+package tx
 
 import (
 	"context"
@@ -18,7 +18,8 @@ import (
 
 	"github.com/NpoolPlatform/notif-middleware/pkg/testinit"
 
-	mgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/notif/txnotifstate"
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
+	mgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/notif/tx"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/google/uuid"
@@ -34,25 +35,25 @@ func init() {
 }
 
 var (
-	txState = mgrpb.TxState_WaitSend
-	txType  = mgrpb.TxType_Withdraw
-	data    = &mgrpb.TxNotifState{
+	txState = mgrpb.TxState_WaitNotified
+	txType  = basetypes.TxType_TxWithdraw
+	data    = &mgrpb.Tx{
 		ID:         uuid.NewString(),
 		TxID:       uuid.NewString(),
 		NotifState: txState,
-		NotifType:  txType,
+		TxType:     txType,
 	}
 )
 
-var dataReq = &mgrpb.TxNotifStateReq{
+var dataReq = &mgrpb.TxReq{
 	ID:         &data.ID,
 	TxID:       &data.TxID,
 	NotifState: &data.NotifState,
-	NotifType:  &data.NotifType,
+	TxType:     &data.TxType,
 }
 
-func createTxNotifState(t *testing.T) {
-	info, err := CreateTxNotifState(context.Background(), dataReq)
+func createTx(t *testing.T) {
+	info, err := CreateTx(context.Background(), dataReq)
 	if assert.Nil(t, err) {
 		data.CreatedAt = info.CreatedAt
 		data.UpdatedAt = info.UpdatedAt
@@ -60,8 +61,8 @@ func createTxNotifState(t *testing.T) {
 	}
 }
 
-func updateTxNotifState(t *testing.T) {
-	info, err := UpdateTxNotifState(context.Background(), dataReq)
+func updateTx(t *testing.T) {
+	info, err := UpdateTx(context.Background(), dataReq)
 	if assert.Nil(t, err) {
 		data.CreatedAt = info.CreatedAt
 		data.UpdatedAt = info.UpdatedAt
@@ -69,8 +70,8 @@ func updateTxNotifState(t *testing.T) {
 	}
 }
 
-func getTxNotifStates(t *testing.T) {
-	infos, total, err := GetTxNotifStates(context.Background(), &mgrpb.Conds{
+func getTxs(t *testing.T) {
+	infos, total, err := GetTxs(context.Background(), &mgrpb.Conds{
 		ID: &valuedef.StringVal{
 			Op:    cruder.EQ,
 			Value: data.ID,
@@ -82,8 +83,8 @@ func getTxNotifStates(t *testing.T) {
 	}
 }
 
-func getTxNotifStateOnly(t *testing.T) {
-	info, err := GetTxNotifStateOnly(context.Background(), &mgrpb.Conds{
+func getTxOnly(t *testing.T) {
+	info, err := GetTxOnly(context.Background(), &mgrpb.Conds{
 		ID: &valuedef.StringVal{
 			Op:    cruder.EQ,
 			Value: data.ID,
@@ -104,8 +105,8 @@ func TestClient(t *testing.T) {
 		return grpc.Dial(fmt.Sprintf("localhost:%v", gport), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	})
 
-	t.Run("createTxNotifState", createTxNotifState)
-	t.Run("updateTxNotifState", updateTxNotifState)
-	t.Run("getTxNotifStates", getTxNotifStates)
-	t.Run("getTxNotifStateOnly", getTxNotifStateOnly)
+	t.Run("createTx", createTx)
+	t.Run("updateTx", updateTx)
+	t.Run("getTxs", getTxs)
+	t.Run("getTxOnly", getTxOnly)
 }

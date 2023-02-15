@@ -1,4 +1,4 @@
-package notifchannel
+package channel
 
 import (
 	"context"
@@ -8,11 +8,11 @@ import (
 	grpc2 "github.com/NpoolPlatform/go-service-framework/pkg/grpc"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
-	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/notifchannel"
+	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/channel"
 
 	constant "github.com/NpoolPlatform/notif-middleware/pkg/message/const"
 
-	mgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/notif/notifchannel"
+	mgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/notif/channel"
 )
 
 var timeout = 10 * time.Second
@@ -25,7 +25,7 @@ func withCRUD(ctx context.Context, handler handler) (cruder.Any, error) {
 
 	conn, err := grpc2.GetGRPCConn(constant.ServiceName, grpc2.GRPCTAG)
 	if err != nil {
-		return nil, fmt.Errorf("fail get notifchannel connection: %v", err)
+		return nil, fmt.Errorf("fail get channel connection: %v", err)
 	}
 
 	defer conn.Close()
@@ -35,38 +35,38 @@ func withCRUD(ctx context.Context, handler handler) (cruder.Any, error) {
 	return handler(_ctx, cli)
 }
 
-func GetNotifChannelOnly(ctx context.Context, conds *mgrpb.Conds) (*mgrpb.NotifChannel, error) {
+func GetChannelOnly(ctx context.Context, conds *mgrpb.Conds) (*mgrpb.Channel, error) {
 	info, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		resp, err := cli.GetNotifChannelOnly(ctx, &npool.GetNotifChannelOnlyRequest{
+		resp, err := cli.GetChannelOnly(ctx, &npool.GetChannelOnlyRequest{
 			Conds: conds,
 		})
 		if err != nil {
-			return nil, fmt.Errorf("fail get notifchannel: %v", err)
+			return nil, fmt.Errorf("fail get channel: %v", err)
 		}
 		return resp.Info, nil
 	})
 	if err != nil {
-		return nil, fmt.Errorf("fail get notifchannel: %v", err)
+		return nil, fmt.Errorf("fail get channel: %v", err)
 	}
-	return info.(*mgrpb.NotifChannel), nil
+	return info.(*mgrpb.Channel), nil
 }
 
-func GetNotifChannels(ctx context.Context, conds *mgrpb.Conds, offset, limit int32) ([]*mgrpb.NotifChannel, uint32, error) {
+func GetChannels(ctx context.Context, conds *mgrpb.Conds, offset, limit int32) ([]*mgrpb.Channel, uint32, error) {
 	var total uint32
 	infos, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		resp, err := cli.GetNotifChannels(ctx, &npool.GetNotifChannelsRequest{
+		resp, err := cli.GetChannels(ctx, &npool.GetChannelsRequest{
 			Conds:  conds,
 			Limit:  limit,
 			Offset: offset,
 		})
 		if err != nil {
-			return nil, fmt.Errorf("fail get notifchannels: %v", err)
+			return nil, fmt.Errorf("fail get channels: %v", err)
 		}
 		total = resp.GetTotal()
 		return resp.Infos, nil
 	})
 	if err != nil {
-		return nil, 0, fmt.Errorf("fail get notifchannels: %v", err)
+		return nil, 0, fmt.Errorf("fail get channels: %v", err)
 	}
-	return infos.([]*mgrpb.NotifChannel), total, nil
+	return infos.([]*mgrpb.Channel), total, nil
 }

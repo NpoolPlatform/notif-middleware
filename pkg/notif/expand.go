@@ -21,3 +21,11 @@ func expand(info *mgrpb.Notif) *npool.Notif {
 		UpdatedAt:   info.UpdatedAt,
 	}
 }
+
+func expandMany(infos []*mgrpb.Notif) []*npool.Notif {
+	_infos := []*npool.Notif{}
+	for _, info := range infos {
+		_infos = append(_infos, expand(info))
+	}
+	return _infos
+}

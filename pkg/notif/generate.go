@@ -6,7 +6,11 @@ import (
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	tmplmwpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/template"
 
+	mgrcli "github.com/NpoolPlatform/notif-manager/pkg/client/notif"
+
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
+
+	template "github.com/NpoolPlatform/notif-middleware/pkg/template"
 )
 
 func GenerateNotifs(
@@ -17,5 +21,15 @@ func GenerateNotifs(
 ) (
 	[]*npool.Notif, error,
 ) {
-	return nil, nil
+	reqs, err := template.FillTemplate(ctx, appID, usedFor, vars)
+	if err != nil {
+		return nil, err
+	}
+
+	notifs, err := mgrcli.CreateNotifs(ctx, reqs)
+	if err != nil {
+		return nil, err
+	}
+
+	return expandMany(notifs), nil
 }

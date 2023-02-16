@@ -152,3 +152,17 @@ func GetNotifs(ctx context.Context, conds *mgrpb.Conds, offset, limit int32) ([]
 	}
 	return infos.([]*npool.Notif), total, nil
 }
+
+func GenerateNotifs(ctx context.Context, in *npool.GenerateNotifsRequest) ([]*npool.Notif, error) {
+	infos, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		resp, err := cli.GenerateNotifs(ctx, in)
+		if err != nil {
+			return nil, fmt.Errorf("fail generate notifs: %v", err)
+		}
+		return resp.Infos, nil
+	})
+	if err != nil {
+		return nil, fmt.Errorf("fail generate notifs: %v", err)
+	}
+	return infos.([]*npool.Notif), nil
+}

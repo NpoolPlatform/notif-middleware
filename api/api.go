@@ -12,6 +12,9 @@ import (
 	"github.com/NpoolPlatform/notif-middleware/api/notif/channel"
 	"github.com/NpoolPlatform/notif-middleware/api/notif/tx"
 	"github.com/NpoolPlatform/notif-middleware/api/template"
+	"github.com/NpoolPlatform/notif-middleware/api/template/email"
+	"github.com/NpoolPlatform/notif-middleware/api/template/frontend"
+	"github.com/NpoolPlatform/notif-middleware/api/template/sms"
 
 	v1 "github.com/NpoolPlatform/message/npool/notif/mw/v1"
 
@@ -28,6 +31,9 @@ func Register(server grpc.ServiceRegistrar) {
 	notif.Register(server)
 	contact.Register(server)
 	template.Register(server)
+	email.Register(server)
+	sms.Register(server)
+	frontend.Register(server)
 	readstate.Register(server)
 	sendstate.Register(server)
 	announcement.Register(server)

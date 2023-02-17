@@ -20,14 +20,21 @@ import (
 
 func GetAnnouncements(
 	ctx context.Context,
-	conds *mgrpb.Conds,
+	conds *npool.Conds,
 	offset, limit int32,
 ) (
 	[]*npool.Announcement,
 	uint32,
 	error,
 ) {
-	rows, total, err := mgrcli.GetAnnouncements(ctx, conds, offset, limit)
+	rows, total, err := mgrcli.GetAnnouncements(ctx, &mgrpb.Conds{
+		ID:       conds.ID,
+		AppID:    conds.AppID,
+		LangID:   conds.LangID,
+		Channels: conds.Channels,
+		EndAt:    conds.EndAt,
+		Channel:  conds.Channel,
+	}, offset, limit)
 	if err != nil {
 		return nil, 0, err
 	}

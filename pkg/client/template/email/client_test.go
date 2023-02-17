@@ -22,7 +22,7 @@ import (
 	"github.com/NpoolPlatform/notif-middleware/pkg/testinit"
 
 	mgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/template/email"
-	crud "github.com/NpoolPlatform/notif-manager/pkg/crud/v1/template/email"
+	crud "github.com/NpoolPlatform/notif-manager/pkg/crud/template/email"
 
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 

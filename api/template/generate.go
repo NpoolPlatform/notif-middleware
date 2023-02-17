@@ -17,7 +17,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func (s *Server) GenerateText(ctx context.Context, in *npool.GenerateTextRequest) (*npool.GenerateTextResponse, error) {
+func (s *Server) GenerateText(ctx context.Context, in *npool.GenerateTextRequest) (*npool.GenerateTextResponse, error) { //nolint
 	if _, err := uuid.Parse(in.GetAppID()); err != nil {
 		return &npool.GenerateTextResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}

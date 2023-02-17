@@ -26,6 +26,15 @@ func (s *Server) GenerateText(ctx context.Context, in *npool.GenerateTextRequest
 	}
 
 	switch in.GetEventType() {
+	case basetypes.UsedFor_Signup:
+	case basetypes.UsedFor_Signin:
+	case basetypes.UsedFor_Update:
+	case basetypes.UsedFor_SetWithdrawAddress:
+	case basetypes.UsedFor_Withdraw:
+	case basetypes.UsedFor_CreateInvitationCode:
+	case basetypes.UsedFor_SetCommission:
+	case basetypes.UsedFor_SetTransferTargetUser:
+	case basetypes.UsedFor_Transfer:
 	case basetypes.UsedFor_WithdrawalRequest:
 	case basetypes.UsedFor_WithdrawalCompleted:
 	case basetypes.UsedFor_DepositReceived:

@@ -37,12 +37,12 @@ func GenerateText(ctx context.Context, in *npool.GenerateTextRequest) (*npool.Te
 	info, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.GenerateText(ctx, in)
 		if err != nil {
-			return nil, fmt.Errorf("fail create template: %v", err)
+			return nil, fmt.Errorf("fail generate text: %v", err)
 		}
 		return resp.Info, nil
 	})
 	if err != nil {
-		return nil, fmt.Errorf("fail create template: %v", err)
+		return nil, fmt.Errorf("fail generate text: %v", err)
 	}
 	return info.(*npool.TextInfo), nil
 }

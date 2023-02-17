@@ -58,7 +58,14 @@ func (s *Server) GenerateNotifs(ctx context.Context, in *npool.GenerateNotifsReq
 		return &npool.GenerateNotifsResponse{}, status.Error(codes.InvalidArgument, "EventType is invalid")
 	}
 
-	infos, err := notif1.GenerateNotifs(ctx, in.GetAppID(), in.GetUserID(), in.GetEventType(), in.Vars)
+	infos, err := notif1.GenerateNotifs(
+		ctx,
+		in.GetAppID(),
+		in.GetUserID(),
+		in.GetEventType(),
+		in.Vars,
+		in.Extra,
+	)
 	if err != nil {
 		logger.Sugar().Errorw("GenerateNotifs", "error", err)
 		return &npool.GenerateNotifsResponse{}, status.Error(codes.Internal, err.Error())

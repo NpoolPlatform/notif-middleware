@@ -18,12 +18,17 @@ func GenerateNotifs(
 	appID, userID string,
 	usedFor basetypes.UsedFor,
 	vars *tmplmwpb.TemplateVars,
+	extra *string,
 ) (
 	[]*npool.Notif, error,
 ) {
 	reqs, err := template.GenerateNotifs(ctx, appID, userID, usedFor, vars)
 	if err != nil {
 		return nil, err
+	}
+
+	for _, req := range reqs {
+		req.Extra = extra
 	}
 
 	notifs, err := mgrcli.CreateNotifs(ctx, reqs)

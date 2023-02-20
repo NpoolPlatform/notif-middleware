@@ -45,6 +45,7 @@ func GetAnnouncements(
 		infos = append(infos, &npool.Announcement{
 			AnnouncementID:   val.ID,
 			AppID:            val.AppID,
+			LangID:           val.LangID,
 			Title:            val.Title,
 			Content:          val.Content,
 			EndAt:            val.EndAt,

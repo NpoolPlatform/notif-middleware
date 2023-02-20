@@ -58,6 +58,8 @@ var (
 		AnnouncementTypeStr: aType.String(),
 		AnnouncementType:    aType,
 		ReadUserID:          userID,
+		ChannelStr:          channelpb.NotifChannel_ChannelEmail.String(),
+		Channel:             channelpb.NotifChannel_ChannelEmail,
 	}
 )
 

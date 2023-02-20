@@ -4,6 +4,7 @@ import (
 	"context"
 
 	mgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/announcement"
+	chanmgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/channel"
 	mgrcli "github.com/NpoolPlatform/notif-manager/pkg/client/announcement"
 
 	entreadannouncement "github.com/NpoolPlatform/notif-manager/pkg/db/ent/readannouncement"
@@ -132,6 +133,7 @@ func expand(infos []*npool.Announcement) []*npool.Announcement {
 	for _, info := range infos {
 		info.Read = info.ReadUserID != ""
 		info.AnnouncementType = mgrpb.AnnouncementType(mgrpb.AnnouncementType_value[info.AnnouncementTypeStr])
+		info.Channel = chanmgrpb.NotifChannel(chanmgrpb.NotifChannel_value[info.ChannelStr])
 	}
 	return infos
 }

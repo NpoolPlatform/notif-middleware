@@ -48,6 +48,7 @@ func GetAnnouncements(
 			Title:            val.Title,
 			Content:          val.Content,
 			EndAt:            val.EndAt,
+			Channel:          val.Channel,
 			AnnouncementType: val.AnnouncementType,
 		})
 	}

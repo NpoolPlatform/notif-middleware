@@ -44,13 +44,13 @@ func GetAnnouncements(ctx context.Context, conds *npool.Conds, offset, limit int
 			Offset: offset,
 		})
 		if err != nil {
-			return nil, fmt.Errorf("fail get announcementss: %v", err)
+			return nil, fmt.Errorf("fail get announcements: %v", err)
 		}
 		total = resp.GetTotal()
 		return resp.GetInfos(), nil
 	})
 	if err != nil {
-		return nil, 0, fmt.Errorf("fail get announcementss: %v", err)
+		return nil, 0, fmt.Errorf("fail get announcements: %v", err)
 	}
 	return infos.([]*npool.Announcement), total, nil
 }
@@ -64,13 +64,13 @@ func GetAnnouncementStates(ctx context.Context, conds *npool.Conds, offset, limi
 			Limit:  limit,
 		})
 		if err != nil {
-			return nil, fmt.Errorf("fail get announcementss: %v", err)
+			return nil, fmt.Errorf("fail get announcements: %v", err)
 		}
 		total = resp.GetTotal()
 		return resp.GetInfos(), nil
 	})
 	if err != nil {
-		return nil, 0, fmt.Errorf("fail get announcementss: %v", err)
+		return nil, 0, fmt.Errorf("fail get announcements: %v", err)
 	}
 	return infos.([]*npool.Announcement), total, nil
 }

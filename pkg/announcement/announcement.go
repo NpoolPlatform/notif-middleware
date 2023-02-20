@@ -99,6 +99,7 @@ func GetAnnouncementStates(
 				s.C(entannouncement.FieldUpdatedAt),
 				s.C(entannouncement.FieldEndAt),
 				s.C(entannouncement.FieldType),
+				s.C(entannouncement.FieldChannel),
 				sql.As(t1.C(entreadannouncement.FieldUserID), "read_user_id"),
 			)
 		})

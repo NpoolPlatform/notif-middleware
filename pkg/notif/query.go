@@ -34,5 +34,8 @@ func GetNotifOnly(ctx context.Context, conds *mgrpb.Conds) (*npool.Notif, error)
 	if err != nil {
 		return nil, err
 	}
+	if info == nil {
+		return nil, nil
+	}
 	return expand(info), nil
 }

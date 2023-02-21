@@ -37,8 +37,8 @@ func ReplaceAll(pattern string, vars *npool.TemplateVars) string {
 	}
 	if vars.Timestamp != nil {
 		datetime := time.Unix(int64(*vars.Timestamp), 0)
-		date := datetime.Format("1970-01-01")
-		time1 := datetime.Format("00:00:01")
+		date := datetime.Format("2006-01-02")
+		time1 := datetime.Format("15:04:05")
 
 		pattern = strings.ReplaceAll(pattern, NotifTemplateVarDate, date)
 		pattern = strings.ReplaceAll(pattern, NotifTemplateVarTime, time1)

@@ -40,7 +40,7 @@ func init() {
 }
 
 var (
-	aType = announcementmgrpb.AnnouncementType_AppointUsers
+	aType = announcementmgrpb.AnnouncementType_Multicast
 	data  = npool.SendState{
 		AnnouncementID:      uuid.NewString(),
 		AppID:               uuid.NewString(),
@@ -56,12 +56,14 @@ var (
 
 func getSendStates(t *testing.T) {
 	endAt := uint32(time.Now().Add(1 * time.Hour).Unix())
+	channel1 := channelpb.NotifChannel_ChannelEmail
+
 	_, err := announcementcrud.Create(context.Background(), &announcementmgrpb.AnnouncementReq{
 		ID:               &data.AnnouncementID,
 		AppID:            &data.AppID,
 		Title:            &data.Title,
 		Content:          &data.Content,
-		Channels:         []channelpb.NotifChannel{channelpb.NotifChannel_ChannelEmail},
+		Channel:          &channel1,
 		EndAt:            &endAt,
 		AnnouncementType: &aType,
 	})

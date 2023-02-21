@@ -2,18 +2,18 @@ package readstate
 
 import (
 	"context"
-	"encoding/json"
+
+	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 
 	announcementpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/announcement"
-
-	"entgo.io/ent/dialect/sql"
-	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 	mgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/announcement/readstate"
 	channelpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/channel"
-	"github.com/NpoolPlatform/notif-manager/pkg/db"
+	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/readstate"
+
+	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
 
-	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/readstate"
+	"github.com/NpoolPlatform/notif-manager/pkg/db"
 	"github.com/NpoolPlatform/notif-manager/pkg/db/ent"
 	entannouncement "github.com/NpoolPlatform/notif-manager/pkg/db/ent/announcement"
 	entreadannouncement "github.com/NpoolPlatform/notif-manager/pkg/db/ent/readannouncement"
@@ -21,9 +21,8 @@ import (
 
 func GetReadState(ctx context.Context, announcementID, userID string) (*npool.ReadState, error) {
 	var infos []*npool.ReadState
-	var err error
 
-	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
+	err := db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
 		return cli.
 			Announcement.
 			Query().
@@ -38,7 +37,7 @@ func GetReadState(ctx context.Context, announcementID, userID string) (*npool.Re
 					s.C(entannouncement.FieldAppID),
 					s.C(entannouncement.FieldTitle),
 					s.C(entannouncement.FieldContent),
-					s.C(entannouncement.FieldChannels),
+					s.C(entannouncement.FieldChannel),
 					s.C(entannouncement.FieldCreatedAt),
 					s.C(entannouncement.FieldUpdatedAt),
 					s.C(entannouncement.FieldType),
@@ -67,20 +66,15 @@ func GetReadState(ctx context.Context, announcementID, userID string) (*npool.Re
 		return nil, nil
 	}
 
-	infos, err = expand(infos)
-	if err != nil {
-		logger.Sugar().Errorw("GetReadState", "err", err)
-		return nil, err
-	}
+	infos = expand(infos)
 	return infos[0], nil
 }
 
 func GetReadStates(ctx context.Context, conds *mgrpb.Conds, offset, limit int32) ([]*npool.ReadState, uint32, error) {
 	var infos []*npool.ReadState
 	var total uint32
-	var err error
 
-	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
+	err := db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
 		stm := cli.
 			ReadAnnouncement.
 			Query()
@@ -129,12 +123,7 @@ func GetReadStates(ctx context.Context, conds *mgrpb.Conds, offset, limit int32)
 		return nil, 0, nil
 	}
 
-	infos, err = expand(infos)
-	if err != nil {
-		logger.Sugar().Errorw("GetReadState", "err", err)
-		return nil, 0, err
-	}
-
+	infos = expand(infos)
 	return infos, total, nil
 }
 
@@ -158,29 +147,16 @@ func join(stm *ent.ReadAnnouncementQuery) *ent.ReadAnnouncementSelect {
 			AppendSelect(
 				t1.C(entannouncement.FieldTitle),
 				t1.C(entannouncement.FieldContent),
-				t1.C(entannouncement.FieldChannels),
+				t1.C(entannouncement.FieldChannel),
 				t1.C(entannouncement.FieldType),
 			)
 	})
 }
 
-func expand(infos []*npool.ReadState) ([]*npool.ReadState, error) {
-	for key := range infos {
-		channelsStr := []string{}
-		if infos[key].ChannelsStr != "" {
-			err := json.Unmarshal([]byte(infos[key].ChannelsStr), &channelsStr)
-			if err != nil {
-				return nil, err
-			}
-		}
-
-		channels := []channelpb.NotifChannel{}
-		for _, channel := range channelsStr {
-			channels = append(channels, channelpb.NotifChannel(channelpb.NotifChannel_value[channel]))
-		}
-		infos[key].Channels = channels
-
-		infos[key].AnnouncementType = announcementpb.AnnouncementType(announcementpb.AnnouncementType_value[infos[key].AnnouncementTypeStr])
+func expand(infos []*npool.ReadState) []*npool.ReadState {
+	for _, info := range infos {
+		info.AnnouncementType = announcementpb.AnnouncementType(announcementpb.AnnouncementType_value[info.AnnouncementTypeStr])
+		info.Channel = channelpb.NotifChannel(channelpb.NotifChannel_value[info.ChannelStr])
 	}
-	return infos, nil
+	return infos
 }

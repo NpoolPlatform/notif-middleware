@@ -46,43 +46,47 @@ func init() {
 var (
 	endAt  = uint32(time.Now().Add(1 * time.Hour).Unix())
 	userID = uuid.NewString()
-	aType  = mgrpb.AnnouncementType_AllUsers
+	aType  = mgrpb.AnnouncementType_Broadcast
 	data   = npool.Announcement{
 		AnnouncementID:      uuid.NewString(),
 		AppID:               uuid.NewString(),
 		LangID:              uuid.NewString(),
 		Title:               uuid.NewString(),
 		Content:             uuid.NewString(),
-		AlreadyRead:         true,
+		Read:                true,
 		EndAt:               endAt,
 		AnnouncementTypeStr: aType.String(),
 		AnnouncementType:    aType,
 		ReadUserID:          userID,
+		ChannelStr:          channelpb.NotifChannel_ChannelEmail.String(),
+		Channel:             channelpb.NotifChannel_ChannelEmail,
 	}
 )
 
 func getAnnouncementStates(t *testing.T) {
+	channel1 := channelpb.NotifChannel_ChannelEmail
+
 	_, err := announcementcrud.Create(context.Background(), &mgrpb.AnnouncementReq{
 		ID:               &data.AnnouncementID,
 		AppID:            &data.AppID,
 		LangID:           &data.LangID,
 		Title:            &data.Title,
 		Content:          &data.Content,
-		Channels:         []channelpb.NotifChannel{channelpb.NotifChannel_ChannelEmail},
+		Channel:          &channel1,
 		EndAt:            &endAt,
 		AnnouncementType: &aType,
 	})
 	assert.Nil(t, err)
 
 	userID1 := uuid.NewString()
-	aType1 := mgrpb.AnnouncementType_AppointUsers
+	aType1 := mgrpb.AnnouncementType_Multicast
 	_, err = announcementcrud.Create(context.Background(), &mgrpb.AnnouncementReq{
 		ID:               &userID,
 		AppID:            &data.AppID,
 		LangID:           &data.LangID,
 		Title:            &data.Title,
 		Content:          &data.Content,
-		Channels:         []channelpb.NotifChannel{channelpb.NotifChannel_ChannelEmail},
+		Channel:          &channel1,
 		EndAt:            &endAt,
 		AnnouncementType: &aType1,
 	})

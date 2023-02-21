@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/NpoolPlatform/notif-manager/pkg/db"
 	"github.com/NpoolPlatform/notif-middleware/api"
-	"github.com/NpoolPlatform/notif-middleware/pkg/migrator"
 
 	grpc2 "github.com/NpoolPlatform/go-service-framework/pkg/grpc"
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
@@ -24,10 +23,6 @@ var runCmd = &cli.Command{
 	Aliases: []string{"s"},
 	Usage:   "Run the daemon",
 	Action: func(c *cli.Context) error {
-		if err := migrator.Migrate(c.Context); err != nil {
-			return err
-		}
-
 		if err := db.Init(); err != nil {
 			return err
 		}

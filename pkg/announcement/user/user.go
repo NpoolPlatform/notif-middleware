@@ -2,29 +2,30 @@ package user
 
 import (
 	"context"
-	"encoding/json"
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
+
 	mgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/announcement/user"
 	channelpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/channel"
+
 	"github.com/NpoolPlatform/notif-manager/pkg/db"
-	"github.com/google/uuid"
+	"github.com/NpoolPlatform/notif-manager/pkg/db/ent"
 
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/user"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent"
 
 	announcementpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/announcement"
 	entannouncement "github.com/NpoolPlatform/notif-manager/pkg/db/ent/announcement"
 	entuserannouncement "github.com/NpoolPlatform/notif-manager/pkg/db/ent/userannouncement"
+
+	"github.com/google/uuid"
 )
 
 func GetUsers(ctx context.Context, conds *mgrpb.Conds, offset, limit int32) ([]*npool.User, uint32, error) {
 	var infos []*npool.User
 	var total uint32
-	var err error
 
-	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
+	err := db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
 		stm := cli.Debug().
 			UserAnnouncement.
 			Query()
@@ -81,12 +82,7 @@ func GetUsers(ctx context.Context, conds *mgrpb.Conds, offset, limit int32) ([]*
 		return nil, 0, nil
 	}
 
-	infos, err = expand(infos)
-	if err != nil {
-		logger.Sugar().Errorw("GetUser", "err", err)
-		return nil, 0, err
-	}
-
+	infos = expand(infos)
 	return infos, total, nil
 }
 
@@ -111,29 +107,16 @@ func join(stm *ent.UserAnnouncementQuery) *ent.UserAnnouncementSelect {
 			AppendSelect(
 				t1.C(entannouncement.FieldTitle),
 				t1.C(entannouncement.FieldContent),
-				t1.C(entannouncement.FieldChannels),
+				t1.C(entannouncement.FieldChannel),
 				t1.C(entannouncement.FieldType),
 			)
 	})
 }
 
-func expand(infos []*npool.User) ([]*npool.User, error) {
-	for key := range infos {
-		channelsStr := []string{}
-		if infos[key].ChannelsStr != "" {
-			err := json.Unmarshal([]byte(infos[key].ChannelsStr), &channelsStr)
-			if err != nil {
-				return nil, err
-			}
-		}
-
-		channels := []channelpb.NotifChannel{}
-		for _, channel := range channelsStr {
-			channels = append(channels, channelpb.NotifChannel(channelpb.NotifChannel_value[channel]))
-		}
-
-		infos[key].AnnouncementType = announcementpb.AnnouncementType(announcementpb.AnnouncementType_value[infos[key].AnnouncementTypeStr])
-		infos[key].Channels = channels
+func expand(infos []*npool.User) []*npool.User {
+	for _, info := range infos {
+		info.Channel = channelpb.NotifChannel(channelpb.NotifChannel_value[info.ChannelStr])
+		info.AnnouncementType = announcementpb.AnnouncementType(announcementpb.AnnouncementType_value[info.AnnouncementTypeStr])
 	}
-	return infos, nil
+	return infos
 }

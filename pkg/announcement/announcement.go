@@ -4,6 +4,7 @@ import (
 	"context"
 
 	mgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/announcement"
+	chanmgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/channel"
 	mgrcli "github.com/NpoolPlatform/notif-manager/pkg/client/announcement"
 
 	entreadannouncement "github.com/NpoolPlatform/notif-manager/pkg/db/ent/readannouncement"
@@ -20,14 +21,21 @@ import (
 
 func GetAnnouncements(
 	ctx context.Context,
-	conds *mgrpb.Conds,
+	conds *npool.Conds,
 	offset, limit int32,
 ) (
 	[]*npool.Announcement,
 	uint32,
 	error,
 ) {
-	rows, total, err := mgrcli.GetAnnouncements(ctx, conds, offset, limit)
+	rows, total, err := mgrcli.GetAnnouncements(ctx, &mgrpb.Conds{
+		ID:       conds.ID,
+		AppID:    conds.AppID,
+		LangID:   conds.LangID,
+		Channels: conds.Channels,
+		EndAt:    conds.EndAt,
+		Channel:  conds.Channel,
+	}, offset, limit)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -37,9 +45,11 @@ func GetAnnouncements(
 		infos = append(infos, &npool.Announcement{
 			AnnouncementID:   val.ID,
 			AppID:            val.AppID,
+			LangID:           val.LangID,
 			Title:            val.Title,
 			Content:          val.Content,
 			EndAt:            val.EndAt,
+			Channel:          val.Channel,
 			AnnouncementType: val.AnnouncementType,
 		})
 	}
@@ -92,6 +102,7 @@ func GetAnnouncementStates(
 				s.C(entannouncement.FieldUpdatedAt),
 				s.C(entannouncement.FieldEndAt),
 				s.C(entannouncement.FieldType),
+				s.C(entannouncement.FieldChannel),
 				sql.As(t1.C(entreadannouncement.FieldUserID), "read_user_id"),
 			)
 		})
@@ -122,11 +133,9 @@ func GetAnnouncementStates(
 
 func expand(infos []*npool.Announcement) []*npool.Announcement {
 	for _, info := range infos {
-		if info.ReadUserID != "" {
-			info.AlreadyRead = true
-		}
-
+		info.Read = info.ReadUserID != ""
 		info.AnnouncementType = mgrpb.AnnouncementType(mgrpb.AnnouncementType_value[info.AnnouncementTypeStr])
+		info.Channel = chanmgrpb.NotifChannel(chanmgrpb.NotifChannel_value[info.ChannelStr])
 	}
 	return infos
 }

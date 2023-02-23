@@ -31,22 +31,10 @@ func CreateSendState(
 	channel channelpb.NotifChannel,
 ) error {
 	exist, err := mgrcli.ExistSendStateConds(ctx, &mgrpb.Conds{
-		AppID: &valuedef.StringVal{
-			Op:    cruder.EQ,
-			Value: appID,
-		},
-		UserID: &valuedef.StringVal{
-			Op:    cruder.EQ,
-			Value: userID,
-		},
-		AnnouncementID: &valuedef.StringVal{
-			Op:    cruder.EQ,
-			Value: announcementID,
-		},
-		Channel: &valuedef.Uint32Val{
-			Op:    cruder.EQ,
-			Value: uint32(channel.Number()),
-		},
+		AppID:          &valuedef.StringVal{Op: cruder.EQ, Value: appID},
+		UserID:         &valuedef.StringVal{Op: cruder.EQ, Value: userID},
+		AnnouncementID: &valuedef.StringVal{Op: cruder.EQ, Value: announcementID},
+		Channel:        &valuedef.Uint32Val{Op: cruder.EQ, Value: uint32(channel.Number())},
 	})
 	if err != nil {
 		return err
@@ -141,6 +129,8 @@ func join(stm *ent.SendAnnouncementQuery) *ent.SendAnnouncementSelect {
 			s.C(entsendannouncement.FieldAppID),
 			s.C(entsendannouncement.FieldUserID),
 			s.C(entsendannouncement.FieldChannel),
+			s.C(entsendannouncement.FieldCreatedAt),
+			s.C(entsendannouncement.FieldUpdatedAt),
 		)
 		t1 := sql.Table(entannouncement.Table)
 		s.

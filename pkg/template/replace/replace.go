@@ -4,6 +4,9 @@ import (
 	"strings"
 	"time"
 
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
+
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/template"
 )
 
@@ -30,7 +33,8 @@ func ReplaceAll(pattern string, vars *npool.TemplateVars) string {
 		pattern = strings.ReplaceAll(pattern, NotifTemplateVarMessage, *vars.Message)
 	}
 	if vars.Amount != nil {
-		pattern = strings.ReplaceAll(pattern, NotifTemplateVarAmount, *vars.Amount)
+		p := message.NewPrinter(language.English)
+		pattern = strings.ReplaceAll(pattern, NotifTemplateVarAmount, p.Sprintf("%d", *vars.Amount))
 	}
 	if vars.CoinUnit != nil {
 		pattern = strings.ReplaceAll(pattern, NotifTemplateVarCoinUnit, *vars.CoinUnit)

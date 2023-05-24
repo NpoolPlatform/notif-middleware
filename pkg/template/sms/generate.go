@@ -16,6 +16,8 @@ import (
 	commonpb "github.com/NpoolPlatform/message/npool"
 
 	tmplreplace "github.com/NpoolPlatform/notif-middleware/pkg/template/replace"
+
+	"github.com/google/uuid"
 )
 
 func GenerateNotifs(
@@ -25,6 +27,7 @@ func GenerateNotifs(
 	vars *npool.TemplateVars,
 ) ([]*notifmgrpb.NotifReq, error) {
 	const maxTemplates = int32(100)
+	eventID := uuid.NewString()
 
 	tmpls, _, err := smstmplmgrcli.GetSMSTemplates(ctx, &smstmplmgrpb.Conds{
 		AppID: &commonpb.StringVal{
@@ -59,6 +62,7 @@ func GenerateNotifs(
 			Title:       &title,
 			Content:     &content,
 			Channel:     &channel1,
+			EventID:     &eventID,
 		})
 	}
 

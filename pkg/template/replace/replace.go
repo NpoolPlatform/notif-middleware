@@ -21,7 +21,6 @@ const (
 	NotifTemplateVarCode     = "{{ CODE }}"
 )
 
-//nolint
 func formatAmount(amount string) string {
 	index := strings.Index(amount, ".")
 	if index < 0 {

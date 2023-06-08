@@ -9,8 +9,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent/emailtemplate"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent/predicate"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/emailtemplate"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/predicate"
 )
 
 // EmailTemplateDelete is the builder for deleting a EmailTemplate entity.

@@ -9,8 +9,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent/predicate"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent/readannouncement"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/predicate"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/readannouncement"
 )
 
 // ReadAnnouncementDelete is the builder for deleting a ReadAnnouncement entity.

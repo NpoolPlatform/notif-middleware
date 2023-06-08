@@ -5,12 +5,12 @@ package enttest
 import (
 	"context"
 
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
 	// required by schema hooks.
-	_ "github.com/NpoolPlatform/notif-manager/pkg/db/ent/runtime"
+	_ "github.com/NpoolPlatform/notif-middleware/pkg/db/ent/runtime"
 
 	"entgo.io/ent/dialect/sql/schema"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent/migrate"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/migrate"
 )
 
 type (

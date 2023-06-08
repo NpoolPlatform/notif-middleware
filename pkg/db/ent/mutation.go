@@ -8,18 +8,21 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent/announcement"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent/contact"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent/emailtemplate"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent/frontendtemplate"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent/notif"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent/notifchannel"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent/predicate"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent/readannouncement"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent/sendannouncement"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent/smstemplate"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent/txnotifstate"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent/userannouncement"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/announcement"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/contact"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/emailtemplate"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/frontendtemplate"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notif"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notifchannel"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/predicate"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/readannouncement"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/readnotif"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/sendannouncement"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/sendnotif"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/smstemplate"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/txnotifstate"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/userannouncement"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/usernotif"
 	"github.com/google/uuid"
 
 	"entgo.io/ent"
@@ -41,10 +44,13 @@ const (
 	TypeNotif            = "Notif"
 	TypeNotifChannel     = "NotifChannel"
 	TypeReadAnnouncement = "ReadAnnouncement"
+	TypeReadNotif        = "ReadNotif"
 	TypeSMSTemplate      = "SMSTemplate"
 	TypeSendAnnouncement = "SendAnnouncement"
+	TypeSendNotif        = "SendNotif"
 	TypeTxNotifState     = "TxNotifState"
 	TypeUserAnnouncement = "UserAnnouncement"
+	TypeUserNotif        = "UserNotif"
 )
 
 // AnnouncementMutation represents an operation that mutates the Announcement nodes in the graph.
@@ -4008,6 +4014,7 @@ type NotifMutation struct {
 	content       *string
 	channel       *string
 	extra         *string
+	_type         *string
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*Notif, error)
@@ -4825,6 +4832,55 @@ func (m *NotifMutation) ResetExtra() {
 	delete(m.clearedFields, notif.FieldExtra)
 }
 
+// SetType sets the "type" field.
+func (m *NotifMutation) SetType(s string) {
+	m._type = &s
+}
+
+// GetType returns the value of the "type" field in the mutation.
+func (m *NotifMutation) GetType() (r string, exists bool) {
+	v := m._type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldType returns the old "type" field's value of the Notif entity.
+// If the Notif object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *NotifMutation) OldType(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldType: %w", err)
+	}
+	return oldValue.Type, nil
+}
+
+// ClearType clears the value of the "type" field.
+func (m *NotifMutation) ClearType() {
+	m._type = nil
+	m.clearedFields[notif.FieldType] = struct{}{}
+}
+
+// TypeCleared returns if the "type" field was cleared in this mutation.
+func (m *NotifMutation) TypeCleared() bool {
+	_, ok := m.clearedFields[notif.FieldType]
+	return ok
+}
+
+// ResetType resets all changes to the "type" field.
+func (m *NotifMutation) ResetType() {
+	m._type = nil
+	delete(m.clearedFields, notif.FieldType)
+}
+
 // Where appends a list predicates to the NotifMutation builder.
 func (m *NotifMutation) Where(ps ...predicate.Notif) {
 	m.predicates = append(m.predicates, ps...)
@@ -4844,7 +4900,7 @@ func (m *NotifMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *NotifMutation) Fields() []string {
-	fields := make([]string, 0, 14)
+	fields := make([]string, 0, 15)
 	if m.created_at != nil {
 		fields = append(fields, notif.FieldCreatedAt)
 	}
@@ -4887,6 +4943,9 @@ func (m *NotifMutation) Fields() []string {
 	if m.extra != nil {
 		fields = append(fields, notif.FieldExtra)
 	}
+	if m._type != nil {
+		fields = append(fields, notif.FieldType)
+	}
 	return fields
 }
 
@@ -4923,6 +4982,8 @@ func (m *NotifMutation) Field(name string) (ent.Value, bool) {
 		return m.Channel()
 	case notif.FieldExtra:
 		return m.Extra()
+	case notif.FieldType:
+		return m.GetType()
 	}
 	return nil, false
 }
@@ -4960,6 +5021,8 @@ func (m *NotifMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldChannel(ctx)
 	case notif.FieldExtra:
 		return m.OldExtra(ctx)
+	case notif.FieldType:
+		return m.OldType(ctx)
 	}
 	return nil, fmt.Errorf("unknown Notif field %s", name)
 }
@@ -5067,6 +5130,13 @@ func (m *NotifMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetExtra(v)
 		return nil
+	case notif.FieldType:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetType(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Notif field %s", name)
 }
@@ -5169,6 +5239,9 @@ func (m *NotifMutation) ClearedFields() []string {
 	if m.FieldCleared(notif.FieldExtra) {
 		fields = append(fields, notif.FieldExtra)
 	}
+	if m.FieldCleared(notif.FieldType) {
+		fields = append(fields, notif.FieldType)
+	}
 	return fields
 }
 
@@ -5215,6 +5288,9 @@ func (m *NotifMutation) ClearField(name string) error {
 		return nil
 	case notif.FieldExtra:
 		m.ClearExtra()
+		return nil
+	case notif.FieldType:
+		m.ClearType()
 		return nil
 	}
 	return fmt.Errorf("unknown Notif nullable field %s", name)
@@ -5265,6 +5341,9 @@ func (m *NotifMutation) ResetField(name string) error {
 		return nil
 	case notif.FieldExtra:
 		m.ResetExtra()
+		return nil
+	case notif.FieldType:
+		m.ResetType()
 		return nil
 	}
 	return fmt.Errorf("unknown Notif field %s", name)
@@ -6814,6 +6893,755 @@ func (m *ReadAnnouncementMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *ReadAnnouncementMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown ReadAnnouncement edge %s", name)
+}
+
+// ReadNotifMutation represents an operation that mutates the ReadNotif nodes in the graph.
+type ReadNotifMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *uuid.UUID
+	created_at    *uint32
+	addcreated_at *int32
+	updated_at    *uint32
+	addupdated_at *int32
+	deleted_at    *uint32
+	adddeleted_at *int32
+	app_id        *uuid.UUID
+	user_id       *uuid.UUID
+	notif_id      *uuid.UUID
+	clearedFields map[string]struct{}
+	done          bool
+	oldValue      func(context.Context) (*ReadNotif, error)
+	predicates    []predicate.ReadNotif
+}
+
+var _ ent.Mutation = (*ReadNotifMutation)(nil)
+
+// readnotifOption allows management of the mutation configuration using functional options.
+type readnotifOption func(*ReadNotifMutation)
+
+// newReadNotifMutation creates new mutation for the ReadNotif entity.
+func newReadNotifMutation(c config, op Op, opts ...readnotifOption) *ReadNotifMutation {
+	m := &ReadNotifMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeReadNotif,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withReadNotifID sets the ID field of the mutation.
+func withReadNotifID(id uuid.UUID) readnotifOption {
+	return func(m *ReadNotifMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *ReadNotif
+		)
+		m.oldValue = func(ctx context.Context) (*ReadNotif, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().ReadNotif.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withReadNotif sets the old ReadNotif of the mutation.
+func withReadNotif(node *ReadNotif) readnotifOption {
+	return func(m *ReadNotifMutation) {
+		m.oldValue = func(context.Context) (*ReadNotif, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ReadNotifMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ReadNotifMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of ReadNotif entities.
+func (m *ReadNotifMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ReadNotifMutation) ID() (id uuid.UUID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *ReadNotifMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uuid.UUID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().ReadNotif.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *ReadNotifMutation) SetCreatedAt(u uint32) {
+	m.created_at = &u
+	m.addcreated_at = nil
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *ReadNotifMutation) CreatedAt() (r uint32, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the ReadNotif entity.
+// If the ReadNotif object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReadNotifMutation) OldCreatedAt(ctx context.Context) (v uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// AddCreatedAt adds u to the "created_at" field.
+func (m *ReadNotifMutation) AddCreatedAt(u int32) {
+	if m.addcreated_at != nil {
+		*m.addcreated_at += u
+	} else {
+		m.addcreated_at = &u
+	}
+}
+
+// AddedCreatedAt returns the value that was added to the "created_at" field in this mutation.
+func (m *ReadNotifMutation) AddedCreatedAt() (r int32, exists bool) {
+	v := m.addcreated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *ReadNotifMutation) ResetCreatedAt() {
+	m.created_at = nil
+	m.addcreated_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *ReadNotifMutation) SetUpdatedAt(u uint32) {
+	m.updated_at = &u
+	m.addupdated_at = nil
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *ReadNotifMutation) UpdatedAt() (r uint32, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the ReadNotif entity.
+// If the ReadNotif object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReadNotifMutation) OldUpdatedAt(ctx context.Context) (v uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// AddUpdatedAt adds u to the "updated_at" field.
+func (m *ReadNotifMutation) AddUpdatedAt(u int32) {
+	if m.addupdated_at != nil {
+		*m.addupdated_at += u
+	} else {
+		m.addupdated_at = &u
+	}
+}
+
+// AddedUpdatedAt returns the value that was added to the "updated_at" field in this mutation.
+func (m *ReadNotifMutation) AddedUpdatedAt() (r int32, exists bool) {
+	v := m.addupdated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *ReadNotifMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+	m.addupdated_at = nil
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *ReadNotifMutation) SetDeletedAt(u uint32) {
+	m.deleted_at = &u
+	m.adddeleted_at = nil
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *ReadNotifMutation) DeletedAt() (r uint32, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the ReadNotif entity.
+// If the ReadNotif object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReadNotifMutation) OldDeletedAt(ctx context.Context) (v uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// AddDeletedAt adds u to the "deleted_at" field.
+func (m *ReadNotifMutation) AddDeletedAt(u int32) {
+	if m.adddeleted_at != nil {
+		*m.adddeleted_at += u
+	} else {
+		m.adddeleted_at = &u
+	}
+}
+
+// AddedDeletedAt returns the value that was added to the "deleted_at" field in this mutation.
+func (m *ReadNotifMutation) AddedDeletedAt() (r int32, exists bool) {
+	v := m.adddeleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *ReadNotifMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	m.adddeleted_at = nil
+}
+
+// SetAppID sets the "app_id" field.
+func (m *ReadNotifMutation) SetAppID(u uuid.UUID) {
+	m.app_id = &u
+}
+
+// AppID returns the value of the "app_id" field in the mutation.
+func (m *ReadNotifMutation) AppID() (r uuid.UUID, exists bool) {
+	v := m.app_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAppID returns the old "app_id" field's value of the ReadNotif entity.
+// If the ReadNotif object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReadNotifMutation) OldAppID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAppID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAppID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAppID: %w", err)
+	}
+	return oldValue.AppID, nil
+}
+
+// ClearAppID clears the value of the "app_id" field.
+func (m *ReadNotifMutation) ClearAppID() {
+	m.app_id = nil
+	m.clearedFields[readnotif.FieldAppID] = struct{}{}
+}
+
+// AppIDCleared returns if the "app_id" field was cleared in this mutation.
+func (m *ReadNotifMutation) AppIDCleared() bool {
+	_, ok := m.clearedFields[readnotif.FieldAppID]
+	return ok
+}
+
+// ResetAppID resets all changes to the "app_id" field.
+func (m *ReadNotifMutation) ResetAppID() {
+	m.app_id = nil
+	delete(m.clearedFields, readnotif.FieldAppID)
+}
+
+// SetUserID sets the "user_id" field.
+func (m *ReadNotifMutation) SetUserID(u uuid.UUID) {
+	m.user_id = &u
+}
+
+// UserID returns the value of the "user_id" field in the mutation.
+func (m *ReadNotifMutation) UserID() (r uuid.UUID, exists bool) {
+	v := m.user_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserID returns the old "user_id" field's value of the ReadNotif entity.
+// If the ReadNotif object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReadNotifMutation) OldUserID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
+	}
+	return oldValue.UserID, nil
+}
+
+// ClearUserID clears the value of the "user_id" field.
+func (m *ReadNotifMutation) ClearUserID() {
+	m.user_id = nil
+	m.clearedFields[readnotif.FieldUserID] = struct{}{}
+}
+
+// UserIDCleared returns if the "user_id" field was cleared in this mutation.
+func (m *ReadNotifMutation) UserIDCleared() bool {
+	_, ok := m.clearedFields[readnotif.FieldUserID]
+	return ok
+}
+
+// ResetUserID resets all changes to the "user_id" field.
+func (m *ReadNotifMutation) ResetUserID() {
+	m.user_id = nil
+	delete(m.clearedFields, readnotif.FieldUserID)
+}
+
+// SetNotifID sets the "notif_id" field.
+func (m *ReadNotifMutation) SetNotifID(u uuid.UUID) {
+	m.notif_id = &u
+}
+
+// NotifID returns the value of the "notif_id" field in the mutation.
+func (m *ReadNotifMutation) NotifID() (r uuid.UUID, exists bool) {
+	v := m.notif_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNotifID returns the old "notif_id" field's value of the ReadNotif entity.
+// If the ReadNotif object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReadNotifMutation) OldNotifID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNotifID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNotifID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNotifID: %w", err)
+	}
+	return oldValue.NotifID, nil
+}
+
+// ClearNotifID clears the value of the "notif_id" field.
+func (m *ReadNotifMutation) ClearNotifID() {
+	m.notif_id = nil
+	m.clearedFields[readnotif.FieldNotifID] = struct{}{}
+}
+
+// NotifIDCleared returns if the "notif_id" field was cleared in this mutation.
+func (m *ReadNotifMutation) NotifIDCleared() bool {
+	_, ok := m.clearedFields[readnotif.FieldNotifID]
+	return ok
+}
+
+// ResetNotifID resets all changes to the "notif_id" field.
+func (m *ReadNotifMutation) ResetNotifID() {
+	m.notif_id = nil
+	delete(m.clearedFields, readnotif.FieldNotifID)
+}
+
+// Where appends a list predicates to the ReadNotifMutation builder.
+func (m *ReadNotifMutation) Where(ps ...predicate.ReadNotif) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *ReadNotifMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (ReadNotif).
+func (m *ReadNotifMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ReadNotifMutation) Fields() []string {
+	fields := make([]string, 0, 6)
+	if m.created_at != nil {
+		fields = append(fields, readnotif.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, readnotif.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, readnotif.FieldDeletedAt)
+	}
+	if m.app_id != nil {
+		fields = append(fields, readnotif.FieldAppID)
+	}
+	if m.user_id != nil {
+		fields = append(fields, readnotif.FieldUserID)
+	}
+	if m.notif_id != nil {
+		fields = append(fields, readnotif.FieldNotifID)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ReadNotifMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case readnotif.FieldCreatedAt:
+		return m.CreatedAt()
+	case readnotif.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case readnotif.FieldDeletedAt:
+		return m.DeletedAt()
+	case readnotif.FieldAppID:
+		return m.AppID()
+	case readnotif.FieldUserID:
+		return m.UserID()
+	case readnotif.FieldNotifID:
+		return m.NotifID()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ReadNotifMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case readnotif.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case readnotif.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case readnotif.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case readnotif.FieldAppID:
+		return m.OldAppID(ctx)
+	case readnotif.FieldUserID:
+		return m.OldUserID(ctx)
+	case readnotif.FieldNotifID:
+		return m.OldNotifID(ctx)
+	}
+	return nil, fmt.Errorf("unknown ReadNotif field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ReadNotifMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case readnotif.FieldCreatedAt:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case readnotif.FieldUpdatedAt:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case readnotif.FieldDeletedAt:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case readnotif.FieldAppID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAppID(v)
+		return nil
+	case readnotif.FieldUserID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserID(v)
+		return nil
+	case readnotif.FieldNotifID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNotifID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ReadNotif field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ReadNotifMutation) AddedFields() []string {
+	var fields []string
+	if m.addcreated_at != nil {
+		fields = append(fields, readnotif.FieldCreatedAt)
+	}
+	if m.addupdated_at != nil {
+		fields = append(fields, readnotif.FieldUpdatedAt)
+	}
+	if m.adddeleted_at != nil {
+		fields = append(fields, readnotif.FieldDeletedAt)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ReadNotifMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case readnotif.FieldCreatedAt:
+		return m.AddedCreatedAt()
+	case readnotif.FieldUpdatedAt:
+		return m.AddedUpdatedAt()
+	case readnotif.FieldDeletedAt:
+		return m.AddedDeletedAt()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ReadNotifMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case readnotif.FieldCreatedAt:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCreatedAt(v)
+		return nil
+	case readnotif.FieldUpdatedAt:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUpdatedAt(v)
+		return nil
+	case readnotif.FieldDeletedAt:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDeletedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ReadNotif numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ReadNotifMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(readnotif.FieldAppID) {
+		fields = append(fields, readnotif.FieldAppID)
+	}
+	if m.FieldCleared(readnotif.FieldUserID) {
+		fields = append(fields, readnotif.FieldUserID)
+	}
+	if m.FieldCleared(readnotif.FieldNotifID) {
+		fields = append(fields, readnotif.FieldNotifID)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ReadNotifMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ReadNotifMutation) ClearField(name string) error {
+	switch name {
+	case readnotif.FieldAppID:
+		m.ClearAppID()
+		return nil
+	case readnotif.FieldUserID:
+		m.ClearUserID()
+		return nil
+	case readnotif.FieldNotifID:
+		m.ClearNotifID()
+		return nil
+	}
+	return fmt.Errorf("unknown ReadNotif nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ReadNotifMutation) ResetField(name string) error {
+	switch name {
+	case readnotif.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case readnotif.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case readnotif.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case readnotif.FieldAppID:
+		m.ResetAppID()
+		return nil
+	case readnotif.FieldUserID:
+		m.ResetUserID()
+		return nil
+	case readnotif.FieldNotifID:
+		m.ResetNotifID()
+		return nil
+	}
+	return fmt.Errorf("unknown ReadNotif field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ReadNotifMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ReadNotifMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ReadNotifMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ReadNotifMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ReadNotifMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ReadNotifMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ReadNotifMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown ReadNotif unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ReadNotifMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown ReadNotif edge %s", name)
 }
 
 // SMSTemplateMutation represents an operation that mutates the SMSTemplate nodes in the graph.
@@ -8495,6 +9323,828 @@ func (m *SendAnnouncementMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown SendAnnouncement edge %s", name)
 }
 
+// SendNotifMutation represents an operation that mutates the SendNotif nodes in the graph.
+type SendNotifMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *uuid.UUID
+	created_at    *uint32
+	addcreated_at *int32
+	updated_at    *uint32
+	addupdated_at *int32
+	deleted_at    *uint32
+	adddeleted_at *int32
+	app_id        *uuid.UUID
+	user_id       *uuid.UUID
+	notif_id      *uuid.UUID
+	channel       *string
+	clearedFields map[string]struct{}
+	done          bool
+	oldValue      func(context.Context) (*SendNotif, error)
+	predicates    []predicate.SendNotif
+}
+
+var _ ent.Mutation = (*SendNotifMutation)(nil)
+
+// sendnotifOption allows management of the mutation configuration using functional options.
+type sendnotifOption func(*SendNotifMutation)
+
+// newSendNotifMutation creates new mutation for the SendNotif entity.
+func newSendNotifMutation(c config, op Op, opts ...sendnotifOption) *SendNotifMutation {
+	m := &SendNotifMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeSendNotif,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withSendNotifID sets the ID field of the mutation.
+func withSendNotifID(id uuid.UUID) sendnotifOption {
+	return func(m *SendNotifMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *SendNotif
+		)
+		m.oldValue = func(ctx context.Context) (*SendNotif, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().SendNotif.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withSendNotif sets the old SendNotif of the mutation.
+func withSendNotif(node *SendNotif) sendnotifOption {
+	return func(m *SendNotifMutation) {
+		m.oldValue = func(context.Context) (*SendNotif, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m SendNotifMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m SendNotifMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of SendNotif entities.
+func (m *SendNotifMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *SendNotifMutation) ID() (id uuid.UUID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *SendNotifMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uuid.UUID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().SendNotif.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *SendNotifMutation) SetCreatedAt(u uint32) {
+	m.created_at = &u
+	m.addcreated_at = nil
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *SendNotifMutation) CreatedAt() (r uint32, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the SendNotif entity.
+// If the SendNotif object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SendNotifMutation) OldCreatedAt(ctx context.Context) (v uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// AddCreatedAt adds u to the "created_at" field.
+func (m *SendNotifMutation) AddCreatedAt(u int32) {
+	if m.addcreated_at != nil {
+		*m.addcreated_at += u
+	} else {
+		m.addcreated_at = &u
+	}
+}
+
+// AddedCreatedAt returns the value that was added to the "created_at" field in this mutation.
+func (m *SendNotifMutation) AddedCreatedAt() (r int32, exists bool) {
+	v := m.addcreated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *SendNotifMutation) ResetCreatedAt() {
+	m.created_at = nil
+	m.addcreated_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *SendNotifMutation) SetUpdatedAt(u uint32) {
+	m.updated_at = &u
+	m.addupdated_at = nil
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *SendNotifMutation) UpdatedAt() (r uint32, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the SendNotif entity.
+// If the SendNotif object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SendNotifMutation) OldUpdatedAt(ctx context.Context) (v uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// AddUpdatedAt adds u to the "updated_at" field.
+func (m *SendNotifMutation) AddUpdatedAt(u int32) {
+	if m.addupdated_at != nil {
+		*m.addupdated_at += u
+	} else {
+		m.addupdated_at = &u
+	}
+}
+
+// AddedUpdatedAt returns the value that was added to the "updated_at" field in this mutation.
+func (m *SendNotifMutation) AddedUpdatedAt() (r int32, exists bool) {
+	v := m.addupdated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *SendNotifMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+	m.addupdated_at = nil
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *SendNotifMutation) SetDeletedAt(u uint32) {
+	m.deleted_at = &u
+	m.adddeleted_at = nil
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *SendNotifMutation) DeletedAt() (r uint32, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the SendNotif entity.
+// If the SendNotif object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SendNotifMutation) OldDeletedAt(ctx context.Context) (v uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// AddDeletedAt adds u to the "deleted_at" field.
+func (m *SendNotifMutation) AddDeletedAt(u int32) {
+	if m.adddeleted_at != nil {
+		*m.adddeleted_at += u
+	} else {
+		m.adddeleted_at = &u
+	}
+}
+
+// AddedDeletedAt returns the value that was added to the "deleted_at" field in this mutation.
+func (m *SendNotifMutation) AddedDeletedAt() (r int32, exists bool) {
+	v := m.adddeleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *SendNotifMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	m.adddeleted_at = nil
+}
+
+// SetAppID sets the "app_id" field.
+func (m *SendNotifMutation) SetAppID(u uuid.UUID) {
+	m.app_id = &u
+}
+
+// AppID returns the value of the "app_id" field in the mutation.
+func (m *SendNotifMutation) AppID() (r uuid.UUID, exists bool) {
+	v := m.app_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAppID returns the old "app_id" field's value of the SendNotif entity.
+// If the SendNotif object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SendNotifMutation) OldAppID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAppID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAppID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAppID: %w", err)
+	}
+	return oldValue.AppID, nil
+}
+
+// ClearAppID clears the value of the "app_id" field.
+func (m *SendNotifMutation) ClearAppID() {
+	m.app_id = nil
+	m.clearedFields[sendnotif.FieldAppID] = struct{}{}
+}
+
+// AppIDCleared returns if the "app_id" field was cleared in this mutation.
+func (m *SendNotifMutation) AppIDCleared() bool {
+	_, ok := m.clearedFields[sendnotif.FieldAppID]
+	return ok
+}
+
+// ResetAppID resets all changes to the "app_id" field.
+func (m *SendNotifMutation) ResetAppID() {
+	m.app_id = nil
+	delete(m.clearedFields, sendnotif.FieldAppID)
+}
+
+// SetUserID sets the "user_id" field.
+func (m *SendNotifMutation) SetUserID(u uuid.UUID) {
+	m.user_id = &u
+}
+
+// UserID returns the value of the "user_id" field in the mutation.
+func (m *SendNotifMutation) UserID() (r uuid.UUID, exists bool) {
+	v := m.user_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserID returns the old "user_id" field's value of the SendNotif entity.
+// If the SendNotif object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SendNotifMutation) OldUserID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
+	}
+	return oldValue.UserID, nil
+}
+
+// ClearUserID clears the value of the "user_id" field.
+func (m *SendNotifMutation) ClearUserID() {
+	m.user_id = nil
+	m.clearedFields[sendnotif.FieldUserID] = struct{}{}
+}
+
+// UserIDCleared returns if the "user_id" field was cleared in this mutation.
+func (m *SendNotifMutation) UserIDCleared() bool {
+	_, ok := m.clearedFields[sendnotif.FieldUserID]
+	return ok
+}
+
+// ResetUserID resets all changes to the "user_id" field.
+func (m *SendNotifMutation) ResetUserID() {
+	m.user_id = nil
+	delete(m.clearedFields, sendnotif.FieldUserID)
+}
+
+// SetNotifID sets the "notif_id" field.
+func (m *SendNotifMutation) SetNotifID(u uuid.UUID) {
+	m.notif_id = &u
+}
+
+// NotifID returns the value of the "notif_id" field in the mutation.
+func (m *SendNotifMutation) NotifID() (r uuid.UUID, exists bool) {
+	v := m.notif_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNotifID returns the old "notif_id" field's value of the SendNotif entity.
+// If the SendNotif object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SendNotifMutation) OldNotifID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNotifID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNotifID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNotifID: %w", err)
+	}
+	return oldValue.NotifID, nil
+}
+
+// ClearNotifID clears the value of the "notif_id" field.
+func (m *SendNotifMutation) ClearNotifID() {
+	m.notif_id = nil
+	m.clearedFields[sendnotif.FieldNotifID] = struct{}{}
+}
+
+// NotifIDCleared returns if the "notif_id" field was cleared in this mutation.
+func (m *SendNotifMutation) NotifIDCleared() bool {
+	_, ok := m.clearedFields[sendnotif.FieldNotifID]
+	return ok
+}
+
+// ResetNotifID resets all changes to the "notif_id" field.
+func (m *SendNotifMutation) ResetNotifID() {
+	m.notif_id = nil
+	delete(m.clearedFields, sendnotif.FieldNotifID)
+}
+
+// SetChannel sets the "channel" field.
+func (m *SendNotifMutation) SetChannel(s string) {
+	m.channel = &s
+}
+
+// Channel returns the value of the "channel" field in the mutation.
+func (m *SendNotifMutation) Channel() (r string, exists bool) {
+	v := m.channel
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldChannel returns the old "channel" field's value of the SendNotif entity.
+// If the SendNotif object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SendNotifMutation) OldChannel(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldChannel is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldChannel requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldChannel: %w", err)
+	}
+	return oldValue.Channel, nil
+}
+
+// ClearChannel clears the value of the "channel" field.
+func (m *SendNotifMutation) ClearChannel() {
+	m.channel = nil
+	m.clearedFields[sendnotif.FieldChannel] = struct{}{}
+}
+
+// ChannelCleared returns if the "channel" field was cleared in this mutation.
+func (m *SendNotifMutation) ChannelCleared() bool {
+	_, ok := m.clearedFields[sendnotif.FieldChannel]
+	return ok
+}
+
+// ResetChannel resets all changes to the "channel" field.
+func (m *SendNotifMutation) ResetChannel() {
+	m.channel = nil
+	delete(m.clearedFields, sendnotif.FieldChannel)
+}
+
+// Where appends a list predicates to the SendNotifMutation builder.
+func (m *SendNotifMutation) Where(ps ...predicate.SendNotif) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *SendNotifMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (SendNotif).
+func (m *SendNotifMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *SendNotifMutation) Fields() []string {
+	fields := make([]string, 0, 7)
+	if m.created_at != nil {
+		fields = append(fields, sendnotif.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, sendnotif.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, sendnotif.FieldDeletedAt)
+	}
+	if m.app_id != nil {
+		fields = append(fields, sendnotif.FieldAppID)
+	}
+	if m.user_id != nil {
+		fields = append(fields, sendnotif.FieldUserID)
+	}
+	if m.notif_id != nil {
+		fields = append(fields, sendnotif.FieldNotifID)
+	}
+	if m.channel != nil {
+		fields = append(fields, sendnotif.FieldChannel)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *SendNotifMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case sendnotif.FieldCreatedAt:
+		return m.CreatedAt()
+	case sendnotif.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case sendnotif.FieldDeletedAt:
+		return m.DeletedAt()
+	case sendnotif.FieldAppID:
+		return m.AppID()
+	case sendnotif.FieldUserID:
+		return m.UserID()
+	case sendnotif.FieldNotifID:
+		return m.NotifID()
+	case sendnotif.FieldChannel:
+		return m.Channel()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *SendNotifMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case sendnotif.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case sendnotif.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case sendnotif.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case sendnotif.FieldAppID:
+		return m.OldAppID(ctx)
+	case sendnotif.FieldUserID:
+		return m.OldUserID(ctx)
+	case sendnotif.FieldNotifID:
+		return m.OldNotifID(ctx)
+	case sendnotif.FieldChannel:
+		return m.OldChannel(ctx)
+	}
+	return nil, fmt.Errorf("unknown SendNotif field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *SendNotifMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case sendnotif.FieldCreatedAt:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case sendnotif.FieldUpdatedAt:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case sendnotif.FieldDeletedAt:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case sendnotif.FieldAppID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAppID(v)
+		return nil
+	case sendnotif.FieldUserID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserID(v)
+		return nil
+	case sendnotif.FieldNotifID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNotifID(v)
+		return nil
+	case sendnotif.FieldChannel:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetChannel(v)
+		return nil
+	}
+	return fmt.Errorf("unknown SendNotif field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *SendNotifMutation) AddedFields() []string {
+	var fields []string
+	if m.addcreated_at != nil {
+		fields = append(fields, sendnotif.FieldCreatedAt)
+	}
+	if m.addupdated_at != nil {
+		fields = append(fields, sendnotif.FieldUpdatedAt)
+	}
+	if m.adddeleted_at != nil {
+		fields = append(fields, sendnotif.FieldDeletedAt)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *SendNotifMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case sendnotif.FieldCreatedAt:
+		return m.AddedCreatedAt()
+	case sendnotif.FieldUpdatedAt:
+		return m.AddedUpdatedAt()
+	case sendnotif.FieldDeletedAt:
+		return m.AddedDeletedAt()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *SendNotifMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case sendnotif.FieldCreatedAt:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCreatedAt(v)
+		return nil
+	case sendnotif.FieldUpdatedAt:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUpdatedAt(v)
+		return nil
+	case sendnotif.FieldDeletedAt:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDeletedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown SendNotif numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *SendNotifMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(sendnotif.FieldAppID) {
+		fields = append(fields, sendnotif.FieldAppID)
+	}
+	if m.FieldCleared(sendnotif.FieldUserID) {
+		fields = append(fields, sendnotif.FieldUserID)
+	}
+	if m.FieldCleared(sendnotif.FieldNotifID) {
+		fields = append(fields, sendnotif.FieldNotifID)
+	}
+	if m.FieldCleared(sendnotif.FieldChannel) {
+		fields = append(fields, sendnotif.FieldChannel)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *SendNotifMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *SendNotifMutation) ClearField(name string) error {
+	switch name {
+	case sendnotif.FieldAppID:
+		m.ClearAppID()
+		return nil
+	case sendnotif.FieldUserID:
+		m.ClearUserID()
+		return nil
+	case sendnotif.FieldNotifID:
+		m.ClearNotifID()
+		return nil
+	case sendnotif.FieldChannel:
+		m.ClearChannel()
+		return nil
+	}
+	return fmt.Errorf("unknown SendNotif nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *SendNotifMutation) ResetField(name string) error {
+	switch name {
+	case sendnotif.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case sendnotif.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case sendnotif.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case sendnotif.FieldAppID:
+		m.ResetAppID()
+		return nil
+	case sendnotif.FieldUserID:
+		m.ResetUserID()
+		return nil
+	case sendnotif.FieldNotifID:
+		m.ResetNotifID()
+		return nil
+	case sendnotif.FieldChannel:
+		m.ResetChannel()
+		return nil
+	}
+	return fmt.Errorf("unknown SendNotif field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *SendNotifMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *SendNotifMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *SendNotifMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *SendNotifMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *SendNotifMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *SendNotifMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *SendNotifMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown SendNotif unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *SendNotifMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown SendNotif edge %s", name)
+}
+
 // TxNotifStateMutation represents an operation that mutates the TxNotifState nodes in the graph.
 type TxNotifStateMutation struct {
 	config
@@ -9991,4 +11641,753 @@ func (m *UserAnnouncementMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *UserAnnouncementMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown UserAnnouncement edge %s", name)
+}
+
+// UserNotifMutation represents an operation that mutates the UserNotif nodes in the graph.
+type UserNotifMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *uuid.UUID
+	created_at    *uint32
+	addcreated_at *int32
+	updated_at    *uint32
+	addupdated_at *int32
+	deleted_at    *uint32
+	adddeleted_at *int32
+	app_id        *uuid.UUID
+	user_id       *uuid.UUID
+	notif_id      *uuid.UUID
+	clearedFields map[string]struct{}
+	done          bool
+	oldValue      func(context.Context) (*UserNotif, error)
+	predicates    []predicate.UserNotif
+}
+
+var _ ent.Mutation = (*UserNotifMutation)(nil)
+
+// usernotifOption allows management of the mutation configuration using functional options.
+type usernotifOption func(*UserNotifMutation)
+
+// newUserNotifMutation creates new mutation for the UserNotif entity.
+func newUserNotifMutation(c config, op Op, opts ...usernotifOption) *UserNotifMutation {
+	m := &UserNotifMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeUserNotif,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withUserNotifID sets the ID field of the mutation.
+func withUserNotifID(id uuid.UUID) usernotifOption {
+	return func(m *UserNotifMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *UserNotif
+		)
+		m.oldValue = func(ctx context.Context) (*UserNotif, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().UserNotif.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withUserNotif sets the old UserNotif of the mutation.
+func withUserNotif(node *UserNotif) usernotifOption {
+	return func(m *UserNotifMutation) {
+		m.oldValue = func(context.Context) (*UserNotif, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m UserNotifMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m UserNotifMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of UserNotif entities.
+func (m *UserNotifMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *UserNotifMutation) ID() (id uuid.UUID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *UserNotifMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uuid.UUID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().UserNotif.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *UserNotifMutation) SetCreatedAt(u uint32) {
+	m.created_at = &u
+	m.addcreated_at = nil
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *UserNotifMutation) CreatedAt() (r uint32, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the UserNotif entity.
+// If the UserNotif object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserNotifMutation) OldCreatedAt(ctx context.Context) (v uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// AddCreatedAt adds u to the "created_at" field.
+func (m *UserNotifMutation) AddCreatedAt(u int32) {
+	if m.addcreated_at != nil {
+		*m.addcreated_at += u
+	} else {
+		m.addcreated_at = &u
+	}
+}
+
+// AddedCreatedAt returns the value that was added to the "created_at" field in this mutation.
+func (m *UserNotifMutation) AddedCreatedAt() (r int32, exists bool) {
+	v := m.addcreated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *UserNotifMutation) ResetCreatedAt() {
+	m.created_at = nil
+	m.addcreated_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *UserNotifMutation) SetUpdatedAt(u uint32) {
+	m.updated_at = &u
+	m.addupdated_at = nil
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *UserNotifMutation) UpdatedAt() (r uint32, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the UserNotif entity.
+// If the UserNotif object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserNotifMutation) OldUpdatedAt(ctx context.Context) (v uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// AddUpdatedAt adds u to the "updated_at" field.
+func (m *UserNotifMutation) AddUpdatedAt(u int32) {
+	if m.addupdated_at != nil {
+		*m.addupdated_at += u
+	} else {
+		m.addupdated_at = &u
+	}
+}
+
+// AddedUpdatedAt returns the value that was added to the "updated_at" field in this mutation.
+func (m *UserNotifMutation) AddedUpdatedAt() (r int32, exists bool) {
+	v := m.addupdated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *UserNotifMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+	m.addupdated_at = nil
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *UserNotifMutation) SetDeletedAt(u uint32) {
+	m.deleted_at = &u
+	m.adddeleted_at = nil
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *UserNotifMutation) DeletedAt() (r uint32, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the UserNotif entity.
+// If the UserNotif object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserNotifMutation) OldDeletedAt(ctx context.Context) (v uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// AddDeletedAt adds u to the "deleted_at" field.
+func (m *UserNotifMutation) AddDeletedAt(u int32) {
+	if m.adddeleted_at != nil {
+		*m.adddeleted_at += u
+	} else {
+		m.adddeleted_at = &u
+	}
+}
+
+// AddedDeletedAt returns the value that was added to the "deleted_at" field in this mutation.
+func (m *UserNotifMutation) AddedDeletedAt() (r int32, exists bool) {
+	v := m.adddeleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *UserNotifMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	m.adddeleted_at = nil
+}
+
+// SetAppID sets the "app_id" field.
+func (m *UserNotifMutation) SetAppID(u uuid.UUID) {
+	m.app_id = &u
+}
+
+// AppID returns the value of the "app_id" field in the mutation.
+func (m *UserNotifMutation) AppID() (r uuid.UUID, exists bool) {
+	v := m.app_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAppID returns the old "app_id" field's value of the UserNotif entity.
+// If the UserNotif object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserNotifMutation) OldAppID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAppID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAppID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAppID: %w", err)
+	}
+	return oldValue.AppID, nil
+}
+
+// ClearAppID clears the value of the "app_id" field.
+func (m *UserNotifMutation) ClearAppID() {
+	m.app_id = nil
+	m.clearedFields[usernotif.FieldAppID] = struct{}{}
+}
+
+// AppIDCleared returns if the "app_id" field was cleared in this mutation.
+func (m *UserNotifMutation) AppIDCleared() bool {
+	_, ok := m.clearedFields[usernotif.FieldAppID]
+	return ok
+}
+
+// ResetAppID resets all changes to the "app_id" field.
+func (m *UserNotifMutation) ResetAppID() {
+	m.app_id = nil
+	delete(m.clearedFields, usernotif.FieldAppID)
+}
+
+// SetUserID sets the "user_id" field.
+func (m *UserNotifMutation) SetUserID(u uuid.UUID) {
+	m.user_id = &u
+}
+
+// UserID returns the value of the "user_id" field in the mutation.
+func (m *UserNotifMutation) UserID() (r uuid.UUID, exists bool) {
+	v := m.user_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserID returns the old "user_id" field's value of the UserNotif entity.
+// If the UserNotif object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserNotifMutation) OldUserID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
+	}
+	return oldValue.UserID, nil
+}
+
+// ClearUserID clears the value of the "user_id" field.
+func (m *UserNotifMutation) ClearUserID() {
+	m.user_id = nil
+	m.clearedFields[usernotif.FieldUserID] = struct{}{}
+}
+
+// UserIDCleared returns if the "user_id" field was cleared in this mutation.
+func (m *UserNotifMutation) UserIDCleared() bool {
+	_, ok := m.clearedFields[usernotif.FieldUserID]
+	return ok
+}
+
+// ResetUserID resets all changes to the "user_id" field.
+func (m *UserNotifMutation) ResetUserID() {
+	m.user_id = nil
+	delete(m.clearedFields, usernotif.FieldUserID)
+}
+
+// SetNotifID sets the "notif_id" field.
+func (m *UserNotifMutation) SetNotifID(u uuid.UUID) {
+	m.notif_id = &u
+}
+
+// NotifID returns the value of the "notif_id" field in the mutation.
+func (m *UserNotifMutation) NotifID() (r uuid.UUID, exists bool) {
+	v := m.notif_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNotifID returns the old "notif_id" field's value of the UserNotif entity.
+// If the UserNotif object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserNotifMutation) OldNotifID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNotifID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNotifID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNotifID: %w", err)
+	}
+	return oldValue.NotifID, nil
+}
+
+// ClearNotifID clears the value of the "notif_id" field.
+func (m *UserNotifMutation) ClearNotifID() {
+	m.notif_id = nil
+	m.clearedFields[usernotif.FieldNotifID] = struct{}{}
+}
+
+// NotifIDCleared returns if the "notif_id" field was cleared in this mutation.
+func (m *UserNotifMutation) NotifIDCleared() bool {
+	_, ok := m.clearedFields[usernotif.FieldNotifID]
+	return ok
+}
+
+// ResetNotifID resets all changes to the "notif_id" field.
+func (m *UserNotifMutation) ResetNotifID() {
+	m.notif_id = nil
+	delete(m.clearedFields, usernotif.FieldNotifID)
+}
+
+// Where appends a list predicates to the UserNotifMutation builder.
+func (m *UserNotifMutation) Where(ps ...predicate.UserNotif) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *UserNotifMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (UserNotif).
+func (m *UserNotifMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *UserNotifMutation) Fields() []string {
+	fields := make([]string, 0, 6)
+	if m.created_at != nil {
+		fields = append(fields, usernotif.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, usernotif.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, usernotif.FieldDeletedAt)
+	}
+	if m.app_id != nil {
+		fields = append(fields, usernotif.FieldAppID)
+	}
+	if m.user_id != nil {
+		fields = append(fields, usernotif.FieldUserID)
+	}
+	if m.notif_id != nil {
+		fields = append(fields, usernotif.FieldNotifID)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *UserNotifMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case usernotif.FieldCreatedAt:
+		return m.CreatedAt()
+	case usernotif.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case usernotif.FieldDeletedAt:
+		return m.DeletedAt()
+	case usernotif.FieldAppID:
+		return m.AppID()
+	case usernotif.FieldUserID:
+		return m.UserID()
+	case usernotif.FieldNotifID:
+		return m.NotifID()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *UserNotifMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case usernotif.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case usernotif.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case usernotif.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case usernotif.FieldAppID:
+		return m.OldAppID(ctx)
+	case usernotif.FieldUserID:
+		return m.OldUserID(ctx)
+	case usernotif.FieldNotifID:
+		return m.OldNotifID(ctx)
+	}
+	return nil, fmt.Errorf("unknown UserNotif field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *UserNotifMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case usernotif.FieldCreatedAt:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case usernotif.FieldUpdatedAt:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case usernotif.FieldDeletedAt:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case usernotif.FieldAppID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAppID(v)
+		return nil
+	case usernotif.FieldUserID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserID(v)
+		return nil
+	case usernotif.FieldNotifID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNotifID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown UserNotif field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *UserNotifMutation) AddedFields() []string {
+	var fields []string
+	if m.addcreated_at != nil {
+		fields = append(fields, usernotif.FieldCreatedAt)
+	}
+	if m.addupdated_at != nil {
+		fields = append(fields, usernotif.FieldUpdatedAt)
+	}
+	if m.adddeleted_at != nil {
+		fields = append(fields, usernotif.FieldDeletedAt)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *UserNotifMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case usernotif.FieldCreatedAt:
+		return m.AddedCreatedAt()
+	case usernotif.FieldUpdatedAt:
+		return m.AddedUpdatedAt()
+	case usernotif.FieldDeletedAt:
+		return m.AddedDeletedAt()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *UserNotifMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case usernotif.FieldCreatedAt:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCreatedAt(v)
+		return nil
+	case usernotif.FieldUpdatedAt:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUpdatedAt(v)
+		return nil
+	case usernotif.FieldDeletedAt:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDeletedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown UserNotif numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *UserNotifMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(usernotif.FieldAppID) {
+		fields = append(fields, usernotif.FieldAppID)
+	}
+	if m.FieldCleared(usernotif.FieldUserID) {
+		fields = append(fields, usernotif.FieldUserID)
+	}
+	if m.FieldCleared(usernotif.FieldNotifID) {
+		fields = append(fields, usernotif.FieldNotifID)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *UserNotifMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *UserNotifMutation) ClearField(name string) error {
+	switch name {
+	case usernotif.FieldAppID:
+		m.ClearAppID()
+		return nil
+	case usernotif.FieldUserID:
+		m.ClearUserID()
+		return nil
+	case usernotif.FieldNotifID:
+		m.ClearNotifID()
+		return nil
+	}
+	return fmt.Errorf("unknown UserNotif nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *UserNotifMutation) ResetField(name string) error {
+	switch name {
+	case usernotif.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case usernotif.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case usernotif.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case usernotif.FieldAppID:
+		m.ResetAppID()
+		return nil
+	case usernotif.FieldUserID:
+		m.ResetUserID()
+		return nil
+	case usernotif.FieldNotifID:
+		m.ResetNotifID()
+		return nil
+	}
+	return fmt.Errorf("unknown UserNotif field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *UserNotifMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *UserNotifMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *UserNotifMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *UserNotifMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *UserNotifMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *UserNotifMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *UserNotifMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown UserNotif unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *UserNotifMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown UserNotif edge %s", name)
 }

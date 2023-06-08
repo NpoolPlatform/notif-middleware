@@ -10,8 +10,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent/notif"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent/predicate"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notif"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/predicate"
 	"github.com/google/uuid"
 )
 
@@ -304,6 +304,26 @@ func (nu *NotifUpdate) ClearExtra() *NotifUpdate {
 	return nu
 }
 
+// SetType sets the "type" field.
+func (nu *NotifUpdate) SetType(s string) *NotifUpdate {
+	nu.mutation.SetType(s)
+	return nu
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (nu *NotifUpdate) SetNillableType(s *string) *NotifUpdate {
+	if s != nil {
+		nu.SetType(*s)
+	}
+	return nu
+}
+
+// ClearType clears the value of the "type" field.
+func (nu *NotifUpdate) ClearType() *NotifUpdate {
+	nu.mutation.ClearType()
+	return nu
+}
+
 // Mutation returns the NotifMutation object of the builder.
 func (nu *NotifUpdate) Mutation() *NotifMutation {
 	return nu.mutation
@@ -585,6 +605,19 @@ func (nu *NotifUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: notif.FieldExtra,
+		})
+	}
+	if value, ok := nu.mutation.GetType(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: notif.FieldType,
+		})
+	}
+	if nu.mutation.TypeCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: notif.FieldType,
 		})
 	}
 	_spec.Modifiers = nu.modifiers
@@ -880,6 +913,26 @@ func (nuo *NotifUpdateOne) SetNillableExtra(s *string) *NotifUpdateOne {
 // ClearExtra clears the value of the "extra" field.
 func (nuo *NotifUpdateOne) ClearExtra() *NotifUpdateOne {
 	nuo.mutation.ClearExtra()
+	return nuo
+}
+
+// SetType sets the "type" field.
+func (nuo *NotifUpdateOne) SetType(s string) *NotifUpdateOne {
+	nuo.mutation.SetType(s)
+	return nuo
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (nuo *NotifUpdateOne) SetNillableType(s *string) *NotifUpdateOne {
+	if s != nil {
+		nuo.SetType(*s)
+	}
+	return nuo
+}
+
+// ClearType clears the value of the "type" field.
+func (nuo *NotifUpdateOne) ClearType() *NotifUpdateOne {
+	nuo.mutation.ClearType()
 	return nuo
 }
 
@@ -1194,6 +1247,19 @@ func (nuo *NotifUpdateOne) sqlSave(ctx context.Context) (_node *Notif, err error
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: notif.FieldExtra,
+		})
+	}
+	if value, ok := nuo.mutation.GetType(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: notif.FieldType,
+		})
+	}
+	if nuo.mutation.TypeCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: notif.FieldType,
 		})
 	}
 	_spec.Modifiers = nuo.modifiers

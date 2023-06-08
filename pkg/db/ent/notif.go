@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent/notif"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notif"
 	"github.com/google/uuid"
 )
 
@@ -44,6 +44,8 @@ type Notif struct {
 	Channel string `json:"channel,omitempty"`
 	// Extra holds the value of the "extra" field.
 	Extra string `json:"extra,omitempty"`
+	// Type holds the value of the "type" field.
+	Type string `json:"type,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -55,7 +57,7 @@ func (*Notif) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullBool)
 		case notif.FieldCreatedAt, notif.FieldUpdatedAt, notif.FieldDeletedAt:
 			values[i] = new(sql.NullInt64)
-		case notif.FieldEventType, notif.FieldTitle, notif.FieldContent, notif.FieldChannel, notif.FieldExtra:
+		case notif.FieldEventType, notif.FieldTitle, notif.FieldContent, notif.FieldChannel, notif.FieldExtra, notif.FieldType:
 			values[i] = new(sql.NullString)
 		case notif.FieldID, notif.FieldAppID, notif.FieldUserID, notif.FieldLangID, notif.FieldEventID:
 			values[i] = new(uuid.UUID)
@@ -164,6 +166,12 @@ func (n *Notif) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				n.Extra = value.String
 			}
+		case notif.FieldType:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field type", values[i])
+			} else if value.Valid {
+				n.Type = value.String
+			}
 		}
 	}
 	return nil
@@ -233,6 +241,9 @@ func (n *Notif) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("extra=")
 	builder.WriteString(n.Extra)
+	builder.WriteString(", ")
+	builder.WriteString("type=")
+	builder.WriteString(n.Type)
 	builder.WriteByte(')')
 	return builder.String()
 }

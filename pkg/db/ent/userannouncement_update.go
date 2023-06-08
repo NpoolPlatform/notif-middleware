@@ -10,8 +10,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent/predicate"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent/userannouncement"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/predicate"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/userannouncement"
 	"github.com/google/uuid"
 )
 

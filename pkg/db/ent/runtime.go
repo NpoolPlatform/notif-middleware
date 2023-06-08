@@ -2,4 +2,4 @@
 
 package ent
 
-// The schema-stitching logic is generated in github.com/NpoolPlatform/notif-manager/pkg/db/ent/runtime/runtime.go
+// The schema-stitching logic is generated in github.com/NpoolPlatform/notif-middleware/pkg/db/ent/runtime/runtime.go

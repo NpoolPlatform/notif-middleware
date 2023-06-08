@@ -40,6 +40,8 @@ const (
 	FieldChannel = "channel"
 	// FieldExtra holds the string denoting the extra field in the database.
 	FieldExtra = "extra"
+	// FieldType holds the string denoting the type field in the database.
+	FieldType = "type"
 	// Table holds the table name of the notif in the database.
 	Table = "notifs"
 )
@@ -61,6 +63,7 @@ var Columns = []string{
 	FieldContent,
 	FieldChannel,
 	FieldExtra,
+	FieldType,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -77,7 +80,7 @@ func ValidColumn(column string) bool {
 // package on the initialization of the application. Therefore,
 // it should be imported in the main as follows:
 //
-//	import _ "github.com/NpoolPlatform/notif-manager/pkg/db/ent/runtime"
+//	import _ "github.com/NpoolPlatform/notif-middleware/pkg/db/ent/runtime"
 //
 var (
 	Hooks  [1]ent.Hook
@@ -112,6 +115,8 @@ var (
 	DefaultChannel string
 	// DefaultExtra holds the default value on creation for the "extra" field.
 	DefaultExtra string
+	// DefaultType holds the default value on creation for the "type" field.
+	DefaultType string
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )

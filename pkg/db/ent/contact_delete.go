@@ -9,8 +9,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent/contact"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent/predicate"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/contact"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/predicate"
 )
 
 // ContactDelete is the builder for deleting a Contact entity.

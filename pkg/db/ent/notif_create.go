@@ -11,7 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent/notif"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notif"
 	"github.com/google/uuid"
 )
 
@@ -219,6 +219,20 @@ func (nc *NotifCreate) SetNillableExtra(s *string) *NotifCreate {
 	return nc
 }
 
+// SetType sets the "type" field.
+func (nc *NotifCreate) SetType(s string) *NotifCreate {
+	nc.mutation.SetType(s)
+	return nc
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (nc *NotifCreate) SetNillableType(s *string) *NotifCreate {
+	if s != nil {
+		nc.SetType(*s)
+	}
+	return nc
+}
+
 // SetID sets the "id" field.
 func (nc *NotifCreate) SetID(u uuid.UUID) *NotifCreate {
 	nc.mutation.SetID(u)
@@ -389,6 +403,10 @@ func (nc *NotifCreate) defaults() error {
 		v := notif.DefaultExtra
 		nc.mutation.SetExtra(v)
 	}
+	if _, ok := nc.mutation.GetType(); !ok {
+		v := notif.DefaultType
+		nc.mutation.SetType(v)
+	}
 	if _, ok := nc.mutation.ID(); !ok {
 		if notif.DefaultID == nil {
 			return fmt.Errorf("ent: uninitialized notif.DefaultID (forgotten import ent/runtime?)")
@@ -558,6 +576,14 @@ func (nc *NotifCreate) createSpec() (*Notif, *sqlgraph.CreateSpec) {
 			Column: notif.FieldExtra,
 		})
 		_node.Extra = value
+	}
+	if value, ok := nc.mutation.GetType(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: notif.FieldType,
+		})
+		_node.Type = value
 	}
 	return _node, _spec
 }
@@ -862,6 +888,24 @@ func (u *NotifUpsert) UpdateExtra() *NotifUpsert {
 // ClearExtra clears the value of the "extra" field.
 func (u *NotifUpsert) ClearExtra() *NotifUpsert {
 	u.SetNull(notif.FieldExtra)
+	return u
+}
+
+// SetType sets the "type" field.
+func (u *NotifUpsert) SetType(v string) *NotifUpsert {
+	u.Set(notif.FieldType, v)
+	return u
+}
+
+// UpdateType sets the "type" field to the value that was provided on create.
+func (u *NotifUpsert) UpdateType() *NotifUpsert {
+	u.SetExcluded(notif.FieldType)
+	return u
+}
+
+// ClearType clears the value of the "type" field.
+func (u *NotifUpsert) ClearType() *NotifUpsert {
+	u.SetNull(notif.FieldType)
 	return u
 }
 
@@ -1206,6 +1250,27 @@ func (u *NotifUpsertOne) UpdateExtra() *NotifUpsertOne {
 func (u *NotifUpsertOne) ClearExtra() *NotifUpsertOne {
 	return u.Update(func(s *NotifUpsert) {
 		s.ClearExtra()
+	})
+}
+
+// SetType sets the "type" field.
+func (u *NotifUpsertOne) SetType(v string) *NotifUpsertOne {
+	return u.Update(func(s *NotifUpsert) {
+		s.SetType(v)
+	})
+}
+
+// UpdateType sets the "type" field to the value that was provided on create.
+func (u *NotifUpsertOne) UpdateType() *NotifUpsertOne {
+	return u.Update(func(s *NotifUpsert) {
+		s.UpdateType()
+	})
+}
+
+// ClearType clears the value of the "type" field.
+func (u *NotifUpsertOne) ClearType() *NotifUpsertOne {
+	return u.Update(func(s *NotifUpsert) {
+		s.ClearType()
 	})
 }
 
@@ -1716,6 +1781,27 @@ func (u *NotifUpsertBulk) UpdateExtra() *NotifUpsertBulk {
 func (u *NotifUpsertBulk) ClearExtra() *NotifUpsertBulk {
 	return u.Update(func(s *NotifUpsert) {
 		s.ClearExtra()
+	})
+}
+
+// SetType sets the "type" field.
+func (u *NotifUpsertBulk) SetType(v string) *NotifUpsertBulk {
+	return u.Update(func(s *NotifUpsert) {
+		s.SetType(v)
+	})
+}
+
+// UpdateType sets the "type" field to the value that was provided on create.
+func (u *NotifUpsertBulk) UpdateType() *NotifUpsertBulk {
+	return u.Update(func(s *NotifUpsert) {
+		s.UpdateType()
+	})
+}
+
+// ClearType clears the value of the "type" field.
+func (u *NotifUpsertBulk) ClearType() *NotifUpsertBulk {
+	return u.Update(func(s *NotifUpsert) {
+		s.ClearType()
 	})
 }
 

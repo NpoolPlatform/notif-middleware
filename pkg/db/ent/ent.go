@@ -10,17 +10,20 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent/announcement"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent/contact"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent/emailtemplate"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent/frontendtemplate"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent/notif"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent/notifchannel"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent/readannouncement"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent/sendannouncement"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent/smstemplate"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent/txnotifstate"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent/userannouncement"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/announcement"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/contact"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/emailtemplate"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/frontendtemplate"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notif"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notifchannel"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/readannouncement"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/readnotif"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/sendannouncement"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/sendnotif"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/smstemplate"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/txnotifstate"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/userannouncement"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/usernotif"
 )
 
 // ent aliases to avoid import conflicts in user's code.
@@ -48,10 +51,13 @@ func columnChecker(table string) func(string) error {
 		notif.Table:            notif.ValidColumn,
 		notifchannel.Table:     notifchannel.ValidColumn,
 		readannouncement.Table: readannouncement.ValidColumn,
+		readnotif.Table:        readnotif.ValidColumn,
 		smstemplate.Table:      smstemplate.ValidColumn,
 		sendannouncement.Table: sendannouncement.ValidColumn,
+		sendnotif.Table:        sendnotif.ValidColumn,
 		txnotifstate.Table:     txnotifstate.ValidColumn,
 		userannouncement.Table: userannouncement.ValidColumn,
+		usernotif.Table:        usernotif.ValidColumn,
 	}
 	check, ok := checks[table]
 	if !ok {

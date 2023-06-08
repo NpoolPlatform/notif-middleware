@@ -3,11 +3,11 @@ package schema
 import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/mixin"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/mixin"
 	"github.com/google/uuid"
 
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
-	npool "github.com/NpoolPlatform/message/npool/notif/mgr/v1/notif/tx"
+	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/tx"
 )
 
 // TxNotifState holds the schema definition for the TxNotifState entity.

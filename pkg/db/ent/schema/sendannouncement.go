@@ -3,8 +3,8 @@ package schema
 import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
-	"github.com/NpoolPlatform/message/npool/notif/mgr/v1/channel"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/mixin"
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/mixin"
 	"github.com/google/uuid"
 )
 
@@ -41,7 +41,7 @@ func (SendAnnouncement) Fields() []ent.Field {
 		field.
 			String("channel").
 			Optional().
-			Default(channel.NotifChannel_DefaultChannel.String()),
+			Default(basetypes.NotifChannel_DefaultChannel.String()),
 	}
 }
 

@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent/contact"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/contact"
 	"github.com/google/uuid"
 )
 

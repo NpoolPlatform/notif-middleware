@@ -4,11 +4,10 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
 
-	"github.com/NpoolPlatform/notif-manager/pkg/db/mixin"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/mixin"
 	"github.com/google/uuid"
 
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
-	"github.com/NpoolPlatform/message/npool/notif/mgr/v1/channel"
 )
 
 // NotifChannel holds the schema definition for the NotifChannel entity.
@@ -40,7 +39,7 @@ func (NotifChannel) Fields() []ent.Field {
 		field.
 			String("channel").
 			Optional().
-			Default(channel.NotifChannel_DefaultChannel.String()),
+			Default(basetypes.NotifChannel_DefaultChannel.String()),
 	}
 }
 

@@ -4,7 +4,7 @@ package frontendtemplate
 
 import (
 	"entgo.io/ent/dialect/sql"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent/predicate"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/predicate"
 	"github.com/google/uuid"
 )
 

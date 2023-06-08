@@ -5,7 +5,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/mixin"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/mixin"
 	"github.com/google/uuid"
 )
 

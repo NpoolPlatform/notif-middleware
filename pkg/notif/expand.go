@@ -16,7 +16,6 @@ func expand(info *mgrpb.Notif) *npool.Notif {
 		UseTemplate: info.UseTemplate,
 		Title:       info.Title,
 		Content:     info.Content,
-		Channel:     info.Channel,
 		CreatedAt:   info.CreatedAt,
 		UpdatedAt:   info.UpdatedAt,
 	}

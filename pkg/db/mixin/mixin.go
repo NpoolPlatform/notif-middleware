@@ -2,8 +2,8 @@ package mixin
 
 import (
 	"entgo.io/ent"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/ent/privacy"
-	"github.com/NpoolPlatform/notif-manager/pkg/db/rule"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/privacy"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/rule"
 )
 
 func (TimeMixin) Mixin() []ent.Mixin {

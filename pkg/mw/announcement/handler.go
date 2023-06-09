@@ -3,6 +3,7 @@ package announcement
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
@@ -20,7 +21,7 @@ type Handler struct {
 	Content *string
 	Channel *basetypes.NotifChannel
 	Type    *npool.AnnouncementType
-	EndAt   *uint32
+	EndAt   int32
 	Conds   *amtcrud.Conds
 	Offset  int32
 	Limit   int32
@@ -147,6 +148,16 @@ func WithAnnouncementType(_type *npool.AnnouncementType) func(context.Context, *
 			return fmt.Errorf("type %v invalid", *_type)
 		}
 		h.Type = _type
+		return nil
+	}
+}
+
+func WithEndAt(endAt int32) func(context.Context, *Handler) error {
+	return func(ctx context.Context, h *Handler) error {
+		if endAt < int32(time.Now().Unix()) {
+			return fmt.Errorf("invalid end at")
+		}
+		h.EndAt = endAt
 		return nil
 	}
 }

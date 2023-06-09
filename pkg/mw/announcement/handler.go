@@ -99,7 +99,6 @@ func WithTitle(title *string) func(context.Context, *Handler) error {
 		if len(*title) < leastTitleLen {
 			return fmt.Errorf("name %v too short", *title)
 		}
-		// TODO: confirm name not exist
 		h.Title = title
 		return nil
 	}

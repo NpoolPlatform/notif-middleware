@@ -134,7 +134,6 @@ func (h *Handler) GetUserAnnouncement(ctx context.Context) (info *npool.UserAnno
 	if err != nil {
 		return
 	}
-
 	if len(handler.infos) == 0 {
 		return nil, nil
 	}

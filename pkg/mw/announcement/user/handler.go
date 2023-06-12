@@ -71,9 +71,7 @@ func WithUserID(appID, userID *string) func(context.Context, *Handler) error {
 		if err != nil {
 			return err
 		}
-		if err != nil {
-			return err
-		}
+
 		exist, err := appusercli.ExistUser(ctx, *appID, *userID)
 		if err != nil {
 			return err

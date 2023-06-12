@@ -1,33 +1,33 @@
-package send
+package read
 
 import (
 	"context"
 	"fmt"
 
 	"entgo.io/ent/dialect/sql"
-	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/send"
-	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/announcement/send"
+	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/read"
+	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/announcement/read"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
 	entamt "github.com/NpoolPlatform/notif-middleware/pkg/db/ent/announcement"
-	entsendamt "github.com/NpoolPlatform/notif-middleware/pkg/db/ent/sendannouncement"
+	entreadamt "github.com/NpoolPlatform/notif-middleware/pkg/db/ent/readannouncement"
 )
 
 type queryHandler struct {
 	*Handler
-	stm   *ent.SendAnnouncementSelect
-	infos []*npool.SendAnnouncement
+	stm   *ent.ReadAnnouncementSelect
+	infos []*npool.ReadAnnouncement
 	total uint32
 }
 
-func (h *queryHandler) selectSendAnnouncement(stm *ent.SendAnnouncementQuery) {
+func (h *queryHandler) selectReadAnnouncement(stm *ent.ReadAnnouncementQuery) {
 	h.stm = stm.Select(
-		entsendamt.FieldID,
-		entsendamt.FieldAppID,
-		entsendamt.FieldUserID,
-		entsendamt.FieldAnnouncementID,
-		entsendamt.FieldCreatedAt,
-		entsendamt.FieldUpdatedAt,
+		entreadamt.FieldID,
+		entreadamt.FieldAppID,
+		entreadamt.FieldUserID,
+		entreadamt.FieldAnnouncementID,
+		entreadamt.FieldCreatedAt,
+		entreadamt.FieldUpdatedAt,
 	)
 }
 
@@ -35,7 +35,7 @@ func (h *queryHandler) queryJoinAnnouncement(s *sql.Selector) {
 	t := sql.Table(entamt.Table)
 	s.LeftJoin(t).
 		On(
-			s.C(entsendamt.FieldAnnouncementID),
+			s.C(entreadamt.FieldAnnouncementID),
 			t.C(entamt.FieldID),
 		).
 		AppendSelect(
@@ -54,23 +54,23 @@ func (h *queryHandler) queryJoin() {
 	})
 }
 
-func (h *queryHandler) querySendAnnouncement(cli *ent.Client) error {
+func (h *queryHandler) queryReadAnnouncement(cli *ent.Client) error {
 	if h.ID == nil {
 		return fmt.Errorf("invalid user announcement id")
 	}
-	h.selectSendAnnouncement(
-		cli.SendAnnouncement.
+	h.selectReadAnnouncement(
+		cli.ReadAnnouncement.
 			Query().
 			Where(
-				entsendamt.ID(*h.ID),
-				entsendamt.DeletedAt(0),
+				entreadamt.ID(*h.ID),
+				entreadamt.DeletedAt(0),
 			),
 	)
 	return nil
 }
 
-func (h *queryHandler) querySendAnnouncementsByConds(ctx context.Context, cli *ent.Client) (err error) {
-	stm, err := crud.SetQueryConds(cli.SendAnnouncement.Query(), h.Conds)
+func (h *queryHandler) queryReadAnnouncementsByConds(ctx context.Context, cli *ent.Client) (err error) {
+	stm, err := crud.SetQueryConds(cli.ReadAnnouncement.Query(), h.Conds)
 	if err != nil {
 		return err
 	}
@@ -82,7 +82,7 @@ func (h *queryHandler) querySendAnnouncementsByConds(ctx context.Context, cli *e
 
 	h.total = uint32(total)
 
-	h.selectSendAnnouncement(stm)
+	h.selectReadAnnouncement(stm)
 	return nil
 }
 
@@ -90,13 +90,13 @@ func (h *queryHandler) scan(ctx context.Context) error {
 	return h.stm.Scan(ctx, &h.infos)
 }
 
-func (h *Handler) GetSendAnnouncements(ctx context.Context) ([]*npool.SendAnnouncement, uint32, error) {
+func (h *Handler) GetReadAnnouncements(ctx context.Context) ([]*npool.ReadAnnouncement, uint32, error) {
 	handler := &queryHandler{
 		Handler: h,
 	}
 
 	err := db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		if err := handler.querySendAnnouncementsByConds(_ctx, cli); err != nil {
+		if err := handler.queryReadAnnouncementsByConds(_ctx, cli); err != nil {
 			return err
 		}
 
@@ -117,13 +117,13 @@ func (h *Handler) GetSendAnnouncements(ctx context.Context) ([]*npool.SendAnnoun
 	return handler.infos, handler.total, nil
 }
 
-func (h *Handler) GetSendAnnouncement(ctx context.Context) (info *npool.SendAnnouncement, err error) {
+func (h *Handler) GetReadAnnouncement(ctx context.Context) (info *npool.ReadAnnouncement, err error) {
 	handler := &queryHandler{
 		Handler: h,
 	}
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		if err := handler.querySendAnnouncement(cli); err != nil {
+		if err := handler.queryReadAnnouncement(cli); err != nil {
 			return err
 		}
 

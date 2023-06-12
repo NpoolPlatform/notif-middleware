@@ -42,9 +42,10 @@ func UpdateSet(u *ent.UserAnnouncementUpdateOne, req *Req) *ent.UserAnnouncement
 }
 
 type Conds struct {
-	ID     *cruder.Cond
-	AppID  *cruder.Cond
-	UserID *cruder.Cond
+	ID             *cruder.Cond
+	AppID          *cruder.Cond
+	UserID         *cruder.Cond
+	AnnouncementID *cruder.Cond
 }
 
 func SetQueryConds(q *ent.UserAnnouncementQuery, conds *Conds) (*ent.UserAnnouncementQuery, error) {
@@ -85,6 +86,18 @@ func SetQueryConds(q *ent.UserAnnouncementQuery, conds *Conds) (*ent.UserAnnounc
 			q.Where(entuseramt.UserID(id))
 		default:
 			return nil, fmt.Errorf("invalid user id op field")
+		}
+	}
+	if conds.AnnouncementID != nil {
+		id, ok := conds.AnnouncementID.Val.(uuid.UUID)
+		if !ok {
+			return nil, fmt.Errorf("invalid announcement id")
+		}
+		switch conds.AnnouncementID.Op {
+		case cruder.EQ:
+			q.Where(entuseramt.AnnouncementID(id))
+		default:
+			return nil, fmt.Errorf("invalid announcement id op field")
 		}
 	}
 	return q, nil

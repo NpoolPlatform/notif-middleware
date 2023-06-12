@@ -6,7 +6,7 @@ import (
 
 	mgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/announcement/user"
 
-	user1 "github.com/NpoolPlatform/notif-middleware/pkg/announcement/user"
+	user1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/user"
 	commontracer "github.com/NpoolPlatform/notif-middleware/pkg/tracer"
 
 	constant "github.com/NpoolPlatform/notif-middleware/pkg/message/const"

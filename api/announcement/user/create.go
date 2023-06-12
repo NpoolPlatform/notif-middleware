@@ -5,8 +5,8 @@ import (
 
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/user"
+	"github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/handler"
 	announcement1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/user"
-
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -15,9 +15,9 @@ func (s *Server) CreateUserAnnouncement(ctx context.Context, in *npool.CreateUse
 	req := in.GetInfo()
 	handler, err := announcement1.NewHandler(
 		ctx,
-		announcement1.WithAppID(req.AppID),
-		announcement1.WithUserID(req.AppID, req.UserID),
-		announcement1.WithAnnouncementID(req.AppID, req.AnnouncementID),
+		handler.WithAppID(req.AppID),
+		handler.WithUserID(req.AppID, req.UserID),
+		handler.WithAnnouncementID(req.AppID, req.AnnouncementID),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

@@ -2,11 +2,15 @@ package read
 
 import (
 	"context"
+	"fmt"
 
+	appcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/app"
+	appusercli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/read"
 	constant "github.com/NpoolPlatform/notif-middleware/pkg/const"
 	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/announcement/read"
+	amt1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement"
 	"github.com/google/uuid"
 )
 
@@ -47,59 +51,68 @@ func WithAppID(appID *string) func(context.Context, *Handler) error {
 		if err != nil {
 			return err
 		}
-		// TODO: judge app id
-		// exist, err := appcli.ExistApp(ctx, *appID)
-		// if err != nil {
-		// 	return err
-		// }
-		// if !exist {
-		// 	return fmt.Errorf("invalid app")
-		// }
+
+		exist, err := appcli.ExistApp(ctx, *appID)
+		if err != nil {
+			return err
+		}
+		if !exist {
+			return fmt.Errorf("invalid app")
+		}
 
 		h.AppID = &_appID
 		return nil
 	}
 }
 
-func WithUserID(userID *string) func(context.Context, *Handler) error {
+func WithUserID(appID, userID *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		_userID, err := uuid.Parse(*userID)
 		if err != nil {
 			return err
 		}
-		// TODO: judge lang id
-		// exist, err := appcli.ExistApp(ctx, *appID)
-		// if err != nil {
-		// 	return err
-		// }
-		// if !exist {
-		// 	return fmt.Errorf("invalid app")
-		// }
+
+		exist, err := appusercli.ExistUser(ctx, *appID, *userID)
+		if err != nil {
+			return err
+		}
+		if !exist {
+			return fmt.Errorf("invalid user")
+		}
 
 		h.UserID = &_userID
 		return nil
 	}
 }
 
-func WithAnnouncementID(amtID *string) func(context.Context, *Handler) error {
+func WithAnnouncementID(appID, amtID *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		_amtID, err := uuid.Parse(*amtID)
 		if err != nil {
 			return err
 		}
-		// TODO: judge lang id
-		// exist, err := appcli.ExistApp(ctx, *appID)
-		// if err != nil {
-		// 	return err
-		// }
-		// if !exist {
-		// 	return fmt.Errorf("invalid app")
-		// }
+
+		handler, err := amt1.NewHandler(ctx,
+			amt1.WithID(amtID),
+			amt1.WithAppID(appID),
+		)
+		if err != nil {
+			return err
+		}
+
+		exist, err := handler.ExistAnnouncement(ctx)
+		if err != nil {
+			return err
+		}
+		if !exist {
+			return fmt.Errorf("invalid announcement id")
+		}
 
 		h.AnnouncementID = &_amtID
 		return nil
 	}
 }
+
 func WithOffset(offset int32) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		h.Offset = offset

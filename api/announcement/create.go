@@ -18,7 +18,7 @@ func (s *Server) CreateAnnouncement(ctx context.Context, in *npool.CreateAnnounc
 		announcement1.WithTitle(req.Title),
 		announcement1.WithContent(req.Content),
 		announcement1.WithAppID(req.AppID),
-		announcement1.WithLangID(req.LangID),
+		announcement1.WithLangID(req.AppID, req.LangID),
 		announcement1.WithChannel(req.Channel),
 		announcement1.WithAnnouncementType(req.AnnouncementType),
 		announcement1.WithEndAt(req.EndAt),

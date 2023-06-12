@@ -119,9 +119,6 @@ func WithContent(content *string) func(context.Context, *Handler) error {
 
 func WithChannel(channel *basetypes.NotifChannel) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		if channel == nil {
-			return nil
-		}
 		switch *channel {
 		case basetypes.NotifChannel_ChannelEmail:
 		case basetypes.NotifChannel_ChannelSMS:

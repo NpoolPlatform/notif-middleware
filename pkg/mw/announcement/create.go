@@ -16,10 +16,13 @@ type createHandler struct {
 
 func (h *createHandler) validate() error {
 	if h.Title == nil {
-		return fmt.Errorf("title empty")
+		return fmt.Errorf("title is empty")
 	}
 	if h.Content == nil {
-		return fmt.Errorf("content empty")
+		return fmt.Errorf("content is empty")
+	}
+	if h.Type == nil {
+		return fmt.Errorf("type is empty")
 	}
 	return nil
 }

@@ -18,7 +18,11 @@ func (h *Handler) ExistAnnouncement(ctx context.Context) (exist bool, err error)
 		exist, err = cli.
 			Announcement.
 			Query().
-			Where(entamt.ID(*h.ID), entamt.DeletedAt(0)).
+			Where(
+				entamt.ID(*h.ID),
+				entamt.AppID(*h.AppID),
+				entamt.DeletedAt(0),
+			).
 			Exist(_ctx)
 		return err
 	})

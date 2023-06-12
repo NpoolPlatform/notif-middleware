@@ -69,10 +69,11 @@ func GetAnnouncementStates(ctx context.Context, conds *npool.Conds, offset, limi
 	return infos.([]*npool.Announcement), total, nil
 }
 
-func ExistAnnouncement(ctx context.Context, id string) (bool, error) {
+func ExistAnnouncement(ctx context.Context, id, appID string) (bool, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.ExistAnnouncement(ctx, &npool.ExistAnnouncementRequest{
-			ID: id,
+			ID:    id,
+			AppID: appID,
 		})
 		if err != nil {
 			return nil, err

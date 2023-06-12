@@ -15,6 +15,7 @@ func (s *Server) ExistAnnouncement(ctx context.Context, in *npool.ExistAnnouncem
 	handler, err := announcement1.NewHandler(
 		ctx,
 		announcement1.WithID(&in.ID),
+		announcement1.WithAppID(&in.AppID),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

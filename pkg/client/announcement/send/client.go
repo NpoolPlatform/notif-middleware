@@ -13,7 +13,7 @@ import (
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 
 	mgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/announcement/sendstate"
-	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/sendstate"
+	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/send"
 
 	constant "github.com/NpoolPlatform/notif-middleware/pkg/message/const"
 )

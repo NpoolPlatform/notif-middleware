@@ -25,7 +25,7 @@ import (
 	announcementmgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/announcement"
 	readstatemgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/announcement/readstate"
 	channelpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/channel"
-	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/readstate"
+	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/read"
 	"github.com/stretchr/testify/assert"
 
 	announcementcrud "github.com/NpoolPlatform/notif-manager/pkg/crud/announcement"

@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
-	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement"
+	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/user"
 	constant "github.com/NpoolPlatform/notif-middleware/pkg/const"
 	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/announcement/user"
 	"github.com/google/uuid"

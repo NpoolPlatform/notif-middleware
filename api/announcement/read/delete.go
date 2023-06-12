@@ -6,6 +6,7 @@ import (
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/read"
 	announcement1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/read"
+	"github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/handler"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -14,7 +15,7 @@ func (s *Server) DeleteReadAnnouncement(ctx context.Context, in *npool.DeleteRea
 	id := in.GetInfo().GetID()
 	handler, err := announcement1.NewHandler(
 		ctx,
-		announcement1.WithID(&id),
+		handler.WithID(&id),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

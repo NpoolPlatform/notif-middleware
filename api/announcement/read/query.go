@@ -6,8 +6,8 @@ import (
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/read"
+	"github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/handler"
 	announcement1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/read"
-
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -16,8 +16,8 @@ func (s *Server) GetReadAnnouncements(ctx context.Context, in *npool.GetReadAnno
 	handler, err := announcement1.NewHandler(
 		ctx,
 		announcement1.WithConds(in.GetConds()),
-		announcement1.WithOffset(in.Offset),
-		announcement1.WithLimit(in.Limit),
+		handler.WithOffset(in.Offset),
+		handler.WithLimit(in.Limit),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
@@ -42,7 +42,7 @@ func (s *Server) GetReadAnnouncements(ctx context.Context, in *npool.GetReadAnno
 func (s *Server) GetReadAnnouncement(ctx context.Context, in *npool.GetReadAnnouncementRequest) (*npool.GetReadAnnouncementResponse, error) {
 	handler, err := announcement1.NewHandler(
 		ctx,
-		announcement1.WithID(&in.ID),
+		handler.WithID(&in.ID),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

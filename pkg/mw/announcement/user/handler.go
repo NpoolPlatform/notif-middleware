@@ -85,14 +85,17 @@ func WithUserID(appID, userID *string) func(context.Context, *Handler) error {
 	}
 }
 
-func WithAnnouncementID(amtID *string) func(context.Context, *Handler) error {
+func WithAnnouncementID(appID, amtID *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		_amtID, err := uuid.Parse(*amtID)
 		if err != nil {
 			return err
 		}
 
-		handler, err := amt1.NewHandler(ctx, amt1.WithID(amtID))
+		handler, err := amt1.NewHandler(ctx,
+			amt1.WithID(amtID),
+			amt1.WithAppID(appID),
+		)
 		if err != nil {
 			return err
 		}
@@ -138,7 +141,7 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 				return err
 			}
 			h.Conds.ID = &cruder.Cond{
-				Op:  conds.GetID().GetOp(), Val: id,
+				Op: conds.GetID().GetOp(), Val: id,
 			}
 		}
 		return nil

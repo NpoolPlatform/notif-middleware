@@ -17,7 +17,7 @@ func (s *Server) CreateUserAnnouncement(ctx context.Context, in *npool.CreateUse
 		ctx,
 		announcement1.WithAppID(req.AppID),
 		announcement1.WithUserID(req.AppID, req.UserID),
-		announcement1.WithAnnouncementID(req.AnnouncementID),
+		announcement1.WithAnnouncementID(req.AppID, req.AnnouncementID),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

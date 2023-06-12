@@ -22,10 +22,12 @@ type queryHandler struct {
 
 func (h *queryHandler) selectUserAnnouncement(stm *ent.UserAnnouncementQuery) {
 	h.stm = stm.Select(
-		entamt.FieldID,
-		entamt.FieldAppID,
-		entamt.FieldCreatedAt,
-		entamt.FieldUpdatedAt,
+		entuseramt.FieldID,
+		entuseramt.FieldAppID,
+		entuseramt.FieldUserID,
+		entuseramt.FieldAnnouncementID,
+		entuseramt.FieldCreatedAt,
+		entuseramt.FieldUpdatedAt,
 	)
 }
 

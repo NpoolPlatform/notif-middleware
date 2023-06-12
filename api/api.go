@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/NpoolPlatform/notif-middleware/api/announcement"
-	"github.com/NpoolPlatform/notif-middleware/api/announcement/readstate"
-	"github.com/NpoolPlatform/notif-middleware/api/announcement/sendstate"
+	"github.com/NpoolPlatform/notif-middleware/api/announcement/read"
+	"github.com/NpoolPlatform/notif-middleware/api/announcement/send"
 	"github.com/NpoolPlatform/notif-middleware/api/announcement/user"
 	"github.com/NpoolPlatform/notif-middleware/api/contact"
 	"github.com/NpoolPlatform/notif-middleware/api/notif"

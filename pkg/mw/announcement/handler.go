@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"time"
 
+	appcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/app"
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement"
 	constant "github.com/NpoolPlatform/notif-middleware/pkg/const"
-	amtcrud "github.com/NpoolPlatform/notif-middleware/pkg/crud/announcement"
+	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/announcement"
 	"github.com/google/uuid"
 )
 
@@ -22,7 +23,7 @@ type Handler struct {
 	Channel *basetypes.NotifChannel
 	Type    *npool.AnnouncementType
 	EndAt   uint32
-	Conds   *amtcrud.Conds
+	Conds   *crud.Conds
 	Offset  int32
 	Limit   int32
 }
@@ -39,9 +40,6 @@ func NewHandler(ctx context.Context, options ...func(context.Context, *Handler) 
 
 func WithID(id *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		if id == nil {
-			return nil
-		}
 		_id, err := uuid.Parse(*id)
 		if err != nil {
 			return err
@@ -57,26 +55,26 @@ func WithAppID(appID *string) func(context.Context, *Handler) error {
 		if err != nil {
 			return err
 		}
-		// TODO: judge app id
-		// exist, err := appcli.ExistApp(ctx, *appID)
-		// if err != nil {
-		// 	return err
-		// }
-		// if !exist {
-		// 	return fmt.Errorf("invalid app")
-		// }
+		exist, err := appcli.ExistApp(ctx, *appID)
+		if err != nil {
+			return err
+		}
+		if !exist {
+			return fmt.Errorf("invalid app")
+		}
 
 		h.AppID = &_appID
 		return nil
 	}
 }
 
-func WithLangID(langID *string) func(context.Context, *Handler) error {
+func WithLangID(appID, langID *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		_langID, err := uuid.Parse(*langID)
 		if err != nil {
 			return err
 		}
+		// wait g11n-middleware merger to master
 		// TODO: judge lang id
 		// exist, err := appcli.ExistApp(ctx, *appID)
 		// if err != nil {
@@ -152,12 +150,15 @@ func WithAnnouncementType(_type *npool.AnnouncementType) func(context.Context, *
 	}
 }
 
-func WithEndAt(endAt uint32) func(context.Context, *Handler) error {
+func WithEndAt(endAt *uint32) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		if endAt < uint32(time.Now().Unix()) {
+		if endAt == nil {
+			return nil
+		}
+		if *endAt < uint32(time.Now().Unix()) {
 			return fmt.Errorf("invalid end at")
 		}
-		h.EndAt = endAt
+		h.EndAt = *endAt
 		return nil
 	}
 }
@@ -181,7 +182,7 @@ func WithLimit(limit int32) func(context.Context, *Handler) error {
 
 func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		h.Conds = &amtcrud.Conds{}
+		h.Conds = &crud.Conds{}
 		if conds == nil {
 			return nil
 		}

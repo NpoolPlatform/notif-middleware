@@ -16,7 +16,7 @@ func (s *Server) CreateUserAnnouncement(ctx context.Context, in *npool.CreateUse
 	handler, err := announcement1.NewHandler(
 		ctx,
 		announcement1.WithAppID(req.AppID),
-		announcement1.WithUserID(req.UserID),
+		announcement1.WithUserID(req.AppID, req.UserID),
 		announcement1.WithAnnouncementID(req.AnnouncementID),
 	)
 	if err != nil {

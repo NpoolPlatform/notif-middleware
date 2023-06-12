@@ -30,9 +30,10 @@ func (h *Handler) CreateUserAnnouncement(ctx context.Context) (info *npool.UserA
 		info, err := crud.CreateSet(
 			cli.UserAnnouncement.Create(),
 			&crud.Req{
-				ID:     h.ID,
-				AppID:  h.AppID,
-				UserID: h.UserID,
+				ID:             h.ID,
+				AppID:          h.AppID,
+				UserID:         h.UserID,
+				AnnouncementID: h.AnnouncementID,
 			},
 		).Save(ctx)
 		if err != nil {

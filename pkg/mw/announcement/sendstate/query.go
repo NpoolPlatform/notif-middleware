@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"entgo.io/ent/dialect/sql"
-	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/send"
-	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/announcement/send"
+	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/sendstate"
+	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/announcement/sendstate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
 	entamt "github.com/NpoolPlatform/notif-middleware/pkg/db/ent/announcement"
@@ -15,12 +15,12 @@ import (
 
 type queryHandler struct {
 	*Handler
-	stm   *ent.SendAnnouncementSelect
-	infos []*npool.SendAnnouncement
+	stm   *ent.SendStateSelect
+	infos []*npool.SendState
 	total uint32
 }
 
-func (h *queryHandler) selectSendAnnouncement(stm *ent.SendAnnouncementQuery) {
+func (h *queryHandler) selectSendState(stm *ent.SendStateQuery) {
 	h.stm = stm.Select(
 		entsendamt.FieldID,
 		entsendamt.FieldAppID,
@@ -54,12 +54,12 @@ func (h *queryHandler) queryJoin() {
 	})
 }
 
-func (h *queryHandler) querySendAnnouncement(cli *ent.Client) error {
+func (h *queryHandler) querySendState(cli *ent.Client) error {
 	if h.ID == nil {
 		return fmt.Errorf("invalid user announcement id")
 	}
-	h.selectSendAnnouncement(
-		cli.SendAnnouncement.
+	h.selectSendState(
+		cli.SendState.
 			Query().
 			Where(
 				entsendamt.ID(*h.ID),
@@ -69,8 +69,8 @@ func (h *queryHandler) querySendAnnouncement(cli *ent.Client) error {
 	return nil
 }
 
-func (h *queryHandler) querySendAnnouncementsByConds(ctx context.Context, cli *ent.Client) (err error) {
-	stm, err := crud.SetQueryConds(cli.SendAnnouncement.Query(), h.Conds)
+func (h *queryHandler) querySendStatesByConds(ctx context.Context, cli *ent.Client) (err error) {
+	stm, err := crud.SetQueryConds(cli.SendState.Query(), h.Conds)
 	if err != nil {
 		return err
 	}
@@ -82,7 +82,7 @@ func (h *queryHandler) querySendAnnouncementsByConds(ctx context.Context, cli *e
 
 	h.total = uint32(total)
 
-	h.selectSendAnnouncement(stm)
+	h.selectSendState(stm)
 	return nil
 }
 
@@ -90,13 +90,13 @@ func (h *queryHandler) scan(ctx context.Context) error {
 	return h.stm.Scan(ctx, &h.infos)
 }
 
-func (h *Handler) GetSendAnnouncements(ctx context.Context) ([]*npool.SendAnnouncement, uint32, error) {
+func (h *Handler) GetSendStates(ctx context.Context) ([]*npool.SendState, uint32, error) {
 	handler := &queryHandler{
 		Handler: h,
 	}
 
 	err := db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		if err := handler.querySendAnnouncementsByConds(_ctx, cli); err != nil {
+		if err := handler.querySendStatesByConds(_ctx, cli); err != nil {
 			return err
 		}
 
@@ -117,13 +117,13 @@ func (h *Handler) GetSendAnnouncements(ctx context.Context) ([]*npool.SendAnnoun
 	return handler.infos, handler.total, nil
 }
 
-func (h *Handler) GetSendAnnouncement(ctx context.Context) (info *npool.SendAnnouncement, err error) {
+func (h *Handler) GetSendState(ctx context.Context) (info *npool.SendState, err error) {
 	handler := &queryHandler{
 		Handler: h,
 	}
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		if err := handler.querySendAnnouncement(cli); err != nil {
+		if err := handler.querySendState(cli); err != nil {
 			return err
 		}
 

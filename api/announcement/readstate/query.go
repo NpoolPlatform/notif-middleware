@@ -5,14 +5,14 @@ import (
 
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 
-	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/read"
+	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/readstate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/handler"
-	announcement1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/read"
+	announcement1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/readstate"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-func (s *Server) GetReadAnnouncements(ctx context.Context, in *npool.GetReadAnnouncementsRequest) (*npool.GetReadAnnouncementsResponse, error) {
+func (s *Server) GetReadStates(ctx context.Context, in *npool.GetReadStatesRequest) (*npool.GetReadStatesResponse, error) {
 	handler, err := announcement1.NewHandler(
 		ctx,
 		announcement1.WithConds(in.GetConds()),
@@ -21,44 +21,44 @@ func (s *Server) GetReadAnnouncements(ctx context.Context, in *npool.GetReadAnno
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"GetReadAnnouncements",
+			"GetReadStates",
 			"In", in,
 			"Error", err,
 		)
-		return &npool.GetReadAnnouncementsResponse{}, status.Error(codes.InvalidArgument, err.Error())
+		return &npool.GetReadStatesResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	infos, total, err := handler.GetReadAnnouncements(ctx)
+	infos, total, err := handler.GetReadStates(ctx)
 	if err != nil {
-		return &npool.GetReadAnnouncementsResponse{}, status.Error(codes.Internal, err.Error())
+		return &npool.GetReadStatesResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
-	return &npool.GetReadAnnouncementsResponse{
+	return &npool.GetReadStatesResponse{
 		Infos: infos,
 		Total: total,
 	}, nil
 }
 
-func (s *Server) GetReadAnnouncement(ctx context.Context, in *npool.GetReadAnnouncementRequest) (*npool.GetReadAnnouncementResponse, error) {
+func (s *Server) GetReadState(ctx context.Context, in *npool.GetReadStateRequest) (*npool.GetReadStateResponse, error) {
 	handler, err := announcement1.NewHandler(
 		ctx,
 		handler.WithID(&in.ID),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"GetReadAnnouncement",
+			"GetReadState",
 			"In", in,
 			"error", err,
 		)
-		return &npool.GetReadAnnouncementResponse{}, status.Error(codes.InvalidArgument, err.Error())
+		return &npool.GetReadStateResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	info, err := handler.GetReadAnnouncement(ctx)
+	info, err := handler.GetReadState(ctx)
 	if err != nil {
-		return &npool.GetReadAnnouncementResponse{}, status.Error(codes.Internal, err.Error())
+		return &npool.GetReadStateResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
-	return &npool.GetReadAnnouncementResponse{
+	return &npool.GetReadStateResponse{
 		Info: info,
 	}, nil
 }

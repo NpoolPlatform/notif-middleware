@@ -1,7 +1,7 @@
 package readstate
 
 import (
-	readamt "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/read"
+	readamt "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/readstate"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"

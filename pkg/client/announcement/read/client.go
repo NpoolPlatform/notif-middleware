@@ -10,7 +10,7 @@ import (
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 
-	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/read"
+	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/readstate"
 )
 
 func do(ctx context.Context, fn func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error)) (cruder.Any, error) {
@@ -28,9 +28,9 @@ func do(ctx context.Context, fn func(_ctx context.Context, cli npool.MiddlewareC
 	return fn(_ctx, cli)
 }
 
-func CreateReadAnnouncement(ctx context.Context, in *npool.ReadAnnouncementReq) (*npool.ReadAnnouncement, error) {
+func CreateReadState(ctx context.Context, in *npool.ReadStateReq) (*npool.ReadState, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		resp, err := cli.CreateReadAnnouncement(ctx, &npool.CreateReadAnnouncementRequest{
+		resp, err := cli.CreateReadState(ctx, &npool.CreateReadStateRequest{
 			Info: in,
 		})
 		if err != nil {
@@ -41,13 +41,13 @@ func CreateReadAnnouncement(ctx context.Context, in *npool.ReadAnnouncementReq) 
 	if err != nil {
 		return nil, err
 	}
-	return info.(*npool.ReadAnnouncement), nil
+	return info.(*npool.ReadState), nil
 }
 
-func DeleteReadAnnouncement(ctx context.Context, id string) (*npool.ReadAnnouncement, error) {
+func DeleteReadState(ctx context.Context, id string) (*npool.ReadState, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		resp, err := cli.DeleteReadAnnouncement(ctx, &npool.DeleteReadAnnouncementRequest{
-			Info: &npool.ReadAnnouncementReq{
+		resp, err := cli.DeleteReadState(ctx, &npool.DeleteReadStateRequest{
+			Info: &npool.ReadStateReq{
 				ID: &id,
 			},
 		})
@@ -59,13 +59,13 @@ func DeleteReadAnnouncement(ctx context.Context, id string) (*npool.ReadAnnounce
 	if err != nil {
 		return nil, err
 	}
-	return info.(*npool.ReadAnnouncement), nil
+	return info.(*npool.ReadState), nil
 }
 
-func GetReadAnnouncements(ctx context.Context, conds *npool.Conds, offset, limit int32) ([]*npool.ReadAnnouncement, uint32, error) {
+func GetReadStates(ctx context.Context, conds *npool.Conds, offset, limit int32) ([]*npool.ReadState, uint32, error) {
 	var total uint32
 	infos, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		resp, err := cli.GetReadAnnouncements(ctx, &npool.GetReadAnnouncementsRequest{
+		resp, err := cli.GetReadStates(ctx, &npool.GetReadStatesRequest{
 			Conds:  conds,
 			Limit:  limit,
 			Offset: offset,
@@ -79,12 +79,12 @@ func GetReadAnnouncements(ctx context.Context, conds *npool.Conds, offset, limit
 	if err != nil {
 		return nil, 0, fmt.Errorf("fail get read announcements: %v", err)
 	}
-	return infos.([]*npool.ReadAnnouncement), total, nil
+	return infos.([]*npool.ReadState), total, nil
 }
 
-func GetReadAnnouncement(ctx context.Context, id string) (*npool.ReadAnnouncement, error) {
+func GetReadState(ctx context.Context, id string) (*npool.ReadState, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		resp, err := cli.GetReadAnnouncement(ctx, &npool.GetReadAnnouncementRequest{
+		resp, err := cli.GetReadState(ctx, &npool.GetReadStateRequest{
 			ID: id,
 		})
 		if err != nil {
@@ -95,5 +95,5 @@ func GetReadAnnouncement(ctx context.Context, id string) (*npool.ReadAnnouncemen
 	if err != nil {
 		return nil, err
 	}
-	return info.(*npool.ReadAnnouncement), nil
+	return info.(*npool.ReadState), nil
 }

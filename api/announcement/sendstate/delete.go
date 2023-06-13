@@ -4,14 +4,14 @@ import (
 	"context"
 
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
-	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/send"
+	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/sendstate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/handler"
-	announcement1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/send"
+	announcement1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/sendstate"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-func (s *Server) DeleteSendAnnouncement(ctx context.Context, in *npool.DeleteSendAnnouncementRequest) (*npool.DeleteSendAnnouncementResponse, error) {
+func (s *Server) DeleteSendState(ctx context.Context, in *npool.DeleteSendStateRequest) (*npool.DeleteSendStateResponse, error) {
 	id := in.GetInfo().GetID()
 	handler, err := announcement1.NewHandler(
 		ctx,
@@ -19,24 +19,24 @@ func (s *Server) DeleteSendAnnouncement(ctx context.Context, in *npool.DeleteSen
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"DeleteSendAnnouncement",
+			"DeleteSendState",
 			"In", in,
 			"Error", err,
 		)
-		return &npool.DeleteSendAnnouncementResponse{}, status.Error(codes.Aborted, err.Error())
+		return &npool.DeleteSendStateResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
-	info, err := handler.DeleteSendAnnouncement(ctx)
+	info, err := handler.DeleteSendState(ctx)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"DeleteSendAnnouncement",
+			"DeleteSendState",
 			"In", in,
 			"Error", err,
 		)
-		return &npool.DeleteSendAnnouncementResponse{}, status.Error(codes.Aborted, err.Error())
+		return &npool.DeleteSendStateResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
-	return &npool.DeleteSendAnnouncementResponse{
+	return &npool.DeleteSendStateResponse{
 		Info: info,
 	}, nil
 }

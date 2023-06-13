@@ -1,7 +1,7 @@
 package sendstate
 
 import (
-	sendamt "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/send"
+	sendamt "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/sendstate"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"

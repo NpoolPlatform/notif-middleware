@@ -12,7 +12,7 @@ import (
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 
-	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/send"
+	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/sendstate"
 )
 
 func do(ctx context.Context, fn func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error)) (cruder.Any, error) {
@@ -30,9 +30,9 @@ func do(ctx context.Context, fn func(_ctx context.Context, cli npool.MiddlewareC
 	return fn(_ctx, cli)
 }
 
-func CreateSendAnnouncement(ctx context.Context, in *npool.SendAnnouncementReq) (*npool.SendAnnouncement, error) {
+func CreateSendState(ctx context.Context, in *npool.SendStateReq) (*npool.SendState, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		resp, err := cli.CreateSendAnnouncement(ctx, &npool.CreateSendAnnouncementRequest{
+		resp, err := cli.CreateSendState(ctx, &npool.CreateSendStateRequest{
 			Info: in,
 		})
 		if err != nil {
@@ -43,13 +43,13 @@ func CreateSendAnnouncement(ctx context.Context, in *npool.SendAnnouncementReq) 
 	if err != nil {
 		return nil, err
 	}
-	return info.(*npool.SendAnnouncement), nil
+	return info.(*npool.SendState), nil
 }
 
-func DeleteSendAnnouncement(ctx context.Context, id string) (*npool.SendAnnouncement, error) {
+func DeleteSendState(ctx context.Context, id string) (*npool.SendState, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		resp, err := cli.DeleteSendAnnouncement(ctx, &npool.DeleteSendAnnouncementRequest{
-			Info: &npool.SendAnnouncementReq{
+		resp, err := cli.DeleteSendState(ctx, &npool.DeleteSendStateRequest{
+			Info: &npool.SendStateReq{
 				ID: &id,
 			},
 		})
@@ -61,13 +61,13 @@ func DeleteSendAnnouncement(ctx context.Context, id string) (*npool.SendAnnounce
 	if err != nil {
 		return nil, err
 	}
-	return info.(*npool.SendAnnouncement), nil
+	return info.(*npool.SendState), nil
 }
 
-func GetSendAnnouncements(ctx context.Context, conds *npool.Conds, offset, limit int32) ([]*npool.SendAnnouncement, uint32, error) {
+func GetSendStates(ctx context.Context, conds *npool.Conds, offset, limit int32) ([]*npool.SendState, uint32, error) {
 	var total uint32
 	infos, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		resp, err := cli.GetSendAnnouncements(ctx, &npool.GetSendAnnouncementsRequest{
+		resp, err := cli.GetSendStates(ctx, &npool.GetSendStatesRequest{
 			Conds:  conds,
 			Limit:  limit,
 			Offset: offset,
@@ -81,12 +81,12 @@ func GetSendAnnouncements(ctx context.Context, conds *npool.Conds, offset, limit
 	if err != nil {
 		return nil, 0, fmt.Errorf("fail get send announcements: %v", err)
 	}
-	return infos.([]*npool.SendAnnouncement), total, nil
+	return infos.([]*npool.SendState), total, nil
 }
 
-func GetSendAnnouncement(ctx context.Context, id string) (*npool.SendAnnouncement, error) {
+func GetSendState(ctx context.Context, id string) (*npool.SendState, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		resp, err := cli.GetSendAnnouncement(ctx, &npool.GetSendAnnouncementRequest{
+		resp, err := cli.GetSendState(ctx, &npool.GetSendStateRequest{
 			ID: id,
 		})
 		if err != nil {
@@ -97,5 +97,5 @@ func GetSendAnnouncement(ctx context.Context, id string) (*npool.SendAnnouncemen
 	if err != nil {
 		return nil, err
 	}
-	return info.(*npool.SendAnnouncement), nil
+	return info.(*npool.SendState), nil
 }

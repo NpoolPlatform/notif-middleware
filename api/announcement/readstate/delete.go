@@ -4,14 +4,14 @@ import (
 	"context"
 
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
-	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/read"
-	announcement1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/read"
+	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/readstate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/handler"
+	announcement1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/readstate"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-func (s *Server) DeleteReadAnnouncement(ctx context.Context, in *npool.DeleteReadAnnouncementRequest) (*npool.DeleteReadAnnouncementResponse, error) {
+func (s *Server) DeleteReadState(ctx context.Context, in *npool.DeleteReadStateRequest) (*npool.DeleteReadStateResponse, error) {
 	id := in.GetInfo().GetID()
 	handler, err := announcement1.NewHandler(
 		ctx,
@@ -19,23 +19,23 @@ func (s *Server) DeleteReadAnnouncement(ctx context.Context, in *npool.DeleteRea
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"DeleteReadAnnouncement",
+			"DeleteReadState",
 			"In", in,
 			"Error", err,
 		)
-		return &npool.DeleteReadAnnouncementResponse{}, status.Error(codes.Aborted, err.Error())
+		return &npool.DeleteReadStateResponse{}, status.Error(codes.Aborted, err.Error())
 	}
-	info, err := handler.DeleteReadAnnouncement(ctx)
+	info, err := handler.DeleteReadState(ctx)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"DeleteReadAnnouncement",
+			"DeleteReadState",
 			"In", in,
 			"Error", err,
 		)
-		return &npool.DeleteReadAnnouncementResponse{}, status.Error(codes.Aborted, err.Error())
+		return &npool.DeleteReadStateResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
-	return &npool.DeleteReadAnnouncementResponse{
+	return &npool.DeleteReadStateResponse{
 		Info: info,
 	}, nil
 }

@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"entgo.io/ent/dialect/sql"
-	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/read"
-	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/announcement/read"
+	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/readstate"
+	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/announcement/readstate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
 	entamt "github.com/NpoolPlatform/notif-middleware/pkg/db/ent/announcement"
@@ -15,12 +15,12 @@ import (
 
 type queryHandler struct {
 	*Handler
-	stm   *ent.ReadAnnouncementSelect
-	infos []*npool.ReadAnnouncement
+	stm   *ent.ReadStateSelect
+	infos []*npool.ReadState
 	total uint32
 }
 
-func (h *queryHandler) selectReadAnnouncement(stm *ent.ReadAnnouncementQuery) {
+func (h *queryHandler) selectReadState(stm *ent.ReadStateQuery) {
 	h.stm = stm.Select(
 		entreadamt.FieldID,
 		entreadamt.FieldAppID,
@@ -54,12 +54,12 @@ func (h *queryHandler) queryJoin() {
 	})
 }
 
-func (h *queryHandler) queryReadAnnouncement(cli *ent.Client) error {
+func (h *queryHandler) queryReadState(cli *ent.Client) error {
 	if h.ID == nil {
 		return fmt.Errorf("invalid user announcement id")
 	}
-	h.selectReadAnnouncement(
-		cli.ReadAnnouncement.
+	h.selectReadState(
+		cli.ReadState.
 			Query().
 			Where(
 				entreadamt.ID(*h.ID),
@@ -69,8 +69,8 @@ func (h *queryHandler) queryReadAnnouncement(cli *ent.Client) error {
 	return nil
 }
 
-func (h *queryHandler) queryReadAnnouncementsByConds(ctx context.Context, cli *ent.Client) (err error) {
-	stm, err := crud.SetQueryConds(cli.ReadAnnouncement.Query(), h.Conds)
+func (h *queryHandler) queryReadStatesByConds(ctx context.Context, cli *ent.Client) (err error) {
+	stm, err := crud.SetQueryConds(cli.ReadState.Query(), h.Conds)
 	if err != nil {
 		return err
 	}
@@ -82,7 +82,7 @@ func (h *queryHandler) queryReadAnnouncementsByConds(ctx context.Context, cli *e
 
 	h.total = uint32(total)
 
-	h.selectReadAnnouncement(stm)
+	h.selectReadState(stm)
 	return nil
 }
 
@@ -90,13 +90,13 @@ func (h *queryHandler) scan(ctx context.Context) error {
 	return h.stm.Scan(ctx, &h.infos)
 }
 
-func (h *Handler) GetReadAnnouncements(ctx context.Context) ([]*npool.ReadAnnouncement, uint32, error) {
+func (h *Handler) GetReadStates(ctx context.Context) ([]*npool.ReadState, uint32, error) {
 	handler := &queryHandler{
 		Handler: h,
 	}
 
 	err := db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		if err := handler.queryReadAnnouncementsByConds(_ctx, cli); err != nil {
+		if err := handler.queryReadStatesByConds(_ctx, cli); err != nil {
 			return err
 		}
 
@@ -117,13 +117,13 @@ func (h *Handler) GetReadAnnouncements(ctx context.Context) ([]*npool.ReadAnnoun
 	return handler.infos, handler.total, nil
 }
 
-func (h *Handler) GetReadAnnouncement(ctx context.Context) (info *npool.ReadAnnouncement, err error) {
+func (h *Handler) GetReadState(ctx context.Context) (info *npool.ReadState, err error) {
 	handler := &queryHandler{
 		Handler: h,
 	}
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		if err := handler.queryReadAnnouncement(cli); err != nil {
+		if err := handler.queryReadState(cli); err != nil {
 			return err
 		}
 

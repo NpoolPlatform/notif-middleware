@@ -4,14 +4,14 @@ import (
 	"context"
 	"time"
 
-	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/read"
-	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/announcement/read"
+	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/readstate"
+	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/announcement/readstate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
 )
 
-func (h *Handler) DeleteReadAnnouncement(ctx context.Context) (*npool.ReadAnnouncement, error) {
-	info, err := h.GetReadAnnouncement(ctx)
+func (h *Handler) DeleteReadState(ctx context.Context) (*npool.ReadState, error) {
+	info, err := h.GetReadState(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -22,7 +22,7 @@ func (h *Handler) DeleteReadAnnouncement(ctx context.Context) (*npool.ReadAnnoun
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
 		now := uint32(time.Now().Unix())
 		if _, err := crud.UpdateSet(
-			cli.ReadAnnouncement.UpdateOneID(*h.ID),
+			cli.ReadState.UpdateOneID(*h.ID),
 			&crud.Req{
 				ID:        h.ID,
 				DeletedAt: &now,

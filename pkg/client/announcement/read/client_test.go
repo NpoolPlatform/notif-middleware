@@ -29,9 +29,9 @@ import (
 	appuserpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/user"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	amtpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement"
-	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/read"
+	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/readstate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/handler"
-	readamt1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/read"
+	readamt1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/readstate"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -58,14 +58,14 @@ var (
 		EndAt:               uint32(time.Now().Add(1 * time.Hour).Unix()),
 	}
 
-	ret = npool.ReadAnnouncement{
+	ret = npool.ReadState{
 		AppID:          appID,
 		AnnouncementID: "",
 		UserID:         "",
 	}
 )
 
-func setupReadAnnouncement(t *testing.T) func(*testing.T) {
+func setupReadState(t *testing.T) func(*testing.T) {
 	app1, err := appmwcli.CreateApp(
 		context.Background(),
 		&appmwpb.AppReq{
@@ -104,7 +104,7 @@ func setupReadAnnouncement(t *testing.T) func(*testing.T) {
 	)
 	assert.Nil(t, err)
 
-	_amt, err := handler.CreateReadAnnouncement(context.Background())
+	_amt, err := handler.CreateReadState(context.Background())
 	assert.Nil(t, err)
 	assert.NotNil(t, _amt)
 
@@ -113,12 +113,12 @@ func setupReadAnnouncement(t *testing.T) func(*testing.T) {
 	return func(*testing.T) {
 		_, _ = appmwcli.DeleteApp(context.Background(), ret.AppID)
 		_, _ = appusercli.DeleteUser(context.Background(), ret.AppID, ret.UserID)
-		_, _ = handler.DeleteReadAnnouncement(context.Background())
+		_, _ = handler.DeleteReadState(context.Background())
 	}
 }
 
-func createReadAnnouncement(t *testing.T) {
-	info, err := CreateReadAnnouncement(context.Background(), &npool.ReadAnnouncementReq{
+func createReadState(t *testing.T) {
+	info, err := CreateReadState(context.Background(), &npool.ReadStateReq{
 		AppID:          &ret.AppID,
 		UserID:         &ret.UserID,
 		AnnouncementID: &ret.AnnouncementID,
@@ -131,14 +131,14 @@ func createReadAnnouncement(t *testing.T) {
 	}
 }
 
-func getReadAnnouncement(t *testing.T) {
-	info, err := GetReadAnnouncement(context.Background(), ret.ID)
+func getReadState(t *testing.T) {
+	info, err := GetReadState(context.Background(), ret.ID)
 	assert.Nil(t, err)
 	assert.NotNil(t, info)
 }
 
-func getReadAnnouncements(t *testing.T) {
-	infos, _, err := GetReadAnnouncements(context.Background(), &npool.Conds{
+func getReadStates(t *testing.T) {
+	infos, _, err := GetReadStates(context.Background(), &npool.Conds{
 		ID: &basetypes.StringVal{
 			Op:    cruder.EQ,
 			Value: ret.ID,
@@ -149,12 +149,12 @@ func getReadAnnouncements(t *testing.T) {
 	}
 }
 
-func deleteReadAnnouncement(t *testing.T) {
-	info, err := DeleteReadAnnouncement(context.Background(), ret.ID)
+func deleteReadState(t *testing.T) {
+	info, err := DeleteReadState(context.Background(), ret.ID)
 	if assert.Nil(t, err) {
 		assert.Equal(t, info, &ret)
 	}
-	info, err = GetReadAnnouncement(context.Background(), info.ID)
+	info, err = GetReadState(context.Background(), info.ID)
 	assert.Nil(t, err)
 	assert.Nil(t, info)
 }
@@ -166,16 +166,16 @@ func TestClient(t *testing.T) {
 
 	gport := config.GetIntValueWithNameSpace("", config.KeyGRPCPort)
 
-	teardown := setupReadAnnouncement(t)
+	teardown := setupReadState(t)
 	defer teardown(t)
 
 	patch := monkey.Patch(grpc2.GetGRPCConn, func(service string, tags ...string) (*grpc.ClientConn, error) {
 		return grpc.Dial(fmt.Sprintf("localhost:%v", gport), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	})
-	t.Run("createReadAnnouncement", createReadAnnouncement)
-	t.Run("getReadAnnouncement", getReadAnnouncement)
-	t.Run("getReadAnnouncements", getReadAnnouncements)
-	t.Run("deleteReadAnnouncement", deleteReadAnnouncement)
+	t.Run("createReadState", createReadState)
+	t.Run("getReadState", getReadState)
+	t.Run("getReadStates", getReadStates)
+	t.Run("deleteReadState", deleteReadState)
 
 	patch.Unpatch()
 }

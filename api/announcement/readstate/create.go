@@ -4,14 +4,14 @@ import (
 	"context"
 
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
-	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/read"
+	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/readstate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/handler"
-	announcement1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/read"
+	announcement1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/readstate"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-func (s *Server) CreateReadAnnouncement(ctx context.Context, in *npool.CreateReadAnnouncementRequest) (*npool.CreateReadAnnouncementResponse, error) {
+func (s *Server) CreateReadState(ctx context.Context, in *npool.CreateReadStateRequest) (*npool.CreateReadStateResponse, error) {
 	req := in.GetInfo()
 	handler, err := announcement1.NewHandler(
 		ctx,
@@ -21,19 +21,19 @@ func (s *Server) CreateReadAnnouncement(ctx context.Context, in *npool.CreateRea
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"CreateReadAnnouncement",
+			"CreateReadState",
 			"Req", in,
 			"Error", err,
 		)
-		return &npool.CreateReadAnnouncementResponse{}, status.Error(codes.InvalidArgument, err.Error())
+		return &npool.CreateReadStateResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	info, err := handler.CreateReadAnnouncement(ctx)
+	info, err := handler.CreateReadState(ctx)
 	if err != nil {
-		return &npool.CreateReadAnnouncementResponse{}, status.Error(codes.Aborted, err.Error())
+		return &npool.CreateReadStateResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
-	return &npool.CreateReadAnnouncementResponse{
+	return &npool.CreateReadStateResponse{
 		Info: info,
 	}, nil
 }

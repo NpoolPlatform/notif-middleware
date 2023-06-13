@@ -3,8 +3,8 @@ package sendstate
 import (
 	"context"
 
-	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/send"
-	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/announcement/send"
+	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/sendstate"
+	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/announcement/sendstate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
 )
@@ -17,7 +17,7 @@ func (h *createHandler) validate() error {
 	return nil
 }
 
-func (h *Handler) CreateSendAnnouncement(ctx context.Context) (info *npool.SendAnnouncement, err error) {
+func (h *Handler) CreateSendState(ctx context.Context) (info *npool.SendState, err error) {
 	handler := &createHandler{
 		Handler: h,
 	}
@@ -28,7 +28,7 @@ func (h *Handler) CreateSendAnnouncement(ctx context.Context) (info *npool.SendA
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
 		info, err := crud.CreateSet(
-			cli.SendAnnouncement.Create(),
+			cli.SendState.Create(),
 			&crud.Req{
 				ID:             h.ID,
 				AppID:          h.AppID,
@@ -47,5 +47,5 @@ func (h *Handler) CreateSendAnnouncement(ctx context.Context) (info *npool.SendA
 		return nil, err
 	}
 
-	return h.GetSendAnnouncement(ctx)
+	return h.GetSendState(ctx)
 }

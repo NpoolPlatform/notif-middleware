@@ -81,6 +81,17 @@ var (
 		Banned:              true,
 		BanMessage:          uuid.NewString(),
 	}
+	amt = npool.Announcement{
+		AppID: "",
+		LangID: uuid.NewString(),
+		Title:  uuid.NewString(),
+		Content: uuid.NewString(),
+		Channel: basetypes.NotifChannel_ChannelEmail,
+		ChannelStr: basetypes.NotifChannel_ChannelEmail.String(),
+		AnnouncementType: npool.AnnouncementType_Multicast,
+		AnnouncementTypeStr: npool.AnnouncementType_Multicast.String(),
+		EndAt : uint32(time.Now().Add(1 * time.Hour).Unix()),
+	}
 )
 
 func setupUser(t *testing.T) func(*testing.T) {
@@ -106,6 +117,7 @@ func setupUser(t *testing.T) func(*testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, app2)
 
+	amt.AppID = app2.ID
 	return func(*testing.T) {
 		_, _ = appmwcli.DeleteApp(context.Background(), ret.AppID)
 		_, _ = appmwcli.DeleteApp(context.Background(), ret.ImportedFromAppID)
@@ -169,6 +181,7 @@ func createUser(t *testing.T) {
 		ret.CreatedAt = info.CreatedAt
 		ret1.CreatedAt = info.CreatedAt
 		assert.Equal(t, info, &ret1)
+		amt.UserID = info.ID
 	}
 }
 

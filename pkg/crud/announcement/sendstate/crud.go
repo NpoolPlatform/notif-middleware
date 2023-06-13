@@ -42,9 +42,12 @@ func UpdateSet(u *ent.SendAnnouncementUpdateOne, req *Req) *ent.SendAnnouncement
 }
 
 type Conds struct {
-	ID     *cruder.Cond
-	AppID  *cruder.Cond
-	UserID *cruder.Cond
+	ID             *cruder.Cond
+	AppID          *cruder.Cond
+	AnnouncementID *cruder.Cond
+	Channel        *cruder.Cond
+	UserID         *cruder.Cond
+	UserIDs        *cruder.Cond
 }
 
 func SetQueryConds(q *ent.SendAnnouncementQuery, conds *Conds) (*ent.SendAnnouncementQuery, error) {

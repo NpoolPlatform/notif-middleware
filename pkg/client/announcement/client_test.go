@@ -182,7 +182,15 @@ func getAnnouncements(t *testing.T) {
 	infos, _, err := GetAnnouncements(context.Background(), &npool.Conds{
 		ID: &basetypes.StringVal{
 			Op:    cruder.EQ,
-			Value: ret.ID,
+			Value: amt.ID,
+		},
+		Channel: &basetypes.Uint32Val{
+			Op:    cruder.EQ,
+			Value: uint32(basetypes.NotifChannel_value[amt.Channel.String()]),
+		},
+		EndAt: &basetypes.Uint32Val{
+			Op:    cruder.GTE,
+			Value: amt.EndAt,
 		},
 	}, 0, 1)
 	if assert.Nil(t, err) {

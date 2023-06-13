@@ -193,6 +193,19 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 				Val: id,
 			}
 		}
+		if conds.EndAt != nil {
+			h.Conds.EndAt = &cruder.Cond{
+				Op:  conds.GetID().GetOp(),
+				Val: conds.GetEndAt().GetValue(),
+			}
+		}
+		if conds.Channel != nil {
+			channel := conds.GetChannel().GetValue()
+			h.Conds.Channel = &cruder.Cond{
+				Op:  conds.GetChannel().GetOp(),
+				Val: basetypes.NotifChannel(channel),
+			}
+		}
 		return nil
 	}
 }

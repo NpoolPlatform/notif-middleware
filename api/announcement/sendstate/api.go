@@ -1,4 +1,4 @@
-package send
+package sendstate
 
 import (
 	sendamt "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/send"

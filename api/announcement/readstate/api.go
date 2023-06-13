@@ -1,4 +1,4 @@
-package read
+package readstate
 
 import (
 	readamt "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/read"

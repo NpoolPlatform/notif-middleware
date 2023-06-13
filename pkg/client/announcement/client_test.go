@@ -26,6 +26,9 @@ import (
 	appmwpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/app"
 	appuserpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/user"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
+	"github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/handler"
+	readamt "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/read"
+	sendamt "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/send"
 	"github.com/NpoolPlatform/notif-middleware/pkg/testinit"
 )
 
@@ -113,6 +116,41 @@ func createAnnouncement(t *testing.T) {
 		amt.ID = info.ID
 		assert.Equal(t, info, &amt)
 	}
+
+	// send amt
+	sendAmtHandler, err := sendamt.NewHandler(
+		context.Background(),
+		handler.WithAppID(&amt.AppID),
+		handler.WithUserID(&amt.AppID, &amt.UserID),
+		handler.WithAnnouncementID(&amt.AppID, &amt.ID),
+	)
+	assert.Nil(t, err)
+
+	sendAmt, err := sendAmtHandler.CreateSendAnnouncement(context.Background())
+	assert.Nil(t, err)
+	assert.NotNil(t, sendAmt)
+
+	sendAmtRet, err := sendAmtHandler.DeleteSendAnnouncement(context.Background())
+	assert.Nil(t, err)
+	assert.Equal(t, sendAmt, sendAmtRet)
+
+	// read amt
+	readAmtHandler, err := readamt.NewHandler(
+		context.Background(),
+		handler.WithAppID(&amt.AppID),
+		handler.WithUserID(&amt.AppID, &amt.UserID),
+		handler.WithAnnouncementID(&amt.AppID, &amt.ID),
+	)
+	assert.Nil(t, err)
+
+	readAmt, err := readAmtHandler.CreateReadAnnouncement(context.Background())
+	assert.Nil(t, err)
+	assert.NotNil(t, readAmt)
+
+	readAmtRet, err := readAmtHandler.DeleteReadAnnouncement(context.Background())
+	assert.Nil(t, err)
+	assert.Equal(t, readAmt, readAmtRet)
+
 }
 
 func updateAnnouncement(t *testing.T) {

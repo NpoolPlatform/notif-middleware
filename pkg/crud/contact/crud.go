@@ -58,19 +58,26 @@ func Update(u *ent.ContactUpdateOne, req *Req) (*ent.ContactUpdateOne, error) {
 	return u, nil
 }
 
+type Conds struct {
+	ID          *cruder.Cond
+	AppID       *cruder.Cond
+	AccountType *cruder.Cond
+	UsedFor     *cruder.Cond
+}
+
 //nolint:nolintlint,gocyclo
-func SetQueryConds(q *ent.ContactQuery, conds *npool.Conds) (*ent.ContactQuery, error) {
+func SetQueryConds(q *ent.ContactQuery, conds *Conds) (*ent.ContactQuery, error) {
 	if conds == nil {
 		return q, nil
 	}
 
 	if conds.ID != nil {
-		id, err := uuid.Parse(conds.GetID().GetValue())
-		if err != nil {
-			return nil, err
+		id, ok := conds.ID.Val.(uuid.UUID)
+		if !ok {
+			return nil, fmt.Errorf("invalid contact id")
 		}
 
-		switch conds.GetID().GetOp() {
+		switch conds.ID.Op {
 		case cruder.EQ:
 			q.Where(contact.ID(id))
 		default:
@@ -79,12 +86,12 @@ func SetQueryConds(q *ent.ContactQuery, conds *npool.Conds) (*ent.ContactQuery, 
 	}
 
 	if conds.AppID != nil {
-		id, err := uuid.Parse(conds.GetAppID().GetValue())
-		if err != nil {
-			return nil, err
+		id, ok := conds.AppID.Val.(uuid.UUID)
+		if !ok {
+			return nil, fmt.Errorf("invalid app id")
 		}
 
-		switch conds.GetAppID().GetOp() {
+		switch conds.AppID.Op {
 		case cruder.EQ:
 			q.Where(contact.AppID(id))
 		default:
@@ -93,18 +100,27 @@ func SetQueryConds(q *ent.ContactQuery, conds *npool.Conds) (*ent.ContactQuery, 
 	}
 
 	if conds.AccountType != nil {
-		switch conds.GetAccountType().GetOp() {
+		accountType, ok := conds.AccountType.Val.(basetypes.SignMethod)
+		if !ok {
+			return nil, fmt.Errorf("invalid account type")
+		}
+
+		switch conds.AccountType.Op {
 		case cruder.EQ:
-			q.Where(contact.AccountType(basetypes.SignMethod(conds.GetAccountType().GetValue()).String()))
+			q.Where(contact.AccountType(accountType.String()))
 		default:
 			return nil, fmt.Errorf("invalid account type op field")
 		}
 	}
 
 	if conds.UsedFor != nil {
-		switch conds.GetUsedFor().GetOp() {
+		usedFor, ok := conds.UsedFor.Val.(basetypes.UsedFor)
+		if !ok {
+			return nil, fmt.Errorf("invalid used for")
+		}
+		switch conds.UsedFor.Op {
 		case cruder.EQ:
-			q.Where(contact.UsedFor(basetypes.UsedFor(conds.GetUsedFor().GetValue()).String()))
+			q.Where(contact.UsedFor(usedFor.String()))
 		default:
 			return nil, fmt.Errorf("invalid used for op field")
 		}

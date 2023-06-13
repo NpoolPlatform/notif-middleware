@@ -6,89 +6,96 @@ import (
 
 	"time"
 
-	"github.com/NpoolPlatform/message/npool/notif/mgr/v1/channel"
+	"github.com/NpoolPlatform/notif-middleware/pkg/servicename"
 
 	grpc2 "github.com/NpoolPlatform/go-service-framework/pkg/grpc"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 
-	mgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/announcement/sendstate"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/send"
-
-	constant "github.com/NpoolPlatform/notif-middleware/pkg/message/const"
 )
 
-var timeout = 10 * time.Second
-
-type handler func(context.Context, npool.MiddlewareClient) (cruder.Any, error)
-
-func withCRUD(ctx context.Context, handler handler) (cruder.Any, error) {
-	_ctx, cancel := context.WithTimeout(ctx, timeout)
+func do(ctx context.Context, fn func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error)) (cruder.Any, error) {
+	_ctx, cancel := context.WithTimeout(ctx, 10*time.Second) //nolint
 	defer cancel()
 
-	conn, err := grpc2.GetGRPCConn(constant.ServiceName, grpc2.GRPCTAG)
+	conn, err := grpc2.GetGRPCConn(servicename.ServiceDomain, grpc2.GRPCTAG)
 	if err != nil {
-		return nil, fmt.Errorf("fail get sendstate connection: %v", err)
+		return nil, err
 	}
-
 	defer conn.Close()
 
 	cli := npool.NewMiddlewareClient(conn)
 
-	return handler(_ctx, cli)
+	return fn(_ctx, cli)
 }
 
-func CreateSendState(ctx context.Context, appID, userID, announcementID string, c channel.NotifChannel) error {
-	_, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		_, err := cli.CreateSendState(ctx, &npool.CreateSendStateRequest{
-			AppID:          appID,
-			UserID:         userID,
-			AnnouncementID: announcementID,
-			Channel:        c,
+func CreateSendAnnouncement(ctx context.Context, in *npool.SendAnnouncementReq) (*npool.SendAnnouncement, error) {
+	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		resp, err := cli.CreateSendAnnouncement(ctx, &npool.CreateSendAnnouncementRequest{
+			Info: in,
 		})
 		if err != nil {
-			return nil, fmt.Errorf("fail get sendstates: %v", err)
+			return nil, err
 		}
-		return nil, nil
+		return resp.Info, nil
 	})
 	if err != nil {
-		return fmt.Errorf("fail get sendstates: %v", err)
+		return nil, err
 	}
-	return nil
+	return info.(*npool.SendAnnouncement), nil
 }
 
-func CreateSendStates(ctx context.Context, infos []*mgrpb.SendStateReq) error {
-	_, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		_, err := cli.CreateSendStates(ctx, &npool.CreateSendStatesRequest{
-			Infos: infos,
+func DeleteSendAnnouncement(ctx context.Context, id string) (*npool.SendAnnouncement, error) {
+	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		resp, err := cli.DeleteSendAnnouncement(ctx, &npool.DeleteSendAnnouncementRequest{
+			Info: &npool.SendAnnouncementReq{
+				ID: &id,
+			},
 		})
 		if err != nil {
-			return nil, fmt.Errorf("fail creates sendstates: %v", err)
+			return nil, err
 		}
-		return nil, nil
+		return resp.Info, nil
 	})
 	if err != nil {
-		return fmt.Errorf("fail creates sendstates: %v", err)
+		return nil, err
 	}
-	return nil
+	return info.(*npool.SendAnnouncement), nil
 }
 
-func GetSendStates(ctx context.Context, conds *npool.Conds, offset, limit int32) ([]*npool.SendState, uint32, error) {
+func GetSendAnnouncements(ctx context.Context, conds *npool.Conds, offset, limit int32) ([]*npool.SendAnnouncement, uint32, error) {
 	var total uint32
-	infos, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		resp, err := cli.GetSendStates(ctx, &npool.GetSendStatesRequest{
+	infos, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		resp, err := cli.GetSendAnnouncements(ctx, &npool.GetSendAnnouncementsRequest{
 			Conds:  conds,
 			Limit:  limit,
 			Offset: offset,
 		})
 		if err != nil {
-			return nil, fmt.Errorf("fail get sendstates: %v", err)
+			return nil, fmt.Errorf("fail get send announcements: %v", err)
 		}
 		total = resp.GetTotal()
 		return resp.GetInfos(), nil
 	})
 	if err != nil {
-		return nil, 0, fmt.Errorf("fail get sendstates: %v", err)
+		return nil, 0, fmt.Errorf("fail get send announcements: %v", err)
 	}
-	return infos.([]*npool.SendState), total, nil
+	return infos.([]*npool.SendAnnouncement), total, nil
+}
+
+func GetSendAnnouncement(ctx context.Context, id string) (*npool.SendAnnouncement, error) {
+	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		resp, err := cli.GetSendAnnouncement(ctx, &npool.GetSendAnnouncementRequest{
+			ID: id,
+		})
+		if err != nil {
+			return nil, err
+		}
+		return resp.Info, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return info.(*npool.SendAnnouncement), nil
 }

@@ -15,12 +15,12 @@ import (
 
 type queryHandler struct {
 	*Handler
-	stm   *ent.ReadStateSelect
+	stm   *ent.ReadAnnouncementSelect
 	infos []*npool.ReadState
 	total uint32
 }
 
-func (h *queryHandler) selectReadState(stm *ent.ReadStateQuery) {
+func (h *queryHandler) selectReadState(stm *ent.ReadAnnouncementQuery) {
 	h.stm = stm.Select(
 		entreadamt.FieldID,
 		entreadamt.FieldAppID,
@@ -59,7 +59,7 @@ func (h *queryHandler) queryReadState(cli *ent.Client) error {
 		return fmt.Errorf("invalid user announcement id")
 	}
 	h.selectReadState(
-		cli.ReadState.
+		cli.ReadAnnouncement.
 			Query().
 			Where(
 				entreadamt.ID(*h.ID),
@@ -70,7 +70,7 @@ func (h *queryHandler) queryReadState(cli *ent.Client) error {
 }
 
 func (h *queryHandler) queryReadStatesByConds(ctx context.Context, cli *ent.Client) (err error) {
-	stm, err := crud.SetQueryConds(cli.ReadState.Query(), h.Conds)
+	stm, err := crud.SetQueryConds(cli.ReadAnnouncement.Query(), h.Conds)
 	if err != nil {
 		return err
 	}

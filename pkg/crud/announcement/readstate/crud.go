@@ -18,7 +18,7 @@ type Req struct {
 	DeletedAt      *uint32
 }
 
-func CreateSet(c *ent.ReadStateCreate, req *Req) *ent.ReadStateCreate {
+func CreateSet(c *ent.ReadAnnouncementCreate, req *Req) *ent.ReadAnnouncementCreate {
 	if req.ID != nil {
 		c.SetID(*req.ID)
 	}
@@ -34,7 +34,7 @@ func CreateSet(c *ent.ReadStateCreate, req *Req) *ent.ReadStateCreate {
 	return c
 }
 
-func UpdateSet(u *ent.ReadStateUpdateOne, req *Req) *ent.ReadStateUpdateOne {
+func UpdateSet(u *ent.ReadAnnouncementUpdateOne, req *Req) *ent.ReadAnnouncementUpdateOne {
 	if req.DeletedAt != nil {
 		u.SetDeletedAt(*req.DeletedAt)
 	}
@@ -47,7 +47,7 @@ type Conds struct {
 	UserID *cruder.Cond
 }
 
-func SetQueryConds(q *ent.ReadStateQuery, conds *Conds) (*ent.ReadStateQuery, error) {
+func SetQueryConds(q *ent.ReadAnnouncementQuery, conds *Conds) (*ent.ReadAnnouncementQuery, error) {
 	if conds == nil {
 		return q, nil
 	}

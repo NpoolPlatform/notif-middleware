@@ -28,7 +28,7 @@ func (h *Handler) CreateReadState(ctx context.Context) (info *npool.ReadState, e
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
 		info, err := crud.CreateSet(
-			cli.ReadState.Create(),
+			cli.ReadAnnouncement.Create(),
 			&crud.Req{
 				ID:             h.ID,
 				AppID:          h.AppID,

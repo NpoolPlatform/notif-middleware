@@ -22,7 +22,7 @@ func (h *Handler) DeleteReadState(ctx context.Context) (*npool.ReadState, error)
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
 		now := uint32(time.Now().Unix())
 		if _, err := crud.UpdateSet(
-			cli.ReadState.UpdateOneID(*h.ID),
+			cli.ReadAnnouncement.UpdateOneID(*h.ID),
 			&crud.Req{
 				ID:        h.ID,
 				DeletedAt: &now,

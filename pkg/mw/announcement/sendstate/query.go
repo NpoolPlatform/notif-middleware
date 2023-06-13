@@ -15,12 +15,12 @@ import (
 
 type queryHandler struct {
 	*Handler
-	stm   *ent.SendStateSelect
+	stm   *ent.SendAnnouncementSelect
 	infos []*npool.SendState
 	total uint32
 }
 
-func (h *queryHandler) selectSendState(stm *ent.SendStateQuery) {
+func (h *queryHandler) selectSendState(stm *ent.SendAnnouncementQuery) {
 	h.stm = stm.Select(
 		entsendamt.FieldID,
 		entsendamt.FieldAppID,
@@ -59,7 +59,7 @@ func (h *queryHandler) querySendState(cli *ent.Client) error {
 		return fmt.Errorf("invalid user announcement id")
 	}
 	h.selectSendState(
-		cli.SendState.
+		cli.SendAnnouncement.
 			Query().
 			Where(
 				entsendamt.ID(*h.ID),
@@ -70,7 +70,7 @@ func (h *queryHandler) querySendState(cli *ent.Client) error {
 }
 
 func (h *queryHandler) querySendStatesByConds(ctx context.Context, cli *ent.Client) (err error) {
-	stm, err := crud.SetQueryConds(cli.SendState.Query(), h.Conds)
+	stm, err := crud.SetQueryConds(cli.SendAnnouncement.Query(), h.Conds)
 	if err != nil {
 		return err
 	}

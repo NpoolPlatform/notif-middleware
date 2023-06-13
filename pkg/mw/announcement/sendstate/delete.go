@@ -22,7 +22,7 @@ func (h *Handler) DeleteSendState(ctx context.Context) (*npool.SendState, error)
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
 		now := uint32(time.Now().Unix())
 		if _, err := crud.UpdateSet(
-			cli.SendState.UpdateOneID(*h.ID),
+			cli.SendAnnouncement.UpdateOneID(*h.ID),
 			&crud.Req{
 				ID:        h.ID,
 				DeletedAt: &now,

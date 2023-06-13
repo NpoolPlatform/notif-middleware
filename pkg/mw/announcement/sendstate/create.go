@@ -28,7 +28,7 @@ func (h *Handler) CreateSendState(ctx context.Context) (info *npool.SendState, e
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
 		info, err := crud.CreateSet(
-			cli.SendState.Create(),
+			cli.SendAnnouncement.Create(),
 			&crud.Req{
 				ID:             h.ID,
 				AppID:          h.AppID,

@@ -1,14 +1,15 @@
-package announcements
+package announcement
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"os"
 	"strconv"
 	"testing"
 	"time"
-	"math/rand"
+
 	"bou.ke/monkey"
 	"github.com/NpoolPlatform/go-service-framework/pkg/config"
 	grpc2 "github.com/NpoolPlatform/go-service-framework/pkg/grpc"
@@ -34,9 +35,9 @@ import (
 
 	appmwcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/app"
 	appusercli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
+	appmwpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/app"
 	appuserpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/user"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
-	appmwpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/app"
 	"github.com/NpoolPlatform/notif-middleware/pkg/testinit"
 )
 
@@ -82,15 +83,15 @@ var (
 		BanMessage:          uuid.NewString(),
 	}
 	amt = npool.Announcement{
-		AppID: "",
-		LangID: uuid.NewString(),
-		Title:  uuid.NewString(),
-		Content: uuid.NewString(),
-		Channel: basetypes.NotifChannel_ChannelEmail,
-		ChannelStr: basetypes.NotifChannel_ChannelEmail.String(),
-		AnnouncementType: npool.AnnouncementType_Multicast,
+		AppID:               "",
+		LangID:              uuid.NewString(),
+		Title:               uuid.NewString(),
+		Content:             uuid.NewString(),
+		Channel:             basetypes.NotifChannel_ChannelEmail,
+		ChannelStr:          basetypes.NotifChannel_ChannelEmail.String(),
+		AnnouncementType:    npool.AnnouncementType_Multicast,
 		AnnouncementTypeStr: npool.AnnouncementType_Multicast.String(),
-		EndAt : uint32(time.Now().Add(1 * time.Hour).Unix()),
+		EndAt:               uint32(time.Now().Add(1 * time.Hour).Unix()),
 	}
 )
 
@@ -185,25 +186,22 @@ func createUser(t *testing.T) {
 	}
 }
 
-var (
-	endAt  = uint32(time.Now().Add(1 * time.Hour).Unix())
-	userID = uuid.NewString()
-	aType  = mgrpb.AnnouncementType_Broadcast
-	data   = npool.Announcement{
-		AnnouncementID:      uuid.NewString(),
-		AppID:               uuid.NewString(),
-		LangID:              uuid.NewString(),
-		Title:               uuid.NewString(),
-		Content:             uuid.NewString(),
-		Read:                true,
-		EndAt:               endAt,
-		AnnouncementTypeStr: aType.String(),
-		AnnouncementType:    aType,
-		ReadUserID:          userID,
-		ChannelStr:          channelpb.NotifChannel_ChannelEmail.String(),
-		Channel:             channelpb.NotifChannel_ChannelEmail,
+func createAnnouncement(t *testing.T) {
+	info, err := CreateAnnouncement(context.Background(), &npool.AnnouncementReq{
+		AppID:            &amt.AppID,
+		LangID:           &amt.LangID,
+		Title:            &amt.Title,
+		Content:          &amt.Content,
+		Channel:          &amt.Channel,
+		AnnouncementType: &amt.AnnouncementType,
+		EndAt:            &amt.EndAt,
+	})
+	if assert.Nil(t, err) {
+		amt.CreatedAt = info.CreatedAt
+		amt.UpdatedAt = info.UpdatedAt
+		assert.Equal(t, info, &amt)
 	}
-)
+}
 
 func getAnnouncementStates(t *testing.T) {
 	channel1 := channelpb.NotifChannel_ChannelEmail

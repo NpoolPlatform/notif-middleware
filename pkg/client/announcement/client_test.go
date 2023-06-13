@@ -93,7 +93,6 @@ func setupAnnouncement(t *testing.T) func(*testing.T) {
 
 	return func(*testing.T) {
 		_, _ = appmwcli.DeleteApp(context.Background(), ret.AppID)
-		_, _ = appmwcli.DeleteApp(context.Background(), ret.ImportedFromAppID)
 		_, _ = appusercli.DeleteUser(context.Background(), info.AppID, info.ID)
 	}
 }

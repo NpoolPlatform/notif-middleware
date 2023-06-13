@@ -51,6 +51,24 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 				Op: conds.GetID().GetOp(), Val: id,
 			}
 		}
+		if conds.AppID != nil {
+			id, err := uuid.Parse(conds.GetAppID().GetValue())
+			if err != nil {
+				return err
+			}
+			h.Conds.AppID = &cruder.Cond{
+				Op: conds.GetAppID().GetOp(), Val: id,
+			}
+		}
+		if conds.AnnouncementID != nil {
+			id, err := uuid.Parse(conds.GetAnnouncementID().GetValue())
+			if err != nil {
+				return err
+			}
+			h.Conds.AnnouncementID = &cruder.Cond{
+				Op: conds.GetAnnouncementID().GetOp(), Val: id,
+			}
+		}
 		return nil
 	}
 }

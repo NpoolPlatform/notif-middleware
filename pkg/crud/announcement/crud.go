@@ -75,8 +75,9 @@ func UpdateSet(u *ent.AnnouncementUpdateOne, req *Req) *ent.AnnouncementUpdateOn
 }
 
 type Conds struct {
-	ID  *cruder.Cond
-	IDs *cruder.Cond
+	ID      *cruder.Cond
+	EndAt   *cruder.Cond
+	Channel *cruder.Cond
 }
 
 func SetQueryConds(q *ent.AnnouncementQuery, conds *Conds) (*ent.AnnouncementQuery, error) {
@@ -96,17 +97,31 @@ func SetQueryConds(q *ent.AnnouncementQuery, conds *Conds) (*ent.AnnouncementQue
 		}
 	}
 
-	if conds.IDs != nil {
-		ids, ok := conds.IDs.Val.([]uuid.UUID)
+	if conds.EndAt != nil {
+		endAt, ok := conds.EndAt.Val.(uint32)
 		if !ok {
-			return nil, fmt.Errorf("invalid announcement ids")
+			return nil, fmt.Errorf("invalid endat")
 		}
-		switch conds.IDs.Op {
-		case cruder.IN:
-			q.Where(entamt.IDIn(ids...))
+		switch conds.EndAt.Op {
+		case cruder.GTE:
+			q.Where(entamt.EndAt(endAt))
 		default:
-			return nil, fmt.Errorf("invalid announcement op field")
+			return nil, fmt.Errorf("invalid endat op field")
 		}
 	}
+
+	if conds.Channel != nil {
+		channel, ok := conds.Channel.Val.(basetypes.NotifChannel)
+		if !ok {
+			return nil, fmt.Errorf("invalid channel")
+		}
+		switch conds.Channel.Op {
+		case cruder.EQ:
+			q.Where(entamt.Channel(channel.String()))
+		default:
+			return nil, fmt.Errorf("invalid channel op field")
+		}
+	}
+
 	return q, nil
 }

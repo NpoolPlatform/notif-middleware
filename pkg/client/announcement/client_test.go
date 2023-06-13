@@ -2,12 +2,13 @@ package announcements
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 	"strconv"
 	"testing"
 	"time"
-
+	"math/rand"
 	"bou.ke/monkey"
 	"github.com/NpoolPlatform/go-service-framework/pkg/config"
 	grpc2 "github.com/NpoolPlatform/go-service-framework/pkg/grpc"
@@ -31,6 +32,11 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
+	appmwcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/app"
+	appusercli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
+	appuserpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/user"
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
+	appmwpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/app"
 	"github.com/NpoolPlatform/notif-middleware/pkg/testinit"
 )
 
@@ -40,6 +46,129 @@ func init() {
 	}
 	if err := testinit.Init(); err != nil {
 		fmt.Printf("cannot init test stub: %v\n", err)
+	}
+}
+
+var (
+	addressFields     = []string{uuid.NewString()}
+	addressFieldsS, _ = json.Marshal(addressFields)
+	appID             = uuid.NewString()
+	ret               = appuserpb.User{
+		ID:                  uuid.NewString(),
+		AppID:               appID,
+		EmailAddress:        "aaa@aaa.aaa",
+		PhoneNO:             "+8613612203133",
+		ImportedFromAppID:   uuid.NewString(),
+		Username:            "amwnrekadsf.are-",
+		AddressFieldsString: string(addressFieldsS),
+		AddressFields:       addressFields,
+		Gender:              uuid.NewString(),
+		PostalCode:          uuid.NewString(),
+		Age:                 100,
+		Birthday:            uint32(time.Now().Unix()),
+		Avatar:              uuid.NewString(),
+		Organization:        uuid.NewString(),
+		FirstName:           uuid.NewString(),
+		LastName:            uuid.NewString(),
+		IDNumber:            uuid.NewString(),
+		GoogleAuthVerified:  true,
+		SigninVerifyType:    basetypes.SignMethod_Email,
+		SigninVerifyTypeStr: basetypes.SignMethod_Email.String(),
+		GoogleSecret:        appID,
+		HasGoogleSecret:     true,
+		Roles:               []string{""},
+		ActionCredits:       "0",
+		Banned:              true,
+		BanMessage:          uuid.NewString(),
+	}
+)
+
+func setupUser(t *testing.T) func(*testing.T) {
+	app1, err := appmwcli.CreateApp(
+		context.Background(),
+		&appmwpb.AppReq{
+			ID:        &ret.AppID,
+			CreatedBy: &ret.ID,
+			Name:      &ret.AppID,
+		},
+	)
+	assert.Nil(t, err)
+	assert.NotNil(t, app1)
+
+	app2, err := appmwcli.CreateApp(
+		context.Background(),
+		&appmwpb.AppReq{
+			ID:        &ret.ImportedFromAppID,
+			CreatedBy: &ret.ID,
+			Name:      &ret.ImportedFromAppID,
+		},
+	)
+	assert.Nil(t, err)
+	assert.NotNil(t, app2)
+
+	return func(*testing.T) {
+		_, _ = appmwcli.DeleteApp(context.Background(), ret.AppID)
+		_, _ = appmwcli.DeleteApp(context.Background(), ret.ImportedFromAppID)
+	}
+}
+
+func createUser(t *testing.T) {
+	ret.PhoneNO = fmt.Sprintf("+86%v", rand.Intn(100000000)+10000)           //nolint
+	ret.EmailAddress = fmt.Sprintf("%v@hhh.ccc", rand.Intn(100000000)+10000) //nolint
+	ret.ImportedFromAppName = ret.ImportedFromAppID
+	var (
+		id                = ret.ID
+		appID             = ret.AppID
+		importedFromAppID = ret.ImportedFromAppID
+		strVal            = "AAA"
+		req               = appuserpb.UserReq{
+			ID:                 &id,
+			AppID:              &appID,
+			EmailAddress:       &ret.EmailAddress,
+			PhoneNO:            &ret.PhoneNO,
+			ImportedFromAppID:  &importedFromAppID,
+			Username:           &ret.Username,
+			AddressFields:      addressFields,
+			Gender:             &ret.Gender,
+			PostalCode:         &ret.PostalCode,
+			Age:                &ret.Age,
+			Birthday:           &ret.Birthday,
+			Avatar:             &ret.Avatar,
+			Organization:       &ret.Organization,
+			FirstName:          &ret.FirstName,
+			LastName:           &ret.LastName,
+			IDNumber:           &ret.IDNumber,
+			GoogleAuthVerified: &ret.GoogleAuthVerified,
+			SigninVerifyType:   &ret.SigninVerifyType,
+			PasswordHash:       &strVal,
+			GoogleSecret:       &appID,
+			ThirdPartyID:       &strVal,
+			ThirdPartyUserID:   &strVal,
+			ThirdPartyUsername: &strVal,
+			ThirdPartyAvatar:   &strVal,
+			Banned:             &ret.Banned,
+			BanMessage:         &ret.BanMessage,
+		}
+		ret1 = appuserpb.User{
+			ID:                  ret.ID,
+			AppID:               ret.AppID,
+			EmailAddress:        ret.EmailAddress,
+			PhoneNO:             ret.PhoneNO,
+			ImportedFromAppID:   ret.ImportedFromAppID,
+			ImportedFromAppName: ret.ImportedFromAppName,
+			ActionCredits:       ret.ActionCredits,
+			AddressFieldsString: "[]",
+			AddressFields:       nil,
+			SigninVerifyTypeStr: basetypes.SignMethod_Email.String(),
+			SigninVerifyType:    basetypes.SignMethod_Email,
+		}
+	)
+
+	info, err := appusercli.CreateUser(context.Background(), &req)
+	if assert.Nil(t, err) {
+		ret.CreatedAt = info.CreatedAt
+		ret1.CreatedAt = info.CreatedAt
+		assert.Equal(t, info, &ret1)
 	}
 }
 

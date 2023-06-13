@@ -1,11 +1,11 @@
-package read
+package sendstate
 
 import (
 	"context"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
-	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/read"
-	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/announcement/read"
+	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/send"
+	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/announcement/send"
 	"github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/handler"
 	"github.com/google/uuid"
 )

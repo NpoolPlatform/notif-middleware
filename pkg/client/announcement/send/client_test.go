@@ -1,8 +1,10 @@
-package sendstate
+package send
 
 import (
 	"context"
 	"fmt"
+	"math/rand"
+
 	"os"
 	"strconv"
 	"testing"
@@ -11,7 +13,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
-	valuedef "github.com/NpoolPlatform/message/npool"
 
 	"github.com/NpoolPlatform/go-service-framework/pkg/config"
 
@@ -22,12 +23,16 @@ import (
 
 	"github.com/NpoolPlatform/notif-middleware/pkg/testinit"
 
-	announcementmgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/announcement"
-	channelpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/channel"
+	appmwcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/app"
+	appusercli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
+	appmwpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/app"
+	appuserpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/user"
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
+	amtpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/send"
+	"github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/handler"
+	sendamt1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/send"
 	"github.com/stretchr/testify/assert"
-
-	announcementcrud "github.com/NpoolPlatform/notif-manager/pkg/crud/announcement"
 )
 
 func init() {
@@ -40,62 +45,118 @@ func init() {
 }
 
 var (
-	aType = announcementmgrpb.AnnouncementType_Multicast
-	data  = npool.SendState{
-		AnnouncementID:      uuid.NewString(),
-		AppID:               uuid.NewString(),
-		UserID:              uuid.NewString(),
+	appID = uuid.NewString()
+	amt   = amtpb.Announcement{
+		AppID:               appID,
+		LangID:              uuid.NewString(),
 		Title:               uuid.NewString(),
 		Content:             uuid.NewString(),
-		ChannelStr:          channelpb.NotifChannel_ChannelEmail.String(),
-		Channel:             channelpb.NotifChannel_ChannelEmail,
-		AnnouncementTypeStr: aType.String(),
-		AnnouncementType:    aType,
+		Channel:             basetypes.NotifChannel_ChannelEmail,
+		ChannelStr:          basetypes.NotifChannel_ChannelEmail.String(),
+		AnnouncementType:    amtpb.AnnouncementType_Multicast,
+		AnnouncementTypeStr: amtpb.AnnouncementType_Multicast.String(),
+		EndAt:               uint32(time.Now().Add(1 * time.Hour).Unix()),
+	}
+
+	ret = npool.SendAnnouncement{
+		AppID:          appID,
+		AnnouncementID: "",
+		UserID:         "",
 	}
 )
 
-func getSendStates(t *testing.T) {
-	endAt := uint32(time.Now().Add(1 * time.Hour).Unix())
-	channel1 := channelpb.NotifChannel_ChannelEmail
+func setupSendAnnouncement(t *testing.T) func(*testing.T) {
+	app1, err := appmwcli.CreateApp(
+		context.Background(),
+		&appmwpb.AppReq{
+			ID:        &appID,
+			CreatedBy: &appID,
+			Name:      &appID,
+		},
+	)
+	assert.Nil(t, err)
+	assert.NotNil(t, app1)
 
-	_, err := announcementcrud.Create(context.Background(), &announcementmgrpb.AnnouncementReq{
-		ID:               &data.AnnouncementID,
-		AppID:            &data.AppID,
-		Title:            &data.Title,
-		Content:          &data.Content,
-		Channel:          &channel1,
-		EndAt:            &endAt,
-		AnnouncementType: &aType,
+	var (
+		id           = uuid.NewString()
+		appID        = app1.ID
+		emailAddress = fmt.Sprintf("%v@hhh.ccc", rand.Intn(100000000)+1000000) //nolint
+		passwordHash = uuid.NewString()
+		req          = &appuserpb.UserReq{
+			ID:           &id,
+			AppID:        &appID,
+			EmailAddress: &emailAddress,
+			PasswordHash: &passwordHash,
+		}
+	)
+
+	user, err := appusercli.CreateUser(context.Background(), req)
+	assert.Nil(t, err)
+	assert.NotNil(t, user)
+
+	ret.UserID = user.ID
+
+	handler, err := sendamt1.NewHandler(
+		context.Background(),
+		handler.WithAppID(&amt.AppID),
+		handler.WithUserID(&amt.AppID, &amt.UserID),
+		handler.WithAnnouncementID(&amt.AppID, &amt.ID),
+	)
+	assert.Nil(t, err)
+
+	_amt, err := handler.CreateSendAnnouncement(context.Background())
+	assert.Nil(t, err)
+	assert.NotNil(t, _amt)
+
+	ret.AnnouncementID = _amt.ID
+
+	return func(*testing.T) {
+		_, _ = appmwcli.DeleteApp(context.Background(), ret.AppID)
+		_, _ = appusercli.DeleteUser(context.Background(), ret.AppID, ret.UserID)
+		_, _ = handler.DeleteSendAnnouncement(context.Background())
+	}
+}
+
+func createSendAnnouncement(t *testing.T) {
+	info, err := CreateSendAnnouncement(context.Background(), &npool.SendAnnouncementReq{
+		AppID:          &ret.AppID,
+		UserID:         &ret.UserID,
+		AnnouncementID: &ret.AnnouncementID,
 	})
-	assert.Nil(t, err)
+	if assert.Nil(t, err) {
+		ret.CreatedAt = info.CreatedAt
+		ret.UpdatedAt = info.UpdatedAt
+		ret.ID = info.ID
+		assert.Equal(t, info, &ret)
+	}
+}
 
-	err = CreateSendState(context.Background(), data.AppID, data.UserID, data.AnnouncementID, data.Channel)
+func getSendAnnouncement(t *testing.T) {
+	info, err := GetSendAnnouncement(context.Background(), ret.ID)
 	assert.Nil(t, err)
+	assert.NotNil(t, info)
+}
 
-	infos, total, err := GetSendStates(context.Background(), &npool.Conds{
-		AppID: &valuedef.StringVal{
+func getSendAnnouncements(t *testing.T) {
+	infos, _, err := GetSendAnnouncements(context.Background(), &npool.Conds{
+		ID: &basetypes.StringVal{
 			Op:    cruder.EQ,
-			Value: data.AppID,
-		},
-		UserID: &valuedef.StringVal{
-			Op:    cruder.EQ,
-			Value: data.UserID,
-		},
-		AnnouncementID: &valuedef.StringVal{
-			Op:    cruder.EQ,
-			Value: data.AnnouncementID,
-		},
-		Channel: &valuedef.Uint32Val{
-			Op:    cruder.EQ,
-			Value: uint32(channelpb.NotifChannel_ChannelEmail),
+			Value: ret.ID,
 		},
 	}, 0, 1)
 	if assert.Nil(t, err) {
-		assert.Equal(t, total, uint32(1))
-		data.CreatedAt = infos[0].CreatedAt
-		data.UpdatedAt = infos[0].UpdatedAt
-		assert.Equal(t, infos[0], &data)
+		assert.NotEqual(t, len(infos), 0)
 	}
+}
+
+func deleteSendAnnouncement(t *testing.T) {
+	info, err := DeleteSendAnnouncement(context.Background(), ret.ID)
+	if assert.Nil(t, err) {
+		assert.Equal(t, info, &ret)
+	}
+	info, err = GetSendAnnouncement(context.Background(), info.ID)
+	assert.Nil(t, err)
+	assert.Nil(t, info)
 }
 
 func TestClient(t *testing.T) {
@@ -105,8 +166,16 @@ func TestClient(t *testing.T) {
 
 	gport := config.GetIntValueWithNameSpace("", config.KeyGRPCPort)
 
-	monkey.Patch(grpc2.GetGRPCConn, func(service string, tags ...string) (*grpc.ClientConn, error) {
+	teardown := setupSendAnnouncement(t)
+	defer teardown(t)
+
+	patch := monkey.Patch(grpc2.GetGRPCConn, func(service string, tags ...string) (*grpc.ClientConn, error) {
 		return grpc.Dial(fmt.Sprintf("localhost:%v", gport), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	})
-	t.Run("getSendStates", getSendStates)
+	t.Run("createSendAnnouncement", createSendAnnouncement)
+	t.Run("getSendAnnouncement", getSendAnnouncement)
+	t.Run("getSendAnnouncements", getSendAnnouncements)
+	t.Run("deleteSendAnnouncement", deleteSendAnnouncement)
+
+	patch.Unpatch()
 }

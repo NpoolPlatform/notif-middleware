@@ -1,4 +1,4 @@
-package sendstate
+package send
 
 import (
 	"context"

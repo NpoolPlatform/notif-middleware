@@ -49,6 +49,73 @@ func GetAnnouncements(ctx context.Context, conds *npool.Conds, offset, limit int
 	return infos.([]*npool.Announcement), total, nil
 }
 
+func GetAnnouncement(ctx context.Context, id string) (*npool.Announcement, error) {
+	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		resp, err := cli.GetAnnouncement(ctx, &npool.GetAnnouncementRequest{
+			ID: id,
+		})
+		if err != nil {
+			return nil, err
+		}
+		return resp.Info, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return info.(*npool.Announcement), nil
+}
+
+func DeleteAnnouncement(ctx context.Context, id string) (*npool.Announcement, error) {
+	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		resp, err := cli.DeleteAnnouncement(ctx, &npool.DeleteAnnouncementRequest{
+			Info: &npool.AnnouncementReq{
+				ID: &id,
+			},
+		})
+		if err != nil {
+			return nil, err
+		}
+		return resp.Info, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return info.(*npool.Announcement), nil
+}
+
+func UpdateAnnouncement(ctx context.Context, in *npool.AnnouncementReq) (*npool.Announcement, error) {
+	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		resp, err := cli.UpdateAnnouncement(ctx, &npool.UpdateAnnouncementRequest{
+			Info: in,
+		})
+		if err != nil {
+			return nil, err
+		}
+		return resp.Info, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return info.(*npool.Announcement), nil
+}
+
+func ExistAnnouncement(ctx context.Context, id, appID string) (bool, error) {
+	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		resp, err := cli.ExistAnnouncement(ctx, &npool.ExistAnnouncementRequest{
+			ID:    id,
+			AppID: appID,
+		})
+		if err != nil {
+			return nil, err
+		}
+		return resp.Info, nil
+	})
+	if err != nil {
+		return false, err
+	}
+	return info.(bool), nil
+}
+
 func GetAnnouncementStates(ctx context.Context, conds *npool.Conds, offset, limit int32) ([]*npool.Announcement, uint32, error) {
 	var total uint32
 	infos, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
@@ -67,21 +134,4 @@ func GetAnnouncementStates(ctx context.Context, conds *npool.Conds, offset, limi
 		return nil, 0, fmt.Errorf("fail get announcements: %v", err)
 	}
 	return infos.([]*npool.Announcement), total, nil
-}
-
-func ExistAnnouncement(ctx context.Context, id, appID string) (bool, error) {
-	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		resp, err := cli.ExistAnnouncement(ctx, &npool.ExistAnnouncementRequest{
-			ID:    id,
-			AppID: appID,
-		})
-		if err != nil {
-			return nil, err
-		}
-		return resp.Info, nil
-	})
-	if err != nil {
-		return false, err
-	}
-	return info.(bool), nil
 }

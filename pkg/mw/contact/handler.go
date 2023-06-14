@@ -7,7 +7,7 @@ import (
 	appcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/app"
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
-	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement"
+	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/contact"
 	constant "github.com/NpoolPlatform/notif-middleware/pkg/const"
 	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/contact"
 	"github.com/google/uuid"
@@ -143,6 +143,28 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			h.Conds.ID = &cruder.Cond{
 				Op:  conds.GetID().GetOp(),
 				Val: id,
+			}
+		}
+		if conds.AppID != nil {
+			id, err := uuid.Parse(conds.GetAppID().GetValue())
+			if err != nil {
+				return err
+			}
+			h.Conds.AppID = &cruder.Cond{
+				Op:  conds.GetAppID().GetOp(),
+				Val: id,
+			}
+		}
+		if conds.AccountType != nil {
+			accountType := conds.GetAccountType().GetValue()
+			h.Conds.AccountType = &cruder.Cond{
+				Op: conds.GetAccountType().GetOp(), Val: basetypes.SignMethod(accountType),
+			}
+		}
+		if conds.UsedFor != nil {
+			usedFor := conds.GetUsedFor().GetValue()
+			h.Conds.UsedFor = &cruder.Cond{
+				Op: conds.GetUsedFor().GetOp(), Val: basetypes.UsedFor(usedFor),
 			}
 		}
 		return nil

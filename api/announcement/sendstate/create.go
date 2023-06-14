@@ -6,14 +6,14 @@ import (
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/sendstate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/handler"
-	announcement1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/sendstate"
+	sendamt "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/sendstate"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 func (s *Server) CreateSendState(ctx context.Context, in *npool.CreateSendStateRequest) (*npool.CreateSendStateResponse, error) {
 	req := in.GetInfo()
-	handler, err := announcement1.NewHandler(
+	handler, err := sendamt.NewHandler(
 		ctx,
 		handler.WithAppID(req.AppID),
 		handler.WithUserID(req.AppID, req.UserID),

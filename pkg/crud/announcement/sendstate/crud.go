@@ -14,6 +14,7 @@ type Req struct {
 	ID             *uuid.UUID
 	AppID          *uuid.UUID
 	UserID         *uuid.UUID
+	Channel        *basetypes.NotifChannel
 	AnnouncementID *uuid.UUID
 	DeletedAt      *uint32
 }
@@ -27,6 +28,9 @@ func CreateSet(c *ent.SendAnnouncementCreate, req *Req) *ent.SendAnnouncementCre
 	}
 	if req.UserID != nil {
 		c.SetUserID(*req.UserID)
+	}
+	if req.Channel != nil {
+		c.SetChannel(req.Channel.String())
 	}
 	if req.AnnouncementID != nil {
 		c.SetAnnouncementID(*req.AnnouncementID)

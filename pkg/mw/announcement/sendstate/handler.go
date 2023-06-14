@@ -2,6 +2,7 @@ package sendstate
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
@@ -13,7 +14,8 @@ import (
 
 type Handler struct {
 	*handler.Handler
-	Conds *crud.Conds
+	Channel *basetypes.NotifChannel
+	Conds   *crud.Conds
 }
 
 func NewHandler(ctx context.Context, options ...interface{}) (*Handler, error) {
@@ -35,6 +37,20 @@ func NewHandler(ctx context.Context, options ...interface{}) (*Handler, error) {
 		}
 	}
 	return h, nil
+}
+
+func WithChannel(channel *basetypes.NotifChannel) func(context.Context, *Handler) error {
+	return func(ctx context.Context, h *Handler) error {
+		switch *channel {
+		case basetypes.NotifChannel_ChannelEmail:
+		case basetypes.NotifChannel_ChannelSMS:
+		case basetypes.NotifChannel_ChannelFrontend:
+		default:
+			return fmt.Errorf("channel %v invalid", *channel)
+		}
+		h.Channel = channel
+		return nil
+	}
 }
 
 func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {

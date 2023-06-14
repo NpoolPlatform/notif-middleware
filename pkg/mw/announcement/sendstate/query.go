@@ -26,6 +26,7 @@ func (h *queryHandler) selectSendState(stm *ent.SendAnnouncementQuery) {
 		entsendamt.FieldAppID,
 		entsendamt.FieldUserID,
 		entsendamt.FieldAnnouncementID,
+		entsendamt.FieldChannel,
 		entsendamt.FieldCreatedAt,
 		entsendamt.FieldUpdatedAt,
 	)

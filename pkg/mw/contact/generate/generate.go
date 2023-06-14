@@ -6,30 +6,23 @@ import (
 	"strings"
 
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
-	mgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/contact"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/contact"
 
-	mgrcli "github.com/NpoolPlatform/notif-manager/pkg/client/contact"
-
 	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
-	commonpb "github.com/NpoolPlatform/message/npool"
 )
 
 func (h *Handler) GenerateContact(ctx context.Context) (*npool.TextInfo, error) {
-	info, err := mgrcli.GetContactOnly(ctx, &mgrpb.Conds{
-		AppID: &commonpb.StringVal{
-			Op:    cruder.EQ,
-			Value: h.AppID.String(),
-		},
-		UsedFor: &commonpb.Int32Val{
-			Op:    cruder.EQ,
-			Value: int32(h.UsedFor.Number()),
-		},
-		AccountType: &commonpb.Int32Val{
-			Op:    cruder.EQ,
-			Value: int32(basetypes.SignMethod_Email),
-		},
-	})
+	h.Conds.AppID = &cruder.Cond{
+		Op:  cruder.EQ, Val: *h.AppID,
+	}
+	h.Conds.UsedFor = &cruder.Cond{
+		Op:  cruder.EQ, Val: int32(h.UsedFor.Number()),
+	}
+	h.Conds.AccountType = &cruder.Cond{
+		Op:  cruder.EQ, Val: int32(basetypes.SignMethod_Email),
+	}
+
+	info, err := h.GetContactOnly(ctx)
 	if err != nil {
 		return nil, err
 	}

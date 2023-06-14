@@ -117,3 +117,36 @@ func (h *Handler) GetContact(ctx context.Context) (info *npool.Contact, err erro
 
 	return handler.infos[0], nil
 }
+
+func (h *Handler) GetContactOnly(ctx context.Context) (*npool.Contact, error) {
+	handler := &queryHandler{
+		Handler: h,
+	}
+
+	err := db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
+		if err := handler.queryContactsByConds(_ctx, cli); err != nil {
+			return err
+		}
+
+		_, err := handler.stm.Only(_ctx)
+		if err != nil {
+			if ent.IsNotFound(err) {
+				return nil
+			}
+			return err
+		}
+
+		if err := handler.scan(_ctx); err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	if len(handler.infos) > 0 {
+		return nil, fmt.Errorf("to many record")
+	}
+
+	return handler.infos[0], nil
+}

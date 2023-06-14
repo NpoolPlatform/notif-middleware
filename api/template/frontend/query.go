@@ -2,48 +2,36 @@ package frontend
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/template/frontend"
-	constant "github.com/NpoolPlatform/notif-middleware/pkg/message/const"
-	"github.com/google/uuid"
-	"go.opentelemetry.io/otel"
-	scodes "go.opentelemetry.io/otel/codes"
+	frontendtemplate1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/template/frontend"
+
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-
-	mgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/template/frontend"
-	mgrcli "github.com/NpoolPlatform/notif-manager/pkg/client/template/frontend"
-
-	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 )
 
-func (s *Server) GetFrontendTemplate(
-	ctx context.Context,
-	in *npool.GetFrontendTemplateRequest,
-) (
-	resp *npool.GetFrontendTemplateResponse,
-	err error,
-) {
-	_, span := otel.Tracer(constant.ServiceName).Start(ctx, "GetFrontendTemplate")
-	defer span.End()
-	defer func() {
-		if err != nil {
-			span.SetStatus(scodes.Error, err.Error())
-			span.RecordError(err)
-		}
-	}()
-
-	if _, err = uuid.Parse(in.GetID()); err != nil {
-		logger.Sugar().Errorw("GetFrontendTemplate", "error", err)
-		return &npool.GetFrontendTemplateResponse{}, status.Error(codes.InvalidArgument, err.Error())
-	}
-
-	info, err := mgrcli.GetFrontendTemplate(ctx, in.GetID())
+func (s *Server) GetFrontendTemplate(ctx context.Context, in *npool.GetFrontendTemplateRequest) (*npool.GetFrontendTemplateResponse, error) {
+	handler, err := frontendtemplate1.NewHandler(
+		ctx,
+		frontendtemplate1.WithID(&in.ID),
+	)
 	if err != nil {
-		logger.Sugar().Errorw("GetFrontendTemplate", "error", err)
-		return &npool.GetFrontendTemplateResponse{}, status.Error(codes.Internal, err.Error())
+		logger.Sugar().Errorw(
+			"GetFrontendTemplate",
+			"In", in,
+			"Error", err,
+		)
+		return &npool.GetFrontendTemplateResponse{}, status.Error(codes.Aborted, err.Error())
+	}
+	info, err := handler.GetFrontendTemplate(ctx)
+	if err != nil {
+		logger.Sugar().Errorw(
+			"GetFrontendTemplate",
+			"In", in,
+			"Error", err,
+		)
+		return &npool.GetFrontendTemplateResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
 	return &npool.GetFrontendTemplateResponse{
@@ -51,101 +39,61 @@ func (s *Server) GetFrontendTemplate(
 	}, nil
 }
 
-func validateConds(in *mgrpb.Conds) error {
-	if in.ID != nil {
-		if _, err := uuid.Parse(in.GetID().GetValue()); err != nil {
-			logger.Sugar().Errorw("validateConds", "ID", in.GetID().GetValue(), "error", err)
-			return err
-		}
+func (s *Server) GetFrontendTemplateOnly(ctx context.Context, in *npool.GetFrontendTemplateOnlyRequest) (*npool.GetFrontendTemplateOnlyResponse, error) {
+	handler, err := frontendtemplate1.NewHandler(
+		ctx,
+		frontendtemplate1.WithConds(in.Conds),
+	)
+	if err != nil {
+		logger.Sugar().Errorw(
+			"GetFrontendTemplate",
+			"In", in,
+			"Error", err,
+		)
+		return &npool.GetFrontendTemplateOnlyResponse{}, status.Error(codes.Aborted, err.Error())
 	}
-	if in.AppID != nil {
-		if _, err := uuid.Parse(in.GetAppID().GetValue()); err != nil {
-			logger.Sugar().Errorw("validateConds", "AppID", in.GetAppID().GetValue(), "error", err)
-			return err
-		}
+	info, err := handler.GetFrontendTemplate(ctx)
+	if err != nil {
+		logger.Sugar().Errorw(
+			"GetFrontendTemplate",
+			"In", in,
+			"Error", err,
+		)
+		return &npool.GetFrontendTemplateOnlyResponse{}, status.Error(codes.Aborted, err.Error())
 	}
-	if in.LangID != nil {
-		if _, err := uuid.Parse(in.GetLangID().GetValue()); err != nil {
-			logger.Sugar().Errorw("validateConds", "LangID", in.GetLangID().GetValue(), "error", err)
-			return err
-		}
-	}
-	if in.UsedFor != nil {
-		switch in.GetUsedFor().GetValue() {
-		case uint32(basetypes.UsedFor_WithdrawalRequest):
-		case uint32(basetypes.UsedFor_WithdrawalCompleted):
-		case uint32(basetypes.UsedFor_DepositReceived):
-		case uint32(basetypes.UsedFor_KYCApproved):
-		case uint32(basetypes.UsedFor_KYCRejected):
-		case uint32(basetypes.UsedFor_Announcement):
-		default:
-			return fmt.Errorf("UsedFor is invalid")
-		}
-	}
-	return nil
+
+	return &npool.GetFrontendTemplateOnlyResponse{
+		Info: info,
+	}, nil
 }
 
-func (s *Server) GetFrontendTemplates(
-	ctx context.Context,
-	in *npool.GetFrontendTemplatesRequest,
-) (
-	resp *npool.GetFrontendTemplatesResponse,
-	err error,
-) {
-	_, span := otel.Tracer(constant.ServiceName).Start(ctx, "GetFrontendTemplate")
-	defer span.End()
-	defer func() {
-		if err != nil {
-			span.SetStatus(scodes.Error, err.Error())
-			span.RecordError(err)
-		}
-	}()
-
-	err = validateConds(in.GetConds())
+func (s *Server) GetFrontendTemplates(ctx context.Context, in *npool.GetFrontendTemplatesRequest) (*npool.GetFrontendTemplatesResponse, error) {
+	handler, err := frontendtemplate1.NewHandler(
+		ctx,
+		frontendtemplate1.WithConds(in.GetConds()),
+		frontendtemplate1.WithOffset(in.GetOffset()),
+		frontendtemplate1.WithLimit(in.GetLimit()),
+	)
 	if err != nil {
-		logger.Sugar().Errorw("GetFrontendTemplate", "error", err)
-		return &npool.GetFrontendTemplatesResponse{}, status.Error(codes.Internal, err.Error())
+		logger.Sugar().Errorw(
+			"GetFrontendTemplates",
+			"In", in,
+			"Error", err,
+		)
+		return &npool.GetFrontendTemplatesResponse{}, status.Error(codes.Aborted, err.Error())
 	}
-	infos, total, err := mgrcli.GetFrontendTemplates(ctx, in.GetConds(), int32(in.GetOffset()), int32(in.GetLimit()))
+	infos, total, err := handler.GetFrontendTemplates(ctx)
 	if err != nil {
-		logger.Sugar().Errorw("GetFrontendTemplate", "error", err)
-		return &npool.GetFrontendTemplatesResponse{}, status.Error(codes.Internal, err.Error())
+		logger.Sugar().Errorw(
+			"GetFrontendTemplates",
+			"In", in,
+			"Error", err,
+		)
+		return &npool.GetFrontendTemplatesResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
 	return &npool.GetFrontendTemplatesResponse{
 		Infos: infos,
 		Total: total,
-	}, nil
-}
-
-func (s *Server) GetFrontendTemplateOnly(
-	ctx context.Context,
-	in *npool.GetFrontendTemplateOnlyRequest,
-) (
-	resp *npool.GetFrontendTemplateOnlyResponse,
-	err error,
-) {
-	_, span := otel.Tracer(constant.ServiceName).Start(ctx, "GetFrontendTemplateOnly")
-	defer span.End()
-	defer func() {
-		if err != nil {
-			span.SetStatus(scodes.Error, err.Error())
-			span.RecordError(err)
-		}
-	}()
-
-	err = validateConds(in.GetConds())
-	if err != nil {
-		logger.Sugar().Errorw("GetFrontendTemplateOnly", "error", err)
-		return &npool.GetFrontendTemplateOnlyResponse{}, status.Error(codes.Internal, err.Error())
-	}
-	info, err := mgrcli.GetFrontendTemplateOnly(ctx, in.GetConds())
-	if err != nil {
-		logger.Sugar().Errorw("GetFrontendTemplateOnly", "error", err)
-		return &npool.GetFrontendTemplateOnlyResponse{}, status.Error(codes.Internal, err.Error())
-	}
-
-	return &npool.GetFrontendTemplateOnlyResponse{
-		Info: info,
 	}, nil
 }

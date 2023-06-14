@@ -94,6 +94,28 @@ func updateContact(t *testing.T) {
 	}
 }
 
+func existContactConds(t *testing.T) {
+	exist, err := ExistContactConds(context.Background(), &npool.ExistContactCondsRequest{
+		Conds: &npool.Conds{
+			AppID: &basetypes.StringVal{
+				Op:    cruder.EQ,
+				Value: ret.AppID,
+			},
+			AccountType: &basetypes.Int32Val{
+				Op:    cruder.EQ,
+				Value: int32(ret.AccountType),
+			},
+			UsedFor: &basetypes.Int32Val{
+				Op:    cruder.EQ,
+				Value: int32(ret.UsedFor),
+			},
+		},
+	})
+	if assert.Nil(t, err) {
+		assert.True(t, exist)
+	}
+}
+
 func getContact(t *testing.T) {
 	info, err := GetContact(context.Background(), ret.ID)
 	assert.Nil(t, err)
@@ -161,6 +183,7 @@ func TestClient(t *testing.T) {
 	t.Run("updateContact", updateContact)
 	t.Run("getContact", getContact)
 	t.Run("getContacts", getContacts)
+	t.Run("existContactConds", existContactConds)
 	t.Run("generateContact", generateContact)
 	t.Run("deleteContact", deleteContact)
 

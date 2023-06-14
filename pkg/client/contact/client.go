@@ -100,13 +100,13 @@ func GetContacts(ctx context.Context, conds *npool.Conds, offset, limit int32) (
 			Offset: offset,
 		})
 		if err != nil {
-			return nil, fmt.Errorf("fail get announcements: %v", err)
+			return nil, fmt.Errorf("fail get contacts: %v", err)
 		}
 		total = resp.GetTotal()
 		return resp.GetInfos(), nil
 	})
 	if err != nil {
-		return nil, 0, fmt.Errorf("fail get announcements: %v", err)
+		return nil, 0, fmt.Errorf("fail get contacts: %v", err)
 	}
 	return infos.([]*npool.Contact), total, nil
 }

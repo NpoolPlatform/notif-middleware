@@ -6,7 +6,7 @@ require (
 	bou.ke/monkey v1.0.2
 	entgo.io/ent v0.11.2
 	github.com/NpoolPlatform/basal-middleware v0.0.0-20230518061816-62bd589c0f63
-	github.com/NpoolPlatform/go-service-framework v0.0.0-20230509081417-267df92cab6d
+	github.com/NpoolPlatform/go-service-framework v0.0.0-20230602083207-1c0e6203556b
 	github.com/NpoolPlatform/libent-cruder v0.0.0-20221109023947-366125b690fb
 	github.com/NpoolPlatform/message v0.0.0-20230524064408-5c6a3ac485cd
 	github.com/NpoolPlatform/notif-manager v0.0.0-20230524065114-b1b16877fab1
@@ -22,7 +22,7 @@ require (
 	google.golang.org/protobuf v1.30.0
 )
 
-replace github.com/NpoolPlatform/message => github.com/NpoolPlatform/message v0.0.0-20230608094346-ef94f234b00a
+replace github.com/NpoolPlatform/message => github.com/NpoolPlatform/message v0.0.0-20230613030903-874d0af17283
 
 require (
 	ariga.io/atlas v0.5.1-0.20220717122844-8593d7eb1a8e // indirect
@@ -40,6 +40,7 @@ require (
 	github.com/coocood/freecache v1.0.1 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/go-chassis/go-archaius v1.5.3 // indirect
@@ -47,6 +48,7 @@ require (
 	github.com/go-logr/logr v1.2.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-openapi/inflect v0.19.0 // indirect
+	github.com/go-redis/redis/v8 v8.11.4 // indirect
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect

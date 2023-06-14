@@ -2,48 +2,36 @@ package email
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/template/email"
-	constant "github.com/NpoolPlatform/notif-middleware/pkg/message/const"
-	"github.com/google/uuid"
-	"go.opentelemetry.io/otel"
-	scodes "go.opentelemetry.io/otel/codes"
+	emailtemplate1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/template/email"
+
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-
-	mgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/template/email"
-	mgrcli "github.com/NpoolPlatform/notif-manager/pkg/client/template/email"
-
-	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 )
 
-func (s *Server) GetEmailTemplate(
-	ctx context.Context,
-	in *npool.GetEmailTemplateRequest,
-) (
-	resp *npool.GetEmailTemplateResponse,
-	err error,
-) {
-	_, span := otel.Tracer(constant.ServiceName).Start(ctx, "GetEmailTemplate")
-	defer span.End()
-	defer func() {
-		if err != nil {
-			span.SetStatus(scodes.Error, err.Error())
-			span.RecordError(err)
-		}
-	}()
-
-	if _, err = uuid.Parse(in.GetID()); err != nil {
-		logger.Sugar().Errorw("GetEmailTemplate", "error", err)
-		return &npool.GetEmailTemplateResponse{}, status.Error(codes.InvalidArgument, err.Error())
-	}
-
-	info, err := mgrcli.GetEmailTemplate(ctx, in.GetID())
+func (s *Server) GetEmailTemplate(ctx context.Context, in *npool.GetEmailTemplateRequest) (*npool.GetEmailTemplateResponse, error) {
+	handler, err := emailtemplate1.NewHandler(
+		ctx,
+		emailtemplate1.WithID(&in.ID),
+	)
 	if err != nil {
-		logger.Sugar().Errorw("GetEmailTemplate", "error", err)
-		return &npool.GetEmailTemplateResponse{}, status.Error(codes.Internal, err.Error())
+		logger.Sugar().Errorw(
+			"GetEmailTemplate",
+			"In", in,
+			"Error", err,
+		)
+		return &npool.GetEmailTemplateResponse{}, status.Error(codes.Aborted, err.Error())
+	}
+	info, err := handler.GetEmailTemplate(ctx)
+	if err != nil {
+		logger.Sugar().Errorw(
+			"GetEmailTemplate",
+			"In", in,
+			"Error", err,
+		)
+		return &npool.GetEmailTemplateResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
 	return &npool.GetEmailTemplateResponse{
@@ -51,101 +39,61 @@ func (s *Server) GetEmailTemplate(
 	}, nil
 }
 
-func validateConds(in *mgrpb.Conds) error {
-	if in.ID != nil {
-		if _, err := uuid.Parse(in.GetID().GetValue()); err != nil {
-			logger.Sugar().Errorw("validateConds", "ID", in.GetID().GetValue(), "error", err)
-			return err
-		}
+func (s *Server) GetEmailTemplateOnly(ctx context.Context, in *npool.GetEmailTemplateOnlyRequest) (*npool.GetEmailTemplateOnlyResponse, error) {
+	handler, err := emailtemplate1.NewHandler(
+		ctx,
+		emailtemplate1.WithConds(in.Conds),
+	)
+	if err != nil {
+		logger.Sugar().Errorw(
+			"GetEmailTemplate",
+			"In", in,
+			"Error", err,
+		)
+		return &npool.GetEmailTemplateOnlyResponse{}, status.Error(codes.Aborted, err.Error())
 	}
-	if in.AppID != nil {
-		if _, err := uuid.Parse(in.GetAppID().GetValue()); err != nil {
-			logger.Sugar().Errorw("validateConds", "AppID", in.GetAppID().GetValue(), "error", err)
-			return err
-		}
+	info, err := handler.GetEmailTemplate(ctx)
+	if err != nil {
+		logger.Sugar().Errorw(
+			"GetEmailTemplate",
+			"In", in,
+			"Error", err,
+		)
+		return &npool.GetEmailTemplateOnlyResponse{}, status.Error(codes.Aborted, err.Error())
 	}
-	if in.LangID != nil {
-		if _, err := uuid.Parse(in.GetLangID().GetValue()); err != nil {
-			logger.Sugar().Errorw("validateConds", "LangID", in.GetLangID().GetValue(), "error", err)
-			return err
-		}
-	}
-	if in.UsedFor != nil {
-		switch in.GetUsedFor().GetValue() {
-		case int32(basetypes.UsedFor_WithdrawalRequest):
-		case int32(basetypes.UsedFor_WithdrawalCompleted):
-		case int32(basetypes.UsedFor_DepositReceived):
-		case int32(basetypes.UsedFor_KYCApproved):
-		case int32(basetypes.UsedFor_KYCRejected):
-		case int32(basetypes.UsedFor_Announcement):
-		default:
-			return fmt.Errorf("UsedFor is invalid")
-		}
-	}
-	return nil
+
+	return &npool.GetEmailTemplateOnlyResponse{
+		Info: info,
+	}, nil
 }
 
-func (s *Server) GetEmailTemplates(
-	ctx context.Context,
-	in *npool.GetEmailTemplatesRequest,
-) (
-	resp *npool.GetEmailTemplatesResponse,
-	err error,
-) {
-	_, span := otel.Tracer(constant.ServiceName).Start(ctx, "GetEmailTemplate")
-	defer span.End()
-	defer func() {
-		if err != nil {
-			span.SetStatus(scodes.Error, err.Error())
-			span.RecordError(err)
-		}
-	}()
-
-	err = validateConds(in.GetConds())
+func (s *Server) GetEmailTemplates(ctx context.Context, in *npool.GetEmailTemplatesRequest) (*npool.GetEmailTemplatesResponse, error) {
+	handler, err := emailtemplate1.NewHandler(
+		ctx,
+		emailtemplate1.WithConds(in.GetConds()),
+		emailtemplate1.WithOffset(in.GetOffset()),
+		emailtemplate1.WithLimit(in.GetLimit()),
+	)
 	if err != nil {
-		logger.Sugar().Errorw("GetEmailTemplate", "error", err)
-		return &npool.GetEmailTemplatesResponse{}, status.Error(codes.Internal, err.Error())
+		logger.Sugar().Errorw(
+			"GetEmailTemplates",
+			"In", in,
+			"Error", err,
+		)
+		return &npool.GetEmailTemplatesResponse{}, status.Error(codes.Aborted, err.Error())
 	}
-	infos, total, err := mgrcli.GetEmailTemplates(ctx, in.GetConds(), int32(in.GetOffset()), int32(in.GetLimit()))
+	infos, total, err := handler.GetEmailTemplates(ctx)
 	if err != nil {
-		logger.Sugar().Errorw("GetEmailTemplate", "error", err)
-		return &npool.GetEmailTemplatesResponse{}, status.Error(codes.Internal, err.Error())
+		logger.Sugar().Errorw(
+			"GetEmailTemplates",
+			"In", in,
+			"Error", err,
+		)
+		return &npool.GetEmailTemplatesResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
 	return &npool.GetEmailTemplatesResponse{
 		Infos: infos,
 		Total: total,
-	}, nil
-}
-
-func (s *Server) GetEmailTemplateOnly(
-	ctx context.Context,
-	in *npool.GetEmailTemplateOnlyRequest,
-) (
-	resp *npool.GetEmailTemplateOnlyResponse,
-	err error,
-) {
-	_, span := otel.Tracer(constant.ServiceName).Start(ctx, "GetEmailTemplateOnly")
-	defer span.End()
-	defer func() {
-		if err != nil {
-			span.SetStatus(scodes.Error, err.Error())
-			span.RecordError(err)
-		}
-	}()
-
-	err = validateConds(in.GetConds())
-	if err != nil {
-		logger.Sugar().Errorw("GetEmailTemplateOnly", "error", err)
-		return &npool.GetEmailTemplateOnlyResponse{}, status.Error(codes.Internal, err.Error())
-	}
-	info, err := mgrcli.GetEmailTemplateOnly(ctx, in.GetConds())
-	if err != nil {
-		logger.Sugar().Errorw("GetEmailTemplateOnly", "error", err)
-		return &npool.GetEmailTemplateOnlyResponse{}, status.Error(codes.Internal, err.Error())
-	}
-
-	return &npool.GetEmailTemplateOnlyResponse{
-		Info: info,
 	}, nil
 }

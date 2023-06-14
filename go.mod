@@ -5,10 +5,11 @@ go 1.17
 require (
 	bou.ke/monkey v1.0.2
 	entgo.io/ent v0.11.2
+	github.com/NpoolPlatform/appuser-middleware v0.0.0-20230609030803-0b26c1f95713
 	github.com/NpoolPlatform/basal-middleware v0.0.0-20230518061816-62bd589c0f63
 	github.com/NpoolPlatform/go-service-framework v0.0.0-20230602083207-1c0e6203556b
 	github.com/NpoolPlatform/libent-cruder v0.0.0-20221109023947-366125b690fb
-	github.com/NpoolPlatform/message v0.0.0-20230524064408-5c6a3ac485cd
+	github.com/NpoolPlatform/message v0.0.0-20230614070554-061289657fc1
 	github.com/NpoolPlatform/notif-manager v0.0.0-20230524065114-b1b16877fab1
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/google/uuid v1.3.0
@@ -21,8 +22,6 @@ require (
 	google.golang.org/grpc v1.55.0
 	google.golang.org/protobuf v1.30.0
 )
-
-replace github.com/NpoolPlatform/message => github.com/NpoolPlatform/message v0.0.0-20230613030903-874d0af17283
 
 require (
 	ariga.io/atlas v0.5.1-0.20220717122844-8593d7eb1a8e // indirect

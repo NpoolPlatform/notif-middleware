@@ -88,7 +88,7 @@ func WithNotifID(notifid *string) func(context.Context, *Handler) error {
 }
 
 // nolint:gocyclo
-func WithReqs(reqs []*npool.UserReq) func(context.Context, *Handler) error {
+func WithReqs(reqs []*npool.UserNotifReq) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		_reqs := []*usercrud.Req{}
 		for _, req := range reqs {

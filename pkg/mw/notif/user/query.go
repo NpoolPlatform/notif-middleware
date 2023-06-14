@@ -66,7 +66,7 @@ func (h *queryHandler) scan(ctx context.Context) error {
 	return h.stm.Scan(ctx, &h.infos)
 }
 
-func (h *Handler) GetUser(ctx context.Context) (*npool.User, error) {
+func (h *Handler) GetUser(ctx context.Context) (*npool.UserNotif, error) {
 	handler := &queryHandler{
 		Handler: h,
 	}
@@ -98,7 +98,7 @@ func (h *Handler) GetUser(ctx context.Context) (*npool.User, error) {
 	return handler.infos[0], nil
 }
 
-func (h *Handler) GetUsers(ctx context.Context) ([]*npool.User, uint32, error) {
+func (h *Handler) GetUsers(ctx context.Context) ([]*npool.UserNotif, uint32, error) {
 	handler := &queryHandler{
 		Handler: h,
 	}
@@ -123,7 +123,7 @@ func (h *Handler) GetUsers(ctx context.Context) ([]*npool.User, uint32, error) {
 	return handler.infos, handler.total, nil
 }
 
-func (h *Handler) GetUserOnly(ctx context.Context) (info *npool.User, err error) {
+func (h *Handler) GetUserOnly(ctx context.Context) (info *npool.UserNotif, err error) {
 	handler := &queryHandler{
 		Handler: h,
 	}

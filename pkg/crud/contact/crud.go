@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
-	npool "github.com/NpoolPlatform/message/npool/notif/mgr/v1/contact"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/contact"
 	"github.com/google/uuid"
@@ -22,29 +21,29 @@ type Req struct {
 	DeletedAt   *uint32
 }
 
-func CreateSet(c *ent.ContactCreate, in *npool.ContactReq) *ent.ContactCreate {
+func CreateSet(c *ent.ContactCreate, in *Req) *ent.ContactCreate {
 	if in.ID != nil {
-		c.SetID(uuid.MustParse(in.GetID()))
+		c.SetID(*in.ID)
 	}
 	if in.AppID != nil {
-		c.SetAppID(uuid.MustParse(in.GetAppID()))
+		c.SetAppID(*in.AppID)
 	}
 	if in.UsedFor != nil {
-		c.SetUsedFor(in.GetUsedFor().String())
+		c.SetUsedFor(in.UsedFor.String())
 	}
 	if in.Account != nil {
-		c.SetAccount(in.GetAccount())
+		c.SetAccount(*in.Account)
 	}
 	if in.AccountType != nil {
-		c.SetAccountType(in.GetAccountType().String())
+		c.SetAccountType(in.AccountType.String())
 	}
 	if in.Sender != nil {
-		c.SetSender(in.GetSender())
+		c.SetSender(*in.Sender)
 	}
 	return c
 }
 
-func Update(u *ent.ContactUpdateOne, req *Req) (*ent.ContactUpdateOne, error) {
+func UpdateSet(u *ent.ContactUpdateOne, req *Req) *ent.ContactUpdateOne {
 	if req.Account != nil {
 		u.SetAccount(*req.Account)
 	}
@@ -54,8 +53,10 @@ func Update(u *ent.ContactUpdateOne, req *Req) (*ent.ContactUpdateOne, error) {
 	if req.Sender != nil {
 		u.SetSender(*req.Sender)
 	}
-
-	return u, nil
+	if req.DeletedAt != nil {
+		u.SetDeletedAt(*req.DeletedAt)
+	}
+	return u
 }
 
 type Conds struct {

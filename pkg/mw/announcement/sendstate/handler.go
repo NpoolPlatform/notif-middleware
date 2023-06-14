@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/sendstate"
 	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/announcement/sendstate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/handler"
@@ -50,6 +51,43 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			h.Conds.ID = &cruder.Cond{
 				Op:  conds.GetID().GetOp(),
 				Val: id,
+			}
+		}
+		if conds.AppID != nil {
+			id, err := uuid.Parse(conds.GetAppID().GetValue())
+			if err != nil {
+				return err
+			}
+			h.Conds.AppID = &cruder.Cond{
+				Op: conds.GetAppID().GetOp(), Val: id,
+			}
+		}
+		if conds.AnnouncementID != nil {
+			id, err := uuid.Parse(conds.GetAnnouncementID().GetValue())
+			if err != nil {
+				return err
+			}
+			h.Conds.AnnouncementID = &cruder.Cond{
+				Op: conds.GetAnnouncementID().GetOp(), Val: id,
+			}
+		}
+		if conds.Channel != nil {
+			channel := conds.GetChannel().GetValue()
+			h.Conds.Channel = &cruder.Cond{
+				Op: conds.GetChannel().GetOp(), Val: basetypes.NotifChannel(channel),
+			}
+		}
+		if conds.UserIDs != nil {
+			ids := []uuid.UUID{}
+			for _, id := range conds.GetUserIDs().GetValue() {
+				_id, err := uuid.Parse(id)
+				if err != nil {
+					return err
+				}
+				ids = append(ids, _id)
+			}
+			h.Conds.UserIDs = &cruder.Cond{
+				Op: conds.GetUserIDs().GetOp(), Val: ids,
 			}
 		}
 		return nil

@@ -4,9 +4,9 @@ import (
 	"fmt"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
 	entsendamt "github.com/NpoolPlatform/notif-middleware/pkg/db/ent/sendannouncement"
-
 	"github.com/google/uuid"
 )
 
@@ -78,6 +78,30 @@ func SetQueryConds(q *ent.SendAnnouncementQuery, conds *Conds) (*ent.SendAnnounc
 			return nil, fmt.Errorf("invalid app id op field")
 		}
 	}
+	if conds.AnnouncementID != nil {
+		id, ok := conds.AnnouncementID.Val.(uuid.UUID)
+		if !ok {
+			return nil, fmt.Errorf("invalid announcement id")
+		}
+		switch conds.AnnouncementID.Op {
+		case cruder.EQ:
+			q.Where(entsendamt.AnnouncementID(id))
+		default:
+			return nil, fmt.Errorf("invalid announcement id op field")
+		}
+	}
+	if conds.Channel != nil {
+		channel, ok := conds.Channel.Val.(basetypes.NotifChannel)
+		if !ok {
+			return nil, fmt.Errorf("invalid channel")
+		}
+		switch conds.Channel.Op {
+		case cruder.EQ:
+			q.Where(entsendamt.Channel(channel.String()))
+		default:
+			return nil, fmt.Errorf("invalid channel op field")
+		}
+	}
 	if conds.UserID != nil {
 		id, ok := conds.UserID.Val.(uuid.UUID)
 		if !ok {
@@ -88,6 +112,18 @@ func SetQueryConds(q *ent.SendAnnouncementQuery, conds *Conds) (*ent.SendAnnounc
 			q.Where(entsendamt.UserID(id))
 		default:
 			return nil, fmt.Errorf("invalid user id op field")
+		}
+	}
+	if conds.UserIDs != nil {
+		ids, ok := conds.UserIDs.Val.([]uuid.UUID)
+		if !ok {
+			return nil, fmt.Errorf("invalid user ids")
+		}
+		switch conds.UserIDs.Op {
+		case cruder.IN:
+			q.Where(entsendamt.UserIDIn(ids...))
+		default:
+			return nil, fmt.Errorf("invalid user ids op field")
 		}
 	}
 	return q, nil

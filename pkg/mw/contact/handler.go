@@ -70,6 +70,9 @@ func WithAccount(account *string) func(context.Context, *Handler) error {
 		if account == nil {
 			return nil
 		}
+		if *account == "" {
+			return fmt.Errorf("account is empty")
+		}
 		h.Account = account
 		return nil
 	}
@@ -79,6 +82,9 @@ func WithSender(sender *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if sender == nil {
 			return nil
+		}
+		if *sender == "" {
+			return fmt.Errorf("sender is empty")
 		}
 		h.Sender = sender
 		return nil

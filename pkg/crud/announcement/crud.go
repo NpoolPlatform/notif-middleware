@@ -100,13 +100,15 @@ func SetQueryConds(q *ent.AnnouncementQuery, conds *Conds) (*ent.AnnouncementQue
 	if conds.EndAt != nil {
 		endAt, ok := conds.EndAt.Val.(uint32)
 		if !ok {
-			return nil, fmt.Errorf("invalid endat")
+			return nil, fmt.Errorf("invalid end at")
 		}
 		switch conds.EndAt.Op {
 		case cruder.GTE:
 			q.Where(entamt.EndAt(endAt))
+		case cruder.EQ:
+			q.Where(entamt.EndAt(endAt))
 		default:
-			return nil, fmt.Errorf("invalid endat op field")
+			return nil, fmt.Errorf("invalid end at op field")
 		}
 	}
 

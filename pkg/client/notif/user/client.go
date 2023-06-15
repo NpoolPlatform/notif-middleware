@@ -29,9 +29,9 @@ func do(ctx context.Context, fn func(_ctx context.Context, cli npool.MiddlewareC
 	return fn(_ctx, cli)
 }
 
-func CreateUser(ctx context.Context, req *npool.UserReq) (*npool.User, error) {
+func CreateUser(ctx context.Context, req *npool.UserNotifReq) (*npool.UserNotif, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		resp, err := cli.CreateUser(ctx, &npool.CreateUserRequest{
+		resp, err := cli.CreateUserNotif(ctx, &npool.CreateUserNotifRequest{
 			Info: req,
 		})
 		if err != nil {
@@ -42,12 +42,12 @@ func CreateUser(ctx context.Context, req *npool.UserReq) (*npool.User, error) {
 	if err != nil {
 		return nil, err
 	}
-	return info.(*npool.User), nil
+	return info.(*npool.UserNotif), nil
 }
 
-func CreateUsers(ctx context.Context, reqs []*npool.UserReq) ([]*npool.User, error) {
+func CreateUsers(ctx context.Context, reqs []*npool.UserNotifReq) ([]*npool.UserNotif, error) {
 	infos, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		resp, err := cli.CreateUsers(ctx, &npool.CreateUsersRequest{
+		resp, err := cli.CreateUserNotifs(ctx, &npool.CreateUserNotifsRequest{
 			Infos: reqs,
 		})
 		if err != nil {
@@ -58,12 +58,12 @@ func CreateUsers(ctx context.Context, reqs []*npool.UserReq) ([]*npool.User, err
 	if err != nil {
 		return nil, err
 	}
-	return infos.([]*npool.User), nil
+	return infos.([]*npool.UserNotif), nil
 }
 
-func UpdateUser(ctx context.Context, req *npool.UserReq) (*npool.User, error) {
+func UpdateUser(ctx context.Context, req *npool.UserNotifReq) (*npool.UserNotif, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		resp, err := cli.UpdateUser(ctx, &npool.UpdateUserRequest{
+		resp, err := cli.UpdateUserNotif(ctx, &npool.UpdateUserNotifRequest{
 			Info: req,
 		})
 		if err != nil {
@@ -74,12 +74,12 @@ func UpdateUser(ctx context.Context, req *npool.UserReq) (*npool.User, error) {
 	if err != nil {
 		return nil, err
 	}
-	return info.(*npool.User), nil
+	return info.(*npool.UserNotif), nil
 }
 
-func GetUser(ctx context.Context, id string) (*npool.User, error) {
+func GetUser(ctx context.Context, id string) (*npool.UserNotif, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		resp, err := cli.GetUser(ctx, &npool.GetUserRequest{
+		resp, err := cli.GetUserNotif(ctx, &npool.GetUserNotifRequest{
 			ID: id,
 		})
 		if err != nil {
@@ -90,13 +90,13 @@ func GetUser(ctx context.Context, id string) (*npool.User, error) {
 	if err != nil {
 		return nil, err
 	}
-	return info.(*npool.User), nil
+	return info.(*npool.UserNotif), nil
 }
 
-func GetUsers(ctx context.Context, conds *npool.Conds, offset, limit int32) ([]*npool.User, uint32, error) {
+func GetUsers(ctx context.Context, conds *npool.Conds, offset, limit int32) ([]*npool.UserNotif, uint32, error) {
 	var total uint32
 	infos, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		resp, err := cli.GetUsers(ctx, &npool.GetUsersRequest{
+		resp, err := cli.GetUserNotifs(ctx, &npool.GetUserNotifsRequest{
 			Conds:  conds,
 			Offset: offset,
 			Limit:  limit,
@@ -110,12 +110,12 @@ func GetUsers(ctx context.Context, conds *npool.Conds, offset, limit int32) ([]*
 	if err != nil {
 		return nil, 0, err
 	}
-	return infos.([]*npool.User), total, nil
+	return infos.([]*npool.UserNotif), total, nil
 }
 
-func GetUserOnly(ctx context.Context, conds *npool.Conds) (*npool.User, error) {
+func GetUserOnly(ctx context.Context, conds *npool.Conds) (*npool.UserNotif, error) {
 	infos, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		resp, err := cli.GetUsers(ctx, &npool.GetUsersRequest{
+		resp, err := cli.GetUserNotifs(ctx, &npool.GetUserNotifsRequest{
 			Conds:  conds,
 			Offset: 0,
 			Limit:  2, //nolint
@@ -128,18 +128,18 @@ func GetUserOnly(ctx context.Context, conds *npool.Conds) (*npool.User, error) {
 	if err != nil {
 		return nil, err
 	}
-	if len(infos.([]*npool.User)) == 0 {
+	if len(infos.([]*npool.UserNotif)) == 0 {
 		return nil, nil
 	}
-	if len(infos.([]*npool.User)) > 1 {
+	if len(infos.([]*npool.UserNotif)) > 1 {
 		return nil, fmt.Errorf("too many record")
 	}
-	return infos.([]*npool.User)[0], nil
+	return infos.([]*npool.UserNotif)[0], nil
 }
 
-func DeleteUser(ctx context.Context, req *npool.UserReq) (*npool.User, error) {
+func DeleteUser(ctx context.Context, req *npool.UserNotifReq) (*npool.UserNotif, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		resp, err := cli.DeleteUser(ctx, &npool.DeleteUserRequest{
+		resp, err := cli.DeleteUserNotif(ctx, &npool.DeleteUserNotifRequest{
 			Info: req,
 		})
 		if err != nil {
@@ -150,12 +150,12 @@ func DeleteUser(ctx context.Context, req *npool.UserReq) (*npool.User, error) {
 	if err != nil {
 		return nil, err
 	}
-	return info.(*npool.User), nil
+	return info.(*npool.UserNotif), nil
 }
 
 func ExistUserConds(ctx context.Context, conds *npool.Conds) (bool, error) {
 	infos, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		resp, err := cli.ExistUserConds(ctx, &npool.ExistUserCondsRequest{
+		resp, err := cli.ExistUserNotifConds(ctx, &npool.ExistUserNotifCondsRequest{
 			Conds: conds,
 		})
 		if err != nil {

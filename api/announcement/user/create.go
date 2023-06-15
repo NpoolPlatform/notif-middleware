@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s *Server) CreateUserAnnouncement(ctx context.Context, in *npool.CreateUserAnnouncementRequest) (*npool.CreateUserAnnouncementResponse, error) {
+func (s *Server) CreateAnnouncementUser(ctx context.Context, in *npool.CreateAnnouncementUserRequest) (*npool.CreateAnnouncementUserResponse, error) {
 	req := in.GetInfo()
 	handler, err := announcement1.NewHandler(
 		ctx,
@@ -21,19 +21,19 @@ func (s *Server) CreateUserAnnouncement(ctx context.Context, in *npool.CreateUse
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"CreateUserAnnouncement",
+			"CreateAnnouncementUser",
 			"Req", in,
 			"Error", err,
 		)
-		return &npool.CreateUserAnnouncementResponse{}, status.Error(codes.InvalidArgument, err.Error())
+		return &npool.CreateAnnouncementUserResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	info, err := handler.CreateUserAnnouncement(ctx)
+	info, err := handler.CreateAnnouncementUser(ctx)
 	if err != nil {
-		return &npool.CreateUserAnnouncementResponse{}, status.Error(codes.Aborted, err.Error())
+		return &npool.CreateAnnouncementUserResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
-	return &npool.CreateUserAnnouncementResponse{
+	return &npool.CreateAnnouncementUserResponse{
 		Info: info,
 	}, nil
 }

@@ -5,13 +5,13 @@ import (
 
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/user"
-	announcement1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/user"
 	"github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/handler"
+	announcement1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/user"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-func (s *Server) DeleteUserAnnouncement(ctx context.Context, in *npool.DeleteUserAnnouncementRequest) (*npool.DeleteUserAnnouncementResponse, error) {
+func (s *Server) DeleteAnnouncementUser(ctx context.Context, in *npool.DeleteAnnouncementUserRequest) (*npool.DeleteAnnouncementUserResponse, error) {
 	id := in.GetInfo().GetID()
 	handler, err := announcement1.NewHandler(
 		ctx,
@@ -19,23 +19,23 @@ func (s *Server) DeleteUserAnnouncement(ctx context.Context, in *npool.DeleteUse
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"DeleteUserAnnouncement",
+			"DeleteAnnouncementUser",
 			"In", in,
 			"Error", err,
 		)
-		return &npool.DeleteUserAnnouncementResponse{}, status.Error(codes.Aborted, err.Error())
+		return &npool.DeleteAnnouncementUserResponse{}, status.Error(codes.Aborted, err.Error())
 	}
-	info, err := handler.DeleteUserAnnouncement(ctx)
+	info, err := handler.DeleteAnnouncementUser(ctx)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"DeleteUserAnnouncement",
+			"DeleteAnnouncementUser",
 			"In", in,
 			"Error", err,
 		)
-		return &npool.DeleteUserAnnouncementResponse{}, status.Error(codes.Aborted, err.Error())
+		return &npool.DeleteAnnouncementUserResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
-	return &npool.DeleteUserAnnouncementResponse{
+	return &npool.DeleteAnnouncementUserResponse{
 		Info: info,
 	}, nil
 }

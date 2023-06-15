@@ -57,14 +57,14 @@ var (
 		EndAt:               uint32(time.Now().Add(1 * time.Hour).Unix()),
 	}
 
-	ret = npool.UserAnnouncement{
+	ret = npool.AnnouncementUser{
 		AppID:          appID,
 		AnnouncementID: "",
 		UserID:         "",
 	}
 )
 
-func setupUserAnnouncement(t *testing.T) func(*testing.T) {
+func setupAnnouncementUser(t *testing.T) func(*testing.T) {
 	app1, err := appmwcli.CreateApp(
 		context.Background(),
 		&appmwpb.AppReq{
@@ -120,8 +120,8 @@ func setupUserAnnouncement(t *testing.T) func(*testing.T) {
 	}
 }
 
-func createUserAnnouncement(t *testing.T) {
-	info, err := CreateUserAnnouncement(context.Background(), &npool.UserAnnouncementReq{
+func createAnnouncementUser(t *testing.T) {
+	info, err := CreateAnnouncementUser(context.Background(), &npool.AnnouncementUserReq{
 		AppID:          &ret.AppID,
 		UserID:         &ret.UserID,
 		AnnouncementID: &ret.AnnouncementID,
@@ -134,14 +134,14 @@ func createUserAnnouncement(t *testing.T) {
 	}
 }
 
-func getUserAnnouncement(t *testing.T) {
-	info, err := GetUserAnnouncement(context.Background(), ret.ID)
+func getAnnouncementUser(t *testing.T) {
+	info, err := GetAnnouncementUser(context.Background(), ret.ID)
 	assert.Nil(t, err)
 	assert.NotNil(t, info)
 }
 
-func getUserAnnouncements(t *testing.T) {
-	infos, _, err := GetUserAnnouncements(context.Background(), &npool.Conds{
+func getAnnouncementUsers(t *testing.T) {
+	infos, _, err := GetAnnouncementUsers(context.Background(), &npool.Conds{
 		ID: &basetypes.StringVal{
 			Op:    cruder.EQ,
 			Value: ret.ID,
@@ -152,12 +152,12 @@ func getUserAnnouncements(t *testing.T) {
 	}
 }
 
-func deleteUserAnnouncement(t *testing.T) {
-	info, err := DeleteUserAnnouncement(context.Background(), ret.ID)
+func deleteAnnouncementUser(t *testing.T) {
+	info, err := DeleteAnnouncementUser(context.Background(), ret.ID)
 	if assert.Nil(t, err) {
 		assert.Equal(t, info, &ret)
 	}
-	info, err = GetUserAnnouncement(context.Background(), info.ID)
+	info, err = GetAnnouncementUser(context.Background(), info.ID)
 	assert.Nil(t, err)
 	assert.Nil(t, info)
 }
@@ -169,16 +169,16 @@ func TestClient(t *testing.T) {
 
 	gport := config.GetIntValueWithNameSpace("", config.KeyGRPCPort)
 
-	teardown := setupUserAnnouncement(t)
+	teardown := setupAnnouncementUser(t)
 	defer teardown(t)
 
 	patch := monkey.Patch(grpc2.GetGRPCConn, func(service string, tags ...string) (*grpc.ClientConn, error) {
 		return grpc.Dial(fmt.Sprintf("localhost:%v", gport), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	})
-	t.Run("createUserAnnouncement", createUserAnnouncement)
-	t.Run("getUserAnnouncement", getUserAnnouncement)
-	t.Run("getUserAnnouncements", getUserAnnouncements)
-	t.Run("deleteUserAnnouncement", deleteUserAnnouncement)
+	t.Run("createAnnouncementUser", createAnnouncementUser)
+	t.Run("getAnnouncementUser", getAnnouncementUser)
+	t.Run("getAnnouncementUsers", getAnnouncementUsers)
+	t.Run("deleteAnnouncementUser", deleteAnnouncementUser)
 
 	patch.Unpatch()
 }

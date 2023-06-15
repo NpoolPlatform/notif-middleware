@@ -17,7 +17,7 @@ func (h *createHandler) validate() error {
 	return nil
 }
 
-func (h *Handler) CreateUserAnnouncement(ctx context.Context) (info *npool.UserAnnouncement, err error) {
+func (h *Handler) CreateAnnouncementUser(ctx context.Context) (info *npool.AnnouncementUser, err error) {
 	handler := &createHandler{
 		Handler: h,
 	}
@@ -47,5 +47,5 @@ func (h *Handler) CreateUserAnnouncement(ctx context.Context) (info *npool.UserA
 		return nil, err
 	}
 
-	return h.GetUserAnnouncement(ctx)
+	return h.GetAnnouncementUser(ctx)
 }

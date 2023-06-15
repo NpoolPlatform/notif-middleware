@@ -16,8 +16,9 @@ func (s *Server) UpdateContact(ctx context.Context, in *npool.UpdateContactReque
 	handler, err := contact1.NewHandler(
 		ctx,
 		contact1.WithID(req.ID),
-		contact1.WithAppID(req.Account),
+		contact1.WithAppID(req.AppID),
 		contact1.WithSender(req.Sender),
+		contact1.WithAccount(req.Account),
 		contact1.WithAccountType(req.AccountType),
 	)
 	if err != nil {

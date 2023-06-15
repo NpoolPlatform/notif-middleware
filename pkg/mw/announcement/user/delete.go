@@ -10,8 +10,8 @@ import (
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
 )
 
-func (h *Handler) DeleteUserAnnouncement(ctx context.Context) (*npool.UserAnnouncement, error) {
-	info, err := h.GetUserAnnouncement(ctx)
+func (h *Handler) DeleteAnnouncementUser(ctx context.Context) (*npool.AnnouncementUser, error) {
+	info, err := h.GetAnnouncementUser(ctx)
 	if err != nil {
 		return nil, err
 	}

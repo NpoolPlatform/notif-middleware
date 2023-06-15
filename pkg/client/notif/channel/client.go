@@ -6,37 +6,29 @@ import (
 	"time"
 
 	grpc2 "github.com/NpoolPlatform/go-service-framework/pkg/grpc"
+	"github.com/NpoolPlatform/notif-middleware/pkg/servicename"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/channel"
-
-	constant "github.com/NpoolPlatform/notif-middleware/pkg/message/const"
-
-	mgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/notif/channel"
 )
 
-var timeout = 10 * time.Second
-
-type handler func(context.Context, npool.MiddlewareClient) (cruder.Any, error)
-
-func withCRUD(ctx context.Context, handler handler) (cruder.Any, error) {
-	_ctx, cancel := context.WithTimeout(ctx, timeout)
+func do(ctx context.Context, fn func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error)) (cruder.Any, error) {
+	_ctx, cancel := context.WithTimeout(ctx, 10*time.Second) //nolint
 	defer cancel()
 
-	conn, err := grpc2.GetGRPCConn(constant.ServiceName, grpc2.GRPCTAG)
+	conn, err := grpc2.GetGRPCConn(servicename.ServiceDomain, grpc2.GRPCTAG)
 	if err != nil {
-		return nil, fmt.Errorf("fail get channel connection: %v", err)
+		return nil, err
 	}
-
 	defer conn.Close()
 
 	cli := npool.NewMiddlewareClient(conn)
 
-	return handler(_ctx, cli)
+	return fn(_ctx, cli)
 }
 
-func GetChannelOnly(ctx context.Context, conds *mgrpb.Conds) (*mgrpb.Channel, error) {
-	info, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+func GetChannelOnly(ctx context.Context, conds *npool.Conds) (*npool.Channel, error) {
+	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.GetChannelOnly(ctx, &npool.GetChannelOnlyRequest{
 			Conds: conds,
 		})
@@ -48,12 +40,12 @@ func GetChannelOnly(ctx context.Context, conds *mgrpb.Conds) (*mgrpb.Channel, er
 	if err != nil {
 		return nil, fmt.Errorf("fail get channel: %v", err)
 	}
-	return info.(*mgrpb.Channel), nil
+	return info.(*npool.Channel), nil
 }
 
-func GetChannels(ctx context.Context, conds *mgrpb.Conds, offset, limit int32) ([]*mgrpb.Channel, uint32, error) {
+func GetChannels(ctx context.Context, conds *npool.Conds, offset, limit int32) ([]*npool.Channel, uint32, error) {
 	var total uint32
-	infos, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+	infos, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.GetChannels(ctx, &npool.GetChannelsRequest{
 			Conds:  conds,
 			Limit:  limit,
@@ -68,5 +60,55 @@ func GetChannels(ctx context.Context, conds *mgrpb.Conds, offset, limit int32) (
 	if err != nil {
 		return nil, 0, fmt.Errorf("fail get channels: %v", err)
 	}
-	return infos.([]*mgrpb.Channel), total, nil
+	return infos.([]*npool.Channel), total, nil
+}
+
+func CreateChannel(ctx context.Context, in *npool.ChannelReq) (*npool.Channel, error) {
+	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		resp, err := cli.CreateChannel(ctx, &npool.CreateChannelRequest{
+			Info: in,
+		})
+		if err != nil {
+			return nil, err
+		}
+		return resp.Info, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return info.(*npool.Channel), nil
+}
+
+func DeleteChannel(ctx context.Context, id string) (*npool.Channel, error) {
+	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		resp, err := cli.DeleteChannel(ctx, &npool.DeleteChannelRequest{
+			Info: &npool.ChannelReq{
+				ID: &id,
+			},
+		})
+		if err != nil {
+			return nil, err
+		}
+		return resp.Info, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return info.(*npool.Channel), nil
+}
+
+func GetChannel(ctx context.Context, id string) (*npool.Channel, error) {
+	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		resp, err := cli.GetChannel(ctx, &npool.GetChannelRequest{
+			ID: id,
+		})
+		if err != nil {
+			return nil, err
+		}
+		return resp.Info, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return info.(*npool.Channel), nil
 }

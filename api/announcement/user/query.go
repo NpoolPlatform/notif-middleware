@@ -13,7 +13,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s *Server) GetUserAnnouncements(ctx context.Context, in *npool.GetUserAnnouncementsRequest) (*npool.GetUserAnnouncementsResponse, error) {
+func (s *Server) GetAnnouncementUsers(ctx context.Context, in *npool.GetAnnouncementUsersRequest) (*npool.GetAnnouncementUsersResponse, error) {
 	handler, err := announcement1.NewHandler(
 		ctx,
 		announcement1.WithConds(in.GetConds()),
@@ -22,44 +22,44 @@ func (s *Server) GetUserAnnouncements(ctx context.Context, in *npool.GetUserAnno
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"GetUserAnnouncements",
+			"GetAnnouncementUsers",
 			"In", in,
 			"Error", err,
 		)
-		return &npool.GetUserAnnouncementsResponse{}, status.Error(codes.InvalidArgument, err.Error())
+		return &npool.GetAnnouncementUsersResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	infos, total, err := handler.GetUserAnnouncements(ctx)
+	infos, total, err := handler.GetAnnouncementUsers(ctx)
 	if err != nil {
-		return &npool.GetUserAnnouncementsResponse{}, status.Error(codes.Internal, err.Error())
+		return &npool.GetAnnouncementUsersResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
-	return &npool.GetUserAnnouncementsResponse{
+	return &npool.GetAnnouncementUsersResponse{
 		Infos: infos,
 		Total: total,
 	}, nil
 }
 
-func (s *Server) GetUserAnnouncement(ctx context.Context, in *npool.GetUserAnnouncementRequest) (*npool.GetUserAnnouncementResponse, error) {
+func (s *Server) GetAnnouncementUser(ctx context.Context, in *npool.GetAnnouncementUserRequest) (*npool.GetAnnouncementUserResponse, error) {
 	handler, err := announcement1.NewHandler(
 		ctx,
 		handler.WithID(&in.ID),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"GetUserAnnouncement",
+			"GetAnnouncementUser",
 			"In", in,
 			"error", err,
 		)
-		return &npool.GetUserAnnouncementResponse{}, status.Error(codes.InvalidArgument, err.Error())
+		return &npool.GetAnnouncementUserResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	info, err := handler.GetUserAnnouncement(ctx)
+	info, err := handler.GetAnnouncementUser(ctx)
 	if err != nil {
-		return &npool.GetUserAnnouncementResponse{}, status.Error(codes.Internal, err.Error())
+		return &npool.GetAnnouncementUserResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
-	return &npool.GetUserAnnouncementResponse{
+	return &npool.GetAnnouncementUserResponse{
 		Info: info,
 	}, nil
 }

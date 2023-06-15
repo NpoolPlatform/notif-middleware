@@ -16,11 +16,11 @@ import (
 type queryHandler struct {
 	*Handler
 	stm   *ent.UserAnnouncementSelect
-	infos []*npool.UserAnnouncement
+	infos []*npool.AnnouncementUser
 	total uint32
 }
 
-func (h *queryHandler) selectUserAnnouncement(stm *ent.UserAnnouncementQuery) {
+func (h *queryHandler) selectAnnouncementUser(stm *ent.UserAnnouncementQuery) {
 	h.stm = stm.Select(
 		entuseramt.FieldID,
 		entuseramt.FieldAppID,
@@ -54,11 +54,11 @@ func (h *queryHandler) queryJoin() {
 	})
 }
 
-func (h *queryHandler) queryUserAnnouncement(cli *ent.Client) error {
+func (h *queryHandler) queryAnnouncementUser(cli *ent.Client) error {
 	if h.ID == nil {
 		return fmt.Errorf("invalid user announcement id")
 	}
-	h.selectUserAnnouncement(
+	h.selectAnnouncementUser(
 		cli.UserAnnouncement.
 			Query().
 			Where(
@@ -69,7 +69,7 @@ func (h *queryHandler) queryUserAnnouncement(cli *ent.Client) error {
 	return nil
 }
 
-func (h *queryHandler) queryUserAnnouncementsByConds(ctx context.Context, cli *ent.Client) (err error) {
+func (h *queryHandler) queryAnnouncementUsersByConds(ctx context.Context, cli *ent.Client) (err error) {
 	stm, err := crud.SetQueryConds(cli.UserAnnouncement.Query(), h.Conds)
 	if err != nil {
 		return err
@@ -82,7 +82,7 @@ func (h *queryHandler) queryUserAnnouncementsByConds(ctx context.Context, cli *e
 
 	h.total = uint32(total)
 
-	h.selectUserAnnouncement(stm)
+	h.selectAnnouncementUser(stm)
 	return nil
 }
 
@@ -90,13 +90,13 @@ func (h *queryHandler) scan(ctx context.Context) error {
 	return h.stm.Scan(ctx, &h.infos)
 }
 
-func (h *Handler) GetUserAnnouncements(ctx context.Context) ([]*npool.UserAnnouncement, uint32, error) {
+func (h *Handler) GetAnnouncementUsers(ctx context.Context) ([]*npool.AnnouncementUser, uint32, error) {
 	handler := &queryHandler{
 		Handler: h,
 	}
 
 	err := db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		if err := handler.queryUserAnnouncementsByConds(_ctx, cli); err != nil {
+		if err := handler.queryAnnouncementUsersByConds(_ctx, cli); err != nil {
 			return err
 		}
 
@@ -117,13 +117,13 @@ func (h *Handler) GetUserAnnouncements(ctx context.Context) ([]*npool.UserAnnoun
 	return handler.infos, handler.total, nil
 }
 
-func (h *Handler) GetUserAnnouncement(ctx context.Context) (info *npool.UserAnnouncement, err error) {
+func (h *Handler) GetAnnouncementUser(ctx context.Context) (info *npool.AnnouncementUser, err error) {
 	handler := &queryHandler{
 		Handler: h,
 	}
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		if err := handler.queryUserAnnouncement(cli); err != nil {
+		if err := handler.queryAnnouncementUser(cli); err != nil {
 			return err
 		}
 

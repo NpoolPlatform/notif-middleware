@@ -1,0 +1,104 @@
+package channel
+
+import (
+	"fmt"
+
+	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
+	entchannel "github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notifchannel"
+	"github.com/google/uuid"
+)
+
+type Req struct {
+	ID        *uuid.UUID
+	AppID     *uuid.UUID
+	Channel   *basetypes.NotifChannel
+	EventType *basetypes.UsedFor
+	DeletedAt *uint32
+}
+
+func CreateSet(c *ent.NotifChannelCreate, req *Req) *ent.NotifChannelCreate {
+	if req.ID != nil {
+		c.SetID(*req.ID)
+	}
+	if req.AppID != nil {
+		c.SetAppID(*req.AppID)
+	}
+	if req.Channel != nil {
+		c.SetChannel(req.Channel.String())
+	}
+	if req.EventType != nil {
+		c.SetEventType(req.EventType.String())
+	}
+	return c
+}
+
+func UpdateSet(u *ent.NotifChannelUpdateOne, req *Req) *ent.NotifChannelUpdateOne {
+	if req.DeletedAt != nil {
+		u.SetDeletedAt(*req.DeletedAt)
+	}
+	return u
+}
+
+type Conds struct {
+	ID        *cruder.Cond
+	AppID     *cruder.Cond
+	Channel   *cruder.Cond
+	EventType *cruder.Cond
+}
+
+func SetQueryConds(q *ent.NotifChannelQuery, conds *Conds) (*ent.NotifChannelQuery, error) {
+	if conds == nil {
+		return q, nil
+	}
+	if conds.ID != nil {
+		id, ok := conds.ID.Val.(uuid.UUID)
+		if !ok {
+			return nil, fmt.Errorf("invalid channel id")
+		}
+		switch conds.ID.Op {
+		case cruder.EQ:
+			q.Where(entchannel.ID(id))
+		default:
+			return nil, fmt.Errorf("invalid channel id op field")
+		}
+	}
+	if conds.AppID != nil {
+		id, ok := conds.AppID.Val.(uuid.UUID)
+		if !ok {
+			return nil, fmt.Errorf("invalid app id")
+		}
+		switch conds.AppID.Op {
+		case cruder.EQ:
+			q.Where(entchannel.AppID(id))
+		default:
+			return nil, fmt.Errorf("invalid app id op field")
+		}
+	}
+	if conds.Channel != nil {
+		channel, ok := conds.Channel.Val.(basetypes.NotifChannel)
+		if !ok {
+			return nil, fmt.Errorf("invalid channel")
+		}
+		switch conds.Channel.Op {
+		case cruder.EQ:
+			q.Where(entchannel.Channel(channel.String()))
+		default:
+			return nil, fmt.Errorf("invalid channel op field")
+		}
+	}
+	if conds.EventType != nil {
+		usedFor, ok := conds.EventType.Val.(basetypes.UsedFor)
+		if !ok {
+			return nil, fmt.Errorf("invalid used for")
+		}
+		switch conds.EventType.Op {
+		case cruder.EQ:
+			q.Where(entchannel.EventType(usedFor.String()))
+		default:
+			return nil, fmt.Errorf("invalid used for op field")
+		}
+	}
+	return q, nil
+}

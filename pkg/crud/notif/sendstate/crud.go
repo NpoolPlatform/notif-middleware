@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
 	entsendnotif "github.com/NpoolPlatform/notif-middleware/pkg/db/ent/sendnotif"
 
@@ -15,7 +16,7 @@ type Req struct {
 	AppID     *uuid.UUID
 	UserID    *uuid.UUID
 	NotifID   *uuid.UUID
-	Channel   *string
+	Channel   *basetypes.NotifChannel
 	DeletedAt *uint32
 }
 
@@ -33,7 +34,7 @@ func CreateSet(c *ent.SendNotifCreate, req *Req) *ent.SendNotifCreate {
 		c.SetNotifID(*req.NotifID)
 	}
 	if req.Channel != nil {
-		c.SetChannel(*req.Channel)
+		c.SetChannel(req.Channel.String())
 	}
 	return c
 }

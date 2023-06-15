@@ -14,13 +14,14 @@ import (
 )
 
 type Handler struct {
-	ID        *uuid.UUID
-	AppID     *uuid.UUID
-	Channel   *basetypes.NotifChannel
-	EventType *basetypes.UsedFor
-	Conds     *crud.Conds
-	Offset    int32
-	Limit     int32
+	ID         *uuid.UUID
+	AppID      *uuid.UUID
+	Channel    *basetypes.NotifChannel
+	EventType  *basetypes.UsedFor
+	EventTypes []*basetypes.UsedFor
+	Conds      *crud.Conds
+	Offset     int32
+	Limit      int32
 }
 
 func NewHandler(ctx context.Context, options ...func(context.Context, *Handler) error) (*Handler, error) {
@@ -94,6 +95,42 @@ func WithEventType(_type *basetypes.UsedFor) func(context.Context, *Handler) err
 		}
 
 		h.EventType = _type
+		return nil
+	}
+}
+
+func WithEventTypes(_types []*basetypes.UsedFor) func(context.Context, *Handler) error {
+	return func(ctx context.Context, h *Handler) error {
+		if len(_types) == 0 {
+			return fmt.Errorf("event types is empty")
+		}
+		// 去重
+		newArr := make([]*basetypes.UsedFor, 0)
+		for i := 0; i < len(_types); i++ {
+			repeat := false
+			for j := i + 1; j < len(_types); j++ {
+				if *_types[i] == *_types[j] {
+					repeat = true
+					break
+				}
+				if !repeat {
+					newArr = append(newArr, _types[i])
+				}
+			}
+		}
+		for _, _type := range newArr {
+			switch *_type {
+			case basetypes.UsedFor_WithdrawalRequest:
+			case basetypes.UsedFor_WithdrawalCompleted:
+			case basetypes.UsedFor_DepositReceived:
+			case basetypes.UsedFor_KYCApproved:
+			case basetypes.UsedFor_KYCRejected:
+			case basetypes.UsedFor_Announcement:
+			default:
+				return fmt.Errorf("EventType is invalid %v", *_type)
+			}
+		}
+		h.EventTypes = newArr
 		return nil
 	}
 }

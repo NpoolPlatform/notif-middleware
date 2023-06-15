@@ -26,7 +26,7 @@ func (h *createHandler) createNotif(ctx context.Context, cli *ent.Client) error 
 		basetypes.Prefix_PrefixCreateAppCoin,
 		*h.AppID,
 		*h.LangID,
-		*h.UsedFor,
+		*h.UserID,
 	)
 	if err := redis2.TryLock(lockKey, 0); err != nil {
 		return err
@@ -36,9 +36,9 @@ func (h *createHandler) createNotif(ctx context.Context, cli *ent.Client) error 
 	}()
 
 	h.Conds = &notifcrud.Conds{
-		AppID:   &cruder.Cond{Op: cruder.EQ, Val: *h.AppID},
-		LangID:  &cruder.Cond{Op: cruder.EQ, Val: *h.LangID},
-		UsedFor: &cruder.Cond{Op: cruder.EQ, Val: *h.UsedFor},
+		AppID:  &cruder.Cond{Op: cruder.EQ, Val: *h.AppID},
+		LangID: &cruder.Cond{Op: cruder.EQ, Val: *h.LangID},
+		UserID: &cruder.Cond{Op: cruder.EQ, Val: *h.UserID},
 	}
 	exist, err := h.ExistNotifConds(ctx)
 	if err != nil {
@@ -56,15 +56,19 @@ func (h *createHandler) createNotif(ctx context.Context, cli *ent.Client) error 
 	info, err := notifcrud.CreateSet(
 		cli.Notif.Create(),
 		&notifcrud.Req{
-			ID:       h.ID,
-			AppID:    h.AppID,
-			LangID:   h.LangID,
-			UsedFor:  h.UsedFor,
-			Sender:   h.Sender,
-			ReplyTos: h.ReplyTos,
-			CcTos:    h.CcTos,
-			Subject:  h.Subject,
-			Body:     h.Body,
+			ID:          h.ID,
+			AppID:       h.AppID,
+			LangID:      h.LangID,
+			UserID:      h.UserID,
+			EventID:     h.EventID,
+			Notified:    h.Notified,
+			EventType:   h.EventType,
+			UseTemplate: h.UseTemplate,
+			Title:       h.Title,
+			Content:     h.Content,
+			Channel:     h.Channel,
+			Extra:       h.Extra,
+			NotifType:   h.NotifType,
 		},
 	).Save(ctx)
 	if err != nil {

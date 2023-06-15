@@ -6,6 +6,7 @@ import (
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
+	notifmwpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
 	notifcrud "github.com/NpoolPlatform/notif-middleware/pkg/crud/notif"
 
@@ -19,13 +20,14 @@ type Handler struct {
 	LangID      *uuid.UUID
 	EventID     *uuid.UUID
 	Notified    *bool
-	EventType   *string
+	EventType   *basetypes.UsedFor
 	UseTemplate *bool
 	Title       *string
 	Content     *string
-	Channel     *basetypes.Channel
+	Channel     *basetypes.NotifChannel
 	Extra       *string
-	Type        *string
+	NotifType   *notifmwpb.NotifType
+	IDs         *[]uuid.UUID
 	Reqs        []*notifcrud.Req
 	Conds       *notifcrud.Conds
 	Offset      int32
@@ -152,7 +154,7 @@ func WithContent(content *string) func(context.Context, *Handler) error {
 	}
 }
 
-func WithChannel(_channel *basetypes.Channel) func(context.Context, *Handler) error {
+func WithChannel(_channel *basetypes.NotifChannel) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if _channel == nil {
 			return nil
@@ -188,16 +190,6 @@ func WithEventType(eventtype *basetypes.UsedFor) func(context.Context, *Handler)
 			return nil
 		}
 		switch *eventtype {
-		case basetypes.UsedFor_Signup:
-		case basetypes.UsedFor_Signin:
-		case basetypes.UsedFor_Update:
-		case basetypes.UsedFor_Contact:
-		case basetypes.UsedFor_SetWithdrawAddress:
-		case basetypes.UsedFor_Withdraw:
-		case basetypes.UsedFor_CreateInvitationCode:
-		case basetypes.UsedFor_SetCommission:
-		case basetypes.UsedFor_SetTransferTargetUser:
-		case basetypes.UsedFor_Transfer:
 		case basetypes.UsedFor_WithdrawalRequest:
 		case basetypes.UsedFor_WithdrawalCompleted:
 		case basetypes.UsedFor_DepositReceived:
@@ -212,32 +204,45 @@ func WithEventType(eventtype *basetypes.UsedFor) func(context.Context, *Handler)
 	}
 }
 
-func WithType(_type *basetypes.UsedFor) func(context.Context, *Handler) error {
+func WithNotifType(_type *notifmwpb.NotifType) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if _type == nil {
 			return nil
 		}
 		switch *_type {
-		case basetypes.UsedFor_Signup:
-		case basetypes.UsedFor_Signin:
-		case basetypes.UsedFor_Update:
-		case basetypes.UsedFor_Contact:
-		case basetypes.UsedFor_SetWithdrawAddress:
-		case basetypes.UsedFor_Withdraw:
-		case basetypes.UsedFor_CreateInvitationCode:
-		case basetypes.UsedFor_SetCommission:
-		case basetypes.UsedFor_SetTransferTargetUser:
-		case basetypes.UsedFor_Transfer:
-		case basetypes.UsedFor_WithdrawalRequest:
-		case basetypes.UsedFor_WithdrawalCompleted:
-		case basetypes.UsedFor_DepositReceived:
-		case basetypes.UsedFor_KYCApproved:
-		case basetypes.UsedFor_KYCRejected:
-		case basetypes.UsedFor_Announcement:
+		case notifmwpb.NotifType_DefaultType:
+		case notifmwpb.NotifType_Broadcast:
+		case notifmwpb.NotifType_Multicast:
+		case notifmwpb.NotifType_Unicast:
 		default:
 			return fmt.Errorf("Invalid type")
 		}
-		h.Type = _type
+		h.NotifType = _type
+		return nil
+	}
+}
+
+func WithIDs(ids *[]string) func(context.Context, *Handler) error {
+	return func(ctx context.Context, h *Handler) error {
+		if ids == nil {
+			return nil
+		}
+		if len(*ids) == 0 {
+			return fmt.Errorf("invalid ids")
+		}
+		_reqs := []*notifcrud.Req{}
+		for _, id := range *ids {
+			_req := &notifcrud.Req{}
+			if id != "" {
+				_id, err := uuid.Parse(id)
+				if err != nil {
+					return err
+				}
+				_req.ID = &_id
+			}
+			_reqs = append(_reqs, _req)
+		}
+		h.Reqs = _reqs
 		return nil
 	}
 }
@@ -269,28 +274,16 @@ func WithReqs(reqs []*npool.NotifReq) func(context.Context, *Handler) error {
 				}
 				_req.LangID = &id
 			}
-			if req.Type != nil {
-				switch req.GetType() {
-				case basetypes.UsedFor_Signup:
-				case basetypes.UsedFor_Signin:
-				case basetypes.UsedFor_Update:
-				case basetypes.UsedFor_Contact:
-				case basetypes.UsedFor_SetWithdrawAddress:
-				case basetypes.UsedFor_Withdraw:
-				case basetypes.UsedFor_CreateInvitationCode:
-				case basetypes.UsedFor_SetCommission:
-				case basetypes.UsedFor_SetTransferTargetUser:
-				case basetypes.UsedFor_Transfer:
-				case basetypes.UsedFor_WithdrawalRequest:
-				case basetypes.UsedFor_WithdrawalCompleted:
-				case basetypes.UsedFor_DepositReceived:
-				case basetypes.UsedFor_KYCApproved:
-				case basetypes.UsedFor_KYCRejected:
-				case basetypes.UsedFor_Announcement:
+			if req.NotifType != nil {
+				switch req.GetNotifType() {
+				case notifmwpb.NotifType_DefaultType:
+				case notifmwpb.NotifType_Broadcast:
+				case notifmwpb.NotifType_Multicast:
+				case notifmwpb.NotifType_Unicast:
 				default:
 					return fmt.Errorf("Invalid Type")
 				}
-				_req.Type = req.Type
+				_req.NotifType = req.NotifType
 			}
 			_reqs = append(_reqs, _req)
 		}
@@ -322,30 +315,22 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 				Val: id,
 			}
 		}
-		if conds.Type != nil {
-			switch conds.GetUsedFor().GetValue() {
-			case int32(basetypes.UsedFor_Signup):
-			case int32(basetypes.UsedFor_Signin):
-			case int32(basetypes.UsedFor_Update):
-			case int32(basetypes.UsedFor_Contact):
-			case int32(basetypes.UsedFor_SetWithdrawAddress):
-			case int32(basetypes.UsedFor_Withdraw):
-			case int32(basetypes.UsedFor_CreateInvitationCode):
-			case int32(basetypes.UsedFor_SetCommission):
-			case int32(basetypes.UsedFor_SetTransferTargetUser):
-			case int32(basetypes.UsedFor_Transfer):
-			case int32(basetypes.UsedFor_WithdrawalRequest):
-			case int32(basetypes.UsedFor_WithdrawalCompleted):
-			case int32(basetypes.UsedFor_DepositReceived):
-			case int32(basetypes.UsedFor_KYCApproved):
-			case int32(basetypes.UsedFor_KYCRejected):
-			case int32(basetypes.UsedFor_Announcement):
+		if conds.NotifType != nil {
+			switch conds.GetNotifType().GetValue() {
+			case uint32(basetypes.UsedFor_Signup):
+			case uint32(basetypes.UsedFor_Signin):
+			case uint32(basetypes.UsedFor_Update):
+			case uint32(basetypes.UsedFor_Contact):
+			case uint32(basetypes.UsedFor_SetWithdrawAddress):
+			case uint32(basetypes.UsedFor_Withdraw):
+			case uint32(basetypes.UsedFor_CreateInvitationCode):
+			case uint32(basetypes.UsedFor_SetCommission):
 			default:
 				return fmt.Errorf("Invalid Type")
 			}
 			h.Conds.Type = &cruder.Cond{
-				Op:  conds.GetType().GetOp(),
-				Val: conds.GetType().GetValue(),
+				Op:  conds.GetNotifType().GetOp(),
+				Val: conds.GetNotifType().GetValue(),
 			}
 		}
 		return nil

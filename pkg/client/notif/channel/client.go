@@ -27,22 +27,6 @@ func do(ctx context.Context, fn func(_ctx context.Context, cli npool.MiddlewareC
 	return fn(_ctx, cli)
 }
 
-func GetChannelOnly(ctx context.Context, conds *npool.Conds) (*npool.Channel, error) {
-	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		resp, err := cli.GetChannelOnly(ctx, &npool.GetChannelOnlyRequest{
-			Conds: conds,
-		})
-		if err != nil {
-			return nil, fmt.Errorf("fail get channel: %v", err)
-		}
-		return resp.Info, nil
-	})
-	if err != nil {
-		return nil, fmt.Errorf("fail get channel: %v", err)
-	}
-	return info.(*npool.Channel), nil
-}
-
 func GetChannels(ctx context.Context, conds *npool.Conds, offset, limit int32) ([]*npool.Channel, uint32, error) {
 	var total uint32
 	infos, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
@@ -111,4 +95,19 @@ func GetChannel(ctx context.Context, id string) (*npool.Channel, error) {
 		return nil, err
 	}
 	return info.(*npool.Channel), nil
+}
+
+func ExistChannelConds(ctx context.Context, conds *npool.ExistChannelCondsRequest) (bool, error) {
+	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		resp, err := cli.ExistChannelConds(ctx, conds)
+		if err != nil {
+			return nil, fmt.Errorf("fail exist channel: %v", err)
+		}
+		return resp.GetInfo(), nil
+	})
+	if err != nil {
+		return false, fmt.Errorf("fail exist channel: %v", err)
+	}
+
+	return info.(bool), nil
 }

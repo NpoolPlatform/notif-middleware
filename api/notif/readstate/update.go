@@ -17,7 +17,7 @@ func (s *Server) UpdateReadState(ctx context.Context, in *npool.UpdateReadStateR
 		ctx,
 		readstate1.WithID(req.ID),
 		readstate1.WithAppID(req.AppID),
-		readstate1.WithUserID(req.LangID),
+		readstate1.WithUserID(req.UserID),
 		readstate1.WithNotifID(req.NotifID),
 	)
 	if err != nil {

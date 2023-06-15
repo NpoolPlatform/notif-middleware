@@ -26,6 +26,7 @@ func (h *Handler) CreateAnnouncementUser(ctx context.Context) (info *npool.Annou
 		return nil, err
 	}
 
+	// TODO:Check Exist
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
 		info, err := crud.CreateSet(
 			cli.UserAnnouncement.Create(),

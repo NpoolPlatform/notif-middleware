@@ -53,8 +53,6 @@ func (s *Server) UpdateNotif(ctx context.Context, in *npool.UpdateNotifRequest) 
 }
 
 //nolint:funlen,gocyclo
-
-//nolint:funlen,gocyclo
 func (s *Server) UpdateNotifs(ctx context.Context, in *npool.UpdateNotifsRequest) (*npool.UpdateNotifsResponse, error) {
 	handler, err := notif1.NewHandler(
 		ctx,

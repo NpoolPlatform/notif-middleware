@@ -6,10 +6,9 @@ import (
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
-	channel "github.com/NpoolPlatform/message/npool/notif/mgr/v1/channel"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/template"
 
-	template1 "github.com/NpoolPlatform/notif-middleware/pkg/template"
+	template1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/template"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -46,9 +45,9 @@ func (s *Server) GenerateText(ctx context.Context, in *npool.GenerateTextRequest
 	}
 
 	switch in.GetChannel() {
-	case channel.NotifChannel_ChannelFrontend:
-	case channel.NotifChannel_ChannelEmail:
-	case channel.NotifChannel_ChannelSMS:
+	case basetypes.NotifChannel_ChannelFrontend:
+	case basetypes.NotifChannel_ChannelEmail:
+	case basetypes.NotifChannel_ChannelSMS:
 	default:
 		logger.Sugar().Errorw("GenerateText", "Channel", in.GetChannel())
 		return &npool.GenerateTextResponse{}, status.Error(codes.InvalidArgument, "Channel is invalid")

@@ -10,7 +10,7 @@ import (
 
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
 
-	template "github.com/NpoolPlatform/notif-middleware/pkg/template"
+	template "github.com/NpoolPlatform/notif-middleware/pkg/mw/template"
 )
 
 func GenerateNotifs(

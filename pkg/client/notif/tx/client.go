@@ -7,37 +7,29 @@ import (
 	"time"
 
 	grpc2 "github.com/NpoolPlatform/go-service-framework/pkg/grpc"
+	"github.com/NpoolPlatform/notif-middleware/pkg/servicename"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/tx"
-
-	constant "github.com/NpoolPlatform/notif-middleware/pkg/message/const"
-
-	mgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/notif/tx"
 )
 
-var timeout = 10 * time.Second
-
-type handler func(context.Context, npool.MiddlewareClient) (cruder.Any, error)
-
-func withCRUD(ctx context.Context, handler handler) (cruder.Any, error) {
-	_ctx, cancel := context.WithTimeout(ctx, timeout)
+func do(ctx context.Context, fn func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error)) (cruder.Any, error) {
+	_ctx, cancel := context.WithTimeout(ctx, 10*time.Second) //nolint
 	defer cancel()
 
-	conn, err := grpc2.GetGRPCConn(constant.ServiceName, grpc2.GRPCTAG)
+	conn, err := grpc2.GetGRPCConn(servicename.ServiceDomain, grpc2.GRPCTAG)
 	if err != nil {
-		return nil, fmt.Errorf("fail get tx connection: %v", err)
+		return nil, err
 	}
-
 	defer conn.Close()
 
 	cli := npool.NewMiddlewareClient(conn)
 
-	return handler(_ctx, cli)
+	return fn(_ctx, cli)
 }
 
-func CreateTx(ctx context.Context, in *mgrpb.TxReq) (*mgrpb.Tx, error) {
-	info, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+func CreateTx(ctx context.Context, in *npool.TxReq) (*npool.Tx, error) {
+	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.CreateTx(ctx, &npool.CreateTxRequest{
 			Info: in,
 		})
@@ -49,11 +41,11 @@ func CreateTx(ctx context.Context, in *mgrpb.TxReq) (*mgrpb.Tx, error) {
 	if err != nil {
 		return nil, fmt.Errorf("fail create tx: %v", err)
 	}
-	return info.(*mgrpb.Tx), nil
+	return info.(*npool.Tx), nil
 }
 
-func UpdateTx(ctx context.Context, in *mgrpb.TxReq) (*mgrpb.Tx, error) {
-	info, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+func UpdateTx(ctx context.Context, in *npool.TxReq) (*npool.Tx, error) {
+	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.UpdateTx(ctx, &npool.UpdateTxRequest{
 			Info: in,
 		})
@@ -65,11 +57,11 @@ func UpdateTx(ctx context.Context, in *mgrpb.TxReq) (*mgrpb.Tx, error) {
 	if err != nil {
 		return nil, fmt.Errorf("fail create tx: %v", err)
 	}
-	return info.(*mgrpb.Tx), nil
+	return info.(*npool.Tx), nil
 }
 
-func GetTxOnly(ctx context.Context, conds *mgrpb.Conds) (*mgrpb.Tx, error) {
-	info, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+func GetTxOnly(ctx context.Context, conds *npool.Conds) (*npool.Tx, error) {
+	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.GetTxOnly(ctx, &npool.GetTxOnlyRequest{
 			Conds: conds,
 		})
@@ -81,12 +73,12 @@ func GetTxOnly(ctx context.Context, conds *mgrpb.Conds) (*mgrpb.Tx, error) {
 	if err != nil {
 		return nil, fmt.Errorf("fail get tx: %v", err)
 	}
-	return info.(*mgrpb.Tx), nil
+	return info.(*npool.Tx), nil
 }
 
-func GetTxs(ctx context.Context, conds *mgrpb.Conds, offset, limit int32) ([]*mgrpb.Tx, uint32, error) {
+func GetTxs(ctx context.Context, conds *npool.Conds, offset, limit int32) ([]*npool.Tx, uint32, error) {
 	var total uint32
-	infos, err := withCRUD(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+	infos, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.GetTxs(ctx, &npool.GetTxsRequest{
 			Conds:  conds,
 			Limit:  limit,
@@ -101,5 +93,5 @@ func GetTxs(ctx context.Context, conds *mgrpb.Conds, offset, limit int32) ([]*mg
 	if err != nil {
 		return nil, 0, fmt.Errorf("fail get txs: %v", err)
 	}
-	return infos.([]*mgrpb.Tx), total, nil
+	return infos.([]*npool.Tx), total, nil
 }

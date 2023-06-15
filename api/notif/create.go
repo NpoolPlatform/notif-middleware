@@ -23,12 +23,12 @@ func (s *Server) CreateNotif(ctx context.Context, in *npool.CreateNotifRequest) 
 		notif1.WithEventID(req.EventID),
 		notif1.WithNotified(req.Notified),
 		notif1.WithEventType(req.EventType),
-		notif1.WithUseTemplate(&req.UseTemplate),
+		notif1.WithUseTemplate(req.UseTemplate),
 		notif1.WithTitle(req.Title),
 		notif1.WithContent(req.Content),
 		notif1.WithChannel(req.Channel),
 		notif1.WithExtra(req.Extra),
-		notif1.WithType(req.Type),
+		notif1.WithNotifType(req.NotifType),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

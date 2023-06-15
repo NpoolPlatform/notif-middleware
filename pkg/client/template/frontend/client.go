@@ -94,7 +94,7 @@ func GetFrontendTemplate(ctx context.Context, id string) (*npool.FrontendTemplat
 	return info.(*npool.FrontendTemplate), nil
 }
 
-func GetFrontendTemplates(ctx context.Context, conds *npool.Conds, offset, limit int32) ([]*npool.FrontendTemplate, uint32, error) {
+func GetFrontendTemplates(ctx context.Context, conds *npool.Conds, offset, limit uint32) ([]*npool.FrontendTemplate, uint32, error) {
 	var total uint32
 	infos, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.GetFrontendTemplates(ctx, &npool.GetFrontendTemplatesRequest{

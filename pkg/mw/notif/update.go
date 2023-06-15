@@ -8,6 +8,7 @@ import (
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
 	notifcrud "github.com/NpoolPlatform/notif-middleware/pkg/crud/notif"
+	"github.com/google/uuid"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db"
@@ -28,7 +29,7 @@ func (h *updateHandler) updateNotif(ctx context.Context, cli *ent.Client) error 
 			Content:     h.Content,
 			Channel:     h.Channel,
 			Extra:       h.Extra,
-			Type:        h.Type,
+			NotifType:   h.NotifType,
 		},
 	).Save(ctx); err != nil {
 		return err
@@ -63,11 +64,11 @@ func (h *Handler) UpdateNotif(ctx context.Context) (*npool.Notif, error) {
 	h.Offset = 0
 	h.Limit = 2
 
-	email, err := h.GetNotifOnly(ctx)
+	notif, err := h.GetNotifOnly(ctx)
 	if err != nil {
 		return nil, err
 	}
-	if email != nil {
+	if notif != nil {
 		return nil, fmt.Errorf("notif exist")
 	}
 
@@ -86,4 +87,41 @@ func (h *Handler) UpdateNotif(ctx context.Context) (*npool.Notif, error) {
 	}
 
 	return h.GetNotif(ctx)
+}
+
+func (h *Handler) UpdateNotifs(ctx context.Context) ([]*npool.Notif, error) {
+	handler := &updateHandler{
+		Handler: h,
+	}
+
+	ids := []uuid.UUID{}
+
+	err := db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
+		for _, req := range h.Reqs {
+			handler.ID = nil
+			handler.AppID = req.AppID
+			handler.LangID = req.LangID
+			if err := handler.updateNotif(_ctx, cli); err != nil {
+				return err
+			}
+			ids = append(ids, *h.ID)
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	h.Conds = &notifcrud.Conds{
+		IDs: &cruder.Cond{Op: cruder.IN, Val: ids},
+	}
+	h.Offset = 0
+	h.Limit = int32(len(ids))
+
+	infos, _, err := h.GetNotifs(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return infos, err
 }

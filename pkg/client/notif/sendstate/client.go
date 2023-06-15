@@ -62,19 +62,7 @@ func CreateSendStates(ctx context.Context, reqs []*npool.SendStateReq) ([]*npool
 }
 
 func UpdateSendState(ctx context.Context, req *npool.SendStateReq) (*npool.SendState, error) {
-	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		resp, err := cli.UpdateSendState(ctx, &npool.UpdateSendStateRequest{
-			Info: req,
-		})
-		if err != nil {
-			return nil, err
-		}
-		return resp.Info, nil
-	})
-	if err != nil {
-		return nil, err
-	}
-	return info.(*npool.SendState), nil
+	return nil, nil
 }
 
 func GetSendState(ctx context.Context, id string) (*npool.SendState, error) {
@@ -131,7 +119,7 @@ func GetSendStateOnly(ctx context.Context, conds *npool.Conds) (*npool.SendState
 	if len(infos.([]*npool.SendState)) == 0 {
 		return nil, nil
 	}
-	if len(infos.([]*npool.vState)) > 1 {
+	if len(infos.([]*npool.SendState)) > 1 {
 		return nil, fmt.Errorf("too many record")
 	}
 	return infos.([]*npool.SendState)[0], nil

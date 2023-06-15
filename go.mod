@@ -7,9 +7,10 @@ require (
 	entgo.io/ent v0.11.2
 	github.com/NpoolPlatform/appuser-middleware v0.0.0-20230609030803-0b26c1f95713
 	github.com/NpoolPlatform/basal-middleware v0.0.0-20230518061816-62bd589c0f63
+	github.com/NpoolPlatform/g11n-middleware v0.0.0-20230223031300-bc5bcb02d518
 	github.com/NpoolPlatform/go-service-framework v0.0.0-20230602083207-1c0e6203556b
 	github.com/NpoolPlatform/libent-cruder v0.0.0-20221109023947-366125b690fb
-	github.com/NpoolPlatform/message v0.0.0-20230614105913-f4214ef0b261
+	github.com/NpoolPlatform/message v0.0.0-20230615033015-ce3e61912fab
 	github.com/NpoolPlatform/notif-manager v0.0.0-20230524065114-b1b16877fab1
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/google/uuid v1.3.0
@@ -25,6 +26,7 @@ require (
 
 require (
 	ariga.io/atlas v0.5.1-0.20220717122844-8593d7eb1a8e // indirect
+	github.com/NpoolPlatform/g11n-manager v0.0.0-20230223031133-01fb857f1b94 // indirect
 	github.com/Shonminh/apollo-client v0.4.0 // indirect
 	github.com/ThreeDotsLabs/watermill v1.2.0 // indirect
 	github.com/ThreeDotsLabs/watermill-amqp/v2 v2.0.7 // indirect

@@ -71,7 +71,7 @@ func (h *createHandler) createUser(ctx context.Context, cli *ent.Client) error {
 	return nil
 }
 
-func (h *Handler) CreateUser(ctx context.Context) (*npool.User, error) {
+func (h *Handler) CreateUser(ctx context.Context) (*npool.UserNotif, error) {
 	handler := &createHandler{
 		Handler: h,
 	}
@@ -88,7 +88,7 @@ func (h *Handler) CreateUser(ctx context.Context) (*npool.User, error) {
 	return h.GetUser(ctx)
 }
 
-func (h *Handler) CreateUsers(ctx context.Context) ([]*npool.User, error) {
+func (h *Handler) CreateUsers(ctx context.Context) ([]*npool.UserNotif, error) {
 	handler := &createHandler{
 		Handler: h,
 	}

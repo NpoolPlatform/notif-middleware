@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/sendstate"
 	sendstatecrud "github.com/NpoolPlatform/notif-middleware/pkg/crud/notif/sendstate"
 
@@ -15,7 +16,7 @@ type Handler struct {
 	AppID   *uuid.UUID
 	UserID  *uuid.UUID
 	NotifID *uuid.UUID
-	Channel *string
+	Channel *basetypes.NotifChannel
 	Reqs    []*sendstatecrud.Req
 	Conds   *sendstatecrud.Conds
 	Offset  int32
@@ -74,7 +75,7 @@ func WithUserID(userid *string) func(context.Context, *Handler) error {
 	}
 }
 
-func WithChannel(_channel *string) func(context.Context, *Handler) error {
+func WithChannel(_channel *basetypes.NotifChannel) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if _channel == nil {
 			return nil

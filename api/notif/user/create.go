@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s *Server) CreateUser(ctx context.Context, in *npool.CreateUserRequest) (*npool.CreateUserResponse, error) {
+func (s *Server) CreateUser(ctx context.Context, in *npool.CreateUserNotifRequest) (*npool.CreateUserNotifResponse, error) {
 	req := in.GetInfo()
 	handler, err := user1.NewHandler(
 		ctx,
@@ -26,7 +26,7 @@ func (s *Server) CreateUser(ctx context.Context, in *npool.CreateUserRequest) (*
 			"In", in,
 			"Error", err,
 		)
-		return &npool.CreateUserResponse{}, status.Error(codes.Aborted, err.Error())
+		return &npool.CreateUserNotifResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 	info, err := handler.CreateUser(ctx)
 	if err != nil {
@@ -35,14 +35,14 @@ func (s *Server) CreateUser(ctx context.Context, in *npool.CreateUserRequest) (*
 			"In", in,
 			"Error", err,
 		)
-		return &npool.CreateUserResponse{}, status.Error(codes.Aborted, err.Error())
+		return &npool.CreateUserNotifResponse{}, status.Error(codes.Aborted, err.Error())
 	}
-	return &npool.CreateUserResponse{
+	return &npool.CreateUserNotifResponse{
 		Info: info,
 	}, nil
 }
 
-func (s *Server) CreateUsers(ctx context.Context, in *npool.CreateUsersRequest) (*npool.CreateUsersResponse, error) {
+func (s *Server) CreateUsers(ctx context.Context, in *npool.CreateUserNotifsRequest) (*npool.CreateUserNotifsResponse, error) {
 	handler, err := user1.NewHandler(
 		ctx,
 		user1.WithReqs(in.GetInfos()),
@@ -53,7 +53,7 @@ func (s *Server) CreateUsers(ctx context.Context, in *npool.CreateUsersRequest) 
 			"In", in,
 			"Error", err,
 		)
-		return &npool.CreateUsersResponse{}, status.Error(codes.Aborted, err.Error())
+		return &npool.CreateUserNotifsResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 	infos, err := handler.CreateUsers(ctx)
 	if err != nil {
@@ -62,9 +62,9 @@ func (s *Server) CreateUsers(ctx context.Context, in *npool.CreateUsersRequest) 
 			"In", in,
 			"Error", err,
 		)
-		return &npool.CreateUsersResponse{}, status.Error(codes.Aborted, err.Error())
+		return &npool.CreateUserNotifsResponse{}, status.Error(codes.Aborted, err.Error())
 	}
-	return &npool.CreateUsersResponse{
+	return &npool.CreateUserNotifsResponse{
 		Infos: infos,
 	}, nil
 }

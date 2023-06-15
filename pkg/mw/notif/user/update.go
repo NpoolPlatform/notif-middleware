@@ -28,7 +28,7 @@ func (h *updateHandler) updateUser(ctx context.Context, cli *ent.Client) error {
 	return nil
 }
 
-func (h *Handler) UpdateUser(ctx context.Context) (*npool.User, error) {
+func (h *Handler) UpdateUser(ctx context.Context) (*npool.UserNotif, error) {
 	if h.ID == nil {
 		return nil, fmt.Errorf("invalid id")
 	}

@@ -4,6 +4,8 @@ import (
 	"fmt"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
+	notifmwpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
 	entnotif "github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notif"
 
@@ -17,13 +19,13 @@ type Req struct {
 	UserID      *uuid.UUID
 	EventID     *uuid.UUID
 	Notified    *bool
-	EventType   *string
+	EventType   *basetypes.UsedFor
 	UseTemplate *bool
 	Title       *string
 	Content     *string
-	Channel     *string
+	Channel     *basetypes.NotifChannel
 	Extra       *string
-	Type        *string
+	NotifType   *notifmwpb.NotifType
 	DeletedAt   *uint32
 }
 
@@ -47,7 +49,7 @@ func CreateSet(c *ent.NotifCreate, req *Req) *ent.NotifCreate {
 		c.SetNotified(*req.Notified)
 	}
 	if req.EventType != nil {
-		c.SetEventType(*req.EventType)
+		c.SetEventType(req.EventType.String())
 	}
 	if req.UseTemplate != nil {
 		c.SetUseTemplate(*req.UseTemplate)
@@ -59,13 +61,13 @@ func CreateSet(c *ent.NotifCreate, req *Req) *ent.NotifCreate {
 		c.SetContent(*req.Content)
 	}
 	if req.Channel != nil {
-		c.SetChannel(*req.Channel)
+		c.SetChannel(req.Channel.String())
 	}
 	if req.Extra != nil {
 		c.SetExtra(*req.Extra)
 	}
-	if req.Type != nil {
-		c.SetType(*req.Type)
+	if req.NotifType != nil {
+		c.SetType(req.NotifType.String())
 	}
 	return c
 }
@@ -78,7 +80,7 @@ func UpdateSet(u *ent.NotifUpdateOne, req *Req) *ent.NotifUpdateOne {
 		u = u.SetContent(*req.Content)
 	}
 	if req.Channel != nil {
-		u = u.SetChannel(*req.Channel)
+		u = u.SetChannel(req.Channel.String())
 	}
 	if req.Notified != nil {
 		u = u.SetNotified(*req.Notified)
@@ -89,8 +91,8 @@ func UpdateSet(u *ent.NotifUpdateOne, req *Req) *ent.NotifUpdateOne {
 	if req.Extra != nil {
 		u = u.SetExtra(*req.Extra)
 	}
-	if req.Type != nil {
-		u = u.SetType(*req.Type)
+	if req.NotifType != nil {
+		u = u.SetType(req.NotifType.String())
 	}
 	if req.DeletedAt != nil {
 		u = u.SetDeletedAt(*req.DeletedAt)

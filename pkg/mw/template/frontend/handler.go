@@ -21,8 +21,8 @@ type Handler struct {
 	Content *string
 	Reqs    []*frontendtemplatecrud.Req
 	Conds   *frontendtemplatecrud.Conds
-	Offset  int32
-	Limit   int32
+	Offset  uint32
+	Limit   uint32
 }
 
 func NewHandler(ctx context.Context, options ...func(context.Context, *Handler) error) (*Handler, error) {
@@ -195,12 +195,12 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 		}
 		if conds.UsedFor != nil {
 			switch conds.GetUsedFor().GetValue() {
-			case int32(basetypes.UsedFor_WithdrawalRequest):
-			case int32(basetypes.UsedFor_WithdrawalCompleted):
-			case int32(basetypes.UsedFor_DepositReceived):
-			case int32(basetypes.UsedFor_KYCApproved):
-			case int32(basetypes.UsedFor_KYCRejected):
-			case int32(basetypes.UsedFor_Announcement):
+			case uint32(basetypes.UsedFor_WithdrawalRequest):
+			case uint32(basetypes.UsedFor_WithdrawalCompleted):
+			case uint32(basetypes.UsedFor_DepositReceived):
+			case uint32(basetypes.UsedFor_KYCApproved):
+			case uint32(basetypes.UsedFor_KYCRejected):
+			case uint32(basetypes.UsedFor_Announcement):
 			default:
 				return fmt.Errorf("Invalid UsedFor")
 			}
@@ -213,14 +213,14 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 	}
 }
 
-func WithOffset(offset int32) func(context.Context, *Handler) error {
+func WithOffset(offset uint32) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		h.Offset = offset
 		return nil
 	}
 }
 
-func WithLimit(limit int32) func(context.Context, *Handler) error {
+func WithLimit(limit uint32) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		h.Limit = limit
 		return nil

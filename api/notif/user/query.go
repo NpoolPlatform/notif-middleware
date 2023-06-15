@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s *Server) GetUser(ctx context.Context, in *npool.GetUserRequest) (*npool.GetUserResponse, error) {
+func (s *Server) GetUser(ctx context.Context, in *npool.GetUserNotifRequest) (*npool.GetUserNotifResponse, error) {
 	handler, err := user1.NewHandler(
 		ctx,
 		user1.WithID(&in.ID),
@@ -22,7 +22,7 @@ func (s *Server) GetUser(ctx context.Context, in *npool.GetUserRequest) (*npool.
 			"In", in,
 			"Error", err,
 		)
-		return &npool.GetUserResponse{}, status.Error(codes.Aborted, err.Error())
+		return &npool.GetUserNotifResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 	info, err := handler.GetUser(ctx)
 	if err != nil {
@@ -31,15 +31,15 @@ func (s *Server) GetUser(ctx context.Context, in *npool.GetUserRequest) (*npool.
 			"In", in,
 			"Error", err,
 		)
-		return &npool.GetUserResponse{}, status.Error(codes.Aborted, err.Error())
+		return &npool.GetUserNotifResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
-	return &npool.GetUserResponse{
+	return &npool.GetUserNotifResponse{
 		Info: info,
 	}, nil
 }
 
-func (s *Server) GetUserOnly(ctx context.Context, in *npool.GetUserOnlyRequest) (*npool.GetUserOnlyResponse, error) {
+func (s *Server) GetUserOnly(ctx context.Context, in *npool.GetUserNotifOnlyRequest) (*npool.GetUserNotifOnlyResponse, error) {
 	handler, err := user1.NewHandler(
 		ctx,
 		user1.WithConds(in.Conds),
@@ -50,7 +50,7 @@ func (s *Server) GetUserOnly(ctx context.Context, in *npool.GetUserOnlyRequest) 
 			"In", in,
 			"Error", err,
 		)
-		return &npool.GetUserOnlyResponse{}, status.Error(codes.Aborted, err.Error())
+		return &npool.GetUserNotifOnlyResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 	info, err := handler.GetUser(ctx)
 	if err != nil {
@@ -59,15 +59,15 @@ func (s *Server) GetUserOnly(ctx context.Context, in *npool.GetUserOnlyRequest) 
 			"In", in,
 			"Error", err,
 		)
-		return &npool.GetUserOnlyResponse{}, status.Error(codes.Aborted, err.Error())
+		return &npool.GetUserNotifOnlyResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
-	return &npool.GetUserOnlyResponse{
+	return &npool.GetUserNotifOnlyResponse{
 		Info: info,
 	}, nil
 }
 
-func (s *Server) GetUsers(ctx context.Context, in *npool.GetUsersRequest) (*npool.GetUsersResponse, error) {
+func (s *Server) GetUsers(ctx context.Context, in *npool.GetUserNotifsRequest) (*npool.GetUserNotifsResponse, error) {
 	handler, err := user1.NewHandler(
 		ctx,
 		user1.WithConds(in.GetConds()),
@@ -80,7 +80,7 @@ func (s *Server) GetUsers(ctx context.Context, in *npool.GetUsersRequest) (*npoo
 			"In", in,
 			"Error", err,
 		)
-		return &npool.GetUsersResponse{}, status.Error(codes.Aborted, err.Error())
+		return &npool.GetUserNotifsResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 	infos, total, err := handler.GetUsers(ctx)
 	if err != nil {
@@ -89,10 +89,10 @@ func (s *Server) GetUsers(ctx context.Context, in *npool.GetUsersRequest) (*npoo
 			"In", in,
 			"Error", err,
 		)
-		return &npool.GetUsersResponse{}, status.Error(codes.Aborted, err.Error())
+		return &npool.GetUserNotifsResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
-	return &npool.GetUsersResponse{
+	return &npool.GetUserNotifsResponse{
 		Infos: infos,
 		Total: total,
 	}, nil

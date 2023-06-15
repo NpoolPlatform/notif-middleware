@@ -117,7 +117,7 @@ func (h *Handler) CreateSMSTemplates(ctx context.Context) ([]*npool.SMSTemplate,
 		IDs: &cruder.Cond{Op: cruder.IN, Val: ids},
 	}
 	h.Offset = 0
-	h.Limit = int32(len(ids))
+	h.Limit = uint32(len(ids))
 
 	infos, _, err := h.GetSMSTemplates(ctx)
 	if err != nil {

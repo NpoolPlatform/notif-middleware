@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s *Server) DeleteUser(ctx context.Context, in *npool.DeleteUserRequest) (*npool.DeleteUserResponse, error) {
+func (s *Server) DeleteUser(ctx context.Context, in *npool.DeleteUserNotifRequest) (*npool.DeleteUserNotifResponse, error) {
 	req := in.GetInfo()
 	handler, err := user1.NewHandler(
 		ctx,
@@ -23,7 +23,7 @@ func (s *Server) DeleteUser(ctx context.Context, in *npool.DeleteUserRequest) (*
 			"In", in,
 			"Error", err,
 		)
-		return &npool.DeleteUserResponse{}, status.Error(codes.Aborted, err.Error())
+		return &npool.DeleteUserNotifResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 	info, err := handler.DeleteUser(ctx)
 	if err != nil {
@@ -32,9 +32,9 @@ func (s *Server) DeleteUser(ctx context.Context, in *npool.DeleteUserRequest) (*
 			"In", in,
 			"Error", err,
 		)
-		return &npool.DeleteUserResponse{}, status.Error(codes.Aborted, err.Error())
+		return &npool.DeleteUserNotifResponse{}, status.Error(codes.Aborted, err.Error())
 	}
-	return &npool.DeleteUserResponse{
+	return &npool.DeleteUserNotifResponse{
 		Info: info,
 	}, nil
 }

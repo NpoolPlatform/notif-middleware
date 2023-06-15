@@ -30,7 +30,12 @@ func (s *Server) CreateChannel(ctx context.Context, in *npool.CreateChannelReque
 
 	info, err := handler.CreateChannel(ctx)
 	if err != nil {
-		return &npool.CreateChannelResponse{}, status.Error(codes.Aborted, err.Error())
+		logger.Sugar().Errorw(
+			"CreateChannel",
+			"Req", in,
+			"Error", err,
+		)
+		return &npool.CreateChannelResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
 	return &npool.CreateChannelResponse{

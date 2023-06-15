@@ -134,7 +134,7 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 		if conds.NotifState != nil {
 			_state := conds.GetNotifState().GetValue()
 			h.Conds.NotifState = &cruder.Cond{
-				Op: conds.GetNotifState().GetOp(), Val: basetypes.TxState(_state),
+				Op: conds.GetNotifState().GetOp(), Val: npool.TxState(_state),
 			}
 		}
 		return nil

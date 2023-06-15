@@ -5,6 +5,7 @@ import (
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
+	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/tx"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
 	enttx "github.com/NpoolPlatform/notif-middleware/pkg/db/ent/txnotifstate"
 	"github.com/google/uuid"
@@ -13,7 +14,7 @@ import (
 type Req struct {
 	ID         *uuid.UUID
 	TxID       *uuid.UUID
-	NotifState *basetypes.TxState
+	NotifState *npool.TxState
 	TxType     *basetypes.UsedFor
 	DeletedAt  *uint32
 }
@@ -77,7 +78,7 @@ func SetQueryConds(q *ent.TxNotifStateQuery, conds *Conds) (*ent.TxNotifStateQue
 		}
 	}
 	if conds.NotifState != nil {
-		txState, ok := conds.NotifState.Val.(basetypes.TxState)
+		txState, ok := conds.NotifState.Val.(npool.TxState)
 		if !ok {
 			return nil, fmt.Errorf("invalid tx state")
 		}

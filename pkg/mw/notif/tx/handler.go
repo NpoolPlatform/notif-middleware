@@ -15,7 +15,7 @@ import (
 type Handler struct {
 	ID         *uuid.UUID
 	TxID       *uuid.UUID
-	NotifState *basetypes.TxState
+	NotifState *npool.TxState
 	TxType     *basetypes.TxType
 	Conds      *crud.Conds
 	Offset     int32
@@ -66,15 +66,15 @@ func WithTxType(tx *basetypes.TxType) func(context.Context, *Handler) error {
 	}
 }
 
-func WithNotifState(state *basetypes.TxState) func(context.Context, *Handler) error {
+func WithNotifState(state *npool.TxState) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if state == nil {
 			return nil
 		}
 		switch *state {
-		case basetypes.TxState_TxStateSuccessful:
-		case basetypes.TxState_TxStateWait:
-		case basetypes.TxState_TxStateCreated:
+		case npool.TxState_WaitSuccess:
+		case npool.TxState_WaitNotified:
+		case npool.TxState_Notified:
 		default:
 			return fmt.Errorf("tx state is invalid")
 		}
@@ -113,7 +113,7 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 				return err
 			}
 			h.Conds.ID = &cruder.Cond{
-				Op:  conds.GetID().GetOp(), Val: id,
+				Op: conds.GetID().GetOp(), Val: id,
 			}
 		}
 		if conds.TxID != nil {
@@ -122,19 +122,19 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 				return err
 			}
 			h.Conds.TxID = &cruder.Cond{
-				Op:  conds.GetTxID().GetOp(), Val: appID,
+				Op: conds.GetTxID().GetOp(), Val: appID,
 			}
 		}
 		if conds.TxType != nil {
 			_type := conds.GetTxType().GetValue()
 			h.Conds.TxType = &cruder.Cond{
-				Op:  conds.GetTxType().GetOp(), Val: basetypes.TxType(_type),
+				Op: conds.GetTxType().GetOp(), Val: basetypes.TxType(_type),
 			}
 		}
 		if conds.NotifState != nil {
 			_state := conds.GetNotifState().GetValue()
 			h.Conds.NotifState = &cruder.Cond{
-				Op:  conds.GetNotifState().GetOp(), Val: basetypes.TxState(_state),
+				Op: conds.GetNotifState().GetOp(), Val: basetypes.TxState(_state),
 			}
 		}
 		return nil

@@ -15,7 +15,7 @@ type Req struct {
 	ID         *uuid.UUID
 	TxID       *uuid.UUID
 	NotifState *npool.TxState
-	TxType     *basetypes.UsedFor
+	TxType     *basetypes.TxType
 	DeletedAt  *uint32
 }
 

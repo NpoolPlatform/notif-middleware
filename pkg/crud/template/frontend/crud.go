@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
 	entfrontendtemplate "github.com/NpoolPlatform/notif-middleware/pkg/db/ent/frontendtemplate"
 
@@ -14,7 +15,7 @@ type Req struct {
 	ID        *uuid.UUID
 	AppID     *uuid.UUID
 	LangID    *uuid.UUID
-	UsedFor   *string
+	UsedFor   *basetypes.UsedFor
 	Title     *string
 	Content   *string
 	DeletedAt *uint32
@@ -32,7 +33,7 @@ func CreateSet(c *ent.FrontendTemplateCreate, req *Req) *ent.FrontendTemplateCre
 	}
 
 	if req.UsedFor != nil {
-		c.SetUsedFor(*req.UsedFor)
+		c.SetUsedFor(req.UsedFor.String())
 	}
 	if req.Title != nil {
 		c.SetTitle(*req.Title)
@@ -48,7 +49,7 @@ func UpdateSet(u *ent.FrontendTemplateUpdateOne, req *Req) *ent.FrontendTemplate
 		u = u.SetLangID(*req.LangID)
 	}
 	if req.UsedFor != nil {
-		u = u.SetUsedFor(*req.UsedFor)
+		u = u.SetUsedFor(req.UsedFor.String())
 	}
 	if req.Title != nil {
 		u = u.SetTitle(*req.Title)

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
 	entsmstemplate "github.com/NpoolPlatform/notif-middleware/pkg/db/ent/smstemplate"
 
@@ -14,7 +15,7 @@ type Req struct {
 	ID        *uuid.UUID
 	AppID     *uuid.UUID
 	LangID    *uuid.UUID
-	UsedFor   *string
+	UsedFor   *basetypes.UsedFor
 	Subject   *string
 	Message   *string
 	DeletedAt *uint32
@@ -31,7 +32,7 @@ func CreateSet(c *ent.SMSTemplateCreate, req *Req) *ent.SMSTemplateCreate {
 		c.SetLangID(*req.LangID)
 	}
 	if req.UsedFor != nil {
-		c.SetUsedFor(*req.UsedFor)
+		c.SetUsedFor(req.UsedFor.String())
 	}
 	if req.Subject != nil {
 		c.SetSubject(*req.Subject)

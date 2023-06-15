@@ -21,8 +21,8 @@ type Handler struct {
 	Message *string
 	Reqs    []*smstemplatecrud.Req
 	Conds   *smstemplatecrud.Conds
-	Offset  int32
-	Limit   int32
+	Offset  uint32
+	Limit   uint32
 }
 
 func NewHandler(ctx context.Context, options ...func(context.Context, *Handler) error) (*Handler, error) {
@@ -134,7 +134,7 @@ func WithMessage(message *string) func(context.Context, *Handler) error {
 }
 
 // nolint:gocyclo
-func WithReqs(reqs []*npool.SmsTemplateReq) func(context.Context, *Handler) error {
+func WithReqs(reqs []*npool.SMSTemplateReq) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		_reqs := []*smstemplatecrud.Req{}
 		for _, req := range reqs {
@@ -243,14 +243,14 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 	}
 }
 
-func WithOffset(offset int32) func(context.Context, *Handler) error {
+func WithOffset(offset uint32) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		h.Offset = offset
 		return nil
 	}
 }
 
-func WithLimit(limit int32) func(context.Context, *Handler) error {
+func WithLimit(limit uint32) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		h.Limit = limit
 		return nil

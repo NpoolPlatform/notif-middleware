@@ -21,8 +21,8 @@ type Handler struct {
 	Content *string
 	Reqs    []*frontendtemplatecrud.Req
 	Conds   *frontendtemplatecrud.Conds
-	Offset  uint32
-	Limit   uint32
+	Offset  int32
+	Limit   int32
 }
 
 func NewHandler(ctx context.Context, options ...func(context.Context, *Handler) error) (*Handler, error) {
@@ -213,14 +213,14 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 	}
 }
 
-func WithOffset(offset uint32) func(context.Context, *Handler) error {
+func WithOffset(offset int32) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		h.Offset = offset
 		return nil
 	}
 }
 
-func WithLimit(limit uint32) func(context.Context, *Handler) error {
+func WithLimit(limit int32) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		h.Limit = limit
 		return nil

@@ -117,7 +117,7 @@ func (h *Handler) CreateFrontendTemplates(ctx context.Context) ([]*npool.Fronten
 		IDs: &cruder.Cond{Op: cruder.IN, Val: ids},
 	}
 	h.Offset = 0
-	h.Limit = uint32(len(ids))
+	h.Limit = int32(len(ids))
 
 	infos, _, err := h.GetFrontendTemplates(ctx)
 	if err != nil {

@@ -94,7 +94,7 @@ func GetSMSTemplate(ctx context.Context, id string) (*npool.SMSTemplate, error) 
 	return info.(*npool.SMSTemplate), nil
 }
 
-func GetSMSTemplates(ctx context.Context, conds *npool.Conds, offset, limit uint32) ([]*npool.SMSTemplate, uint32, error) {
+func GetSMSTemplates(ctx context.Context, conds *npool.Conds, offset, limit int32) ([]*npool.SMSTemplate, uint32, error) {
 	var total uint32
 	infos, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.GetSMSTemplates(ctx, &npool.GetSMSTemplatesRequest{

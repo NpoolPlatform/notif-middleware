@@ -31,6 +31,11 @@ func (s *Server) GetAnnouncementUsers(ctx context.Context, in *npool.GetAnnounce
 
 	infos, total, err := handler.GetAnnouncementUsers(ctx)
 	if err != nil {
+		logger.Sugar().Errorw(
+			"GetAnnouncementUsers",
+			"In", in,
+			"Error", err,
+		)
 		return &npool.GetAnnouncementUsersResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
@@ -56,6 +61,11 @@ func (s *Server) GetAnnouncementUser(ctx context.Context, in *npool.GetAnnouncem
 
 	info, err := handler.GetAnnouncementUser(ctx)
 	if err != nil {
+		logger.Sugar().Errorw(
+			"GetAnnouncementUser",
+			"In", in,
+			"error", err,
+		)
 		return &npool.GetAnnouncementUserResponse{}, status.Error(codes.Internal, err.Error())
 	}
 

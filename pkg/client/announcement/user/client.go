@@ -45,6 +45,22 @@ func CreateAnnouncementUser(ctx context.Context, in *npool.AnnouncementUserReq) 
 	return info.(*npool.AnnouncementUser), nil
 }
 
+func CreateAnnouncementUsers(ctx context.Context, in []*npool.AnnouncementUserReq) ([]*npool.AnnouncementUser, error) {
+	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		resp, err := cli.CreateAnnouncementUsers(ctx, &npool.CreateAnnouncementUsersRequest{
+			Infos: in,
+		})
+		if err != nil {
+			return nil, err
+		}
+		return resp.Infos, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return info.([]*npool.AnnouncementUser), nil
+}
+
 func DeleteAnnouncementUser(ctx context.Context, id string) (*npool.AnnouncementUser, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.DeleteAnnouncementUser(ctx, &npool.DeleteAnnouncementUserRequest{

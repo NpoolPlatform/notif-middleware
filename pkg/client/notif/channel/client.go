@@ -63,6 +63,22 @@ func CreateChannel(ctx context.Context, in *npool.ChannelReq) (*npool.Channel, e
 	return info.(*npool.Channel), nil
 }
 
+func CreateChannels(ctx context.Context, in []*npool.ChannelReq) ([]*npool.Channel, error) {
+	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		resp, err := cli.CreateChannels(ctx, &npool.CreateChannelsRequest{
+			Infos: in,
+		})
+		if err != nil {
+			return nil, err
+		}
+		return resp.Infos, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return info.([]*npool.Channel), nil
+}
+
 func DeleteChannel(ctx context.Context, id string) (*npool.Channel, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.DeleteChannel(ctx, &npool.DeleteChannelRequest{

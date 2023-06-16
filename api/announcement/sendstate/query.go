@@ -7,15 +7,15 @@ import (
 
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/sendstate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/handler"
-	announcement1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/sendstate"
+	amtsend1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/sendstate"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 func (s *Server) GetSendStates(ctx context.Context, in *npool.GetSendStatesRequest) (*npool.GetSendStatesResponse, error) {
-	handler, err := announcement1.NewHandler(
+	handler, err := amtsend1.NewHandler(
 		ctx,
-		announcement1.WithConds(in.GetConds()),
+		amtsend1.WithConds(in.GetConds()),
 		handler.WithOffset(in.Offset),
 		handler.WithLimit(in.Limit),
 	)
@@ -30,6 +30,11 @@ func (s *Server) GetSendStates(ctx context.Context, in *npool.GetSendStatesReque
 
 	infos, total, err := handler.GetSendStates(ctx)
 	if err != nil {
+		logger.Sugar().Errorw(
+			"GetSendStates",
+			"In", in,
+			"Error", err,
+		)
 		return &npool.GetSendStatesResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
@@ -40,7 +45,7 @@ func (s *Server) GetSendStates(ctx context.Context, in *npool.GetSendStatesReque
 }
 
 func (s *Server) GetSendState(ctx context.Context, in *npool.GetSendStateRequest) (*npool.GetSendStateResponse, error) {
-	handler, err := announcement1.NewHandler(
+	handler, err := amtsend1.NewHandler(
 		ctx,
 		handler.WithID(&in.ID),
 	)
@@ -55,6 +60,11 @@ func (s *Server) GetSendState(ctx context.Context, in *npool.GetSendStateRequest
 
 	info, err := handler.GetSendState(ctx)
 	if err != nil {
+		logger.Sugar().Errorw(
+			"GetSendState",
+			"In", in,
+			"error", err,
+		)
 		return &npool.GetSendStateResponse{}, status.Error(codes.Internal, err.Error())
 	}
 

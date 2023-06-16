@@ -31,7 +31,7 @@ func (h *queryHandler) selectTx(stm *ent.TxNotifStateQuery) {
 
 func (h *queryHandler) queryTx(cli *ent.Client) error {
 	if h.ID == nil {
-		return fmt.Errorf("invalid notif/tx id")
+		return fmt.Errorf("invalid notif tx id")
 	}
 	h.selectTx(
 		cli.TxNotifState.

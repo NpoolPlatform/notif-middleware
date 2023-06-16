@@ -50,7 +50,7 @@ func (h *Handler) CreateAnnouncement(ctx context.Context) (info *npool.Announcem
 				LangID:  h.LangID,
 				Channel: h.Channel,
 				Type:    h.Type,
-				EndAt:   &h.EndAt,
+				EndAt:   h.EndAt,
 			},
 		).Save(ctx)
 		if err != nil {

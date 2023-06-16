@@ -7,16 +7,16 @@ import (
 
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/user"
 	"github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/handler"
-	announcement1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/user"
+	amtuser1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/user"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 func (s *Server) GetAnnouncementUsers(ctx context.Context, in *npool.GetAnnouncementUsersRequest) (*npool.GetAnnouncementUsersResponse, error) {
-	handler, err := announcement1.NewHandler(
+	handler, err := amtuser1.NewHandler(
 		ctx,
-		announcement1.WithConds(in.GetConds()),
+		amtuser1.WithConds(in.GetConds()),
 		handler.WithOffset(in.Offset),
 		handler.WithLimit(in.Limit),
 	)
@@ -41,7 +41,7 @@ func (s *Server) GetAnnouncementUsers(ctx context.Context, in *npool.GetAnnounce
 }
 
 func (s *Server) GetAnnouncementUser(ctx context.Context, in *npool.GetAnnouncementUserRequest) (*npool.GetAnnouncementUserResponse, error) {
-	handler, err := announcement1.NewHandler(
+	handler, err := amtuser1.NewHandler(
 		ctx,
 		handler.WithID(&in.ID),
 	)

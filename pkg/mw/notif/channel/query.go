@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/channel"
 	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/notif/channel"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db"
@@ -27,6 +28,13 @@ func (h *queryHandler) selectChannel(stm *ent.NotifChannelQuery) {
 		entchannel.FieldCreatedAt,
 		entchannel.FieldUpdatedAt,
 	)
+}
+
+func (h *queryHandler) formalize() {
+	for _, info := range h.infos {
+		info.Channel = basetypes.NotifChannel(basetypes.NotifChannel_value[info.ChannelStr])
+		info.EventType = basetypes.UsedFor(basetypes.UsedFor_value[info.EventTypeStr])
+	}
 }
 
 func (h *queryHandler) queryChannel(cli *ent.Client) error {
@@ -79,6 +87,7 @@ func (h *Handler) GetChannels(ctx context.Context) ([]*npool.Channel, uint32, er
 			stm.
 			Offset(int(h.Offset)).
 			Limit(int(h.Limit))
+		handler.formalize()
 		if err := handler.scan(_ctx); err != nil {
 			return err
 		}
@@ -100,6 +109,7 @@ func (h *Handler) GetChannel(ctx context.Context) (info *npool.Channel, err erro
 		if err := handler.queryChannel(cli); err != nil {
 			return err
 		}
+		handler.formalize()
 		if err := handler.scan(_ctx); err != nil {
 			return err
 		}

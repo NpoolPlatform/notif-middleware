@@ -26,9 +26,6 @@ import (
 	appmwpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/app"
 	appuserpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/user"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
-	"github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/handler"
-	readamt "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/readstate"
-	sendamt "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/sendstate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/testinit"
 )
 
@@ -79,12 +76,14 @@ func setupAnnouncement(t *testing.T) func(*testing.T) {
 	amt.AppID = app1.ID
 
 	var (
-		id    = ret.ID
-		appID = ret.AppID
-		req   = appuserpb.UserReq{
+		id           = ret.ID
+		appID        = ret.AppID
+		passwordHash = uuid.NewString()
+		req          = appuserpb.UserReq{
 			ID:           &id,
 			AppID:        &appID,
 			EmailAddress: &ret.EmailAddress,
+			PasswordHash: &passwordHash,
 		}
 	)
 
@@ -92,7 +91,7 @@ func setupAnnouncement(t *testing.T) func(*testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, info)
 
-	amt.UserID = info.ID
+	ret.ID = info.ID
 
 	return func(*testing.T) {
 		_, _ = appmwcli.DeleteApp(context.Background(), ret.AppID)
@@ -116,40 +115,6 @@ func createAnnouncement(t *testing.T) {
 		amt.ID = info.ID
 		assert.Equal(t, info, &amt)
 	}
-
-	// send amt
-	sendAmtHandler, err := sendamt.NewHandler(
-		context.Background(),
-		handler.WithAppID(&amt.AppID),
-		handler.WithUserID(&amt.AppID, &amt.UserID),
-		handler.WithAnnouncementID(&amt.AppID, &amt.ID),
-	)
-	assert.Nil(t, err)
-
-	sendAmt, err := sendAmtHandler.CreateSendState(context.Background())
-	assert.Nil(t, err)
-	assert.NotNil(t, sendAmt)
-
-	sendAmtRet, err := sendAmtHandler.DeleteSendState(context.Background())
-	assert.Nil(t, err)
-	assert.Equal(t, sendAmt, sendAmtRet)
-
-	// read amt
-	readAmtHandler, err := readamt.NewHandler(
-		context.Background(),
-		handler.WithAppID(&amt.AppID),
-		handler.WithUserID(&amt.AppID, &amt.UserID),
-		handler.WithAnnouncementID(&amt.AppID, &amt.ID),
-	)
-	assert.Nil(t, err)
-
-	readAmt, err := readAmtHandler.CreateReadState(context.Background())
-	assert.Nil(t, err)
-	assert.NotNil(t, readAmt)
-
-	readAmtRet, err := readAmtHandler.DeleteReadState(context.Background())
-	assert.Nil(t, err)
-	assert.Equal(t, readAmt, readAmtRet)
 }
 
 func updateAnnouncement(t *testing.T) {

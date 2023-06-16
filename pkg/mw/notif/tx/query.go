@@ -152,6 +152,9 @@ func (h *Handler) GetTxOnly(ctx context.Context) (*npool.Tx, error) {
 	if err != nil {
 		return nil, err
 	}
+	if len(handler.infos) == 0 {
+		return nil, nil
+	}
 	if len(handler.infos) > 0 {
 		return nil, fmt.Errorf("to many record")
 	}

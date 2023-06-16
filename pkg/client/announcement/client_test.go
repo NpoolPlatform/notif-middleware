@@ -79,10 +79,10 @@ func setupAnnouncement(t *testing.T) func(*testing.T) {
 	amt.AppID = app1.ID
 
 	var (
-		id    = ret.ID
-		appID = ret.AppID
+		id           = ret.ID
+		appID        = ret.AppID
 		passwordHash = uuid.NewString()
-		req   = appuserpb.UserReq{
+		req          = appuserpb.UserReq{
 			ID:           &id,
 			AppID:        &appID,
 			EmailAddress: &ret.EmailAddress,
@@ -94,7 +94,7 @@ func setupAnnouncement(t *testing.T) func(*testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, info)
 
-	amt.UserID = info.ID
+	ret.ID = info.ID
 
 	return func(*testing.T) {
 		_, _ = appmwcli.DeleteApp(context.Background(), ret.AppID)
@@ -123,7 +123,7 @@ func createAnnouncement(t *testing.T) {
 	sendAmtHandler, err := sendamt.NewHandler(
 		context.Background(),
 		handler.WithAppID(&amt.AppID),
-		handler.WithUserID(&amt.AppID, &amt.UserID),
+		handler.WithUserID(&amt.AppID, &ret.ID),
 		handler.WithAnnouncementID(&amt.AppID, &amt.ID),
 	)
 	assert.Nil(t, err)
@@ -140,7 +140,7 @@ func createAnnouncement(t *testing.T) {
 	readAmtHandler, err := readamt.NewHandler(
 		context.Background(),
 		handler.WithAppID(&amt.AppID),
-		handler.WithUserID(&amt.AppID, &amt.UserID),
+		handler.WithUserID(&amt.AppID, &ret.ID),
 		handler.WithAnnouncementID(&amt.AppID, &amt.ID),
 	)
 	assert.Nil(t, err)

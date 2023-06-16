@@ -99,7 +99,7 @@ func setupSendState(t *testing.T) func(*testing.T) {
 	handler, err := sendamt1.NewHandler(
 		context.Background(),
 		handler.WithAppID(&amt.AppID),
-		handler.WithUserID(&amt.AppID, &amt.UserID),
+		handler.WithUserID(&amt.AppID, &ret.UserID),
 		handler.WithAnnouncementID(&amt.AppID, &amt.ID),
 	)
 	assert.Nil(t, err)

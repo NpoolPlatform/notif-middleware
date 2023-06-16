@@ -8,6 +8,7 @@ import (
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	notifmwpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
+	templatemwpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/template"
 	notifcrud "github.com/NpoolPlatform/notif-middleware/pkg/crud/notif"
 
 	"github.com/google/uuid"
@@ -27,6 +28,7 @@ type Handler struct {
 	Channel     *basetypes.NotifChannel
 	Extra       *string
 	NotifType   *notifmwpb.NotifType
+	Vars        *templatemwpb.TemplateVars
 	IDs         *[]uuid.UUID
 	Reqs        []*notifcrud.Req
 	Conds       *notifcrud.Conds
@@ -218,6 +220,13 @@ func WithNotifType(_type *notifmwpb.NotifType) func(context.Context, *Handler) e
 			return fmt.Errorf("Invalid type")
 		}
 		h.NotifType = _type
+		return nil
+	}
+}
+
+func WithVars(vars *templatemwpb.TemplateVars) func(context.Context, *Handler) error {
+	return func(ctx context.Context, h *Handler) error {
+		h.Vars = vars
 		return nil
 	}
 }

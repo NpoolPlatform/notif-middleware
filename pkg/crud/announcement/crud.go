@@ -76,6 +76,7 @@ func UpdateSet(u *ent.AnnouncementUpdateOne, req *Req) *ent.AnnouncementUpdateOn
 
 type Conds struct {
 	ID      *cruder.Cond
+	AppID   *cruder.Cond
 	EndAt   *cruder.Cond
 	Channel *cruder.Cond
 }
@@ -96,16 +97,25 @@ func SetQueryConds(q *ent.AnnouncementQuery, conds *Conds) (*ent.AnnouncementQue
 			return nil, fmt.Errorf("invalid announcement op field")
 		}
 	}
-
+	if conds.AppID != nil {
+		appID, ok := conds.AppID.Val.(uuid.UUID)
+		if !ok {
+			return nil, fmt.Errorf("invalid app id")
+		}
+		switch conds.AppID.Op {
+		case cruder.EQ:
+			q.Where(entamt.AppID(appID))
+		default:
+			return nil, fmt.Errorf("invalid app id op field")
+		}
+	}
 	if conds.EndAt != nil {
 		endAt, ok := conds.EndAt.Val.(uint32)
 		if !ok {
 			return nil, fmt.Errorf("invalid end at")
 		}
 		switch conds.EndAt.Op {
-		case cruder.GTE:
-			q.Where(entamt.EndAt(endAt))
-		case cruder.EQ:
+		case cruder.GT:
 			q.Where(entamt.EndAt(endAt))
 		default:
 			return nil, fmt.Errorf("invalid end at op field")

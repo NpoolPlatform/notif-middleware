@@ -6,14 +6,14 @@ import (
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/readstate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/handler"
-	announcement1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/readstate"
+	amtread1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/readstate"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 func (s *Server) CreateReadState(ctx context.Context, in *npool.CreateReadStateRequest) (*npool.CreateReadStateResponse, error) {
 	req := in.GetInfo()
-	handler, err := announcement1.NewHandler(
+	handler, err := amtread1.NewHandler(
 		ctx,
 		handler.WithAppID(req.AppID),
 		handler.WithUserID(req.AppID, req.UserID),

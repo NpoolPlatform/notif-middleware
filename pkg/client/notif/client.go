@@ -186,3 +186,17 @@ func ExistNotifConds(ctx context.Context, conds *npool.Conds) (bool, error) {
 	}
 	return infos.(bool), nil
 }
+
+func GenerateNotifs(ctx context.Context, in *npool.GenerateNotifsRequest) ([]*npool.Notif, error) {
+	infos, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		resp, err := cli.GenerateNotifs(ctx, in)
+		if err != nil {
+			return nil, fmt.Errorf("fail generate notifs: %v", err)
+		}
+		return resp.Infos, nil
+	})
+	if err != nil {
+		return nil, fmt.Errorf("fail generate notifs: %v", err)
+	}
+	return infos.([]*npool.Notif), nil
+}

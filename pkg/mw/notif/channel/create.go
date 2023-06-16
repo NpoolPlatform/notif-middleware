@@ -2,7 +2,9 @@ package channel
 
 import (
 	"context"
+	"fmt"
 
+	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/channel"
 	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/notif/channel"
@@ -10,22 +12,19 @@ import (
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
 )
 
-type createHandler struct {
-	*Handler
-	Reqs []*crud.Req
-}
-
-func (h *createHandler) validate() error {
-	return nil
-}
-
 func (h *Handler) CreateChannel(ctx context.Context) (info *npool.Channel, err error) {
-	handler := &createHandler{
-		Handler: h,
+	h.Conds = &crud.Conds{
+		AppID:     &cruder.Cond{Op: cruder.EQ, Val: *h.AppID},
+		Channel:   &cruder.Cond{Op: cruder.EQ, Val: basetypes.NotifChannel(uint32(*h.Channel))},
+		EventType: &cruder.Cond{Op: cruder.EQ, Val: basetypes.UsedFor(uint32(*h.EventType))},
 	}
 
-	if err := handler.validate(); err != nil {
+	exist, err := h.ExistChannelConds(ctx)
+	if err != nil {
 		return nil, err
+	}
+	if exist {
+		return nil, fmt.Errorf("channel exist")
 	}
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
@@ -53,36 +52,31 @@ func (h *Handler) CreateChannel(ctx context.Context) (info *npool.Channel, err e
 }
 
 func (h *Handler) CreateChannels(ctx context.Context) (infos []*npool.Channel, err error) {
-	handler := &createHandler{
-		Handler: h,
-	}
-
-	if err := handler.validate(); err != nil {
-		return nil, err
-	}
-
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		rows := []*ent.NotifChannelCreate{}
-		for _, req := range handler.Reqs {
-			rows = append(rows, crud.CreateSet(cli.NotifChannel.Create(), req))
-		}
+		for _, req := range h.Reqs {
+			h.AppID = req.AppID
+			h.Channel = req.Channel
+			h.EventType = req.EventType
 
-		_infos, err := cli.NotifChannel.CreateBulk(rows...).Save(_ctx)
-		if err != nil {
-			return err
-		}
+			h.Conds = &crud.Conds{
+				AppID:     &cruder.Cond{Op: cruder.EQ, Val: *h.AppID},
+				Channel:   &cruder.Cond{Op: cruder.EQ, Val: basetypes.NotifChannel(uint32(*h.Channel))},
+				EventType: &cruder.Cond{Op: cruder.EQ, Val: basetypes.UsedFor(uint32(*h.EventType))},
+			}
 
-		for _, row := range _infos {
-			infos = append(infos, &npool.Channel{
-				ID:           row.ID.String(),
-				AppID:        row.AppID.String(),
-				EventType:    basetypes.UsedFor(basetypes.UsedFor_value[row.EventType]),
-				EventTypeStr: row.EventType,
-				Channel:      basetypes.NotifChannel(basetypes.NotifChannel_value[row.Channel]),
-				ChannelStr:   row.EventType,
-				CreatedAt:    row.CreatedAt,
-				UpdatedAt:    row.UpdatedAt,
-			})
+			exist, err := h.ExistChannelConds(ctx)
+			if err != nil {
+				return err
+			}
+			if exist {
+				continue
+			}
+
+			info, err := h.CreateChannel(ctx)
+			if err != nil {
+				return err
+			}
+			infos = append(infos, info)
 		}
 		return nil
 	})

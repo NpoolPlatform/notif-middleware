@@ -30,7 +30,7 @@ func (s *Server) CreateReadState(ctx context.Context, in *npool.CreateReadStateR
 
 	info, err := handler.CreateReadState(ctx)
 	if err != nil {
-		return &npool.CreateReadStateResponse{}, status.Error(codes.Aborted, err.Error())
+		return &npool.CreateReadStateResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
 	return &npool.CreateReadStateResponse{

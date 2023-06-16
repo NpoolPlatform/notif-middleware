@@ -23,7 +23,7 @@ func (s *Server) DeleteReadState(ctx context.Context, in *npool.DeleteReadStateR
 			"In", in,
 			"Error", err,
 		)
-		return &npool.DeleteReadStateResponse{}, status.Error(codes.Aborted, err.Error())
+		return &npool.DeleteReadStateResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 	info, err := handler.DeleteReadState(ctx)
 	if err != nil {
@@ -32,7 +32,7 @@ func (s *Server) DeleteReadState(ctx context.Context, in *npool.DeleteReadStateR
 			"In", in,
 			"Error", err,
 		)
-		return &npool.DeleteReadStateResponse{}, status.Error(codes.Aborted, err.Error())
+		return &npool.DeleteReadStateResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
 	return &npool.DeleteReadStateResponse{

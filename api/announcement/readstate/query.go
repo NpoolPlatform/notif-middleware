@@ -30,6 +30,11 @@ func (s *Server) GetReadStates(ctx context.Context, in *npool.GetReadStatesReque
 
 	infos, total, err := handler.GetReadStates(ctx)
 	if err != nil {
+		logger.Sugar().Errorw(
+			"GetReadStates",
+			"In", in,
+			"Error", err,
+		)
 		return &npool.GetReadStatesResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
@@ -55,6 +60,11 @@ func (s *Server) GetReadState(ctx context.Context, in *npool.GetReadStateRequest
 
 	info, err := handler.GetReadState(ctx)
 	if err != nil {
+		logger.Sugar().Errorw(
+			"GetReadState",
+			"In", in,
+			"error", err,
+		)
 		return &npool.GetReadStateResponse{}, status.Error(codes.Internal, err.Error())
 	}
 

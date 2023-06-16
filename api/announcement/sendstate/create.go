@@ -54,7 +54,12 @@ func (s *Server) CreateSendStates(ctx context.Context, in *npool.CreateSendState
 
 	infos, err := handler.CreateSendStates(ctx)
 	if err != nil {
-		return &npool.CreateSendStatesResponse{}, status.Error(codes.Aborted, err.Error())
+		logger.Sugar().Errorw(
+			"CreateSendStates",
+			"Req", in,
+			"Error", err,
+		)
+		return &npool.CreateSendStatesResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
 	return &npool.CreateSendStatesResponse{

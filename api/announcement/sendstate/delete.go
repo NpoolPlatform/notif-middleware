@@ -23,7 +23,7 @@ func (s *Server) DeleteSendState(ctx context.Context, in *npool.DeleteSendStateR
 			"In", in,
 			"Error", err,
 		)
-		return &npool.DeleteSendStateResponse{}, status.Error(codes.Aborted, err.Error())
+		return &npool.DeleteSendStateResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
 	info, err := handler.DeleteSendState(ctx)
@@ -33,7 +33,7 @@ func (s *Server) DeleteSendState(ctx context.Context, in *npool.DeleteSendStateR
 			"In", in,
 			"Error", err,
 		)
-		return &npool.DeleteSendStateResponse{}, status.Error(codes.Aborted, err.Error())
+		return &npool.DeleteSendStateResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
 	return &npool.DeleteSendStateResponse{

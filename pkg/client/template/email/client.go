@@ -154,6 +154,22 @@ func DeleteEmailTemplate(ctx context.Context, req *npool.EmailTemplateReq) (*npo
 	return info.(*npool.EmailTemplate), nil
 }
 
+func ExistEmailTemplate(ctx context.Context, id string) (bool, error) {
+	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		resp, err := cli.ExistEmailTemplate(ctx, &npool.ExistEmailTemplateRequest{
+			ID: id,
+		})
+		if err != nil {
+			return nil, err
+		}
+		return resp.Info, nil
+	})
+	if err != nil {
+		return false, err
+	}
+	return info.(bool), nil
+}
+
 func ExistEmailTemplateConds(ctx context.Context, conds *npool.Conds) (bool, error) {
 	infos, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.ExistEmailTemplateConds(ctx, &npool.ExistEmailTemplateCondsRequest{

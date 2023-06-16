@@ -154,6 +154,22 @@ func DeleteSMSTemplate(ctx context.Context, req *npool.SMSTemplateReq) (*npool.S
 	return info.(*npool.SMSTemplate), nil
 }
 
+func ExistSMSTemplate(ctx context.Context, id string) (bool, error) {
+	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		resp, err := cli.ExistSMSTemplate(ctx, &npool.ExistSMSTemplateRequest{
+			ID: id,
+		})
+		if err != nil {
+			return nil, err
+		}
+		return resp.Info, nil
+	})
+	if err != nil {
+		return false, err
+	}
+	return info.(bool), nil
+}
+
 func ExistSMSTemplateConds(ctx context.Context, conds *npool.Conds) (bool, error) {
 	infos, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.ExistSMSTemplateConds(ctx, &npool.ExistSMSTemplateCondsRequest{

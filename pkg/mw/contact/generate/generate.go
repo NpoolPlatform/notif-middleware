@@ -13,13 +13,13 @@ import (
 
 func (h *Handler) GenerateContact(ctx context.Context) (*npool.TextInfo, error) {
 	h.Conds.AppID = &cruder.Cond{
-		Op:  cruder.EQ, Val: *h.AppID,
+		Op: cruder.EQ, Val: *h.AppID,
 	}
 	h.Conds.UsedFor = &cruder.Cond{
-		Op:  cruder.EQ, Val: int32(h.UsedFor.Number()),
+		Op: cruder.EQ, Val: int32(h.UsedFor.Number()),
 	}
 	h.Conds.AccountType = &cruder.Cond{
-		Op:  cruder.EQ, Val: int32(basetypes.SignMethod_Email),
+		Op: cruder.EQ, Val: int32(basetypes.SignMethod_Email),
 	}
 
 	info, err := h.GetContactOnly(ctx)

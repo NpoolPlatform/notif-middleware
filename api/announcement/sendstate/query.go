@@ -30,6 +30,11 @@ func (s *Server) GetSendStates(ctx context.Context, in *npool.GetSendStatesReque
 
 	infos, total, err := handler.GetSendStates(ctx)
 	if err != nil {
+		logger.Sugar().Errorw(
+			"GetSendStates",
+			"In", in,
+			"Error", err,
+		)
 		return &npool.GetSendStatesResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
@@ -55,6 +60,11 @@ func (s *Server) GetSendState(ctx context.Context, in *npool.GetSendStateRequest
 
 	info, err := handler.GetSendState(ctx)
 	if err != nil {
+		logger.Sugar().Errorw(
+			"GetSendState",
+			"In", in,
+			"error", err,
+		)
 		return &npool.GetSendStateResponse{}, status.Error(codes.Internal, err.Error())
 	}
 

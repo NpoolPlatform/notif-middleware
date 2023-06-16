@@ -81,10 +81,12 @@ func setupAnnouncement(t *testing.T) func(*testing.T) {
 	var (
 		id    = ret.ID
 		appID = ret.AppID
+		passwordHash = uuid.NewString()
 		req   = appuserpb.UserReq{
 			ID:           &id,
 			AppID:        &appID,
 			EmailAddress: &ret.EmailAddress,
+			PasswordHash: &passwordHash,
 		}
 	)
 

@@ -3,32 +3,24 @@ package notif
 import (
 	"context"
 
-	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
-	tmplmwpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/template"
-
 	mwcli "github.com/NpoolPlatform/notif-middleware/pkg/client/notif"
+	"github.com/NpoolPlatform/notif-middleware/pkg/template"
 
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
-
-	template "github.com/NpoolPlatform/notif-middleware/pkg/mw/template"
 )
 
-func GenerateNotifs(
+func (h *Handler) GenerateNotifs(
 	ctx context.Context,
-	appID, userID string,
-	usedFor basetypes.UsedFor,
-	vars *tmplmwpb.TemplateVars,
-	extra *string,
 ) (
 	[]*npool.Notif, error,
 ) {
-	reqs, err := template.GenerateNotifs(ctx, appID, userID, usedFor, vars)
+	reqs, err := template.GenerateNotifs(ctx, h.AppID.String(), h.UserID.String(), *h.EventType, h.Vars)
 	if err != nil {
 		return nil, err
 	}
 
 	for _, req := range reqs {
-		req.Extra = extra
+		req.Extra = h.Extra
 	}
 
 	notifs, err := mwcli.CreateNotifs(ctx, reqs)

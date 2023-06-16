@@ -6,14 +6,12 @@ import (
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/template"
 
-	chanmgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/channel"
-	notifmgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/notif"
+	notifmwpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
 
-	frontendtmplmgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/template/frontend"
-	frontendtmplmgrcli "github.com/NpoolPlatform/notif-manager/pkg/client/template/frontend"
+	frontendtmplmwpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/template/frontend"
+	frontendtmplmwcli "github.com/NpoolPlatform/notif-middleware/pkg/client/template/frontend"
 
 	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
-	commonpb "github.com/NpoolPlatform/message/npool"
 
 	tmplreplace "github.com/NpoolPlatform/notif-middleware/pkg/template/replace"
 
@@ -25,16 +23,16 @@ func GenerateNotifs(
 	appID, userID string,
 	usedFor basetypes.UsedFor,
 	vars *npool.TemplateVars,
-) ([]*notifmgrpb.NotifReq, error) {
-	const maxTemplates = int32(100)
+) ([]*notifmwpb.NotifReq, error) {
+	const maxTemplates = uint32(100)
 	eventID := uuid.NewString()
 
-	tmpls, _, err := frontendtmplmgrcli.GetFrontendTemplates(ctx, &frontendtmplmgrpb.Conds{
-		AppID: &commonpb.StringVal{
+	tmpls, _, err := frontendtmplmwcli.GetFrontendTemplates(ctx, &frontendtmplmwpb.Conds{
+		AppID: &basetypes.StringVal{
 			Op:    cruder.EQ,
 			Value: appID,
 		},
-		UsedFor: &commonpb.Uint32Val{
+		UsedFor: &basetypes.Uint32Val{
 			Op:    cruder.EQ,
 			Value: uint32(usedFor),
 		},
@@ -46,14 +44,14 @@ func GenerateNotifs(
 		return nil, nil
 	}
 
-	reqs := []*notifmgrpb.NotifReq{}
+	reqs := []*notifmwpb.NotifReq{}
 	for _, tmpl := range tmpls {
 		title := tmplreplace.ReplaceAll(tmpl.Title, vars)
 		content := tmplreplace.ReplaceAll(tmpl.Content, vars)
 		useTemplate := true
-		channel1 := chanmgrpb.NotifChannel_ChannelFrontend
+		channel1 := basetypes.NotifChannel_ChannelFrontend
 
-		reqs = append(reqs, &notifmgrpb.NotifReq{
+		reqs = append(reqs, &notifmwpb.NotifReq{
 			AppID:       &appID,
 			UserID:      &userID,
 			LangID:      &tmpl.LangID,
@@ -75,16 +73,16 @@ func GenerateText(
 	usedFor basetypes.UsedFor,
 	vars *npool.TemplateVars,
 ) (*npool.TextInfo, error) {
-	tmpl, err := frontendtmplmgrcli.GetFrontendTemplateOnly(ctx, &frontendtmplmgrpb.Conds{
-		AppID: &commonpb.StringVal{
+	tmpl, err := frontendtmplmwcli.GetFrontendTemplateOnly(ctx, &frontendtmplmwpb.Conds{
+		AppID: &basetypes.StringVal{
 			Op:    cruder.EQ,
 			Value: appID,
 		},
-		LangID: &commonpb.StringVal{
+		LangID: &basetypes.StringVal{
 			Op:    cruder.EQ,
 			Value: langID,
 		},
-		UsedFor: &commonpb.Uint32Val{
+		UsedFor: &basetypes.Uint32Val{
 			Op:    cruder.EQ,
 			Value: uint32(usedFor),
 		},

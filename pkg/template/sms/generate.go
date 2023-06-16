@@ -6,14 +6,12 @@ import (
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/template"
 
-	chanmgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/channel"
-	notifmgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/notif"
+	notifmwpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
 
-	smstmplmgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/template/sms"
-	smstmplmgrcli "github.com/NpoolPlatform/notif-manager/pkg/client/template/sms"
+	smstmplmwpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/template/sms"
+	smstmplmwcli "github.com/NpoolPlatform/notif-middleware/pkg/client/template/sms"
 
 	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
-	commonpb "github.com/NpoolPlatform/message/npool"
 
 	tmplreplace "github.com/NpoolPlatform/notif-middleware/pkg/template/replace"
 
@@ -25,16 +23,16 @@ func GenerateNotifs(
 	appID, userID string,
 	usedFor basetypes.UsedFor,
 	vars *npool.TemplateVars,
-) ([]*notifmgrpb.NotifReq, error) {
-	const maxTemplates = int32(100)
+) ([]*notifmwpb.NotifReq, error) {
+	const maxTemplates = uint32(100)
 	eventID := uuid.NewString()
 
-	tmpls, _, err := smstmplmgrcli.GetSMSTemplates(ctx, &smstmplmgrpb.Conds{
-		AppID: &commonpb.StringVal{
+	tmpls, _, err := smstmplmwcli.GetSMSTemplates(ctx, &smstmplmwpb.Conds{
+		AppID: &basetypes.StringVal{
 			Op:    cruder.EQ,
 			Value: appID,
 		},
-		UsedFor: &commonpb.Int32Val{
+		UsedFor: &basetypes.Int32Val{
 			Op:    cruder.EQ,
 			Value: int32(usedFor),
 		},
@@ -46,14 +44,14 @@ func GenerateNotifs(
 		return nil, nil
 	}
 
-	reqs := []*notifmgrpb.NotifReq{}
+	reqs := []*notifmwpb.NotifReq{}
 	for _, tmpl := range tmpls {
 		title := tmplreplace.ReplaceAll(tmpl.Subject, vars)
 		content := tmplreplace.ReplaceAll(tmpl.Message, vars)
 		useTemplate := true
-		channel1 := chanmgrpb.NotifChannel_ChannelSMS
+		channel1 := basetypes.NotifChannel_ChannelSMS
 
-		reqs = append(reqs, &notifmgrpb.NotifReq{
+		reqs = append(reqs, &notifmwpb.NotifReq{
 			AppID:       &appID,
 			UserID:      &userID,
 			LangID:      &tmpl.LangID,
@@ -75,16 +73,16 @@ func GenerateText(
 	usedFor basetypes.UsedFor,
 	vars *npool.TemplateVars,
 ) (*npool.TextInfo, error) {
-	tmpl, err := smstmplmgrcli.GetSMSTemplateOnly(ctx, &smstmplmgrpb.Conds{
-		AppID: &commonpb.StringVal{
+	tmpl, err := smstmplmwcli.GetSMSTemplateOnly(ctx, &smstmplmwpb.Conds{
+		AppID: &basetypes.StringVal{
 			Op:    cruder.EQ,
 			Value: appID,
 		},
-		LangID: &commonpb.StringVal{
+		LangID: &basetypes.StringVal{
 			Op:    cruder.EQ,
 			Value: langID,
 		},
-		UsedFor: &commonpb.Int32Val{
+		UsedFor: &basetypes.Int32Val{
 			Op:    cruder.EQ,
 			Value: int32(usedFor),
 		},

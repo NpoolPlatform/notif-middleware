@@ -4,7 +4,7 @@ import (
 	"context"
 
 	mwcli "github.com/NpoolPlatform/notif-middleware/pkg/client/notif"
-	"github.com/NpoolPlatform/notif-middleware/pkg/template"
+	"github.com/NpoolPlatform/notif-middleware/pkg/mw/template"
 
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
 )

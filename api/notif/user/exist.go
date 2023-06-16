@@ -1,3 +1,4 @@
+//nolint:nolintlint,dupl
 package user
 
 import (
@@ -10,7 +11,6 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-//nolint
 func (s *Server) ExistUser(ctx context.Context, in *npool.ExistUserNotifRequest) (*npool.ExistUserNotifResponse, error) {
 	handler, err := user1.NewHandler(
 		ctx,

@@ -94,6 +94,7 @@ func WithDefaultToUsername(defaultToUsername *string) func(context.Context, *Han
 	}
 }
 
+// nolint:gocyclo
 func WithUsedFor(_usedFor *basetypes.UsedFor) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if _usedFor == nil {
@@ -117,7 +118,7 @@ func WithUsedFor(_usedFor *basetypes.UsedFor) func(context.Context, *Handler) er
 		case basetypes.UsedFor_KYCRejected:
 		case basetypes.UsedFor_Announcement:
 		default:
-			return fmt.Errorf("Invalid UsedFor")
+			return fmt.Errorf("invalid UsedFor")
 		}
 		h.UsedFor = _usedFor
 		return nil
@@ -235,7 +236,7 @@ func WithReqs(reqs []*npool.EmailTemplateReq) func(context.Context, *Handler) er
 				case basetypes.UsedFor_KYCRejected:
 				case basetypes.UsedFor_Announcement:
 				default:
-					return fmt.Errorf("Invalid UsedFor")
+					return fmt.Errorf("invalid UsedFor")
 				}
 				_req.UsedFor = req.UsedFor
 			}
@@ -246,6 +247,7 @@ func WithReqs(reqs []*npool.EmailTemplateReq) func(context.Context, *Handler) er
 	}
 }
 
+// nolint:gocyclo
 func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		h.Conds = &emailtemplatecrud.Conds{}
@@ -288,7 +290,7 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			case int32(basetypes.UsedFor_KYCRejected):
 			case int32(basetypes.UsedFor_Announcement):
 			default:
-				return fmt.Errorf("Invalid UsedFor")
+				return fmt.Errorf("invalid UsedFor")
 			}
 			h.Conds.UsedFor = &cruder.Cond{
 				Op:  conds.GetUsedFor().GetOp(),

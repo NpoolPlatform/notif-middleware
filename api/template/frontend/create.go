@@ -1,3 +1,4 @@
+//nolint:nolintlint,dupl
 package frontend
 
 import (
@@ -11,7 +12,13 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s *Server) CreateFrontendTemplate(ctx context.Context, in *npool.CreateFrontendTemplateRequest) (*npool.CreateFrontendTemplateResponse, error) {
+func (s *Server) CreateFrontendTemplate(
+	ctx context.Context,
+	in *npool.CreateFrontendTemplateRequest,
+) (
+	*npool.CreateFrontendTemplateResponse,
+	error,
+) {
 	req := in.GetInfo()
 	handler, err := frontendtemplate1.NewHandler(
 		ctx,
@@ -44,7 +51,13 @@ func (s *Server) CreateFrontendTemplate(ctx context.Context, in *npool.CreateFro
 	}, nil
 }
 
-func (s *Server) CreateFrontendTemplates(ctx context.Context, in *npool.CreateFrontendTemplatesRequest) (*npool.CreateFrontendTemplatesResponse, error) {
+func (s *Server) CreateFrontendTemplates(
+	ctx context.Context,
+	in *npool.CreateFrontendTemplatesRequest,
+) (
+	*npool.CreateFrontendTemplatesResponse,
+	error,
+) {
 	handler, err := frontendtemplate1.NewHandler(
 		ctx,
 		frontendtemplate1.WithReqs(in.GetInfos()),

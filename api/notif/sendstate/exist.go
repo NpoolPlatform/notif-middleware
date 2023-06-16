@@ -1,3 +1,4 @@
+//nolint:nolintlint,dupl
 package sendstate
 
 import (
@@ -10,7 +11,6 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-//nolint
 func (s *Server) ExistSendState(ctx context.Context, in *npool.ExistSendStateRequest) (*npool.ExistSendStateResponse, error) {
 	handler, err := sendstate1.NewHandler(
 		ctx,
@@ -40,7 +40,13 @@ func (s *Server) ExistSendState(ctx context.Context, in *npool.ExistSendStateReq
 	}, nil
 }
 
-func (s *Server) ExistSendStateConds(ctx context.Context, in *npool.ExistSendStateCondsRequest) (*npool.ExistSendStateCondsResponse, error) {
+func (s *Server) ExistSendStateConds(
+	ctx context.Context,
+	in *npool.ExistSendStateCondsRequest,
+) (
+	*npool.ExistSendStateCondsResponse,
+	error,
+) {
 	handler, err := sendstate1.NewHandler(ctx,
 		sendstate1.WithConds(in.GetConds()),
 	)

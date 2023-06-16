@@ -46,7 +46,7 @@ type Conds struct {
 	IDs     *cruder.Cond
 }
 
-// nolint:funlen,gocyclo
+// nolint:gocyclo
 func SetQueryConds(q *ent.ReadNotifQuery, conds *Conds) (*ent.ReadNotifQuery, error) {
 	if conds.ID != nil {
 		id, ok := conds.ID.Val.(uuid.UUID)

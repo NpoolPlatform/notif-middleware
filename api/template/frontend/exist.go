@@ -10,8 +10,13 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-//nolint
-func (s *Server) ExistFrontendTemplate(ctx context.Context, in *npool.ExistFrontendTemplateRequest) (*npool.ExistFrontendTemplateResponse, error) {
+func (s *Server) ExistFrontendTemplate(
+	ctx context.Context,
+	in *npool.ExistFrontendTemplateRequest,
+) (
+	*npool.ExistFrontendTemplateResponse,
+	error,
+) {
 	handler, err := frontendtemplate1.NewHandler(
 		ctx,
 		frontendtemplate1.WithID(&in.ID),

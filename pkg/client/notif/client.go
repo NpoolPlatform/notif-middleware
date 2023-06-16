@@ -1,4 +1,3 @@
-//nolint:dupl
 package notif
 
 import (
@@ -136,7 +135,7 @@ func GetNotifOnly(ctx context.Context, conds *npool.Conds) (*npool.Notif, error)
 		resp, err := cli.GetNotifs(ctx, &npool.GetNotifsRequest{
 			Conds:  conds,
 			Offset: 0,
-			Limit:  2, //nolint
+			Limit:  2,
 		})
 		if err != nil {
 			return nil, err

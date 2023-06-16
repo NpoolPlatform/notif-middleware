@@ -10,7 +10,6 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-//nolint
 func (s *Server) ExistEmailTemplate(ctx context.Context, in *npool.ExistEmailTemplateRequest) (*npool.ExistEmailTemplateResponse, error) {
 	handler, err := emailtemplate1.NewHandler(
 		ctx,

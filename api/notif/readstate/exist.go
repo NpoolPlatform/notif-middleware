@@ -1,3 +1,4 @@
+//nolint:nolintlint,dupl
 package readstate
 
 import (
@@ -10,7 +11,6 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-//nolint
 func (s *Server) ExistReadState(ctx context.Context, in *npool.ExistReadStateRequest) (*npool.ExistReadStateResponse, error) {
 	handler, err := readstate1.NewHandler(
 		ctx,
@@ -40,7 +40,13 @@ func (s *Server) ExistReadState(ctx context.Context, in *npool.ExistReadStateReq
 	}, nil
 }
 
-func (s *Server) ExistReadStateConds(ctx context.Context, in *npool.ExistReadStateCondsRequest) (*npool.ExistReadStateCondsResponse, error) {
+func (s *Server) ExistReadStateConds(
+	ctx context.Context,
+	in *npool.ExistReadStateCondsRequest,
+) (
+	*npool.ExistReadStateCondsResponse,
+	error,
+) {
 	handler, err := readstate1.NewHandler(ctx,
 		readstate1.WithConds(in.GetConds()),
 	)

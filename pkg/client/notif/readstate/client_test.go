@@ -29,7 +29,7 @@ import (
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	notifpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/readstate"
-	readstatemw "github.com/NpoolPlatform/notif-middleware/pkg/mw/notif/readstate"
+	notifmw "github.com/NpoolPlatform/notif-middleware/pkg/mw/notif"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -97,15 +97,14 @@ func setupReadState(t *testing.T) func(*testing.T) {
 
 	ret.UserID = user.ID
 
-	handler, err := readstatemw.NewHandler(
+	handler, err := notifmw.NewHandler(
 		context.Background(),
-		readstatemw.WithAppID(&ret.AppID),
-		readstatemw.WithUserID(&ret.UserID),
-		readstatemw.WithNotifID(&ret.NotifID),
+		notifmw.WithAppID(&notifData.AppID),
+		notifmw.WithUserID(&notifData.UserID),
 	)
 	assert.Nil(t, err)
 
-	_amt, err := handler.CreateReadState(context.Background())
+	_amt, err := handler.CreateNotif(context.Background())
 	assert.Nil(t, err)
 	assert.NotNil(t, _amt)
 
@@ -114,7 +113,7 @@ func setupReadState(t *testing.T) func(*testing.T) {
 	return func(*testing.T) {
 		_, _ = appmwcli.DeleteApp(context.Background(), ret.AppID)
 		_, _ = appusercli.DeleteUser(context.Background(), ret.AppID, ret.UserID)
-		_, _ = handler.DeleteReadState(context.Background())
+		_, _ = handler.DeleteNotif(context.Background())
 	}
 }
 

@@ -10,7 +10,6 @@ import (
 	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 
 	notifmwpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
-	chanmwpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/channel"
 	notifchanmwpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/channel"
 
 	notifchanmwcli "github.com/NpoolPlatform/notif-middleware/pkg/client/notif/channel"
@@ -49,19 +48,19 @@ func GenerateNotifs(
 
 	for _, ch := range chans {
 		switch ch.Channel {
-		case chanmwpb.NotifChannel_ChannelEmail:
+		case basetypes.NotifChannel_ChannelEmail:
 			_reqs, err := email.GenerateNotifs(ctx, appID, userID, usedFor, vars)
 			if err != nil {
 				return nil, err
 			}
 			reqs = append(reqs, _reqs...)
-		case chanmwpb.NotifChannel_ChannelSMS:
+		case basetypes.NotifChannel_ChannelSMS:
 			_reqs, err := sms.GenerateNotifs(ctx, appID, userID, usedFor, vars)
 			if err != nil {
 				return nil, err
 			}
 			reqs = append(reqs, _reqs...)
-		case chanmwpb.NotifChannel_ChannelFrontend:
+		case basetypes.NotifChannel_ChannelFrontend:
 			_reqs, err := frontend.GenerateNotifs(ctx, appID, userID, usedFor, vars)
 			if err != nil {
 				return nil, err
@@ -77,15 +76,15 @@ func GenerateText(
 	ctx context.Context,
 	appID, langID string,
 	usedFor basetypes.UsedFor,
-	channel chanmwpb.NotifChannel,
+	channel basetypes.NotifChannel,
 	vars *npool.TemplateVars,
 ) (*npool.TextInfo, error) {
 	switch channel {
-	case chanmwpb.NotifChannel_ChannelEmail:
+	case basetypes.NotifChannel_ChannelEmail:
 		return email.GenerateText(ctx, appID, langID, usedFor, vars)
-	case chanmwpb.NotifChannel_ChannelSMS:
+	case basetypes.NotifChannel_ChannelSMS:
 		return sms.GenerateText(ctx, appID, langID, usedFor, vars)
-	case chanmwpb.NotifChannel_ChannelFrontend:
+	case basetypes.NotifChannel_ChannelFrontend:
 		return frontend.GenerateText(ctx, appID, langID, usedFor, vars)
 	}
 

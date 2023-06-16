@@ -93,10 +93,10 @@ func (h *Handler) GetAnnouncements(ctx context.Context) ([]*npool.Announcement, 
 			Order(ent.Desc(entamt.FieldUpdatedAt)).
 			Limit(int(h.Limit))
 
-		handler.formalize()
 		if err := handler.scan(_ctx); err != nil {
 			return err
 		}
+		handler.formalize()
 		return nil
 	})
 	if err != nil {
@@ -116,10 +116,10 @@ func (h *Handler) GetAnnouncement(ctx context.Context) (info *npool.Announcement
 			return err
 		}
 
-		handler.formalize()
 		if err := handler.scan(_ctx); err != nil {
 			return err
 		}
+		handler.formalize()
 		return nil
 	})
 	if err != nil {

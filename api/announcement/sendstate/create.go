@@ -37,3 +37,27 @@ func (s *Server) CreateSendState(ctx context.Context, in *npool.CreateSendStateR
 		Info: info,
 	}, nil
 }
+
+func (s *Server) CreateSendStates(ctx context.Context, in *npool.CreateSendStatesRequest) (*npool.CreateSendStatesResponse, error) {
+	handler, err := sendamt.NewHandler(
+		ctx,
+		sendamt.WithReqs(in.GetInfos()),
+	)
+	if err != nil {
+		logger.Sugar().Errorw(
+			"CreateSendStates",
+			"Req", in,
+			"Error", err,
+		)
+		return &npool.CreateSendStatesResponse{}, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	infos, err := handler.CreateSendStates(ctx)
+	if err != nil {
+		return &npool.CreateSendStatesResponse{}, status.Error(codes.Aborted, err.Error())
+	}
+
+	return &npool.CreateSendStatesResponse{
+		Infos: infos,
+	}, nil
+}

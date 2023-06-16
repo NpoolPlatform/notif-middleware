@@ -96,7 +96,7 @@ func (h *Handler) CreateSendStates(ctx context.Context) (infos []*npool.SendStat
 				AppID:          &cruder.Cond{Op: cruder.EQ, Val: *h.AppID},
 				UserID:         &cruder.Cond{Op: cruder.EQ, Val: *h.UserID},
 				AnnouncementID: &cruder.Cond{Op: cruder.EQ, Val: *h.AnnouncementID},
-				Channel:        &cruder.Cond{Op: cruder.EQ, Val: uint32(*h.Channel)},
+				Channel:        &cruder.Cond{Op: cruder.EQ, Val: int32(*h.Channel)},
 			}
 
 			exist, err := h.ExistSendStateConds(ctx)

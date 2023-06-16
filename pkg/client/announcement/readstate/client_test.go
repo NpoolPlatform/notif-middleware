@@ -115,7 +115,8 @@ func setupReadState(t *testing.T) func(*testing.T) {
 	announcement, err := amtHandler.CreateAnnouncement(context.Background())
 	assert.Nil(t, err)
 	amt.ID = announcement.ID
-
+	fmt.Println("AnnouncementID:", amt.ID)
+	fmt.Println("AppID:", amt.AppID)
 	handler, err := readamt1.NewHandler(
 		context.Background(),
 		handler.WithAppID(&amt.AppID),
@@ -143,6 +144,7 @@ func createReadState(t *testing.T) {
 		UserID:         &ret.UserID,
 		AnnouncementID: &ret.AnnouncementID,
 	})
+	fmt.Println("Error", err)
 	if assert.Nil(t, err) {
 		ret.CreatedAt = info.CreatedAt
 		ret.UpdatedAt = info.UpdatedAt

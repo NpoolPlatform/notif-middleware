@@ -30,6 +30,11 @@ func (s *Server) CreateReadState(ctx context.Context, in *npool.CreateReadStateR
 
 	info, err := handler.CreateReadState(ctx)
 	if err != nil {
+		logger.Sugar().Errorw(
+			"CreateReadState",
+			"Req", in,
+			"Error", err,
+		)
 		return &npool.CreateReadStateResponse{}, status.Error(codes.Internal, err.Error())
 	}
 

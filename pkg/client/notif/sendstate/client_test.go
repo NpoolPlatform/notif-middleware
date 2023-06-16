@@ -29,7 +29,7 @@ import (
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	notifpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/sendstate"
-	sendstatemw "github.com/NpoolPlatform/notif-middleware/pkg/mw/notif/sendstate"
+	notifmw "github.com/NpoolPlatform/notif-middleware/pkg/mw/notif"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -44,7 +44,7 @@ func init() {
 
 var (
 	appID     = uuid.NewString()
-	notifInfo = notifpb.Notif{
+	notifData = notifpb.Notif{
 		AppID:        appID,
 		LangID:       uuid.NewString(),
 		Title:        uuid.NewString(),
@@ -93,15 +93,14 @@ func setupSendState(t *testing.T) func(*testing.T) {
 
 	ret.UserID = user.ID
 
-	handler, err := sendstatemw.NewHandler(
+	handler, err := notifmw.NewHandler(
 		context.Background(),
-		sendstatemw.WithAppID(&ret.AppID),
-		sendstatemw.WithUserID(&ret.UserID),
-		sendstatemw.WithNotifID(&ret.NotifID),
+		notifmw.WithAppID(&notifData.AppID),
+		notifmw.WithUserID(&notifData.UserID),
 	)
 	assert.Nil(t, err)
 
-	_amt, err := handler.CreateSendState(context.Background())
+	_amt, err := handler.CreateNotif(context.Background())
 	assert.Nil(t, err)
 	assert.NotNil(t, _amt)
 
@@ -110,7 +109,7 @@ func setupSendState(t *testing.T) func(*testing.T) {
 	return func(*testing.T) {
 		_, _ = appmwcli.DeleteApp(context.Background(), ret.AppID)
 		_, _ = appusercli.DeleteUser(context.Background(), ret.AppID, ret.UserID)
-		_, _ = handler.DeleteSendState(context.Background())
+		_, _ = handler.DeleteNotif(context.Background())
 	}
 }
 

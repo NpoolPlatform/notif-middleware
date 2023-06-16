@@ -6,7 +6,6 @@ import (
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
-	notifmwpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
 	templatemwpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/template"
 	notifcrud "github.com/NpoolPlatform/notif-middleware/pkg/crud/notif"
@@ -27,7 +26,7 @@ type Handler struct {
 	Content     *string
 	Channel     *basetypes.NotifChannel
 	Extra       *string
-	NotifType   *notifmwpb.NotifType
+	NotifType   *npool.NotifType
 	Vars        *templatemwpb.TemplateVars
 	IDs         *[]uuid.UUID
 	Reqs        []*notifcrud.Req
@@ -166,7 +165,7 @@ func WithChannel(_channel *basetypes.NotifChannel) func(context.Context, *Handle
 		case basetypes.NotifChannel_ChannelEmail:
 		case basetypes.NotifChannel_ChannelSMS:
 		default:
-			return fmt.Errorf("Invalid channel")
+			return fmt.Errorf("invalid channel")
 		}
 		h.Channel = _channel
 		return nil
@@ -199,25 +198,25 @@ func WithEventType(eventtype *basetypes.UsedFor) func(context.Context, *Handler)
 		case basetypes.UsedFor_KYCRejected:
 		case basetypes.UsedFor_Announcement:
 		default:
-			return fmt.Errorf("Invalid eventtype")
+			return fmt.Errorf("invalid eventtype")
 		}
 		h.EventType = eventtype
 		return nil
 	}
 }
 
-func WithNotifType(_type *notifmwpb.NotifType) func(context.Context, *Handler) error {
+func WithNotifType(_type *npool.NotifType) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if _type == nil {
 			return nil
 		}
 		switch *_type {
-		case notifmwpb.NotifType_DefaultType:
-		case notifmwpb.NotifType_Broadcast:
-		case notifmwpb.NotifType_Multicast:
-		case notifmwpb.NotifType_Unicast:
+		case npool.NotifType_DefaultType:
+		case npool.NotifType_Broadcast:
+		case npool.NotifType_Multicast:
+		case npool.NotifType_Unicast:
 		default:
-			return fmt.Errorf("Invalid type")
+			return fmt.Errorf("invalid type")
 		}
 		h.NotifType = _type
 		return nil
@@ -256,7 +255,6 @@ func WithIDs(ids *[]string) func(context.Context, *Handler) error {
 	}
 }
 
-// nolint:gocyclo
 func WithReqs(reqs []*npool.NotifReq) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		_reqs := []*notifcrud.Req{}
@@ -285,12 +283,12 @@ func WithReqs(reqs []*npool.NotifReq) func(context.Context, *Handler) error {
 			}
 			if req.NotifType != nil {
 				switch req.GetNotifType() {
-				case notifmwpb.NotifType_DefaultType:
-				case notifmwpb.NotifType_Broadcast:
-				case notifmwpb.NotifType_Multicast:
-				case notifmwpb.NotifType_Unicast:
+				case npool.NotifType_DefaultType:
+				case npool.NotifType_Broadcast:
+				case npool.NotifType_Multicast:
+				case npool.NotifType_Unicast:
 				default:
-					return fmt.Errorf("Invalid Type")
+					return fmt.Errorf("invalid Type")
 				}
 				_req.NotifType = req.NotifType
 			}
@@ -335,7 +333,7 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			case uint32(basetypes.UsedFor_CreateInvitationCode):
 			case uint32(basetypes.UsedFor_SetCommission):
 			default:
-				return fmt.Errorf("Invalid Type")
+				return fmt.Errorf("invalid Type")
 			}
 			h.Conds.Type = &cruder.Cond{
 				Op:  conds.GetNotifType().GetOp(),

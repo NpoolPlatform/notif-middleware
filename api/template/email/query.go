@@ -11,7 +11,13 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s *Server) GetEmailTemplate(ctx context.Context, in *npool.GetEmailTemplateRequest) (*npool.GetEmailTemplateResponse, error) {
+func (s *Server) GetEmailTemplate(
+	ctx context.Context,
+	in *npool.GetEmailTemplateRequest,
+) (
+	*npool.GetEmailTemplateResponse,
+	error,
+) {
 	handler, err := emailtemplate1.NewHandler(
 		ctx,
 		emailtemplate1.WithID(&in.ID),
@@ -39,7 +45,13 @@ func (s *Server) GetEmailTemplate(ctx context.Context, in *npool.GetEmailTemplat
 	}, nil
 }
 
-func (s *Server) GetEmailTemplateOnly(ctx context.Context, in *npool.GetEmailTemplateOnlyRequest) (*npool.GetEmailTemplateOnlyResponse, error) {
+func (s *Server) GetEmailTemplateOnly(
+	ctx context.Context,
+	in *npool.GetEmailTemplateOnlyRequest,
+) (
+	*npool.GetEmailTemplateOnlyResponse,
+	error,
+) {
 	handler, err := emailtemplate1.NewHandler(
 		ctx,
 		emailtemplate1.WithConds(in.Conds),
@@ -67,7 +79,13 @@ func (s *Server) GetEmailTemplateOnly(ctx context.Context, in *npool.GetEmailTem
 	}, nil
 }
 
-func (s *Server) GetEmailTemplates(ctx context.Context, in *npool.GetEmailTemplatesRequest) (*npool.GetEmailTemplatesResponse, error) {
+func (s *Server) GetEmailTemplates(
+	ctx context.Context,
+	in *npool.GetEmailTemplatesRequest,
+) (
+	*npool.GetEmailTemplatesResponse,
+	error,
+) {
 	handler, err := emailtemplate1.NewHandler(
 		ctx,
 		emailtemplate1.WithConds(in.GetConds()),

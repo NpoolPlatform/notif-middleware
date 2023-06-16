@@ -11,7 +11,13 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s *Server) GetFrontendTemplate(ctx context.Context, in *npool.GetFrontendTemplateRequest) (*npool.GetFrontendTemplateResponse, error) {
+func (s *Server) GetFrontendTemplate(
+	ctx context.Context,
+	in *npool.GetFrontendTemplateRequest,
+) (
+	*npool.GetFrontendTemplateResponse,
+	error,
+) {
 	handler, err := frontendtemplate1.NewHandler(
 		ctx,
 		frontendtemplate1.WithID(&in.ID),
@@ -39,7 +45,13 @@ func (s *Server) GetFrontendTemplate(ctx context.Context, in *npool.GetFrontendT
 	}, nil
 }
 
-func (s *Server) GetFrontendTemplateOnly(ctx context.Context, in *npool.GetFrontendTemplateOnlyRequest) (*npool.GetFrontendTemplateOnlyResponse, error) {
+func (s *Server) GetFrontendTemplateOnly(
+	ctx context.Context,
+	in *npool.GetFrontendTemplateOnlyRequest,
+) (
+	*npool.GetFrontendTemplateOnlyResponse,
+	error,
+) {
 	handler, err := frontendtemplate1.NewHandler(
 		ctx,
 		frontendtemplate1.WithConds(in.Conds),
@@ -67,7 +79,13 @@ func (s *Server) GetFrontendTemplateOnly(ctx context.Context, in *npool.GetFront
 	}, nil
 }
 
-func (s *Server) GetFrontendTemplates(ctx context.Context, in *npool.GetFrontendTemplatesRequest) (*npool.GetFrontendTemplatesResponse, error) {
+func (s *Server) GetFrontendTemplates(
+	ctx context.Context,
+	in *npool.GetFrontendTemplatesRequest,
+) (
+	*npool.GetFrontendTemplatesResponse,
+	error,
+) {
 	handler, err := frontendtemplate1.NewHandler(
 		ctx,
 		frontendtemplate1.WithConds(in.GetConds()),

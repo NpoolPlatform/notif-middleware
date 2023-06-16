@@ -10,7 +10,6 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-//nolint
 func (s *Server) ExistSMSTemplate(ctx context.Context, in *npool.ExistSMSTemplateRequest) (*npool.ExistSMSTemplateResponse, error) {
 	handler, err := smstemplate1.NewHandler(
 		ctx,

@@ -11,7 +11,13 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s *Server) DeleteFrontendTemplate(ctx context.Context, in *npool.DeleteFrontendTemplateRequest) (*npool.DeleteFrontendTemplateResponse, error) {
+func (s *Server) DeleteFrontendTemplate(
+	ctx context.Context,
+	in *npool.DeleteFrontendTemplateRequest,
+) (
+	*npool.DeleteFrontendTemplateResponse,
+	error,
+) {
 	req := in.GetInfo()
 	handler, err := frontendtemplate1.NewHandler(
 		ctx,

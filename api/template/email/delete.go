@@ -11,7 +11,13 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s *Server) DeleteEmailTemplate(ctx context.Context, in *npool.DeleteEmailTemplateRequest) (*npool.DeleteEmailTemplateResponse, error) {
+func (s *Server) DeleteEmailTemplate(
+	ctx context.Context,
+	in *npool.DeleteEmailTemplateRequest,
+) (
+	*npool.DeleteEmailTemplateResponse,
+	error,
+) {
 	req := in.GetInfo()
 	handler, err := emailtemplate1.NewHandler(
 		ctx,

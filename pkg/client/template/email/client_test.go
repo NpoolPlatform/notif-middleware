@@ -49,9 +49,7 @@ var (
 		Body:              uuid.NewString(),
 		DefaultToUsername: uuid.NewString(),
 	}
-)
 
-var (
 	appInfo = npool.EmailTemplateReq{
 		ID:                &ret.ID,
 		AppID:             &ret.AppID,
@@ -64,9 +62,9 @@ var (
 		Body:              &ret.Body,
 		DefaultToUsername: &ret.DefaultToUsername,
 	}
-)
 
-var info *npool.EmailTemplate
+	info *npool.EmailTemplate
+)
 
 func createEmailTemplate(t *testing.T) {
 	var err error
@@ -210,7 +208,13 @@ func TestClient(t *testing.T) {
 	monkey.Patch(grpc2.GetGRPCConn, func(service string, tags ...string) (*grpc.ClientConn, error) {
 		return grpc.Dial(fmt.Sprintf("localhost:%v", gport), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	})
+	t.Run("createEmailTemplate", createEmailTemplate)
+	t.Run("createEmailTemplates", createEmailTemplates)
 	t.Run("getEmailTemplate", getEmailTemplate)
-	t.Run("getEmailTemplateOnly", getEmailTemplateOnly)
 	t.Run("getEmailTemplates", getEmailTemplates)
+	t.Run("getEmailTemplateOnly", getEmailTemplateOnly)
+	t.Run("updateEmailTemplate", updateEmailTemplate)
+	t.Run("existEmailTemplate", existEmailTemplate)
+	t.Run("existEmailTemplateConds", existEmailTemplateConds)
+	t.Run("delete", deleteEmailTemplate)
 }

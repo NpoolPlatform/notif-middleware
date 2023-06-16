@@ -99,7 +99,6 @@ func WithNotifID(notifid *string) func(context.Context, *Handler) error {
 	}
 }
 
-// nolint:gocyclo
 func WithReqs(reqs []*npool.SendStateReq) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		_reqs := []*sendstatecrud.Req{}

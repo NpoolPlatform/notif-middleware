@@ -1,3 +1,4 @@
+//nolint:nolintlint,dupl
 package email
 
 import (
@@ -11,7 +12,13 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s *Server) CreateEmailTemplate(ctx context.Context, in *npool.CreateEmailTemplateRequest) (*npool.CreateEmailTemplateResponse, error) {
+func (s *Server) CreateEmailTemplate(
+	ctx context.Context,
+	in *npool.CreateEmailTemplateRequest,
+) (
+	*npool.CreateEmailTemplateResponse,
+	error,
+) {
 	req := in.GetInfo()
 	handler, err := emailtemplate1.NewHandler(
 		ctx,
@@ -48,7 +55,13 @@ func (s *Server) CreateEmailTemplate(ctx context.Context, in *npool.CreateEmailT
 	}, nil
 }
 
-func (s *Server) CreateEmailTemplates(ctx context.Context, in *npool.CreateEmailTemplatesRequest) (*npool.CreateEmailTemplatesResponse, error) {
+func (s *Server) CreateEmailTemplates(
+	ctx context.Context,
+	in *npool.CreateEmailTemplatesRequest,
+) (
+	*npool.CreateEmailTemplatesResponse,
+	error,
+) {
 	handler, err := emailtemplate1.NewHandler(
 		ctx,
 		emailtemplate1.WithReqs(in.GetInfos()),

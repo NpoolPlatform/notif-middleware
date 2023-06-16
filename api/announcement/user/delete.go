@@ -11,9 +11,9 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s *Server) DeleteAnnouncementUser(ctx context.Context, in *npool.DeleteAnnouncementUserRequest) (*npool.DeleteAnnouncementUserResponse, error) {
+func (s *Server) DeleteAnnouncementUser(ctx context.Context, in *npool.DeleteAnnouncementUserRequest) (*npool.DeleteAnnouncementUserResponse, error) { // nolint
 	id := in.GetInfo().GetID()
-	handler, err := announcement1.NewHandler(
+	handler1, err := announcement1.NewHandler(
 		ctx,
 		handler.WithID(&id),
 	)
@@ -25,7 +25,7 @@ func (s *Server) DeleteAnnouncementUser(ctx context.Context, in *npool.DeleteAnn
 		)
 		return &npool.DeleteAnnouncementUserResponse{}, status.Error(codes.Aborted, err.Error())
 	}
-	info, err := handler.DeleteAnnouncementUser(ctx)
+	info, err := handler1.DeleteAnnouncementUser(ctx)
 	if err != nil {
 		logger.Sugar().Errorw(
 			"DeleteAnnouncementUser",

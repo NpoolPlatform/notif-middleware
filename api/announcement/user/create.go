@@ -11,9 +11,9 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s *Server) CreateAnnouncementUser(ctx context.Context, in *npool.CreateAnnouncementUserRequest) (*npool.CreateAnnouncementUserResponse, error) {
+func (s *Server) CreateAnnouncementUser(ctx context.Context, in *npool.CreateAnnouncementUserRequest) (*npool.CreateAnnouncementUserResponse, error) { // nolint
 	req := in.GetInfo()
-	handler, err := amtuser1.NewHandler(
+	handler1, err := amtuser1.NewHandler(
 		ctx,
 		handler.WithAppID(req.AppID),
 		handler.WithUserID(req.AppID, req.UserID),
@@ -28,7 +28,7 @@ func (s *Server) CreateAnnouncementUser(ctx context.Context, in *npool.CreateAnn
 		return &npool.CreateAnnouncementUserResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	info, err := handler.CreateAnnouncementUser(ctx)
+	info, err := handler1.CreateAnnouncementUser(ctx)
 	if err != nil {
 		logger.Sugar().Errorw(
 			"CreateAnnouncementUser",
@@ -43,8 +43,9 @@ func (s *Server) CreateAnnouncementUser(ctx context.Context, in *npool.CreateAnn
 	}, nil
 }
 
+// nolint
 func (s *Server) CreateAnnouncementUsers(ctx context.Context, in *npool.CreateAnnouncementUsersRequest) (*npool.CreateAnnouncementUsersResponse, error) {
-	handler, err := amtuser1.NewHandler(
+	handler1, err := amtuser1.NewHandler(
 		ctx,
 		amtuser1.WithReqs(in.GetInfos()),
 	)
@@ -57,7 +58,7 @@ func (s *Server) CreateAnnouncementUsers(ctx context.Context, in *npool.CreateAn
 		return &npool.CreateAnnouncementUsersResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	info, err := handler.CreateAnnouncementUsers(ctx)
+	info, err := handler1.CreateAnnouncementUsers(ctx)
 	if err != nil {
 		logger.Sugar().Errorw(
 			"CreateAnnouncementUsers",

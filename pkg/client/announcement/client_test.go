@@ -150,7 +150,6 @@ func createAnnouncement(t *testing.T) {
 	readAmtRet, err := readAmtHandler.DeleteReadState(context.Background())
 	assert.Nil(t, err)
 	assert.Equal(t, readAmt, readAmtRet)
-
 }
 
 func updateAnnouncement(t *testing.T) {

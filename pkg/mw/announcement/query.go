@@ -91,8 +91,7 @@ func (h *Handler) GetAnnouncements(ctx context.Context) ([]*npool.Announcement, 
 			stm.
 			Offset(int(h.Offset)).
 			Order(ent.Desc(entamt.FieldUpdatedAt)).
-			Limit(int(h.Limit)).
-			All(_ctx)
+			Limit(int(h.Limit))
 
 		handler.formalize()
 		if err := handler.scan(_ctx); err != nil {

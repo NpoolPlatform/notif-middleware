@@ -10,6 +10,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+// nolint
 func (s *Server) ExistAnnouncementUserConds(ctx context.Context, in *npool.ExistAnnouncementUserCondsRequest) (*npool.ExistAnnouncementUserCondsResponse, error) {
 	handler, err := amtuser1.NewHandler(ctx,
 		amtuser1.WithConds(in.GetConds()),

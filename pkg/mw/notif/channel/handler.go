@@ -18,6 +18,7 @@ type Handler struct {
 	AppID     *uuid.UUID
 	Channel   *basetypes.NotifChannel
 	EventType *basetypes.UsedFor
+	Reqs      []*crud.Req
 	Conds     *crud.Conds
 	Offset    int32
 	Limit     int32
@@ -155,6 +156,57 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 				Val: basetypes.UsedFor(_type),
 			}
 		}
+		return nil
+	}
+}
+
+func WithReqs(reqs []*npool.ChannelReq) func(context.Context, *Handler) error {
+	return func(_ctx context.Context, h *Handler) error {
+		_reqs := []*crud.Req{}
+		for _, req := range _reqs {
+			if req.AppID == nil || req.Channel == nil || req.EventType == nil {
+				continue
+			}
+			// AppID
+			_req := &crud.Req{}
+			appID, err := uuid.Parse(req.AppID.String())
+			if err != nil {
+				return err
+			}
+			exist, err := appcli.ExistApp(_ctx, req.AppID.String())
+			if err != nil {
+				return err
+			}
+			if !exist {
+				return fmt.Errorf("invalid app id %v", req.AppID.String())
+			}
+			_req.AppID = &appID
+
+			// EventType
+			switch *req.EventType {
+			case basetypes.UsedFor_WithdrawalRequest:
+			case basetypes.UsedFor_WithdrawalCompleted:
+			case basetypes.UsedFor_DepositReceived:
+			case basetypes.UsedFor_KYCApproved:
+			case basetypes.UsedFor_KYCRejected:
+			case basetypes.UsedFor_Announcement:
+			default:
+				return fmt.Errorf("EventType is invalid %v", *req.EventType)
+			}
+			_req.EventType = req.EventType
+
+			switch *req.Channel {
+			case basetypes.NotifChannel_ChannelEmail:
+			case basetypes.NotifChannel_ChannelSMS:
+			case basetypes.NotifChannel_ChannelFrontend:
+			default:
+				return fmt.Errorf("channel %v invalid", *req.Channel)
+			}
+			_req.Channel = req.Channel
+
+			_reqs = append(_reqs, _req)
+		}
+		h.Reqs = _reqs
 		return nil
 	}
 }

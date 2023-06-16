@@ -16,7 +16,7 @@ func (h *Handler) UpdateAnnouncement(ctx context.Context) (info *npool.Announcem
 			&crud.Req{
 				Title:   h.Title,
 				Content: h.Content,
-				EndAt:   &h.EndAt,
+				EndAt:   h.EndAt,
 				Type:    h.Type,
 			},
 		).Save(_ctx); err != nil {

@@ -43,6 +43,7 @@ func (s *Server) CreateChannel(ctx context.Context, in *npool.CreateChannelReque
 	}, nil
 }
 
+// nolint
 func (s *Server) CreateChannels(ctx context.Context, in *npool.CreateChannelsRequest) (*npool.CreateChannelsResponse, error) {
 	handler, err := channel1.NewHandler(
 		ctx,

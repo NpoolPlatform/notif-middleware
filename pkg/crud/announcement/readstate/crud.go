@@ -49,6 +49,7 @@ type Conds struct {
 	AnnouncementIDs *cruder.Cond
 }
 
+//nolint
 func SetQueryConds(q *ent.ReadAnnouncementQuery, conds *Conds) (*ent.ReadAnnouncementQuery, error) {
 	if conds == nil {
 		return q, nil

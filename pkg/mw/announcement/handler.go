@@ -22,7 +22,7 @@ type Handler struct {
 	Content *string
 	Channel *basetypes.NotifChannel
 	Type    *npool.AnnouncementType
-	EndAt   uint32
+	EndAt   *uint32
 	Conds   *crud.Conds
 	Offset  int32
 	Limit   int32
@@ -155,7 +155,7 @@ func WithEndAt(endAt *uint32) func(context.Context, *Handler) error {
 		if *endAt < uint32(time.Now().Unix()) {
 			return fmt.Errorf("invalid end at")
 		}
-		h.EndAt = *endAt
+		h.EndAt = endAt
 		return nil
 	}
 }

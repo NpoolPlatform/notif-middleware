@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/tx"
 	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/notif/tx"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db"
@@ -27,6 +28,13 @@ func (h *queryHandler) selectTx(stm *ent.TxNotifStateQuery) {
 		enttx.FieldCreatedAt,
 		enttx.FieldUpdatedAt,
 	)
+}
+
+func (h *queryHandler) formalize() {
+	for _, info := range h.infos {
+		info.TxType = basetypes.TxType(basetypes.TxType_value[info.TxTypeStr])
+		info.NotifState = npool.TxState(npool.TxState_value[info.NotifStateStr])
+	}
 }
 
 func (h *queryHandler) queryTx(cli *ent.Client) error {
@@ -79,6 +87,7 @@ func (h *Handler) GetTxs(ctx context.Context) ([]*npool.Tx, uint32, error) {
 			stm.
 			Offset(int(h.Offset)).
 			Limit(int(h.Limit))
+		handler.formalize()
 		if err := handler.scan(_ctx); err != nil {
 			return err
 		}
@@ -100,6 +109,7 @@ func (h *Handler) GetTx(ctx context.Context) (info *npool.Tx, err error) {
 		if err := handler.queryTx(cli); err != nil {
 			return err
 		}
+		handler.formalize()
 		if err := handler.scan(_ctx); err != nil {
 			return err
 		}
@@ -133,7 +143,7 @@ func (h *Handler) GetTxOnly(ctx context.Context) (*npool.Tx, error) {
 			}
 			return err
 		}
-
+		handler.formalize()
 		if err := handler.scan(_ctx); err != nil {
 			return err
 		}

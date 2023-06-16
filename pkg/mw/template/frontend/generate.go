@@ -24,7 +24,7 @@ func GenerateNotifs(
 	usedFor basetypes.UsedFor,
 	vars *npool.TemplateVars,
 ) ([]*notifmwpb.NotifReq, error) {
-	const maxTemplates = uint32(100)
+	const maxTemplates = int32(100)
 	eventID := uuid.NewString()
 
 	tmpls, _, err := frontendtmplmwcli.GetFrontendTemplates(ctx, &frontendtmplmwpb.Conds{

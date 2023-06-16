@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/contact"
 	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/contact"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db"
@@ -29,6 +30,13 @@ func (h *queryHandler) selectContact(stm *ent.ContactQuery) {
 		entamt.FieldCreatedAt,
 		entamt.FieldUpdatedAt,
 	)
+}
+
+func (h *queryHandler) formalize() {
+	for _, info := range h.infos {
+		info.AccountType = basetypes.SignMethod(basetypes.SignMethod_value[info.AccountTypeStr])
+		info.UsedFor = basetypes.UsedFor(basetypes.UsedFor_value[info.UsedForStr])
+	}
 }
 
 func (h *queryHandler) queryContact(cli *ent.Client) error {
@@ -81,6 +89,7 @@ func (h *Handler) GetContacts(ctx context.Context) ([]*npool.Contact, uint32, er
 			stm.
 			Offset(int(h.Offset)).
 			Limit(int(h.Limit))
+		handler.formalize()
 		if err := handler.scan(_ctx); err != nil {
 			return err
 		}
@@ -102,6 +111,7 @@ func (h *Handler) GetContact(ctx context.Context) (info *npool.Contact, err erro
 		if err := handler.queryContact(cli); err != nil {
 			return err
 		}
+		handler.formalize()
 		if err := handler.scan(_ctx); err != nil {
 			return err
 		}
@@ -135,7 +145,7 @@ func (h *Handler) GetContactOnly(ctx context.Context) (*npool.Contact, error) {
 			}
 			return err
 		}
-
+		handler.formalize()
 		if err := handler.scan(_ctx); err != nil {
 			return err
 		}

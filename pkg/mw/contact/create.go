@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/contact"
 	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/contact"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db"
@@ -40,6 +41,28 @@ func (h *Handler) CreateContact(ctx context.Context) (info *npool.Contact, err e
 
 	if err := handler.validate(); err != nil {
 		return nil, err
+	}
+
+	h.Conds = &crud.Conds{
+		AppID: &cruder.Cond{
+			Op:  cruder.EQ,
+			Val: *h.AppID,
+		},
+		AccountType: &cruder.Cond{
+			Op:  cruder.EQ,
+			Val: int32(*h.AccountType),
+		},
+		UsedFor: &cruder.Cond{
+			Op:  cruder.EQ,
+			Val: int32(*h.UsedFor),
+		},
+	}
+	exist, err := h.ExistContactConds(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if exist {
+		return nil, fmt.Errorf("contact exist")
 	}
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {

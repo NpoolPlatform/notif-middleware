@@ -57,21 +57,21 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			}
 		}
 		if conds.AppID != nil {
-			id, err := uuid.Parse(conds.GetAppID().GetValue())
+			appID, err := uuid.Parse(conds.GetAppID().GetValue())
 			if err != nil {
 				return err
 			}
 			h.Conds.AppID = &cruder.Cond{
-				Op: conds.GetAppID().GetOp(), Val: id,
+				Op: conds.GetAppID().GetOp(), Val: appID,
 			}
 		}
 		if conds.AnnouncementID != nil {
-			id, err := uuid.Parse(conds.GetAnnouncementID().GetValue())
+			amtID, err := uuid.Parse(conds.GetAnnouncementID().GetValue())
 			if err != nil {
 				return err
 			}
 			h.Conds.AnnouncementID = &cruder.Cond{
-				Op: conds.GetAnnouncementID().GetOp(), Val: id,
+				Op: conds.GetAnnouncementID().GetOp(), Val: amtID,
 			}
 		}
 		return nil

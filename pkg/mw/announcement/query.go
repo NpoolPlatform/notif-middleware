@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement"
 	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/announcement"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db"
@@ -48,6 +49,13 @@ func (h *queryHandler) queryAnnouncement(cli *ent.Client) error {
 	return nil
 }
 
+func (h *queryHandler) formalize() {
+	for _, info := range h.infos {
+		info.AnnouncementType = npool.AnnouncementType(npool.AnnouncementType_value[info.AnnouncementTypeStr])
+		info.Channel = basetypes.NotifChannel(basetypes.NotifChannel_value[info.ChannelStr])
+	}
+}
+
 func (h *queryHandler) queryAnnouncementsByConds(ctx context.Context, cli *ent.Client) (err error) {
 	stm, err := crud.SetQueryConds(cli.Announcement.Query(), h.Conds)
 	if err != nil {
@@ -82,7 +90,11 @@ func (h *Handler) GetAnnouncements(ctx context.Context) ([]*npool.Announcement, 
 		handler.
 			stm.
 			Offset(int(h.Offset)).
-			Limit(int(h.Limit))
+			Order(ent.Desc(entamt.FieldUpdatedAt)).
+			Limit(int(h.Limit)).
+			All(_ctx)
+
+		handler.formalize()
 		if err := handler.scan(_ctx); err != nil {
 			return err
 		}
@@ -104,6 +116,8 @@ func (h *Handler) GetAnnouncement(ctx context.Context) (info *npool.Announcement
 		if err := handler.queryAnnouncement(cli); err != nil {
 			return err
 		}
+
+		handler.formalize()
 		if err := handler.scan(_ctx); err != nil {
 			return err
 		}

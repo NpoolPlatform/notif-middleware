@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
-	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/channel"
 	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/notif/channel"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db"
@@ -15,8 +14,8 @@ import (
 func (h *Handler) CreateChannel(ctx context.Context) (info *npool.Channel, err error) {
 	h.Conds = &crud.Conds{
 		AppID:     &cruder.Cond{Op: cruder.EQ, Val: *h.AppID},
-		Channel:   &cruder.Cond{Op: cruder.EQ, Val: basetypes.NotifChannel(uint32(*h.Channel))},
-		EventType: &cruder.Cond{Op: cruder.EQ, Val: basetypes.UsedFor(uint32(*h.EventType))},
+		Channel:   &cruder.Cond{Op: cruder.EQ, Val: int32(*h.Channel)},
+		EventType: &cruder.Cond{Op: cruder.EQ, Val: int32(*h.EventType)},
 	}
 
 	exist, err := h.ExistChannelConds(ctx)
@@ -60,8 +59,8 @@ func (h *Handler) CreateChannels(ctx context.Context) (infos []*npool.Channel, e
 
 			h.Conds = &crud.Conds{
 				AppID:     &cruder.Cond{Op: cruder.EQ, Val: *h.AppID},
-				Channel:   &cruder.Cond{Op: cruder.EQ, Val: basetypes.NotifChannel(uint32(*h.Channel))},
-				EventType: &cruder.Cond{Op: cruder.EQ, Val: basetypes.UsedFor(uint32(*h.EventType))},
+				Channel:   &cruder.Cond{Op: cruder.EQ, Val: int32(*h.Channel)},
+				EventType: &cruder.Cond{Op: cruder.EQ, Val: int32(*h.EventType)},
 			}
 
 			exist, err := h.ExistChannelConds(ctx)

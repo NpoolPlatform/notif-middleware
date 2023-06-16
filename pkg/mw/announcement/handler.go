@@ -193,6 +193,16 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 				Val: id,
 			}
 		}
+		if conds.AppID != nil {
+			appID, err := uuid.Parse(conds.GetAppID().GetValue())
+			if err != nil {
+				return err
+			}
+			h.Conds.AppID = &cruder.Cond{
+				Op:  conds.GetAppID().GetOp(),
+				Val: appID,
+			}
+		}
 		if conds.EndAt != nil {
 			h.Conds.EndAt = &cruder.Cond{
 				Op:  conds.GetID().GetOp(),

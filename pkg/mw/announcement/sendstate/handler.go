@@ -4,10 +4,13 @@ import (
 	"context"
 	"fmt"
 
+	appcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/app"
+	appusercli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/sendstate"
 	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/announcement/sendstate"
+	amt1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement"
 	"github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/handler"
 	"github.com/google/uuid"
 )
@@ -15,6 +18,7 @@ import (
 type Handler struct {
 	*handler.Handler
 	Channel *basetypes.NotifChannel
+	Reqs    []*crud.Req
 	Conds   *crud.Conds
 }
 
@@ -106,6 +110,78 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 				Op: conds.GetUserIDs().GetOp(), Val: ids,
 			}
 		}
+		return nil
+	}
+}
+
+func WithReqs(reqs []*npool.SendStateReq) func(context.Context, *Handler) error {
+	return func(_ctx context.Context, h *Handler) error {
+		_reqs := []*crud.Req{}
+		for _, req := range _reqs {
+			if req.AppID == nil || req.UserID == nil || req.AnnouncementID == nil {
+				continue
+			}
+
+			// AppID
+			_req := &crud.Req{}
+			appID, err := uuid.Parse(req.AppID.String())
+			if err != nil {
+				return err
+			}
+			exist, err := appcli.ExistApp(_ctx, req.AppID.String())
+			if err != nil {
+				return err
+			}
+			if !exist {
+				return fmt.Errorf("invalid app id %v", req.AppID.String())
+			}
+			_req.AppID = &appID
+
+			// UserID
+			userID, err := uuid.Parse(req.UserID.String())
+			if err != nil {
+				return err
+			}
+
+			exist, err = appusercli.ExistUser(_ctx, req.AppID.String(), req.UserID.String())
+			if err != nil {
+				return err
+			}
+			if !exist {
+				return fmt.Errorf("invalid user")
+			}
+			_req.UserID = &userID
+
+			// AnnouncementID
+			amtID, err := uuid.Parse(req.AnnouncementID.String())
+			if err != nil {
+				return err
+			}
+			_amtID := req.AnnouncementID.String()
+			amtHandler, err := amt1.NewHandler(_ctx, amt1.WithID(&_amtID))
+			if err != nil {
+				return err
+			}
+
+			exist, err = amtHandler.ExistAnnouncement(_ctx)
+			if err != nil {
+				return err
+			}
+			if !exist {
+				return fmt.Errorf("invalid user")
+			}
+			_req.AnnouncementID = &amtID
+
+			// Channel
+			info, err := amtHandler.GetAnnouncement(_ctx)
+			if err != nil {
+				return err
+			}
+			_req.Channel = &info.Channel
+
+			_reqs = append(_reqs, _req)
+		}
+		h.Reqs = _reqs
 		return nil
 	}
 }

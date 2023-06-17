@@ -81,7 +81,7 @@ func (h *Handler) GetFrontendTemplate(ctx context.Context) (*npool.FrontendTempl
 			Limit(limit).
 			Modify(func(s *sql.Selector) {})
 		if err := handler.scan(ctx); err != nil {
-			return nil
+			return err
 		}
 		return nil
 	})

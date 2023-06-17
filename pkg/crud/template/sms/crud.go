@@ -85,37 +85,37 @@ func SetQueryConds(q *ent.SMSTemplateQuery, conds *Conds) (*ent.SMSTemplateQuery
 		}
 	}
 	if conds.AppID != nil {
-		id, ok := conds.ID.Val.(uuid.UUID)
+		id, ok := conds.AppID.Val.(uuid.UUID)
 		if !ok {
-			return nil, fmt.Errorf("invalid id")
+			return nil, fmt.Errorf("invalid appid")
 		}
-		switch conds.ID.Op {
+		switch conds.AppID.Op {
 		case cruder.EQ:
-			q.Where(entsmstemplate.ID(id))
+			q.Where(entsmstemplate.AppID(id))
 		default:
 			return nil, fmt.Errorf("invalid sms field")
 		}
 	}
 	if conds.LangID != nil {
-		id, ok := conds.ID.Val.(uuid.UUID)
+		id, ok := conds.LangID.Val.(uuid.UUID)
 		if !ok {
-			return nil, fmt.Errorf("invalid id")
+			return nil, fmt.Errorf("invalid langid")
 		}
-		switch conds.ID.Op {
+		switch conds.LangID.Op {
 		case cruder.EQ:
-			q.Where(entsmstemplate.ID(id))
+			q.Where(entsmstemplate.LangID(id))
 		default:
 			return nil, fmt.Errorf("invalid sms field")
 		}
 	}
 	if conds.UsedFor != nil {
-		usedFor, ok := conds.UsedFor.Val.(string)
+		usedFor, ok := conds.UsedFor.Val.(basetypes.UsedFor)
 		if !ok {
 			return nil, fmt.Errorf("invalid usedFor")
 		}
 		switch conds.UsedFor.Op {
 		case cruder.EQ:
-			q.Where(entsmstemplate.UsedFor(usedFor))
+			q.Where(entsmstemplate.UsedFor(usedFor.String()))
 		default:
 			return nil, fmt.Errorf("invalid sms field")
 		}

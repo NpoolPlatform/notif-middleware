@@ -89,37 +89,37 @@ func SetQueryConds(q *ent.FrontendTemplateQuery, conds *Conds) (*ent.FrontendTem
 		}
 	}
 	if conds.AppID != nil {
-		id, ok := conds.ID.Val.(uuid.UUID)
+		id, ok := conds.AppID.Val.(uuid.UUID)
 		if !ok {
-			return nil, fmt.Errorf("invalid id")
+			return nil, fmt.Errorf("invalid appid")
 		}
-		switch conds.ID.Op {
+		switch conds.AppID.Op {
 		case cruder.EQ:
-			q.Where(entfrontendtemplate.ID(id))
+			q.Where(entfrontendtemplate.AppID(id))
 		default:
 			return nil, fmt.Errorf("invalid frontend field")
 		}
 	}
 	if conds.LangID != nil {
-		id, ok := conds.ID.Val.(uuid.UUID)
+		id, ok := conds.LangID.Val.(uuid.UUID)
 		if !ok {
-			return nil, fmt.Errorf("invalid id")
+			return nil, fmt.Errorf("invalid langid")
 		}
-		switch conds.ID.Op {
+		switch conds.LangID.Op {
 		case cruder.EQ:
-			q.Where(entfrontendtemplate.ID(id))
+			q.Where(entfrontendtemplate.LangID(id))
 		default:
 			return nil, fmt.Errorf("invalid frontend field")
 		}
 	}
 	if conds.UsedFor != nil {
-		usedFor, ok := conds.UsedFor.Val.(string)
+		usedFor, ok := conds.UsedFor.Val.(basetypes.UsedFor)
 		if !ok {
 			return nil, fmt.Errorf("invalid usedFor")
 		}
 		switch conds.UsedFor.Op {
 		case cruder.EQ:
-			q.Where(entfrontendtemplate.UsedFor(usedFor))
+			q.Where(entfrontendtemplate.UsedFor(usedFor.String()))
 		default:
 			return nil, fmt.Errorf("invalid frontend field")
 		}

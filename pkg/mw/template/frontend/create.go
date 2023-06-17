@@ -21,12 +21,21 @@ type createHandler struct {
 }
 
 func (h *createHandler) createFrontendTemplate(ctx context.Context, cli *ent.Client) error {
+	if h.AppID == nil {
+		return fmt.Errorf("invalid lang")
+	}
+	if h.LangID == nil {
+		return fmt.Errorf("invalid logo")
+	}
+	if h.UsedFor == nil {
+		return fmt.Errorf("invalid create usedFor")
+	}
 	lockKey := fmt.Sprintf(
 		"%v:%v:%v:%v",
 		basetypes.Prefix_PrefixCreateAppCoin,
 		*h.AppID,
 		*h.LangID,
-		*h.UsedFor,
+		h.UsedFor,
 	)
 	if err := redis2.TryLock(lockKey, 0); err != nil {
 		return err

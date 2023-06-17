@@ -21,12 +21,21 @@ type createHandler struct {
 }
 
 func (h *createHandler) createEmailTemplate(ctx context.Context, cli *ent.Client) error {
+	if h.AppID == nil {
+		return fmt.Errorf("invalid lang")
+	}
+	if h.LangID == nil {
+		return fmt.Errorf("invalid logo")
+	}
+	if h.UsedFor == nil {
+		return fmt.Errorf("invalid usedFor")
+	}
 	lockKey := fmt.Sprintf(
 		"%v:%v:%v:%v",
 		basetypes.Prefix_PrefixCreateAppCoin,
 		*h.AppID,
 		*h.LangID,
-		*h.UsedFor,
+		h.UsedFor,
 	)
 	if err := redis2.TryLock(lockKey, 0); err != nil {
 		return err
@@ -52,25 +61,24 @@ func (h *createHandler) createEmailTemplate(ctx context.Context, cli *ent.Client
 	if h.ID == nil {
 		h.ID = &id
 	}
-
 	info, err := emailtemplatecrud.CreateSet(
 		cli.EmailTemplate.Create(),
 		&emailtemplatecrud.Req{
-			ID:       h.ID,
-			AppID:    h.AppID,
-			LangID:   h.LangID,
-			UsedFor:  h.UsedFor,
-			Sender:   h.Sender,
-			ReplyTos: h.ReplyTos,
-			CcTos:    h.CcTos,
-			Subject:  h.Subject,
-			Body:     h.Body,
+			ID:                h.ID,
+			AppID:             h.AppID,
+			LangID:            h.LangID,
+			UsedFor:           h.UsedFor,
+			Sender:            h.Sender,
+			ReplyTos:          h.ReplyTos,
+			CcTos:             h.CcTos,
+			Subject:           h.Subject,
+			Body:              h.Body,
+			DefaultToUsername: h.DefaultToUsername,
 		},
 	).Save(ctx)
 	if err != nil {
 		return err
 	}
-
 	h.ID = &info.ID
 
 	return nil

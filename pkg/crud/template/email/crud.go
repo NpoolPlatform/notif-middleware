@@ -111,39 +111,39 @@ func SetQueryConds(q *ent.EmailTemplateQuery, conds *Conds) (*ent.EmailTemplateQ
 		}
 	}
 	if conds.AppID != nil {
-		id, ok := conds.ID.Val.(uuid.UUID)
+		id, ok := conds.AppID.Val.(uuid.UUID)
 		if !ok {
-			return nil, fmt.Errorf("invalid id")
+			return nil, fmt.Errorf("invalid appid")
 		}
-		switch conds.ID.Op {
+		switch conds.AppID.Op {
 		case cruder.EQ:
-			q.Where(entemailtemplate.ID(id))
+			q.Where(entemailtemplate.AppID(id))
 		default:
 			return nil, fmt.Errorf("invalid email field")
 		}
 	}
 	if conds.LangID != nil {
-		id, ok := conds.ID.Val.(uuid.UUID)
+		id, ok := conds.LangID.Val.(uuid.UUID)
 		if !ok {
-			return nil, fmt.Errorf("invalid id")
+			return nil, fmt.Errorf("invalid langid")
 		}
-		switch conds.ID.Op {
+		switch conds.LangID.Op {
 		case cruder.EQ:
-			q.Where(entemailtemplate.ID(id))
+			q.Where(entemailtemplate.LangID(id))
 		default:
 			return nil, fmt.Errorf("invalid email field")
 		}
 	}
 	if conds.UsedFor != nil {
-		usedFor, ok := conds.UsedFor.Val.(string)
+		usedFor, ok := conds.UsedFor.Val.(basetypes.UsedFor)
 		if !ok {
-			return nil, fmt.Errorf("invalid usedFor")
+			return nil, fmt.Errorf("invalid used for")
 		}
 		switch conds.UsedFor.Op {
 		case cruder.EQ:
-			q.Where(entemailtemplate.UsedFor(usedFor))
+			q.Where(entemailtemplate.UsedFor(usedFor.String()))
 		default:
-			return nil, fmt.Errorf("invalid email field")
+			return nil, fmt.Errorf("invalid used for op field")
 		}
 	}
 	if conds.Sender != nil {

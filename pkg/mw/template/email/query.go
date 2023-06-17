@@ -4,13 +4,13 @@ import (
 	"context"
 	"fmt"
 
-	"entgo.io/ent/dialect/sql"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
 
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/template/email"
 	entemailtemplate "github.com/NpoolPlatform/notif-middleware/pkg/db/ent/emailtemplate"
 
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	emailtemplatecrud "github.com/NpoolPlatform/notif-middleware/pkg/crud/template/email"
 )
 
@@ -41,7 +41,6 @@ func (h *queryHandler) queryEmailTemplate(cli *ent.Client) error {
 	if h.ID == nil {
 		return fmt.Errorf("invalid emailtemplateid")
 	}
-
 	h.selectEmailTemplate(
 		cli.EmailTemplate.
 			Query().
@@ -51,6 +50,12 @@ func (h *queryHandler) queryEmailTemplate(cli *ent.Client) error {
 			),
 	)
 	return nil
+}
+
+func (h *queryHandler) formalize() {
+	for _, info := range h.infos {
+		info.UsedFor = basetypes.UsedFor(basetypes.UsedFor_value[info.UsedFor.String()])
+	}
 }
 
 func (h *queryHandler) queryEmailTemplates(ctx context.Context, cli *ent.Client) error {
@@ -75,18 +80,14 @@ func (h *Handler) GetEmailTemplate(ctx context.Context) (*npool.EmailTemplate, e
 	handler := &queryHandler{
 		Handler: h,
 	}
-
 	err := db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
 		if err := handler.queryEmailTemplate(cli); err != nil {
 			return err
 		}
-		const limit = 2
-		handler.stm = handler.stm.
-			Offset(int(handler.Offset)).
-			Limit(limit).
-			Modify(func(s *sql.Selector) {})
+
+		handler.formalize()
 		if err := handler.scan(ctx); err != nil {
-			return nil
+			return err
 		}
 		return nil
 	})
@@ -112,10 +113,12 @@ func (h *Handler) GetEmailTemplates(ctx context.Context) ([]*npool.EmailTemplate
 		if err := handler.queryEmailTemplates(ctx, cli); err != nil {
 			return err
 		}
-		handler.stm = handler.stm.
+		handler.
+			stm.
 			Offset(int(handler.Offset)).
-			Limit(int(handler.Limit)).
-			Modify(func(s *sql.Selector) {})
+			Limit(int(handler.Limit))
+
+		handler.formalize()
 		if err := handler.scan(ctx); err != nil {
 			return err
 		}

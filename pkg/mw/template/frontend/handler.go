@@ -123,6 +123,7 @@ func WithContent(content *string) func(context.Context, *Handler) error {
 	}
 }
 
+// nolint:gocyclo
 func WithReqs(reqs []*npool.FrontendTemplateReq) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		_reqs := []*frontendtemplatecrud.Req{}
@@ -161,6 +162,12 @@ func WithReqs(reqs []*npool.FrontendTemplateReq) func(context.Context, *Handler)
 					return fmt.Errorf("invalid UsedFor")
 				}
 				_req.UsedFor = req.UsedFor
+			}
+			if req.Title != nil {
+				_req.Title = req.Title
+			}
+			if req.Content != nil {
+				_req.Content = req.Content
 			}
 			_reqs = append(_reqs, _req)
 		}

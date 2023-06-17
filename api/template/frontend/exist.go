@@ -1,3 +1,4 @@
+//nolint:nolintlint,dupl
 package frontend
 
 import (
@@ -45,7 +46,13 @@ func (s *Server) ExistFrontendTemplate(
 	}, nil
 }
 
-func (s *Server) ExistFrontendTemplateConds(ctx context.Context, in *npool.ExistFrontendTemplateCondsRequest) (*npool.ExistFrontendTemplateCondsResponse, error) {
+func (s *Server) ExistFrontendTemplateConds(
+	ctx context.Context,
+	in *npool.ExistFrontendTemplateCondsRequest,
+) (
+	*npool.ExistFrontendTemplateCondsResponse,
+	error,
+) {
 	handler, err := frontendtemplate1.NewHandler(ctx,
 		frontendtemplate1.WithConds(in.GetConds()),
 	)

@@ -9,7 +9,6 @@ import (
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/template/frontend"
 	frontendtemplatecrud "github.com/NpoolPlatform/notif-middleware/pkg/crud/template/frontend"
 
-	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
 )
@@ -35,9 +34,6 @@ func (h *Handler) UpdateFrontendTemplate(ctx context.Context) (*npool.FrontendTe
 	if h.ID == nil {
 		return nil, fmt.Errorf("invalid id")
 	}
-	if h.LangID == nil {
-		return nil, fmt.Errorf("invalid langid")
-	}
 
 	lockKey := fmt.Sprintf(
 		"%v:%v",
@@ -51,26 +47,11 @@ func (h *Handler) UpdateFrontendTemplate(ctx context.Context) (*npool.FrontendTe
 		_ = redis2.Unlock(lockKey)
 	}()
 
-	h.Conds = &frontendtemplatecrud.Conds{
-		ID:     &cruder.Cond{Op: cruder.EQ, Val: *h.ID},
-		LangID: &cruder.Cond{Op: cruder.EQ, Val: *h.LangID},
-	}
-	h.Offset = 0
-	h.Limit = 2
-
-	frontend, err := h.GetFrontendTemplateOnly(ctx)
-	if err != nil {
-		return nil, err
-	}
-	if frontend != nil {
-		return nil, fmt.Errorf("frontendtemplate exist")
-	}
-
 	handler := &updateHandler{
 		Handler: h,
 	}
 
-	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
+	err := db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
 		if err := handler.updateFrontendTemplate(_ctx, cli); err != nil {
 			return err
 		}

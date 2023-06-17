@@ -111,6 +111,9 @@ func (h *Handler) CreateFrontendTemplates(ctx context.Context) ([]*npool.Fronten
 			handler.ID = nil
 			handler.AppID = req.AppID
 			handler.LangID = req.LangID
+			handler.UsedFor = req.UsedFor
+			handler.Title = req.Title
+			handler.Content = req.Content
 			if err := handler.createFrontendTemplate(ctx, cli); err != nil {
 				return err
 			}

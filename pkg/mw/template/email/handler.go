@@ -240,6 +240,24 @@ func WithReqs(reqs []*npool.EmailTemplateReq) func(context.Context, *Handler) er
 				}
 				_req.UsedFor = req.UsedFor
 			}
+			if req.Sender != nil {
+				_req.Sender = req.Sender
+			}
+			if req.ReplyTos != nil {
+				_req.ReplyTos = &req.ReplyTos
+			}
+			if req.CCTos != nil {
+				_req.CcTos = &req.CCTos
+			}
+			if req.Subject != nil {
+				_req.Subject = req.Subject
+			}
+			if req.Body != nil {
+				_req.Body = req.Body
+			}
+			if req.DefaultToUsername != nil {
+				_req.DefaultToUsername = req.DefaultToUsername
+			}
 			_reqs = append(_reqs, _req)
 		}
 		h.Reqs = _reqs

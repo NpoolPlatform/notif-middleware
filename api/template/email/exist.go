@@ -1,3 +1,4 @@
+//nolint:nolintlint,dupl
 package email
 
 import (
@@ -39,7 +40,13 @@ func (s *Server) ExistEmailTemplate(ctx context.Context, in *npool.ExistEmailTem
 	}, nil
 }
 
-func (s *Server) ExistEmailTemplateConds(ctx context.Context, in *npool.ExistEmailTemplateCondsRequest) (*npool.ExistEmailTemplateCondsResponse, error) {
+func (s *Server) ExistEmailTemplateConds(
+	ctx context.Context,
+	in *npool.ExistEmailTemplateCondsRequest,
+) (
+	*npool.ExistEmailTemplateCondsResponse,
+	error,
+) {
 	handler, err := emailtemplate1.NewHandler(ctx,
 		emailtemplate1.WithConds(in.GetConds()),
 	)

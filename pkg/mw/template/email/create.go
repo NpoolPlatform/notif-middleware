@@ -105,7 +105,6 @@ func (h *Handler) CreateEmailTemplates(ctx context.Context) ([]*npool.EmailTempl
 	handler := &createHandler{
 		Handler: h,
 	}
-
 	ids := []uuid.UUID{}
 
 	err := db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
@@ -113,6 +112,13 @@ func (h *Handler) CreateEmailTemplates(ctx context.Context) ([]*npool.EmailTempl
 			handler.ID = nil
 			handler.AppID = req.AppID
 			handler.LangID = req.LangID
+			handler.UsedFor = req.UsedFor
+			handler.Sender = req.Sender
+			handler.ReplyTos = req.ReplyTos
+			handler.CcTos = req.CcTos
+			handler.Subject = req.Subject
+			handler.Body = req.Body
+			handler.DefaultToUsername = req.DefaultToUsername
 			if err := handler.createEmailTemplate(ctx, cli); err != nil {
 				return err
 			}

@@ -118,7 +118,7 @@ func GetUserOnly(ctx context.Context, conds *npool.Conds) (*npool.UserNotif, err
 		resp, err := cli.GetUserNotifs(ctx, &npool.GetUserNotifsRequest{
 			Conds:  conds,
 			Offset: 0,
-			Limit:  2,
+			Limit:  2, //nolint
 		})
 		if err != nil {
 			return nil, err

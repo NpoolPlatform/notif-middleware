@@ -1,3 +1,4 @@
+//nolint:nolintlint,dupl
 package sms
 
 import (
@@ -39,7 +40,13 @@ func (s *Server) ExistSMSTemplate(ctx context.Context, in *npool.ExistSMSTemplat
 	}, nil
 }
 
-func (s *Server) ExistSMSTemplateConds(ctx context.Context, in *npool.ExistSMSTemplateCondsRequest) (*npool.ExistSMSTemplateCondsResponse, error) {
+func (s *Server) ExistSMSTemplateConds(
+	ctx context.Context,
+	in *npool.ExistSMSTemplateCondsRequest,
+) (
+	*npool.ExistSMSTemplateCondsResponse,
+	error,
+) {
 	handler, err := smstemplate1.NewHandler(ctx,
 		smstemplate1.WithConds(in.GetConds()),
 	)

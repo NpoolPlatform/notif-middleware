@@ -184,6 +184,12 @@ func WithReqs(reqs []*npool.SMSTemplateReq) func(context.Context, *Handler) erro
 				}
 				_req.UsedFor = req.UsedFor
 			}
+			if req.Subject != nil {
+				_req.Subject = req.Subject
+			}
+			if req.Message != nil {
+				_req.Message = req.Message
+			}
 			_reqs = append(_reqs, _req)
 		}
 		h.Reqs = _reqs

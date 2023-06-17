@@ -111,6 +111,9 @@ func (h *Handler) CreateSMSTemplates(ctx context.Context) ([]*npool.SMSTemplate,
 			handler.ID = nil
 			handler.AppID = req.AppID
 			handler.LangID = req.LangID
+			handler.UsedFor = req.UsedFor
+			handler.Subject = req.Subject
+			handler.Message = req.Message
 			if err := handler.createSMSTemplate(ctx, cli); err != nil {
 				return err
 			}

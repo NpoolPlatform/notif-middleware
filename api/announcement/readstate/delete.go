@@ -5,7 +5,7 @@ import (
 
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/readstate"
-	"github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/handler"
+	handler1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/handler"
 	amtread1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/readstate"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -15,7 +15,7 @@ func (s *Server) DeleteReadState(ctx context.Context, in *npool.DeleteReadStateR
 	id := in.GetInfo().GetID()
 	handler, err := amtread1.NewHandler(
 		ctx,
-		handler.WithID(&id),
+		handler1.WithID(&id),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

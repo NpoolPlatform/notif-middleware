@@ -30,9 +30,9 @@ import (
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	amtpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/sendstate"
-	"github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/handler"
+	amt1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement"
+	handler1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/handler"
 	sendamt1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/sendstate"
-        amt1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -116,9 +116,9 @@ func setupSendState(t *testing.T) func(*testing.T) {
 
 	handler, err := sendamt1.NewHandler(
 		context.Background(),
-		handler.WithAppID(&amt.AppID),
-		handler.WithUserID(&amt.AppID, &ret.UserID),
-		handler.WithAnnouncementID(&amt.AppID, &amt.ID),
+		handler1.WithAppID(&amt.AppID),
+		handler1.WithUserID(&amt.AppID, &ret.UserID),
+		handler1.WithAnnouncementID(&amt.AppID, &amt.ID),
 	)
 	assert.Nil(t, err)
 

@@ -6,7 +6,7 @@ import (
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/readstate"
-	"github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/handler"
+	handler1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/handler"
 	amtread1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/readstate"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -16,8 +16,8 @@ func (s *Server) GetReadStates(ctx context.Context, in *npool.GetReadStatesReque
 	handler, err := amtread1.NewHandler(
 		ctx,
 		amtread1.WithConds(in.GetConds()),
-		handler.WithOffset(in.Offset),
-		handler.WithLimit(in.Limit),
+		handler1.WithOffset(in.Offset),
+		handler1.WithLimit(in.Limit),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
@@ -47,7 +47,7 @@ func (s *Server) GetReadStates(ctx context.Context, in *npool.GetReadStatesReque
 func (s *Server) GetReadState(ctx context.Context, in *npool.GetReadStateRequest) (*npool.GetReadStateResponse, error) {
 	handler, err := amtread1.NewHandler(
 		ctx,
-		handler.WithID(&in.ID),
+		handler1.WithID(&in.ID),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

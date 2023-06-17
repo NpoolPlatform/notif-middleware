@@ -6,7 +6,7 @@ import (
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/sendstate"
-	"github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/handler"
+	handler1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/handler"
 	amtsend1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/sendstate"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -16,8 +16,8 @@ func (s *Server) GetSendStates(ctx context.Context, in *npool.GetSendStatesReque
 	handler, err := amtsend1.NewHandler(
 		ctx,
 		amtsend1.WithConds(in.GetConds()),
-		handler.WithOffset(in.Offset),
-		handler.WithLimit(in.Limit),
+		handler1.WithOffset(in.Offset),
+		handler1.WithLimit(in.Limit),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
@@ -47,7 +47,7 @@ func (s *Server) GetSendStates(ctx context.Context, in *npool.GetSendStatesReque
 func (s *Server) GetSendState(ctx context.Context, in *npool.GetSendStateRequest) (*npool.GetSendStateResponse, error) {
 	handler, err := amtsend1.NewHandler(
 		ctx,
-		handler.WithID(&in.ID),
+		handler1.WithID(&in.ID),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

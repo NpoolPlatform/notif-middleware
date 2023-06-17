@@ -118,7 +118,7 @@ func GetReadStateOnly(ctx context.Context, conds *npool.Conds) (*npool.ReadState
 		resp, err := cli.GetReadStates(ctx, &npool.GetReadStatesRequest{
 			Conds:  conds,
 			Offset: 0,
-			Limit:  2,
+			Limit:  2, //nolint
 		})
 		if err != nil {
 			return nil, err

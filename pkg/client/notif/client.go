@@ -135,7 +135,7 @@ func GetNotifOnly(ctx context.Context, conds *npool.Conds) (*npool.Notif, error)
 		resp, err := cli.GetNotifs(ctx, &npool.GetNotifsRequest{
 			Conds:  conds,
 			Offset: 0,
-			Limit:  2,
+			Limit:  2, //nolint
 		})
 		if err != nil {
 			return nil, err

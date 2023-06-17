@@ -106,7 +106,7 @@ func GetSendStateOnly(ctx context.Context, conds *npool.Conds) (*npool.SendState
 		resp, err := cli.GetSendStates(ctx, &npool.GetSendStatesRequest{
 			Conds:  conds,
 			Offset: 0,
-			Limit:  2,
+			Limit:  2, //nolint
 		})
 		if err != nil {
 			return nil, err

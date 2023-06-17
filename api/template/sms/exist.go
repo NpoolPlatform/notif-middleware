@@ -38,3 +38,31 @@ func (s *Server) ExistSMSTemplate(ctx context.Context, in *npool.ExistSMSTemplat
 		Info: exist,
 	}, nil
 }
+
+func (s *Server) ExistSMSTemplateConds(ctx context.Context, in *npool.ExistSMSTemplateCondsRequest) (*npool.ExistSMSTemplateCondsResponse, error) {
+	handler, err := smstemplate1.NewHandler(ctx,
+		smstemplate1.WithConds(in.GetConds()),
+	)
+	if err != nil {
+		logger.Sugar().Errorw(
+			"ExistSMSTemplate",
+			"Req", in,
+			"Error", err,
+		)
+		return &npool.ExistSMSTemplateCondsResponse{}, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	info, err := handler.ExistSMSTemplateConds(ctx)
+	if err != nil {
+		logger.Sugar().Errorw(
+			"ExistSMSTemplate",
+			"Req", in,
+			"Error", err,
+		)
+		return &npool.ExistSMSTemplateCondsResponse{}, status.Error(codes.Internal, err.Error())
+	}
+
+	return &npool.ExistSMSTemplateCondsResponse{
+		Info: info,
+	}, nil
+}

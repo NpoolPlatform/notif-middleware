@@ -38,3 +38,31 @@ func (s *Server) ExistEmailTemplate(ctx context.Context, in *npool.ExistEmailTem
 		Info: exist,
 	}, nil
 }
+
+func (s *Server) ExistEmailTemplateConds(ctx context.Context, in *npool.ExistEmailTemplateCondsRequest) (*npool.ExistEmailTemplateCondsResponse, error) {
+	handler, err := emailtemplate1.NewHandler(ctx,
+		emailtemplate1.WithConds(in.GetConds()),
+	)
+	if err != nil {
+		logger.Sugar().Errorw(
+			"ExistEmailTemplate",
+			"Req", in,
+			"Error", err,
+		)
+		return &npool.ExistEmailTemplateCondsResponse{}, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	info, err := handler.ExistEmailTemplateConds(ctx)
+	if err != nil {
+		logger.Sugar().Errorw(
+			"ExistEmailTemplate",
+			"Req", in,
+			"Error", err,
+		)
+		return &npool.ExistEmailTemplateCondsResponse{}, status.Error(codes.Internal, err.Error())
+	}
+
+	return &npool.ExistEmailTemplateCondsResponse{
+		Info: info,
+	}, nil
+}

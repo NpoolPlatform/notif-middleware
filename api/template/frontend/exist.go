@@ -44,3 +44,31 @@ func (s *Server) ExistFrontendTemplate(
 		Info: exist,
 	}, nil
 }
+
+func (s *Server) ExistFrontendTemplateConds(ctx context.Context, in *npool.ExistFrontendTemplateCondsRequest) (*npool.ExistFrontendTemplateCondsResponse, error) {
+	handler, err := frontendtemplate1.NewHandler(ctx,
+		frontendtemplate1.WithConds(in.GetConds()),
+	)
+	if err != nil {
+		logger.Sugar().Errorw(
+			"ExistFrontendTemplate",
+			"Req", in,
+			"Error", err,
+		)
+		return &npool.ExistFrontendTemplateCondsResponse{}, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	info, err := handler.ExistFrontendTemplateConds(ctx)
+	if err != nil {
+		logger.Sugar().Errorw(
+			"ExistFrontendTemplate",
+			"Req", in,
+			"Error", err,
+		)
+		return &npool.ExistFrontendTemplateCondsResponse{}, status.Error(codes.Internal, err.Error())
+	}
+
+	return &npool.ExistFrontendTemplateCondsResponse{
+		Info: info,
+	}, nil
+}

@@ -110,6 +110,16 @@ func (h *Handler) CreateNotifs(ctx context.Context) ([]*npool.Notif, error) {
 			handler.ID = nil
 			handler.AppID = req.AppID
 			handler.LangID = req.LangID
+			handler.UserID = req.UserID
+			handler.EventID = req.EventID
+			handler.Notified = req.Notified
+			handler.EventType = req.EventType
+			handler.UseTemplate = req.UseTemplate
+			handler.Title = req.Title
+			handler.Content = req.Content
+			handler.Channel = req.Channel
+			handler.Extra = req.Extra
+			handler.NotifType = req.NotifType
 			if err := handler.createNotif(ctx, cli); err != nil {
 				return err
 			}

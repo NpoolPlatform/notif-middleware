@@ -87,10 +87,10 @@ func (h *Handler) GetTxs(ctx context.Context) ([]*npool.Tx, uint32, error) {
 			stm.
 			Offset(int(h.Offset)).
 			Limit(int(h.Limit))
-		handler.formalize()
 		if err := handler.scan(_ctx); err != nil {
 			return err
 		}
+		handler.formalize()
 		return nil
 	})
 	if err != nil {
@@ -109,10 +109,10 @@ func (h *Handler) GetTx(ctx context.Context) (info *npool.Tx, err error) {
 		if err := handler.queryTx(cli); err != nil {
 			return err
 		}
-		handler.formalize()
 		if err := handler.scan(_ctx); err != nil {
 			return err
 		}
+		handler.formalize()
 		return nil
 	})
 	if err != nil {
@@ -143,10 +143,11 @@ func (h *Handler) GetTxOnly(ctx context.Context) (*npool.Tx, error) {
 			}
 			return err
 		}
-		handler.formalize()
+
 		if err := handler.scan(_ctx); err != nil {
 			return err
 		}
+		handler.formalize()
 		return nil
 	})
 	if err != nil {
@@ -155,7 +156,7 @@ func (h *Handler) GetTxOnly(ctx context.Context) (*npool.Tx, error) {
 	if len(handler.infos) == 0 {
 		return nil, nil
 	}
-	if len(handler.infos) > 0 {
+	if len(handler.infos) > 1 {
 		return nil, fmt.Errorf("to many record")
 	}
 

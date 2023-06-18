@@ -36,6 +36,9 @@ func CreateSet(c *ent.TxNotifStateCreate, req *Req) *ent.TxNotifStateCreate {
 }
 
 func UpdateSet(u *ent.TxNotifStateUpdateOne, req *Req) *ent.TxNotifStateUpdateOne {
+	if req.NotifState != nil {
+		u.SetNotifState(req.NotifState.String())
+	}
 	if req.DeletedAt != nil {
 		u.SetDeletedAt(*req.DeletedAt)
 	}

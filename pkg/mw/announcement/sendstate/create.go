@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
-	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/sendstate"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
+	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/sendstate"
 	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/announcement/sendstate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"

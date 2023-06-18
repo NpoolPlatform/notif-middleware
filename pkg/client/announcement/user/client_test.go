@@ -58,9 +58,9 @@ var (
 	}
 
 	ret = npool.AnnouncementUser{
-		AppID:          appID,
-		AnnouncementID: "",
-		UserID:         "",
+		AppID:            appID,
+		AnnouncementID:   "",
+		UserID:           "",
 		LangID:           amt.LangID,
 		Title:            amt.Title,
 		Content:          amt.Content,
@@ -188,4 +188,3 @@ func TestClient(t *testing.T) {
 
 	patch.Unpatch()
 }
-

@@ -187,4 +187,3 @@ func TestClient(t *testing.T) {
 
 	patch.Unpatch()
 }
-

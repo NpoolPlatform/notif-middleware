@@ -87,10 +87,10 @@ func (h *Handler) GetChannels(ctx context.Context) ([]*npool.Channel, uint32, er
 			stm.
 			Offset(int(h.Offset)).
 			Limit(int(h.Limit))
-		handler.formalize()
 		if err := handler.scan(_ctx); err != nil {
 			return err
 		}
+		handler.formalize()
 		return nil
 	})
 	if err != nil {
@@ -109,10 +109,10 @@ func (h *Handler) GetChannel(ctx context.Context) (info *npool.Channel, err erro
 		if err := handler.queryChannel(cli); err != nil {
 			return err
 		}
-		handler.formalize()
 		if err := handler.scan(_ctx); err != nil {
 			return err
 		}
+		handler.formalize()
 		return nil
 	})
 	if err != nil {

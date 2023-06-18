@@ -89,10 +89,10 @@ func (h *Handler) GetContacts(ctx context.Context) ([]*npool.Contact, uint32, er
 			stm.
 			Offset(int(h.Offset)).
 			Limit(int(h.Limit))
-		handler.formalize()
 		if err := handler.scan(_ctx); err != nil {
 			return err
 		}
+		handler.formalize()
 		return nil
 	})
 	if err != nil {
@@ -111,10 +111,10 @@ func (h *Handler) GetContact(ctx context.Context) (info *npool.Contact, err erro
 		if err := handler.queryContact(cli); err != nil {
 			return err
 		}
-		handler.formalize()
 		if err := handler.scan(_ctx); err != nil {
 			return err
 		}
+		handler.formalize()
 		return nil
 	})
 	if err != nil {
@@ -154,7 +154,7 @@ func (h *Handler) GetContactOnly(ctx context.Context) (*npool.Contact, error) {
 	if err != nil {
 		return nil, err
 	}
-	if len(handler.infos) > 0 {
+	if len(handler.infos) > 1 {
 		return nil, fmt.Errorf("to many record")
 	}
 

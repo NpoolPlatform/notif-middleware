@@ -6,6 +6,7 @@ import (
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/contact"
+        basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/contact"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
@@ -50,11 +51,11 @@ func (h *Handler) CreateContact(ctx context.Context) (info *npool.Contact, err e
 		},
 		AccountType: &cruder.Cond{
 			Op:  cruder.EQ,
-			Val: int32(*h.AccountType),
+			Val: basetypes.SignMethod(basetypes.SignMethod_value[h.AccountType.String()]),
 		},
 		UsedFor: &cruder.Cond{
 			Op:  cruder.EQ,
-			Val: int32(*h.UsedFor),
+			Val: basetypes.UsedFor(basetypes.UsedFor_value[h.UsedFor.String()]) ,
 		},
 	}
 	exist, err := h.ExistContactConds(ctx)

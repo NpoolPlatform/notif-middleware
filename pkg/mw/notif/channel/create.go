@@ -5,15 +5,15 @@ import (
 	"fmt"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/channel"
-        basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/notif/channel"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
 )
 
 func (h *Handler) CreateChannel(ctx context.Context) (info *npool.Channel, err error) {
-        h.Conds = &crud.Conds{
+	h.Conds = &crud.Conds{
 		AppID:     &cruder.Cond{Op: cruder.EQ, Val: *h.AppID},
 		Channel:   &cruder.Cond{Op: cruder.EQ, Val: basetypes.NotifChannel(basetypes.NotifChannel_value[h.Channel.String()])},
 		EventType: &cruder.Cond{Op: cruder.EQ, Val: basetypes.UsedFor(basetypes.UsedFor_value[h.EventType.String()])},

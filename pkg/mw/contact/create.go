@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/contact"
-        basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/contact"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
@@ -55,7 +55,7 @@ func (h *Handler) CreateContact(ctx context.Context) (info *npool.Contact, err e
 		},
 		UsedFor: &cruder.Cond{
 			Op:  cruder.EQ,
-			Val: basetypes.UsedFor(basetypes.UsedFor_value[h.UsedFor.String()]) ,
+			Val: basetypes.UsedFor(basetypes.UsedFor_value[h.UsedFor.String()]),
 		},
 	}
 	exist, err := h.ExistContactConds(ctx)

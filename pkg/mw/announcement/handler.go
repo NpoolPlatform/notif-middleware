@@ -205,7 +205,7 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 		}
 		if conds.EndAt != nil {
 			h.Conds.EndAt = &cruder.Cond{
-				Op:  conds.GetID().GetOp(),
+				Op:  conds.GetEndAt().GetOp(),
 				Val: conds.GetEndAt().GetValue(),
 			}
 		}

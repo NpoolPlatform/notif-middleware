@@ -42,8 +42,8 @@ func (h *queryHandler) queryJoinAnnouncement(s *sql.Selector) {
 			t.C(entamt.FieldLangID),
 			t.C(entamt.FieldTitle),
 			t.C(entamt.FieldContent),
-			t.C(entamt.FieldType),
-			t.C(entamt.FieldChannel),
+			sql.As(t.C(entamt.FieldType), "type"),
+			sql.As(t.C(entamt.FieldChannel), "channel"),
 			t.C(entamt.FieldEndAt),
 		)
 }

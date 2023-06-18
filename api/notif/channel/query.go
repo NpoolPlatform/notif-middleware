@@ -43,3 +43,27 @@ func (s *Server) GetChannels(ctx context.Context, in *npool.GetChannelsRequest) 
 		Total: total,
 	}, nil
 }
+
+func (s *Server) GetChannel(ctx context.Context, in *npool.GetChannelRequest) (*npool.GetChannelResponse, error) {
+	handler, err := channel1.NewHandler(
+		ctx,
+		channel1.WithID(&in.ID),
+	)
+	if err != nil {
+		logger.Sugar().Errorw(
+			"GetChannel",
+			"In", in,
+			"error", err,
+		)
+		return &npool.GetChannelResponse{}, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	info, err := handler.GetChannel(ctx)
+	if err != nil {
+		return &npool.GetChannelResponse{}, status.Error(codes.Internal, err.Error())
+	}
+
+	return &npool.GetChannelResponse{
+		Info: info,
+	}, nil
+}

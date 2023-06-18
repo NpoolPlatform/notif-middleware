@@ -6,6 +6,7 @@ import (
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/sendstate"
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/announcement/sendstate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
@@ -48,7 +49,7 @@ func (h *Handler) CreateSendState(ctx context.Context) (info *npool.SendState, e
 		AppID:          &cruder.Cond{Op: cruder.EQ, Val: *h.AppID},
 		UserID:         &cruder.Cond{Op: cruder.EQ, Val: *h.UserID},
 		AnnouncementID: &cruder.Cond{Op: cruder.EQ, Val: *h.AnnouncementID},
-		Channel:        &cruder.Cond{Op: cruder.EQ, Val: announcement.Channel.String()},
+		Channel:        &cruder.Cond{Op: cruder.EQ, Val: basetypes.NotifChannel(basetypes.NotifChannel_value[announcement.AnnouncementTypeStr])},
 	}
 
 	exist, err := h.ExistSendStateConds(ctx)

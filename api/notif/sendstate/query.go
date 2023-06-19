@@ -47,16 +47,16 @@ func (s *Server) GetSendStateOnly(ctx context.Context, in *npool.GetSendStateOnl
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"GetSendState",
+			"GetSendStateOnly",
 			"In", in,
 			"Error", err,
 		)
 		return &npool.GetSendStateOnlyResponse{}, status.Error(codes.Aborted, err.Error())
 	}
-	info, err := handler.GetSendState(ctx)
+	info, err := handler.GetSendStateOnly(ctx)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"GetSendState",
+			"GetSendStateOnly",
 			"In", in,
 			"Error", err,
 		)

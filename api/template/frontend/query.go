@@ -59,16 +59,16 @@ func (s *Server) GetFrontendTemplateOnly(
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"GetFrontendTemplate",
+			"GetFrontendTemplateOnly",
 			"In", in,
 			"Error", err,
 		)
 		return &npool.GetFrontendTemplateOnlyResponse{}, status.Error(codes.Aborted, err.Error())
 	}
-	info, err := handler.GetFrontendTemplate(ctx)
+	info, err := handler.GetFrontendTemplateOnly(ctx)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"GetFrontendTemplate",
+			"GetFrontendTemplateOnly",
 			"In", in,
 			"Error", err,
 		)

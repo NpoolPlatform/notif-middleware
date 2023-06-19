@@ -47,16 +47,16 @@ func (s *Server) GetReadStateOnly(ctx context.Context, in *npool.GetReadStateOnl
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"GetReadState",
+			"GetReadStateOnly",
 			"In", in,
 			"Error", err,
 		)
 		return &npool.GetReadStateOnlyResponse{}, status.Error(codes.Aborted, err.Error())
 	}
-	info, err := handler.GetReadState(ctx)
+	info, err := handler.GetReadStateOnly(ctx)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"GetReadState",
+			"GetReadStateOnly",
 			"In", in,
 			"Error", err,
 		)

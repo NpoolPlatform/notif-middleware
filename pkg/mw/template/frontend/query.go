@@ -150,6 +150,7 @@ func (h *Handler) GetFrontendTemplateOnly(ctx context.Context) (info *npool.Fron
 	if len(handler.infos) > 1 {
 		return nil, fmt.Errorf("too many records")
 	}
+	handler.formalize()
 
 	return handler.infos[0], nil
 }

@@ -47,16 +47,16 @@ func (s *Server) GetSMSTemplateOnly(ctx context.Context, in *npool.GetSMSTemplat
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"GetSMSTemplate",
+			"GetSMSTemplateOnly",
 			"In", in,
 			"Error", err,
 		)
 		return &npool.GetSMSTemplateOnlyResponse{}, status.Error(codes.Aborted, err.Error())
 	}
-	info, err := handler.GetSMSTemplate(ctx)
+	info, err := handler.GetSMSTemplateOnly(ctx)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"GetSMSTemplate",
+			"GetSMSTemplateOnly",
 			"In", in,
 			"Error", err,
 		)

@@ -47,16 +47,16 @@ func (s *Server) GetNotifOnly(ctx context.Context, in *npool.GetNotifOnlyRequest
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"GetNotif",
+			"GetNotifOnly",
 			"In", in,
 			"Error", err,
 		)
 		return &npool.GetNotifOnlyResponse{}, status.Error(codes.Aborted, err.Error())
 	}
-	info, err := handler.GetNotif(ctx)
+	info, err := handler.GetNotifOnly(ctx)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"GetNotif",
+			"GetNotifOnly",
 			"In", in,
 			"Error", err,
 		)

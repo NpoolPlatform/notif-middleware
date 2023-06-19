@@ -162,6 +162,7 @@ func (h *Handler) GetNotifOnly(ctx context.Context) (info *npool.Notif, err erro
 	if len(handler.infos) > 1 {
 		return nil, fmt.Errorf("too many records")
 	}
+	handler.formalize()
 
 	return handler.infos[0], nil
 }

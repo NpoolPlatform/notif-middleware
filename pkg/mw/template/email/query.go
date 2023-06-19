@@ -167,6 +167,9 @@ func (h *Handler) GetEmailTemplateOnly(ctx context.Context) (info *npool.EmailTe
 	if len(handler.infos) > 1 {
 		return nil, fmt.Errorf("too many records")
 	}
+	if err := handler.formalize(); err != nil {
+		return nil, err
+	}
 
 	return handler.infos[0], nil
 }

@@ -59,16 +59,16 @@ func (s *Server) GetEmailTemplateOnly(
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"GetEmailTemplate",
+			"GetEmailTemplateOnly",
 			"In", in,
 			"Error", err,
 		)
 		return &npool.GetEmailTemplateOnlyResponse{}, status.Error(codes.Aborted, err.Error())
 	}
-	info, err := handler.GetEmailTemplate(ctx)
+	info, err := handler.GetEmailTemplateOnly(ctx)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"GetEmailTemplate",
+			"GetEmailTemplateOnly",
 			"In", in,
 			"Error", err,
 		)

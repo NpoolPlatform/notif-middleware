@@ -12,7 +12,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s *Server) CreateUser(ctx context.Context, in *npool.CreateUserNotifRequest) (*npool.CreateUserNotifResponse, error) {
+func (s *Server) CreateUserNotif(ctx context.Context, in *npool.CreateUserNotifRequest) (*npool.CreateUserNotifResponse, error) {
 	req := in.GetInfo()
 	handler, err := user1.NewHandler(
 		ctx,
@@ -23,7 +23,7 @@ func (s *Server) CreateUser(ctx context.Context, in *npool.CreateUserNotifReques
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"CreateUser",
+			"CreateUserNotif",
 			"In", in,
 			"Error", err,
 		)
@@ -32,7 +32,7 @@ func (s *Server) CreateUser(ctx context.Context, in *npool.CreateUserNotifReques
 	info, err := handler.CreateUser(ctx)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"CreateUser",
+			"CreateUserNotif",
 			"In", in,
 			"Error", err,
 		)
@@ -43,14 +43,14 @@ func (s *Server) CreateUser(ctx context.Context, in *npool.CreateUserNotifReques
 	}, nil
 }
 
-func (s *Server) CreateUsers(ctx context.Context, in *npool.CreateUserNotifsRequest) (*npool.CreateUserNotifsResponse, error) {
+func (s *Server) CreateUserNotifs(ctx context.Context, in *npool.CreateUserNotifsRequest) (*npool.CreateUserNotifsResponse, error) {
 	handler, err := user1.NewHandler(
 		ctx,
 		user1.WithReqs(in.GetInfos()),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"CreateUsers",
+			"CreateUserNotifs",
 			"In", in,
 			"Error", err,
 		)
@@ -59,7 +59,7 @@ func (s *Server) CreateUsers(ctx context.Context, in *npool.CreateUserNotifsRequ
 	infos, err := handler.CreateUsers(ctx)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"CreateUsers",
+			"CreateUserNotifs",
 			"In", in,
 			"Error", err,
 		)

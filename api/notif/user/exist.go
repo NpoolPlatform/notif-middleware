@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s *Server) ExistUser(ctx context.Context, in *npool.ExistUserNotifRequest) (*npool.ExistUserNotifResponse, error) {
+func (s *Server) ExistUserNotif(ctx context.Context, in *npool.ExistUserNotifRequest) (*npool.ExistUserNotifResponse, error) {
 	handler, err := user1.NewHandler(
 		ctx,
 		user1.WithID(&in.ID),
@@ -40,7 +40,13 @@ func (s *Server) ExistUser(ctx context.Context, in *npool.ExistUserNotifRequest)
 	}, nil
 }
 
-func (s *Server) ExistUserConds(ctx context.Context, in *npool.ExistUserNotifCondsRequest) (*npool.ExistUserNotifCondsResponse, error) {
+func (s *Server) ExistUserNotifConds(
+	ctx context.Context,
+	in *npool.ExistUserNotifCondsRequest,
+) (
+	*npool.ExistUserNotifCondsResponse,
+	error,
+) {
 	handler, err := user1.NewHandler(ctx,
 		user1.WithConds(in.GetConds()),
 	)

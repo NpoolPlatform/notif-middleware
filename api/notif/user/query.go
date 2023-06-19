@@ -12,7 +12,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s *Server) GetUser(ctx context.Context, in *npool.GetUserNotifRequest) (*npool.GetUserNotifResponse, error) {
+func (s *Server) GetUserNotif(ctx context.Context, in *npool.GetUserNotifRequest) (*npool.GetUserNotifResponse, error) {
 	handler, err := user1.NewHandler(
 		ctx,
 		user1.WithID(&in.ID),
@@ -40,7 +40,7 @@ func (s *Server) GetUser(ctx context.Context, in *npool.GetUserNotifRequest) (*n
 	}, nil
 }
 
-func (s *Server) GetUserOnly(ctx context.Context, in *npool.GetUserNotifOnlyRequest) (*npool.GetUserNotifOnlyResponse, error) {
+func (s *Server) GetUserNotifOnly(ctx context.Context, in *npool.GetUserNotifOnlyRequest) (*npool.GetUserNotifOnlyResponse, error) {
 	handler, err := user1.NewHandler(
 		ctx,
 		user1.WithConds(in.Conds),
@@ -68,7 +68,7 @@ func (s *Server) GetUserOnly(ctx context.Context, in *npool.GetUserNotifOnlyRequ
 	}, nil
 }
 
-func (s *Server) GetUsers(ctx context.Context, in *npool.GetUserNotifsRequest) (*npool.GetUserNotifsResponse, error) {
+func (s *Server) GetUserNotifs(ctx context.Context, in *npool.GetUserNotifsRequest) (*npool.GetUserNotifsResponse, error) {
 	handler, err := user1.NewHandler(
 		ctx,
 		user1.WithConds(in.GetConds()),

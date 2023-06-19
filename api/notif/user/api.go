@@ -1,7 +1,9 @@
 package user
 
 import (
-	"github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/user"
+	user "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/user"
+
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 )
 
@@ -11,4 +13,8 @@ type Server struct {
 
 func Register(server grpc.ServiceRegistrar) {
 	user.RegisterMiddlewareServer(server, &Server{})
+}
+
+func RegisterGateway(mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) error {
+	return nil
 }

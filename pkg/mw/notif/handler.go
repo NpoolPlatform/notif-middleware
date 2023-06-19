@@ -215,6 +215,9 @@ func WithNotifType(_type *npool.NotifType) func(context.Context, *Handler) error
 		case npool.NotifType_Broadcast:
 		case npool.NotifType_Multicast:
 		case npool.NotifType_Unicast:
+			if h.UserID == nil {
+				return fmt.Errorf("invalid userid")
+			}
 		default:
 			return fmt.Errorf("invalid type")
 		}
@@ -255,6 +258,7 @@ func WithIDs(ids *[]string) func(context.Context, *Handler) error {
 	}
 }
 
+// nolint:gocyclo
 func WithReqs(reqs []*npool.NotifReq) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		_reqs := []*notifcrud.Req{}
@@ -348,6 +352,7 @@ func WithReqs(reqs []*npool.NotifReq) func(context.Context, *Handler) error {
 	}
 }
 
+// nolint:gocyclo
 func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		h.Conds = &notifcrud.Conds{}

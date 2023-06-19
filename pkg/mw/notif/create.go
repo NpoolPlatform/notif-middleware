@@ -22,12 +22,21 @@ type createHandler struct {
 }
 
 func (h *createHandler) createNotif(ctx context.Context, cli *ent.Client) error {
+	if h.AppID == nil {
+		return fmt.Errorf("invalid lang")
+	}
+	if h.LangID == nil {
+		return fmt.Errorf("invalid logo")
+	}
+	if h.EventID == nil {
+		return fmt.Errorf("invalid eventid")
+	}
 	lockKey := fmt.Sprintf(
 		"%v:%v:%v:%v",
 		basetypes.Prefix_PrefixCreateAppCoin,
 		*h.AppID,
 		*h.LangID,
-		*h.UserID,
+		*h.EventID,
 	)
 	if err := redis2.TryLock(lockKey, 0); err != nil {
 		return err
@@ -35,19 +44,6 @@ func (h *createHandler) createNotif(ctx context.Context, cli *ent.Client) error 
 	defer func() {
 		_ = redis2.Unlock(lockKey)
 	}()
-
-	h.Conds = &notifcrud.Conds{
-		AppID:  &cruder.Cond{Op: cruder.EQ, Val: *h.AppID},
-		LangID: &cruder.Cond{Op: cruder.EQ, Val: *h.LangID},
-		UserID: &cruder.Cond{Op: cruder.EQ, Val: *h.UserID},
-	}
-	exist, err := h.ExistNotifConds(ctx)
-	if err != nil {
-		return err
-	}
-	if exist {
-		return fmt.Errorf("notif exist")
-	}
 
 	id := uuid.New()
 	if h.ID == nil {

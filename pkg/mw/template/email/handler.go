@@ -146,9 +146,6 @@ func WithReplyTos(replyTos *[]string) func(context.Context, *Handler) error {
 		if replyTos == nil {
 			return nil
 		}
-		if len(*replyTos) == 0 {
-			return fmt.Errorf("invalid replyTos")
-		}
 		h.ReplyTos = replyTos
 		return nil
 	}
@@ -158,9 +155,6 @@ func WithCcTos(ccTos *[]string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if ccTos == nil {
 			return nil
-		}
-		if len(*ccTos) == 0 {
-			return fmt.Errorf("invalid ccTos")
 		}
 		h.CcTos = ccTos
 		return nil

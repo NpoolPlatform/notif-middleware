@@ -15,6 +15,7 @@ func (s *Server) DeleteChannel(ctx context.Context, in *npool.DeleteChannelReque
 	handler, err := channel1.NewHandler(
 		ctx,
 		channel1.WithID(&id),
+		channel1.WithAppID(&id),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

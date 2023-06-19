@@ -68,6 +68,14 @@ func CreateSet(c *ent.NotifCreate, req *Req) *ent.NotifCreate {
 	}
 	if req.NotifType != nil {
 		c.SetType(req.NotifType.String())
+		switch req.NotifType.String() {
+		case notifmwpb.NotifType_Multicast.Enum().String():
+			c.SetUserID(uuid.Nil)
+			fallthrough //nolint
+		case notifmwpb.NotifType_Broadcast.Enum().String():
+			c.SetUserID(uuid.Nil)
+		default:
+		}
 	}
 	return c
 }
@@ -230,13 +238,13 @@ func SetQueryConds(q *ent.NotifQuery, conds *Conds) (*ent.NotifQuery, error) {
 		}
 	}
 	if conds.Channel != nil {
-		channel, ok := conds.Channel.Val.(string)
+		channel, ok := conds.Channel.Val.(basetypes.NotifChannel)
 		if !ok {
-			return nil, fmt.Errorf("invalid channel")
+			return nil, fmt.Errorf("invalid channelsss")
 		}
 		switch conds.Channel.Op {
 		case cruder.EQ:
-			q.Where(entnotif.Channel(channel))
+			q.Where(entnotif.Channel(channel.String()))
 		default:
 			return nil, fmt.Errorf("invalid notif field")
 		}

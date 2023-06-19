@@ -73,6 +73,7 @@ var (
 func createNotif(t *testing.T) {
 	info, err := CreateNotif(context.Background(), retReq)
 	if assert.Nil(t, err) {
+		ret.UserID = info.UserID
 		ret.CreatedAt = info.CreatedAt
 		ret.UpdatedAt = info.UpdatedAt
 		ret.Notified = info.Notified
@@ -84,6 +85,7 @@ func updateNotif(t *testing.T) {
 	ret.Notified = true
 	info, err := UpdateNotif(context.Background(), retReq)
 	if assert.Nil(t, err) {
+		ret.UserID = info.UserID
 		ret.CreatedAt = info.CreatedAt
 		ret.UpdatedAt = info.UpdatedAt
 		ret.Notified = info.Notified
@@ -95,6 +97,7 @@ func updateNotifs(t *testing.T) {
 	b := true
 	infos, err := UpdateNotifs(context.Background(), []string{ret.ID}, b)
 	if assert.Nil(t, err) {
+		ret.UserID = infos[0].UserID
 		ret.CreatedAt = infos[0].CreatedAt
 		ret.UpdatedAt = infos[0].UpdatedAt
 		assert.Equal(t, infos[0].String(), ret.String())

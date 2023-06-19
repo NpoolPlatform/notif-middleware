@@ -56,13 +56,17 @@ func (h *queryHandler) queryJoin() {
 
 func (h *queryHandler) queryAnnouncementUser(cli *ent.Client) error {
 	if h.ID == nil {
-		return fmt.Errorf("invalid user announcement id")
+		return fmt.Errorf("invalid announcement user id")
+	}
+	if h.AppID == nil {
+		return fmt.Errorf("invalid app id")
 	}
 	h.selectAnnouncementUser(
 		cli.UserAnnouncement.
 			Query().
 			Where(
 				entuseramt.ID(*h.ID),
+				entuseramt.AppID(*h.AppID),
 				entuseramt.DeletedAt(0),
 			),
 	)

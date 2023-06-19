@@ -13,9 +13,11 @@ import (
 
 func (s *Server) DeleteAnnouncementUser(ctx context.Context, in *npool.DeleteAnnouncementUserRequest) (*npool.DeleteAnnouncementUserResponse, error) { // nolint
 	id := in.GetInfo().GetID()
+	appID := in.GetInfo().GetAppID()
 	handler1, err := announcement1.NewHandler(
 		ctx,
 		handler.WithID(&id),
+		handler.WithAppID(&appID),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

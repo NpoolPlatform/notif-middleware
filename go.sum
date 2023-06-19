@@ -59,8 +59,6 @@ github.com/NpoolPlatform/libent-cruder v0.0.0-20221109023947-366125b690fb h1:IAQ
 github.com/NpoolPlatform/libent-cruder v0.0.0-20221109023947-366125b690fb/go.mod h1:zvvqlRwbOdTUauPQ9dFDhDuxa91ILV0CQfVdPBZj+eA=
 github.com/NpoolPlatform/message v0.0.0-20230619030119-1bc2dfc09da7 h1:uafgEzvvObJtJmluf9ISQgWfX5pf/rCy2JAUq0pRKX4=
 github.com/NpoolPlatform/message v0.0.0-20230619030119-1bc2dfc09da7/go.mod h1:PxJpF0vSSOke+NJskbRBRQ2fK2K3SRe8zaEja+GxSHk=
-github.com/NpoolPlatform/notif-manager v0.0.0-20230524065114-b1b16877fab1 h1:CcKTkw0W2YwX9zYThl3lNSXd/lEatniucI7mg+1VY3Y=
-github.com/NpoolPlatform/notif-manager v0.0.0-20230524065114-b1b16877fab1/go.mod h1:j07ieWN/jF7quRnPso/55jEp9n/3rplRJloTRmbLjWE=
 github.com/OneOfOne/xxhash v1.2.2 h1:KMrpdQIwFcEqXDklaen+P1axHaj9BSKzvpUUfnHldSE=
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
 github.com/Shonminh/apollo-client v0.4.0 h1:AXGp4wOahrEKjheMXehgsG9B8dEfLQHttRLHeEefvus=

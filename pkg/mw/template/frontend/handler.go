@@ -6,6 +6,7 @@ import (
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
+	templatemwpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/template"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/template/frontend"
 	frontendtemplatecrud "github.com/NpoolPlatform/notif-middleware/pkg/crud/template/frontend"
 
@@ -19,6 +20,8 @@ type Handler struct {
 	UsedFor *basetypes.UsedFor
 	Title   *string
 	Content *string
+	UserID  *uuid.UUID
+	Vars    *templatemwpb.TemplateVars
 	Reqs    []*frontendtemplatecrud.Req
 	Conds   *frontendtemplatecrud.Conds
 	Offset  int32
@@ -119,6 +122,27 @@ func WithContent(content *string) func(context.Context, *Handler) error {
 			return fmt.Errorf("invalid content")
 		}
 		h.Content = content
+		return nil
+	}
+}
+
+func WithUserID(userid *string) func(context.Context, *Handler) error {
+	return func(ctx context.Context, h *Handler) error {
+		if userid == nil {
+			return nil
+		}
+		_userid, err := uuid.Parse(*userid)
+		if err != nil {
+			return err
+		}
+		h.UserID = &_userid
+		return nil
+	}
+}
+
+func WithVars(vars *templatemwpb.TemplateVars) func(context.Context, *Handler) error {
+	return func(ctx context.Context, h *Handler) error {
+		h.Vars = vars
 		return nil
 	}
 }

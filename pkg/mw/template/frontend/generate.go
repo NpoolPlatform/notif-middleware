@@ -9,7 +9,6 @@ import (
 	notifmwpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
 
 	frontendtmplmwpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/template/frontend"
-	frontendtmplmwcli "github.com/NpoolPlatform/notif-middleware/pkg/client/template/frontend"
 
 	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 
@@ -18,25 +17,34 @@ import (
 	"github.com/google/uuid"
 )
 
-func GenerateNotifs(
+func (h *Handler) GenerateNotifs(
 	ctx context.Context,
-	appID, userID string,
-	usedFor basetypes.UsedFor,
-	vars *npool.TemplateVars,
 ) ([]*notifmwpb.NotifReq, error) {
 	const maxTemplates = int32(100)
 	eventID := uuid.NewString()
+	appID := h.AppID.String()
+	userID := h.UserID.String()
 
-	tmpls, _, err := frontendtmplmwcli.GetFrontendTemplates(ctx, &frontendtmplmwpb.Conds{
-		AppID: &basetypes.StringVal{
-			Op:    cruder.EQ,
-			Value: appID,
-		},
-		UsedFor: &basetypes.Uint32Val{
-			Op:    cruder.EQ,
-			Value: uint32(usedFor),
-		},
-	}, 0, maxTemplates)
+	frontendtmplHandler, err := NewHandler(
+		ctx,
+		WithConds(&frontendtmplmwpb.Conds{
+			AppID: &basetypes.StringVal{
+				Op:    cruder.EQ,
+				Value: appID,
+			},
+			UsedFor: &basetypes.Uint32Val{
+				Op:    cruder.EQ,
+				Value: uint32(*h.UsedFor),
+			},
+		}),
+		WithOffset(0),
+		WithLimit(maxTemplates),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	tmpls, _, err := frontendtmplHandler.GetFrontendTemplates(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -46,8 +54,8 @@ func GenerateNotifs(
 
 	reqs := []*notifmwpb.NotifReq{}
 	for _, tmpl := range tmpls {
-		title := tmplreplace.ReplaceAll(tmpl.Title, vars)
-		content := tmplreplace.ReplaceAll(tmpl.Content, vars)
+		title := tmplreplace.ReplaceAll(tmpl.Title, h.Vars)
+		content := tmplreplace.ReplaceAll(tmpl.Content, h.Vars)
 		useTemplate := true
 		channel1 := basetypes.NotifChannel_ChannelFrontend
 
@@ -55,7 +63,7 @@ func GenerateNotifs(
 			AppID:       &appID,
 			UserID:      &userID,
 			LangID:      &tmpl.LangID,
-			EventType:   &usedFor,
+			EventType:   h.UsedFor,
 			UseTemplate: &useTemplate,
 			Title:       &title,
 			Content:     &content,
@@ -67,26 +75,31 @@ func GenerateNotifs(
 	return reqs, nil
 }
 
-func GenerateText(
-	ctx context.Context,
-	appID, langID string,
-	usedFor basetypes.UsedFor,
-	vars *npool.TemplateVars,
-) (*npool.TextInfo, error) {
-	tmpl, err := frontendtmplmwcli.GetFrontendTemplateOnly(ctx, &frontendtmplmwpb.Conds{
-		AppID: &basetypes.StringVal{
-			Op:    cruder.EQ,
-			Value: appID,
-		},
-		LangID: &basetypes.StringVal{
-			Op:    cruder.EQ,
-			Value: langID,
-		},
-		UsedFor: &basetypes.Uint32Val{
-			Op:    cruder.EQ,
-			Value: uint32(usedFor),
-		},
-	})
+func (h *Handler) GenerateText(ctx context.Context) (*npool.TextInfo, error) {
+	appID := h.AppID.String()
+	langID := h.LangID.String()
+	frontendtmplHandler, err := NewHandler(
+		ctx,
+		WithConds(&frontendtmplmwpb.Conds{
+			AppID: &basetypes.StringVal{
+				Op:    cruder.EQ,
+				Value: appID,
+			},
+			LangID: &basetypes.StringVal{
+				Op:    cruder.EQ,
+				Value: langID,
+			},
+			UsedFor: &basetypes.Uint32Val{
+				Op:    cruder.EQ,
+				Value: uint32(*h.UsedFor),
+			},
+		}),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	tmpl, err := frontendtmplHandler.GetFrontendTemplateOnly(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -94,8 +107,8 @@ func GenerateText(
 		return nil, nil
 	}
 
-	title := tmplreplace.ReplaceAll(tmpl.Content, vars)
-	content := tmplreplace.ReplaceAll(tmpl.Content, vars)
+	title := tmplreplace.ReplaceAll(tmpl.Content, h.Vars)
+	content := tmplreplace.ReplaceAll(tmpl.Content, h.Vars)
 
 	return &npool.TextInfo{
 		Subject: title,

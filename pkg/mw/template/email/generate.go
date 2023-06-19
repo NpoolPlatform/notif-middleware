@@ -9,7 +9,6 @@ import (
 	notifmwpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
 
 	emailtmplmwpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/template/email"
-	emailtmplmwcli "github.com/NpoolPlatform/notif-middleware/pkg/client/template/email"
 
 	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 
@@ -18,25 +17,32 @@ import (
 	"github.com/google/uuid"
 )
 
-func GenerateNotifs(
-	ctx context.Context,
-	appID, userID string,
-	usedFor basetypes.UsedFor,
-	vars *npool.TemplateVars,
-) ([]*notifmwpb.NotifReq, error) {
+func (h *Handler) GenerateNotifs(ctx context.Context) ([]*notifmwpb.NotifReq, error) {
 	const maxTemplates = int32(100)
 	eventID := uuid.NewString()
+	appID := h.AppID.String()
+	userID := h.UserID.String()
 
-	tmpls, _, err := emailtmplmwcli.GetEmailTemplates(ctx, &emailtmplmwpb.Conds{
-		AppID: &basetypes.StringVal{
-			Op:    cruder.EQ,
-			Value: appID,
-		},
-		UsedFor: &basetypes.Int32Val{
-			Op:    cruder.EQ,
-			Value: int32(usedFor),
-		},
-	}, 0, maxTemplates)
+	emailtmplHandler, err := NewHandler(
+		ctx,
+		WithConds(&emailtmplmwpb.Conds{
+			AppID: &basetypes.StringVal{
+				Op:    cruder.EQ,
+				Value: appID,
+			},
+			UsedFor: &basetypes.Int32Val{
+				Op:    cruder.EQ,
+				Value: int32(*h.UsedFor),
+			},
+		}),
+		WithOffset(0),
+		WithLimit(maxTemplates),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	tmpls, _, err := emailtmplHandler.GetEmailTemplates(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -46,8 +52,8 @@ func GenerateNotifs(
 
 	reqs := []*notifmwpb.NotifReq{}
 	for _, tmpl := range tmpls {
-		title := tmplreplace.ReplaceAll(tmpl.Subject, vars)
-		content := tmplreplace.ReplaceAll(tmpl.Body, vars)
+		title := tmplreplace.ReplaceAll(tmpl.Subject, h.Vars)
+		content := tmplreplace.ReplaceAll(tmpl.Body, h.Vars)
 		useTemplate := true
 		channel1 := basetypes.NotifChannel_ChannelEmail
 
@@ -55,7 +61,7 @@ func GenerateNotifs(
 			AppID:       &appID,
 			UserID:      &userID,
 			LangID:      &tmpl.LangID,
-			EventType:   &usedFor,
+			EventType:   h.UsedFor,
 			UseTemplate: &useTemplate,
 			Title:       &title,
 			Content:     &content,
@@ -67,26 +73,30 @@ func GenerateNotifs(
 	return reqs, nil
 }
 
-func GenerateText(
-	ctx context.Context,
-	appID, langID string,
-	usedFor basetypes.UsedFor,
-	vars *npool.TemplateVars,
-) (*npool.TextInfo, error) {
-	tmpl, err := emailtmplmwcli.GetEmailTemplateOnly(ctx, &emailtmplmwpb.Conds{
-		AppID: &basetypes.StringVal{
-			Op:    cruder.EQ,
-			Value: appID,
-		},
-		LangID: &basetypes.StringVal{
-			Op:    cruder.EQ,
-			Value: langID,
-		},
-		UsedFor: &basetypes.Int32Val{
-			Op:    cruder.EQ,
-			Value: int32(usedFor),
-		},
-	})
+func (h *Handler) GenerateText(ctx context.Context) (*npool.TextInfo, error) {
+	appID := h.AppID.String()
+	langID := h.LangID.String()
+	emailtmplHandler, err := NewHandler(
+		ctx,
+		WithConds(&emailtmplmwpb.Conds{
+			AppID: &basetypes.StringVal{
+				Op:    cruder.EQ,
+				Value: appID,
+			},
+			LangID: &basetypes.StringVal{
+				Op:    cruder.EQ,
+				Value: langID,
+			},
+			UsedFor: &basetypes.Int32Val{
+				Op:    cruder.EQ,
+				Value: int32(*h.UsedFor),
+			},
+		}),
+	)
+	if err != nil {
+		return nil, err
+	}
+	tmpl, err := emailtmplHandler.GetEmailTemplateOnly(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -94,8 +104,8 @@ func GenerateText(
 		return nil, nil
 	}
 
-	title := tmplreplace.ReplaceAll(tmpl.Subject, vars)
-	content := tmplreplace.ReplaceAll(tmpl.Body, vars)
+	title := tmplreplace.ReplaceAll(tmpl.Subject, h.Vars)
+	content := tmplreplace.ReplaceAll(tmpl.Body, h.Vars)
 
 	return &npool.TextInfo{
 		Subject:  title,

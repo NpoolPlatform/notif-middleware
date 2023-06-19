@@ -3,7 +3,6 @@ package notif
 import (
 	"context"
 
-	mwcli "github.com/NpoolPlatform/notif-middleware/pkg/client/notif"
 	"github.com/NpoolPlatform/notif-middleware/pkg/mw/template"
 
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
@@ -18,12 +17,19 @@ func (h *Handler) GenerateNotifs(
 	if err != nil {
 		return nil, err
 	}
-
 	for _, req := range reqs {
 		req.Extra = h.Extra
 	}
 
-	notifs, err := mwcli.CreateNotifs(ctx, reqs)
+	notifGenerateHandler, err := NewHandler(
+		ctx,
+		WithReqs(reqs),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	notifs, err := notifGenerateHandler.CreateNotifs(ctx)
 	if err != nil {
 		return nil, err
 	}

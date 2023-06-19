@@ -12,7 +12,7 @@ import (
 	notifmwpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
 	notifchanmwpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/channel"
 
-	notifchanmwcli "github.com/NpoolPlatform/notif-middleware/pkg/client/notif/channel"
+	notifchanmw "github.com/NpoolPlatform/notif-middleware/pkg/mw/notif/channel"
 
 	email "github.com/NpoolPlatform/notif-middleware/pkg/mw/template/email"
 	frontend "github.com/NpoolPlatform/notif-middleware/pkg/mw/template/frontend"
@@ -26,17 +26,26 @@ func GenerateNotifs(
 	vars *npool.TemplateVars,
 ) ([]*notifmwpb.NotifReq, error) {
 	const maxChannels = int32(100)
+	chanHandler, err := notifchanmw.NewHandler(
+		ctx,
+		notifchanmw.WithConds(&notifchanmwpb.Conds{
+			AppID: &basetypes.StringVal{
+				Op:    cruder.EQ,
+				Value: appID,
+			},
+			EventType: &basetypes.Uint32Val{
+				Op:    cruder.EQ,
+				Value: uint32(usedFor),
+			},
+		}),
+		notifchanmw.WithOffset(0),
+		notifchanmw.WithLimit(maxChannels),
+	)
+	if err != nil {
+		return nil, err
+	}
 
-	chans, _, err := notifchanmwcli.GetChannels(ctx, &notifchanmwpb.Conds{
-		AppID: &basetypes.StringVal{
-			Op:    cruder.EQ,
-			Value: appID,
-		},
-		EventType: &basetypes.Uint32Val{
-			Op:    cruder.EQ,
-			Value: uint32(usedFor),
-		},
-	}, 0, maxChannels)
+	chans, _, err := chanHandler.GetChannels(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -49,19 +58,49 @@ func GenerateNotifs(
 	for _, ch := range chans {
 		switch ch.Channel {
 		case basetypes.NotifChannel_ChannelEmail:
-			_reqs, err := email.GenerateNotifs(ctx, appID, userID, usedFor, vars)
+			emailHandler, err := email.NewHandler(
+				ctx,
+				email.WithAppID(&appID),
+				email.WithUserID(&userID),
+				email.WithUsedFor(&usedFor),
+				email.WithVars(vars),
+			)
+			if err != nil {
+				return nil, err
+			}
+			_reqs, err := emailHandler.GenerateNotifs(ctx)
 			if err != nil {
 				return nil, err
 			}
 			reqs = append(reqs, _reqs...)
 		case basetypes.NotifChannel_ChannelSMS:
-			_reqs, err := sms.GenerateNotifs(ctx, appID, userID, usedFor, vars)
+			smsHandler, err := sms.NewHandler(
+				ctx,
+				sms.WithAppID(&appID),
+				sms.WithUserID(&userID),
+				sms.WithUsedFor(&usedFor),
+				sms.WithVars(vars),
+			)
+			if err != nil {
+				return nil, err
+			}
+			_reqs, err := smsHandler.GenerateNotifs(ctx)
 			if err != nil {
 				return nil, err
 			}
 			reqs = append(reqs, _reqs...)
 		case basetypes.NotifChannel_ChannelFrontend:
-			_reqs, err := frontend.GenerateNotifs(ctx, appID, userID, usedFor, vars)
+			frontendHandler, err := frontend.NewHandler(
+				ctx,
+				frontend.WithAppID(&appID),
+				frontend.WithUserID(&userID),
+				frontend.WithUsedFor(&usedFor),
+				frontend.WithVars(vars),
+			)
+			if err != nil {
+				return nil, err
+			}
+			_reqs, err := frontendHandler.GenerateNotifs(ctx)
 			if err != nil {
 				return nil, err
 			}
@@ -81,11 +120,41 @@ func GenerateText(
 ) (*npool.TextInfo, error) {
 	switch channel {
 	case basetypes.NotifChannel_ChannelEmail:
-		return email.GenerateText(ctx, appID, langID, usedFor, vars)
+		emailHandler, err := email.NewHandler(
+			ctx,
+			email.WithAppID(&appID),
+			email.WithLangID(&langID),
+			email.WithUsedFor(&usedFor),
+			email.WithVars(vars),
+		)
+		if err != nil {
+			return nil, err
+		}
+		return emailHandler.GenerateText(ctx)
 	case basetypes.NotifChannel_ChannelSMS:
-		return sms.GenerateText(ctx, appID, langID, usedFor, vars)
+		smsHandler, err := sms.NewHandler(
+			ctx,
+			sms.WithAppID(&appID),
+			sms.WithLangID(&langID),
+			sms.WithUsedFor(&usedFor),
+			sms.WithVars(vars),
+		)
+		if err != nil {
+			return nil, err
+		}
+		return smsHandler.GenerateText(ctx)
 	case basetypes.NotifChannel_ChannelFrontend:
-		return frontend.GenerateText(ctx, appID, langID, usedFor, vars)
+		frontendHandler, err := frontend.NewHandler(
+			ctx,
+			frontend.WithAppID(&appID),
+			frontend.WithLangID(&langID),
+			frontend.WithUsedFor(&usedFor),
+			frontend.WithVars(vars),
+		)
+		if err != nil {
+			return nil, err
+		}
+		return frontendHandler.GenerateText(ctx)
 	}
 
 	return nil, fmt.Errorf("unknown channel")

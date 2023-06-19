@@ -64,7 +64,7 @@ var (
 		ID:           uuid.NewString(),
 		AppID:        appID,
 		UserID:       userID1,
-		Notified:     false,
+		Notified:     true,
 		LangID:       uuid.NewString(),
 		EventID:      uuid.NewString(),
 		EventType:    basetypes.UsedFor_KYCApproved,

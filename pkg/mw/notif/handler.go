@@ -345,6 +345,9 @@ func WithReqs(reqs []*npool.NotifReq) func(context.Context, *Handler) error {
 			if req.Extra != nil {
 				_req.Extra = req.Extra
 			}
+			if req.Notified != nil {
+				_req.Notified = req.Notified
+			}
 			_reqs = append(_reqs, _req)
 		}
 		h.Reqs = _reqs

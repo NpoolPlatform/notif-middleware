@@ -35,6 +35,9 @@ func CreateSet(c *ent.UserNotifCreate, req *Req) *ent.UserNotifCreate {
 }
 
 func UpdateSet(u *ent.UserNotifUpdateOne, req *Req) *ent.UserNotifUpdateOne {
+	if req.DeletedAt != nil {
+		u.SetDeletedAt(*req.DeletedAt)
+	}
 	return u
 }
 

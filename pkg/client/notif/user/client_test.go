@@ -196,7 +196,8 @@ func getNotifUsers(t *testing.T) {
 func deleteNotifUser(t *testing.T) {
 	for _, item := range rets {
 		info, err := DeleteUser(context.Background(), &npool.UserNotifReq{
-			ID: &item.ID,
+			ID:    &item.ID,
+			AppID: &item.AppID,
 		})
 		if assert.Nil(t, err) {
 			item.CreatedAt = info.CreatedAt
@@ -205,7 +206,7 @@ func deleteNotifUser(t *testing.T) {
 		}
 		info, err = GetUser(context.Background(), item.ID)
 		assert.Nil(t, err)
-		assert.NotNil(t, info)
+		assert.Nil(t, info)
 	}
 }
 

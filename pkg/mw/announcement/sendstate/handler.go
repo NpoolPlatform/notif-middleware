@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	appcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/app"
-	appusercli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/sendstate"
@@ -139,27 +137,12 @@ func WithReqs(reqs []*npool.SendStateReq) func(context.Context, *Handler) error 
 			if err != nil {
 				return err
 			}
-			exist, err := appcli.ExistApp(_ctx, req.AppID.String())
-			if err != nil {
-				return err
-			}
-			if !exist {
-				return fmt.Errorf("invalid app id %v", req.AppID.String())
-			}
 			_req.AppID = &appID
 
 			// UserID
 			userID, err := uuid.Parse(req.UserID.String())
 			if err != nil {
 				return err
-			}
-
-			exist, err = appusercli.ExistUser(_ctx, req.AppID.String(), req.UserID.String())
-			if err != nil {
-				return err
-			}
-			if !exist {
-				return fmt.Errorf("invalid user")
 			}
 			_req.UserID = &userID
 
@@ -172,14 +155,6 @@ func WithReqs(reqs []*npool.SendStateReq) func(context.Context, *Handler) error 
 			amtHandler, err := amt1.NewHandler(_ctx, amt1.WithID(&_amtID))
 			if err != nil {
 				return err
-			}
-
-			exist, err = amtHandler.ExistAnnouncement(_ctx)
-			if err != nil {
-				return err
-			}
-			if !exist {
-				return fmt.Errorf("invalid user")
 			}
 			_req.AnnouncementID = &amtID
 

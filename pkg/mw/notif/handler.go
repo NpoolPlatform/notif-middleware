@@ -211,7 +211,6 @@ func WithNotifType(_type *npool.NotifType) func(context.Context, *Handler) error
 			return nil
 		}
 		switch *_type {
-		case npool.NotifType_DefaultType:
 		case npool.NotifType_Broadcast:
 		case npool.NotifType_Multicast:
 		case npool.NotifType_Unicast:
@@ -294,7 +293,6 @@ func WithReqs(reqs []*npool.NotifReq) func(context.Context, *Handler) error {
 			}
 			if req.NotifType != nil {
 				switch req.GetNotifType() {
-				case npool.NotifType_DefaultType:
 				case npool.NotifType_Broadcast:
 				case npool.NotifType_Multicast:
 				case npool.NotifType_Unicast:

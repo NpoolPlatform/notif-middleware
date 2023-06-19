@@ -143,6 +143,7 @@ func updateEmailTemplate(t *testing.T) {
 	if assert.Nil(t, err) {
 		info.ReplyTosStr = ret.ReplyTosStr
 		info.CCTosStr = ret.CCTosStr
+		info.UpdatedAt = ret.UpdatedAt
 		assert.Equal(t, info, &ret)
 	}
 }
@@ -217,6 +218,7 @@ func deleteEmailTemplate(t *testing.T) {
 	if assert.Nil(t, err) {
 		info.ReplyTosStr = ret.ReplyTosStr
 		info.CCTosStr = ret.CCTosStr
+		info.UpdatedAt = ret.UpdatedAt
 		assert.Equal(t, info, &ret)
 	}
 }

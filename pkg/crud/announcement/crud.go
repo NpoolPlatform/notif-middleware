@@ -77,10 +77,12 @@ func UpdateSet(u *ent.AnnouncementUpdateOne, req *Req) *ent.AnnouncementUpdateOn
 type Conds struct {
 	ID      *cruder.Cond
 	AppID   *cruder.Cond
+	LangID  *cruder.Cond
 	EndAt   *cruder.Cond
 	Channel *cruder.Cond
 }
 
+//nolint
 func SetQueryConds(q *ent.AnnouncementQuery, conds *Conds) (*ent.AnnouncementQuery, error) {
 	if conds == nil {
 		return q, nil
@@ -107,6 +109,18 @@ func SetQueryConds(q *ent.AnnouncementQuery, conds *Conds) (*ent.AnnouncementQue
 			q.Where(entamt.AppID(appID))
 		default:
 			return nil, fmt.Errorf("invalid app id op field")
+		}
+	}
+	if conds.LangID != nil {
+		langID, ok := conds.LangID.Val.(uuid.UUID)
+		if !ok {
+			return nil, fmt.Errorf("invalid lang id")
+		}
+		switch conds.LangID.Op {
+		case cruder.EQ:
+			q.Where(entamt.LangID(langID))
+		default:
+			return nil, fmt.Errorf("invalid lang id op field")
 		}
 	}
 	if conds.EndAt != nil {

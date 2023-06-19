@@ -103,7 +103,7 @@ func existChannelConds(t *testing.T) {
 }
 
 func getChannel(t *testing.T) {
-	info, err := GetChannel(context.Background(), ret.ID)
+	info, err := GetChannel(context.Background(), ret.AppID, ret.ID)
 	assert.Nil(t, err)
 	assert.NotNil(t, info)
 }
@@ -129,11 +129,11 @@ func getChannels(t *testing.T) {
 }
 
 func deleteChannel(t *testing.T) {
-	info, err := DeleteChannel(context.Background(), ret.ID)
+	info, err := DeleteChannel(context.Background(), ret.AppID, ret.ID)
 	if assert.Nil(t, err) {
 		assert.Equal(t, info, &ret)
 	}
-	info, err = GetChannel(context.Background(), info.ID)
+	info, err = GetChannel(context.Background(), info.AppID, info.ID)
 	assert.Nil(t, err)
 	assert.Nil(t, info)
 }

@@ -79,11 +79,12 @@ func CreateChannels(ctx context.Context, in []*npool.ChannelReq) ([]*npool.Chann
 	return info.([]*npool.Channel), nil
 }
 
-func DeleteChannel(ctx context.Context, id string) (*npool.Channel, error) {
+func DeleteChannel(ctx context.Context, appID, id string) (*npool.Channel, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.DeleteChannel(ctx, &npool.DeleteChannelRequest{
 			Info: &npool.ChannelReq{
-				ID: &id,
+				ID:    &id,
+				AppID: &appID,
 			},
 		})
 		if err != nil {
@@ -97,10 +98,11 @@ func DeleteChannel(ctx context.Context, id string) (*npool.Channel, error) {
 	return info.(*npool.Channel), nil
 }
 
-func GetChannel(ctx context.Context, id string) (*npool.Channel, error) {
+func GetChannel(ctx context.Context, appID, id string) (*npool.Channel, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.GetChannel(ctx, &npool.GetChannelRequest{
-			ID: id,
+			ID:    id,
+			AppID: appID,
 		})
 		if err != nil {
 			return nil, err

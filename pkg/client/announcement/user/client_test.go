@@ -141,7 +141,7 @@ func createAnnouncementUser(t *testing.T) {
 }
 
 func getAnnouncementUser(t *testing.T) {
-	info, err := GetAnnouncementUser(context.Background(), ret.ID)
+	info, err := GetAnnouncementUser(context.Background(), ret.AppID, ret.ID)
 	assert.Nil(t, err)
 	assert.NotNil(t, info)
 }
@@ -159,11 +159,11 @@ func getAnnouncementUsers(t *testing.T) {
 }
 
 func deleteAnnouncementUser(t *testing.T) {
-	info, err := DeleteAnnouncementUser(context.Background(), ret.ID)
+	info, err := DeleteAnnouncementUser(context.Background(), ret.AppID, ret.ID)
 	if assert.Nil(t, err) {
 		assert.Equal(t, info, &ret)
 	}
-	info, err = GetAnnouncementUser(context.Background(), info.ID)
+	info, err = GetAnnouncementUser(context.Background(), info.AppID, info.ID)
 	assert.Nil(t, err)
 	assert.Nil(t, info)
 }

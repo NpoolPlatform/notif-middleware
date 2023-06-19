@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	appcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/app"
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement"
@@ -58,14 +57,6 @@ func WithAppID(appID *string) func(context.Context, *Handler) error {
 		if err != nil {
 			return err
 		}
-		exist, err := appcli.ExistApp(ctx, *appID)
-		if err != nil {
-			return err
-		}
-		if !exist {
-			return fmt.Errorf("invalid app")
-		}
-
 		h.AppID = &_appID
 		return nil
 	}
@@ -73,19 +64,13 @@ func WithAppID(appID *string) func(context.Context, *Handler) error {
 
 func WithLangID(appID, langID *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
+		if langID == nil {
+			return fmt.Errorf("invalid lang id")
+		}
 		_langID, err := uuid.Parse(*langID)
 		if err != nil {
 			return err
 		}
-		// wait g11n-middleware merger to master
-		// TODO: judge lang id
-		// exist, err := appcli.ExistApp(ctx, *appID)
-		// if err != nil {
-		// 	return err
-		// }
-		// if !exist {
-		// 	return fmt.Errorf("invalid app")
-		// }
 
 		h.LangID = &_langID
 		return nil
@@ -204,6 +189,16 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			h.Conds.AppID = &cruder.Cond{
 				Op:  conds.GetAppID().GetOp(),
 				Val: appID,
+			}
+		}
+		if conds.LangID != nil {
+			langID, err := uuid.Parse(conds.GetLangID().GetValue())
+			if err != nil {
+				return err
+			}
+			h.Conds.LangID = &cruder.Cond{
+				Op:  conds.GetLangID().GetOp(),
+				Val: langID,
 			}
 		}
 		if conds.EndAt != nil {

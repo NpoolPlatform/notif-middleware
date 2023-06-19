@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	appcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/app"
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/channel"
@@ -53,13 +52,6 @@ func WithAppID(appID *string) func(context.Context, *Handler) error {
 		_appID, err := uuid.Parse(*appID)
 		if err != nil {
 			return err
-		}
-		exist, err := appcli.ExistApp(ctx, *appID)
-		if err != nil {
-			return err
-		}
-		if !exist {
-			return fmt.Errorf("invalid app")
 		}
 
 		h.AppID = &_appID
@@ -166,7 +158,6 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 	}
 }
 
-// nolint
 func WithReqs(reqs []*npool.ChannelReq) func(context.Context, *Handler) error {
 	return func(_ctx context.Context, h *Handler) error {
 		_reqs := []*crud.Req{}
@@ -179,13 +170,6 @@ func WithReqs(reqs []*npool.ChannelReq) func(context.Context, *Handler) error {
 			appID, err := uuid.Parse(req.AppID.String())
 			if err != nil {
 				return err
-			}
-			exist, err := appcli.ExistApp(_ctx, req.AppID.String())
-			if err != nil {
-				return err
-			}
-			if !exist {
-				return fmt.Errorf("invalid app id %v", req.AppID.String())
 			}
 			_req.AppID = &appID
 

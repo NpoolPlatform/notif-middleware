@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	appcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/app"
-	appusercli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
 	constant "github.com/NpoolPlatform/notif-middleware/pkg/const"
 	amt1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement"
 	"github.com/google/uuid"
@@ -55,14 +53,6 @@ func WithAppID(appID *string) func(context.Context, *Handler) error {
 			return err
 		}
 
-		exist, err := appcli.ExistApp(ctx, *appID)
-		if err != nil {
-			return err
-		}
-		if !exist {
-			return fmt.Errorf("invalid app")
-		}
-
 		h.AppID = &_appID
 		return nil
 	}
@@ -73,14 +63,6 @@ func WithUserID(appID, userID *string) func(context.Context, *Handler) error {
 		_userID, err := uuid.Parse(*userID)
 		if err != nil {
 			return err
-		}
-
-		exist, err := appusercli.ExistUser(ctx, *appID, *userID)
-		if err != nil {
-			return err
-		}
-		if !exist {
-			return fmt.Errorf("invalid user")
 		}
 
 		h.UserID = &_userID

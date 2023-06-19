@@ -61,11 +61,12 @@ func CreateAnnouncementUsers(ctx context.Context, in []*npool.AnnouncementUserRe
 	return info.([]*npool.AnnouncementUser), nil
 }
 
-func DeleteAnnouncementUser(ctx context.Context, id string) (*npool.AnnouncementUser, error) {
+func DeleteAnnouncementUser(ctx context.Context, appID, id string) (*npool.AnnouncementUser, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.DeleteAnnouncementUser(ctx, &npool.DeleteAnnouncementUserRequest{
 			Info: &npool.AnnouncementUserReq{
-				ID: &id,
+				ID:    &id,
+				AppID: &appID,
 			},
 		})
 		if err != nil {
@@ -88,21 +89,22 @@ func GetAnnouncementUsers(ctx context.Context, conds *npool.Conds, offset, limit
 			Offset: offset,
 		})
 		if err != nil {
-			return nil, fmt.Errorf("fail get announcements: %v", err)
+			return nil, fmt.Errorf("fail get announcement users: %v", err)
 		}
 		total = resp.GetTotal()
 		return resp.GetInfos(), nil
 	})
 	if err != nil {
-		return nil, 0, fmt.Errorf("fail get announcements: %v", err)
+		return nil, 0, fmt.Errorf("fail get announcement users: %v", err)
 	}
 	return infos.([]*npool.AnnouncementUser), total, nil
 }
 
-func GetAnnouncementUser(ctx context.Context, id string) (*npool.AnnouncementUser, error) {
+func GetAnnouncementUser(ctx context.Context, appID, id string) (*npool.AnnouncementUser, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.GetAnnouncementUser(ctx, &npool.GetAnnouncementUserRequest{
-			ID: id,
+			ID:    id,
+			AppID: appID,
 		})
 		if err != nil {
 			return nil, err

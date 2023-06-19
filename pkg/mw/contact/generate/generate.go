@@ -31,7 +31,7 @@ func (h *Handler) GenerateContact(ctx context.Context) (*npool.TextInfo, error) 
 		return nil, fmt.Errorf("contact not exist")
 	}
 
-	_body := fmt.Sprintf("From: %v<br>Name: %v<br>%v", h.Sender, h.SenderName, h.Body)
+	_body := fmt.Sprintf("From: %v<br>Name: %v<br>%v", *h.Sender, *h.SenderName, *h.Body)
 	body := strings.ReplaceAll(_body, "\n", "<br>")
 
 	return &npool.TextInfo{

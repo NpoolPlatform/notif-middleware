@@ -8,8 +8,8 @@ import (
 	appcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/app"
 	g11ncli "github.com/NpoolPlatform/g11n-middleware/pkg/client/applang"
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
-	"github.com/NpoolPlatform/message/npool/g11n/mw/v1/applang"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
+	"github.com/NpoolPlatform/message/npool/g11n/mw/v1/applang"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement"
 	constant "github.com/NpoolPlatform/notif-middleware/pkg/const"
 	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/announcement"
@@ -218,6 +218,16 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			h.Conds.AppID = &cruder.Cond{
 				Op:  conds.GetAppID().GetOp(),
 				Val: appID,
+			}
+		}
+		if conds.LangID != nil {
+			langID, err := uuid.Parse(conds.GetLangID().GetValue())
+			if err != nil {
+				return err
+			}
+			h.Conds.LangID = &cruder.Cond{
+				Op:  conds.GetLangID().GetOp(),
+				Val: langID,
 			}
 		}
 		if conds.EndAt != nil {

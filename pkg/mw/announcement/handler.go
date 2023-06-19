@@ -51,6 +51,9 @@ func WithID(id *string) func(context.Context, *Handler) error {
 
 func WithAppID(appID *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
+		if appID == nil {
+			return fmt.Errorf("invalid app id")
+		}
 		_appID, err := uuid.Parse(*appID)
 		if err != nil {
 			return err
@@ -205,7 +208,7 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 		}
 		if conds.EndAt != nil {
 			h.Conds.EndAt = &cruder.Cond{
-				Op:  conds.GetID().GetOp(),
+				Op:  conds.GetEndAt().GetOp(),
 				Val: conds.GetEndAt().GetValue(),
 			}
 		}

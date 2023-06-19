@@ -17,10 +17,10 @@ func (h *Handler) GenerateContact(ctx context.Context) (*npool.TextInfo, error) 
 			Op: cruder.EQ, Val: *h.AppID,
 		},
 		UsedFor: &cruder.Cond{
-			Op: cruder.EQ, Val: int32(h.UsedFor.Number()),
+			Op: cruder.EQ, Val: basetypes.UsedFor(basetypes.UsedFor_value[h.UsedFor.String()]),
 		},
 		AccountType: &cruder.Cond{
-			Op: cruder.EQ, Val: int32(basetypes.SignMethod_Email),
+			Op: cruder.EQ, Val: basetypes.SignMethod(basetypes.SignMethod_value[basetypes.SignMethod_Email.String()]),
 		},
 	}
 	info, err := h.GetContactOnly(ctx)

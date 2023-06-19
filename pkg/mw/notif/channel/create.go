@@ -61,11 +61,16 @@ func (h *Handler) CreateChannels(ctx context.Context) (infos []*npool.Channel, e
 				Channel:   &cruder.Cond{Op: cruder.EQ, Val: basetypes.NotifChannel(basetypes.NotifChannel_value[h.Channel.String()])},
 				EventType: &cruder.Cond{Op: cruder.EQ, Val: basetypes.UsedFor(basetypes.UsedFor_value[h.EventType.String()])},
 			}
-			exist, err := h.ExistChannelConds(ctx)
+
+			rows, _, err := h.GetChannelConds(ctx)
 			if err != nil {
 				return err
 			}
-			if exist {
+			if len(rows) > 1 {
+				return fmt.Errorf("too many record")
+			}
+			if len(rows) == 1 {
+				infos = append(infos, rows[0])
 				continue
 			}
 

@@ -21,22 +21,22 @@ type createHandler struct {
 	*Handler
 }
 
-func (h *createHandler) createNotif(ctx context.Context, cli *ent.Client) error {
-	if h.AppID == nil {
-		return fmt.Errorf("invalid lang")
+func (h *createHandler) createNotif(ctx context.Context, tx *ent.Tx, req *notifcrud.Req) error {
+	if req.AppID == nil {
+		return fmt.Errorf("invalid appid")
 	}
-	if h.LangID == nil {
-		return fmt.Errorf("invalid logo")
+	if req.LangID == nil {
+		return fmt.Errorf("invalid langid")
 	}
-	if h.EventID == nil {
+	if req.EventID == nil {
 		return fmt.Errorf("invalid eventid")
 	}
 	lockKey := fmt.Sprintf(
 		"%v:%v:%v:%v",
 		basetypes.Prefix_PrefixCreateAppCoin,
-		*h.AppID,
-		*h.LangID,
-		*h.EventID,
+		*req.AppID,
+		*req.LangID,
+		*req.EventID,
 	)
 	if err := redis2.TryLock(lockKey, 0); err != nil {
 		return err
@@ -46,26 +46,26 @@ func (h *createHandler) createNotif(ctx context.Context, cli *ent.Client) error 
 	}()
 
 	id := uuid.New()
-	if h.ID == nil {
-		h.ID = &id
+	if req.ID == nil {
+		req.ID = &id
 	}
 
 	info, err := notifcrud.CreateSet(
-		cli.Notif.Create(),
+		tx.Notif.Create(),
 		&notifcrud.Req{
-			ID:          h.ID,
-			AppID:       h.AppID,
-			LangID:      h.LangID,
-			UserID:      h.UserID,
-			EventID:     h.EventID,
-			Notified:    h.Notified,
-			EventType:   h.EventType,
-			UseTemplate: h.UseTemplate,
-			Title:       h.Title,
-			Content:     h.Content,
-			Channel:     h.Channel,
-			Extra:       h.Extra,
-			NotifType:   h.NotifType,
+			ID:          req.ID,
+			AppID:       req.AppID,
+			LangID:      req.LangID,
+			UserID:      req.UserID,
+			EventID:     req.EventID,
+			Notified:    req.Notified,
+			EventType:   req.EventType,
+			UseTemplate: req.UseTemplate,
+			Title:       req.Title,
+			Content:     req.Content,
+			Channel:     req.Channel,
+			Extra:       req.Extra,
+			NotifType:   req.NotifType,
 		},
 	).Save(ctx)
 	if err != nil {
@@ -73,7 +73,6 @@ func (h *createHandler) createNotif(ctx context.Context, cli *ent.Client) error 
 	}
 
 	h.ID = &info.ID
-
 	return nil
 }
 
@@ -81,8 +80,23 @@ func (h *Handler) CreateNotif(ctx context.Context) (*npool.Notif, error) {
 	handler := &createHandler{
 		Handler: h,
 	}
-	err := db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		if err := handler.createNotif(ctx, cli); err != nil {
+	req := &notifcrud.Req{
+		ID:          handler.ID,
+		AppID:       handler.AppID,
+		LangID:      handler.LangID,
+		UserID:      handler.UserID,
+		EventID:     handler.EventID,
+		Notified:    handler.Notified,
+		EventType:   handler.EventType,
+		UseTemplate: handler.UseTemplate,
+		Title:       handler.Title,
+		Content:     handler.Content,
+		Channel:     handler.Channel,
+		Extra:       handler.Extra,
+		NotifType:   handler.NotifType,
+	}
+	err := db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
+		if err := handler.createNotif(_ctx, tx, req); err != nil {
 			return err
 		}
 		return nil
@@ -101,22 +115,9 @@ func (h *Handler) CreateNotifs(ctx context.Context) ([]*npool.Notif, error) {
 
 	ids := []uuid.UUID{}
 
-	err := db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
+	err := db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
 		for _, req := range h.Reqs {
-			handler.ID = nil
-			handler.AppID = req.AppID
-			handler.LangID = req.LangID
-			handler.UserID = req.UserID
-			handler.EventID = req.EventID
-			handler.Notified = req.Notified
-			handler.EventType = req.EventType
-			handler.UseTemplate = req.UseTemplate
-			handler.Title = req.Title
-			handler.Content = req.Content
-			handler.Channel = req.Channel
-			handler.Extra = req.Extra
-			handler.NotifType = req.NotifType
-			if err := handler.createNotif(ctx, cli); err != nil {
+			if err := handler.createNotif(ctx, tx, req); err != nil {
 				return err
 			}
 			ids = append(ids, *h.ID)

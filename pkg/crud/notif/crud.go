@@ -29,6 +29,7 @@ type Req struct {
 	DeletedAt   *uint32
 }
 
+// nolint:gocyclo
 func CreateSet(c *ent.NotifCreate, req *Req) *ent.NotifCreate {
 	if req.ID != nil {
 		c.SetID(*req.ID)

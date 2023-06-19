@@ -69,6 +69,9 @@ func WithAppID(appID *string) func(context.Context, *Handler) error {
 
 func WithChannel(channel *basetypes.NotifChannel) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
+		if channel == nil {
+			return fmt.Errorf("invalid channel")
+		}
 		switch *channel {
 		case basetypes.NotifChannel_ChannelEmail:
 		case basetypes.NotifChannel_ChannelSMS:
@@ -84,7 +87,7 @@ func WithChannel(channel *basetypes.NotifChannel) func(context.Context, *Handler
 func WithEventType(_type *basetypes.UsedFor) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if _type == nil {
-			return nil
+			return fmt.Errorf("invalid event type")
 		}
 		switch *_type {
 		case basetypes.UsedFor_WithdrawalRequest:

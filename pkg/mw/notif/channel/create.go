@@ -56,13 +56,11 @@ func (h *Handler) CreateChannels(ctx context.Context) (infos []*npool.Channel, e
 			h.AppID = req.AppID
 			h.Channel = req.Channel
 			h.EventType = req.EventType
-
 			h.Conds = &crud.Conds{
 				AppID:     &cruder.Cond{Op: cruder.EQ, Val: *h.AppID},
-				Channel:   &cruder.Cond{Op: cruder.EQ, Val: int32(*h.Channel)},
-				EventType: &cruder.Cond{Op: cruder.EQ, Val: int32(*h.EventType)},
+				Channel:   &cruder.Cond{Op: cruder.EQ, Val: basetypes.NotifChannel(basetypes.NotifChannel_value[h.Channel.String()])},
+				EventType: &cruder.Cond{Op: cruder.EQ, Val: basetypes.UsedFor(basetypes.UsedFor_value[h.EventType.String()])},
 			}
-
 			exist, err := h.ExistChannelConds(ctx)
 			if err != nil {
 				return err

@@ -34,9 +34,6 @@ func (h *Handler) UpdateSMSTemplate(ctx context.Context) (*npool.SMSTemplate, er
 	if h.ID == nil {
 		return nil, fmt.Errorf("invalid id")
 	}
-	if h.LangID == nil {
-		return nil, fmt.Errorf("invalid langid")
-	}
 
 	lockKey := fmt.Sprintf(
 		"%v:%v",

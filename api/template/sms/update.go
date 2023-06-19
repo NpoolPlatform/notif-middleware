@@ -18,7 +18,6 @@ func (s *Server) UpdateSMSTemplate(ctx context.Context, in *npool.UpdateSMSTempl
 		ctx,
 		smstemplate1.WithID(req.ID),
 		smstemplate1.WithAppID(req.AppID),
-		smstemplate1.WithLangID(req.LangID),
 		smstemplate1.WithUsedFor(req.UsedFor),
 		smstemplate1.WithSubject(req.Subject),
 		smstemplate1.WithMessage(req.Message),

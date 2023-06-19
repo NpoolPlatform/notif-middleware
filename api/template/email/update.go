@@ -24,7 +24,6 @@ func (s *Server) UpdateEmailTemplate(
 		ctx,
 		emailtemplate1.WithID(req.ID),
 		emailtemplate1.WithAppID(req.AppID),
-		emailtemplate1.WithLangID(req.LangID),
 		emailtemplate1.WithUsedFor(req.UsedFor),
 		emailtemplate1.WithDefaultToUsername(req.DefaultToUsername),
 		emailtemplate1.WithSender(req.Sender),

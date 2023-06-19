@@ -39,13 +39,17 @@ func (h *queryHandler) formalize() {
 
 func (h *queryHandler) queryChannel(cli *ent.Client) error {
 	if h.ID == nil {
-		return fmt.Errorf("invalid notif/channel id")
+		return fmt.Errorf("invalid channel id")
+	}
+	if h.AppID == nil {
+		return fmt.Errorf("invalid app id")
 	}
 	h.selectChannel(
 		cli.NotifChannel.
 			Query().
 			Where(
 				entchannel.ID(*h.ID),
+				entchannel.AppID(*h.AppID),
 				entchannel.DeletedAt(0),
 			),
 	)

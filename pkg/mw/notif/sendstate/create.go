@@ -34,12 +34,13 @@ func (h *createHandler) createSendState(ctx context.Context, cli *ent.Client) er
 	defer func() {
 		_ = redis2.Unlock(lockKey)
 	}()
-
 	h.Conds = &sendstatecrud.Conds{
 		AppID:   &cruder.Cond{Op: cruder.EQ, Val: *h.AppID},
-		UserID:  &cruder.Cond{Op: cruder.EQ, Val: *h.NotifID},
+		UserID:  &cruder.Cond{Op: cruder.EQ, Val: *h.UserID},
 		NotifID: &cruder.Cond{Op: cruder.EQ, Val: *h.NotifID},
+		Channel: &cruder.Cond{Op: cruder.EQ, Val: *h.Channel},
 	}
+
 	exist, err := h.ExistSendStateConds(ctx)
 	if err != nil {
 		return err

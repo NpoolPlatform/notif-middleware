@@ -105,13 +105,13 @@ func SetQueryConds(q *ent.SendNotifQuery, conds *Conds) (*ent.SendNotifQuery, er
 		}
 	}
 	if conds.Channel != nil {
-		channel, ok := conds.Channel.Val.(string)
+		channel, ok := conds.Channel.Val.(basetypes.NotifChannel)
 		if !ok {
 			return nil, fmt.Errorf("invalid channel")
 		}
 		switch conds.Channel.Op {
 		case cruder.EQ:
-			q.Where(entsendnotif.Channel(channel))
+			q.Where(entsendnotif.Channel(channel.String()))
 		default:
 			return nil, fmt.Errorf("invalid sendstate field")
 		}

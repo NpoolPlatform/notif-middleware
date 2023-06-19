@@ -158,7 +158,6 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 	}
 }
 
-// nolint
 func WithReqs(reqs []*npool.ChannelReq) func(context.Context, *Handler) error {
 	return func(_ctx context.Context, h *Handler) error {
 		_reqs := []*crud.Req{}

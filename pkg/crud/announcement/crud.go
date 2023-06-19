@@ -82,6 +82,7 @@ type Conds struct {
 	Channel *cruder.Cond
 }
 
+//nolint
 func SetQueryConds(q *ent.AnnouncementQuery, conds *Conds) (*ent.AnnouncementQuery, error) {
 	if conds == nil {
 		return q, nil

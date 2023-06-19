@@ -12,7 +12,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s *Server) UpdateUser(ctx context.Context, in *npool.UpdateUserNotifRequest) (*npool.UpdateUserNotifResponse, error) {
+func (s *Server) UpdateUserNotif(ctx context.Context, in *npool.UpdateUserNotifRequest) (*npool.UpdateUserNotifResponse, error) {
 	req := in.GetInfo()
 	handler, err := user1.NewHandler(
 		ctx,

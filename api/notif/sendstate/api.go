@@ -1,14 +1,14 @@
 package sendstate
 
 import (
-	"github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/readstate"
+	"github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/sendstate"
 	"google.golang.org/grpc"
 )
 
 type Server struct {
-	readstate.UnimplementedMiddlewareServer
+	sendstate.UnimplementedMiddlewareServer
 }
 
 func Register(server grpc.ServiceRegistrar) {
-	readstate.RegisterMiddlewareServer(server, &Server{})
+	sendstate.RegisterMiddlewareServer(server, &Server{})
 }

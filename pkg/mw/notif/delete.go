@@ -21,6 +21,7 @@ func (h *Handler) DeleteNotif(ctx context.Context) (*npool.Notif, error) {
 		return nil, fmt.Errorf("invalid appid")
 	}
 	info, err := h.GetNotif(ctx)
+
 	if err != nil {
 		return nil, err
 	}

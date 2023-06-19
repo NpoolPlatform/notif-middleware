@@ -1,183 +1,231 @@
 package user
 
-// import (
-// 	"context"
-// 	"fmt"
-// 	"math/rand"
+import (
+	"context"
+	"fmt"
 
-// 	"os"
-// 	"strconv"
-// 	"testing"
+	"os"
+	"strconv"
+	"testing"
 
-// 	"github.com/google/uuid"
+	"github.com/google/uuid"
 
-// 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
+	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 
-// 	"github.com/NpoolPlatform/go-service-framework/pkg/config"
+	"github.com/NpoolPlatform/go-service-framework/pkg/config"
 
-// 	"bou.ke/monkey"
-// 	grpc2 "github.com/NpoolPlatform/go-service-framework/pkg/grpc"
-// 	"google.golang.org/grpc"
-// 	"google.golang.org/grpc/credentials/insecure"
+	"bou.ke/monkey"
+	grpc2 "github.com/NpoolPlatform/go-service-framework/pkg/grpc"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 
-// 	"github.com/NpoolPlatform/notif-middleware/pkg/testinit"
+	"github.com/NpoolPlatform/notif-middleware/pkg/testinit"
 
-// 	appmwcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/app"
-// 	appusercli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
-// 	appmwpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/app"
-// 	appuserpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/user"
-// 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
-// 	notifpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
-// 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/user"
-// 	notifmw "github.com/NpoolPlatform/notif-middleware/pkg/mw/notif"
-// 	"github.com/stretchr/testify/assert"
-// )
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
+	notifpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
+	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/user"
+	notifmw "github.com/NpoolPlatform/notif-middleware/pkg/mw/notif"
+	"github.com/stretchr/testify/assert"
+)
 
-// func init() {
-// 	if runByGithubAction, err := strconv.ParseBool(os.Getenv("RUN_BY_GITHUB_ACTION")); err == nil && runByGithubAction {
-// 		return
-// 	}
-// 	if err := testinit.Init(); err != nil {
-// 		fmt.Printf("cannot init test stub: %v\n", err)
-// 	}
-// }
+func init() {
+	if runByGithubAction, err := strconv.ParseBool(os.Getenv("RUN_BY_GITHUB_ACTION")); err == nil && runByGithubAction {
+		return
+	}
+	if err := testinit.Init(); err != nil {
+		fmt.Printf("cannot init test stub: %v\n", err)
+	}
+}
 
-// var (
-// 	appID     = uuid.NewString()
-// 	notifInfo = notifpb.Notif{
-// 		AppID:        appID,
-// 		LangID:       uuid.NewString(),
-// 		Title:        uuid.NewString(),
-// 		Content:      uuid.NewString(),
-// 		Channel:      basetypes.NotifChannel_ChannelEmail,
-// 		ChannelStr:   basetypes.NotifChannel_ChannelEmail.String(),
-// 		NotifType:    notifpb.NotifType_Multicast,
-// 		NotifTypeStr: notifpb.NotifType_Multicast.String(),
-// 	}
+var (
+	userID1            = uuid.NewString()
+	userID2            = uuid.NewString()
+	appID              = uuid.NewString()
+	notifInfoMulticast = notifpb.Notif{
+		ID:           uuid.NewString(),
+		AppID:        appID,
+		UserID:       "",
+		Notified:     false,
+		LangID:       uuid.NewString(),
+		EventID:      uuid.NewString(),
+		EventType:    basetypes.UsedFor_WithdrawalRequest,
+		EventTypeStr: basetypes.UsedFor_WithdrawalRequest.String(),
+		UseTemplate:  true,
+		Title:        "Multicast Title " + uuid.NewString(),
+		Content:      "Content " + uuid.NewString(),
+		Channel:      basetypes.NotifChannel_ChannelEmail,
+		ChannelStr:   basetypes.NotifChannel_ChannelEmail.String(),
+		NotifType:    notifpb.NotifType_Multicast,
+		NotifTypeStr: notifpb.NotifType_Multicast.String(),
+	}
+	notifInfoUnicast = notifpb.Notif{
+		ID:           uuid.NewString(),
+		AppID:        appID,
+		UserID:       userID1,
+		Notified:     false,
+		LangID:       uuid.NewString(),
+		EventID:      uuid.NewString(),
+		EventType:    basetypes.UsedFor_KYCApproved,
+		EventTypeStr: basetypes.UsedFor_KYCApproved.String(),
+		UseTemplate:  true,
+		Title:        "Unicast Title " + uuid.NewString(),
+		Content:      "Content " + uuid.NewString(),
+		Channel:      basetypes.NotifChannel_ChannelSMS,
+		ChannelStr:   basetypes.NotifChannel_ChannelSMS.String(),
+		NotifType:    notifpb.NotifType_Unicast,
+		NotifTypeStr: notifpb.NotifType_Unicast.String(),
+	}
 
-// 	ret = npool.UserNotif{
-// 		AppID:   appID,
-// 		NotifID: "",
-// 		UserID:  "",
-// 	}
-// )
+	notifReqs = []*notifpb.NotifReq{
+		{
+			ID:          &notifInfoUnicast.ID,
+			AppID:       &notifInfoUnicast.AppID,
+			UserID:      &notifInfoUnicast.UserID,
+			Notified:    &notifInfoUnicast.Notified,
+			LangID:      &notifInfoUnicast.LangID,
+			EventID:     &notifInfoUnicast.EventID,
+			EventType:   &notifInfoUnicast.EventType,
+			UseTemplate: &notifInfoUnicast.UseTemplate,
+			Title:       &notifInfoUnicast.Title,
+			Content:     &notifInfoUnicast.Content,
+			Channel:     &notifInfoUnicast.Channel,
+			NotifType:   &notifInfoUnicast.NotifType,
+		},
+		{
+			ID:          &notifInfoMulticast.ID,
+			AppID:       &notifInfoMulticast.AppID,
+			Notified:    &notifInfoMulticast.Notified,
+			LangID:      &notifInfoMulticast.LangID,
+			EventID:     &notifInfoMulticast.EventID,
+			EventType:   &notifInfoMulticast.EventType,
+			UseTemplate: &notifInfoMulticast.UseTemplate,
+			Title:       &notifInfoMulticast.Title,
+			Content:     &notifInfoMulticast.Content,
+			Channel:     &notifInfoMulticast.Channel,
+			NotifType:   &notifInfoMulticast.NotifType,
+		},
+	}
 
-// func setupNotifUser(t *testing.T) func(*testing.T) {
-// 	app1, err := appmwcli.CreateApp(
-// 		context.Background(),
-// 		&appmwpb.AppReq{
-// 			ID:        &appID,
-// 			CreatedBy: &appID,
-// 			Name:      &appID,
-// 		},
-// 	)
-// 	assert.Nil(t, err)
-// 	assert.NotNil(t, app1)
+	ret = npool.UserNotif{
+		ID:      "",
+		AppID:   appID,
+		NotifID: "",
+		UserID:  userID1,
+	}
 
-// 	var (
-// 		id           = uuid.NewString()
-// 		appID        = app1.ID
-// 		emailAddress = fmt.Sprintf("%v@hhh.ccc", rand.Intn(100000000)+1000000) //nolint
-// 		passwordHash = uuid.NewString()
-// 		req          = &appuserpb.UserReq{
-// 			ID:           &id,
-// 			AppID:        &appID,
-// 			EmailAddress: &emailAddress,
-// 			PasswordHash: &passwordHash,
-// 		}
-// 	)
+	rets = []npool.UserNotif{
+		{
+			ID:      "",
+			AppID:   appID,
+			NotifID: notifInfoMulticast.ID,
+			UserID:  userID1,
+		},
+		{
+			ID:      "",
+			AppID:   appID,
+			NotifID: notifInfoMulticast.ID,
+			UserID:  userID2,
+		},
+	}
+)
 
-// 	user, err := appusercli.CreateUser(context.Background(), req)
-// 	assert.Nil(t, err)
-// 	assert.NotNil(t, user)
+func setupNotifUser(t *testing.T) func(*testing.T) {
+	n1, err := notifmw.NewHandler(
+		context.Background(),
+		notifmw.WithReqs(notifReqs),
+	)
+	assert.Nil(t, err)
 
-// 	ret.UserID = user.ID
+	_notif, err := n1.CreateNotifs(context.Background())
+	assert.Nil(t, err)
+	assert.NotNil(t, _notif)
 
-// 	handler, err := notifmw.NewHandler(
-// 		context.Background(),
-// 		notifmw.WithTitle(&notifInfo.Title),
-// 		notifmw.WithContent(&notifInfo.Content),
-// 		notifmw.WithAppID(&notifInfo.AppID),
-// 		notifmw.WithLangID(&notifInfo.LangID),
-// 		notifmw.WithChannel(&notifInfo.Channel),
-// 		notifmw.WithNotifType(&notifInfo.NotifType),
-// 	)
-// 	assert.Nil(t, err)
+	ret.NotifID = _notif[0].ID
 
-// 	_amt, err := handler.CreateNotif(context.Background())
-// 	assert.Nil(t, err)
-// 	assert.NotNil(t, _amt)
+	return func(*testing.T) {
+		for _, row := range _notif {
+			id, _ := uuid.Parse(row.ID)
+			n1.ID = &id
+			_appID, _ := uuid.Parse(row.AppID)
+			n1.AppID = &_appID
+			_, _ = n1.DeleteNotif(context.Background())
+		}
+	}
+}
 
-// 	ret.NotifID = _amt.ID
+// nolint:gosec,vet
+func createNotifUser(t *testing.T) {
+	for i, item := range rets {
+		info, err := CreateUser(context.Background(), &npool.UserNotifReq{
+			AppID:   &item.AppID,
+			UserID:  &item.UserID,
+			NotifID: &item.NotifID,
+		})
+		if assert.Nil(t, err) {
+			item.CreatedAt = info.CreatedAt
+			item.UpdatedAt = info.UpdatedAt
+			item.ID = info.ID
+			rets[i].ID = info.ID
+			assert.Equal(t, info, &item)
+		}
+	}
+}
 
-// 	return func(*testing.T) {
-// 		_, _ = appmwcli.DeleteApp(context.Background(), ret.AppID)
-// 		_, _ = appusercli.DeleteUser(context.Background(), ret.AppID, ret.UserID)
-// 		_, _ = handler.DeleteNotif(context.Background())
-// 	}
-// }
+//nolint:vet
+func getNotifUser(t *testing.T) {
+	for _, item := range rets {
+		info, err := GetUser(context.Background(), item.ID)
+		assert.Nil(t, err)
+		assert.NotNil(t, info)
+	}
+}
 
-// func createNotifUser(t *testing.T) {
-// 	info, err := CreateUser(context.Background(), &npool.UserNotifReq{
-// 		AppID:   &ret.AppID,
-// 		UserID:  &ret.UserID,
-// 		NotifID: &ret.NotifID,
-// 	})
-// 	if assert.Nil(t, err) {
-// 		ret.CreatedAt = info.CreatedAt
-// 		ret.UpdatedAt = info.UpdatedAt
-// 		ret.ID = info.ID
-// 		assert.Equal(t, info, &ret)
-// 	}
-// }
+func getNotifUsers(t *testing.T) {
+	infos, _, err := GetUsers(context.Background(), &npool.Conds{
+		ID: &basetypes.StringVal{
+			Op:    cruder.EQ,
+			Value: rets[0].ID,
+		},
+	}, 0, 100)
+	if assert.Nil(t, err) {
+		assert.NotEqual(t, len(infos), 0)
+	}
+}
 
-// func getNotifUser(t *testing.T) {
-// 	info, err := GetUser(context.Background(), ret.ID)
-// 	assert.Nil(t, err)
-// 	assert.NotNil(t, info)
-// }
+// nolint:gosec,vet
+func deleteNotifUser(t *testing.T) {
+	for _, item := range rets {
+		info, err := DeleteUser(context.Background(), &npool.UserNotifReq{
+			ID: &item.ID,
+		})
+		if assert.Nil(t, err) {
+			item.CreatedAt = info.CreatedAt
+			item.UpdatedAt = info.UpdatedAt
+			assert.Equal(t, info, &item)
+		}
+		info, err = GetUser(context.Background(), item.ID)
+		assert.Nil(t, err)
+		assert.NotNil(t, info)
+	}
+}
 
-// func getNotifUsers(t *testing.T) {
-// 	infos, _, err := GetUsers(context.Background(), &npool.Conds{
-// 		ID: &basetypes.StringVal{
-// 			Op:    cruder.EQ,
-// 			Value: ret.ID,
-// 		},
-// 	}, 0, 1)
-// 	if assert.Nil(t, err) {
-// 		assert.NotEqual(t, len(infos), 0)
-// 	}
-// }
+func TestClient(t *testing.T) {
+	if runByGithubAction, err := strconv.ParseBool(os.Getenv("RUN_BY_GITHUB_ACTION")); err == nil && runByGithubAction {
+		return
+	}
 
-// func deleteNotifUser(t *testing.T) {
-// 	info, err := DeleteUser(context.Background(), &npool.UserNotifReq{
-// 		ID: &ret.ID,
-// 	})
-// 	if assert.Nil(t, err) {
-// 		assert.Equal(t, info, &ret)
-// 	}
-// 	info, err = GetUser(context.Background(), info.ID)
-// 	assert.Nil(t, err)
-// 	assert.Nil(t, info)
-// }
+	gport := config.GetIntValueWithNameSpace("", config.KeyGRPCPort)
 
-// func TestClient(t *testing.T) {
-// 	if runByGithubAction, err := strconv.ParseBool(os.Getenv("RUN_BY_GITHUB_ACTION")); err == nil && runByGithubAction {
-// 		return
-// 	}
+	teardown := setupNotifUser(t)
+	defer teardown(t)
 
-// 	gport := config.GetIntValueWithNameSpace("", config.KeyGRPCPort)
+	patch := monkey.Patch(grpc2.GetGRPCConn, func(service string, tags ...string) (*grpc.ClientConn, error) {
+		return grpc.Dial(fmt.Sprintf("localhost:%v", gport), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	})
+	t.Run("createNotifUser", createNotifUser)
+	t.Run("getNotifUser", getNotifUser)
+	t.Run("getNotifUsers", getNotifUsers)
+	t.Run("deleteNotifUser", deleteNotifUser)
 
-// 	teardown := setupNotifUser(t)
-// 	defer teardown(t)
-
-// 	patch := monkey.Patch(grpc2.GetGRPCConn, func(service string, tags ...string) (*grpc.ClientConn, error) {
-// 		return grpc.Dial(fmt.Sprintf("localhost:%v", gport), grpc.WithTransportCredentials(insecure.NewCredentials()))
-// 	})
-// 	t.Run("createNotifUser", createNotifUser)
-// 	t.Run("getNotifUser", getNotifUser)
-// 	t.Run("getNotifUsers", getNotifUsers)
-// 	t.Run("deleteNotifUser", deleteNotifUser)
-
-// 	patch.Unpatch()
-// }
+	patch.Unpatch()
+}

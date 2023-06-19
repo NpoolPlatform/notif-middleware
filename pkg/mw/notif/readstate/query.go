@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"entgo.io/ent/dialect/sql"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
 
@@ -75,13 +74,10 @@ func (h *Handler) GetReadState(ctx context.Context) (*npool.ReadState, error) {
 		if err := handler.queryReadState(cli); err != nil {
 			return err
 		}
-		const limit = 2
-		handler.stm = handler.stm.
-			Offset(int(handler.Offset)).
-			Limit(limit).
-			Modify(func(s *sql.Selector) {})
-		if err := handler.scan(ctx); err != nil {
-			return nil
+		const singleRowLimit = 2
+		handler.stm.Offset(0).Limit(singleRowLimit)
+		if err := handler.scan(_ctx); err != nil {
+			return err
 		}
 		return nil
 	})
@@ -107,10 +103,10 @@ func (h *Handler) GetReadStates(ctx context.Context) ([]*npool.ReadState, uint32
 		if err := handler.queryReadStates(ctx, cli); err != nil {
 			return err
 		}
-		handler.stm = handler.stm.
+		handler.
+			stm.
 			Offset(int(handler.Offset)).
-			Limit(int(handler.Limit)).
-			Modify(func(s *sql.Selector) {})
+			Limit(int(handler.Limit))
 		if err := handler.scan(ctx); err != nil {
 			return err
 		}

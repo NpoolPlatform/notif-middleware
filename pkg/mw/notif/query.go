@@ -4,13 +4,13 @@ import (
 	"context"
 	"fmt"
 
-	"entgo.io/ent/dialect/sql"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
 
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
 	entnotif "github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notif"
 
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	notifcrud "github.com/NpoolPlatform/notif-middleware/pkg/crud/notif"
 )
 
@@ -35,6 +35,7 @@ func (h *queryHandler) selectNotif(stm *ent.NotifQuery) {
 		entnotif.FieldContent,
 		entnotif.FieldChannel,
 		entnotif.FieldExtra,
+		entnotif.FieldType,
 		entnotif.FieldCreatedAt,
 		entnotif.FieldUpdatedAt,
 	)
@@ -54,6 +55,14 @@ func (h *queryHandler) queryNotif(cli *ent.Client) error {
 			),
 	)
 	return nil
+}
+
+func (h *queryHandler) formalize() {
+	for _, info := range h.infos {
+		info.EventType = basetypes.UsedFor(basetypes.UsedFor_value[info.EventTypeStr])
+		info.Channel = basetypes.NotifChannel(basetypes.NotifChannel_value[info.ChannelStr])
+		info.NotifType = npool.NotifType(npool.NotifType_value[info.NotifTypeStr])
+	}
 }
 
 func (h *queryHandler) queryNotifs(ctx context.Context, cli *ent.Client) error {
@@ -83,13 +92,10 @@ func (h *Handler) GetNotif(ctx context.Context) (*npool.Notif, error) {
 		if err := handler.queryNotif(cli); err != nil {
 			return err
 		}
-		const limit = 2
-		handler.stm = handler.stm.
-			Offset(int(handler.Offset)).
-			Limit(limit).
-			Modify(func(s *sql.Selector) {})
-		if err := handler.scan(ctx); err != nil {
-			return nil
+		const singleRowLimit = 2
+		handler.stm.Offset(0).Limit(singleRowLimit)
+		if err := handler.scan(_ctx); err != nil {
+			return err
 		}
 		return nil
 	})
@@ -102,6 +108,7 @@ func (h *Handler) GetNotif(ctx context.Context) (*npool.Notif, error) {
 	if len(handler.infos) > 1 {
 		return nil, fmt.Errorf("too many record")
 	}
+	handler.formalize()
 
 	return handler.infos[0], nil
 }
@@ -115,10 +122,11 @@ func (h *Handler) GetNotifs(ctx context.Context) ([]*npool.Notif, uint32, error)
 		if err := handler.queryNotifs(ctx, cli); err != nil {
 			return err
 		}
-		handler.stm = handler.stm.
+		handler.
+			stm.
 			Offset(int(handler.Offset)).
-			Limit(int(handler.Limit)).
-			Modify(func(s *sql.Selector) {})
+			Limit(int(handler.Limit))
+
 		if err := handler.scan(ctx); err != nil {
 			return err
 		}
@@ -127,6 +135,7 @@ func (h *Handler) GetNotifs(ctx context.Context) ([]*npool.Notif, uint32, error)
 	if err != nil {
 		return nil, 0, err
 	}
+	handler.formalize()
 
 	return handler.infos, handler.total, nil
 }

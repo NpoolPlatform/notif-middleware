@@ -24,7 +24,6 @@ func (s *Server) UpdateFrontendTemplate(
 		ctx,
 		frontendtemplate1.WithID(req.ID),
 		frontendtemplate1.WithAppID(req.AppID),
-		frontendtemplate1.WithLangID(req.LangID),
 		frontendtemplate1.WithUsedFor(req.UsedFor),
 		frontendtemplate1.WithTitle(req.Title),
 		frontendtemplate1.WithContent(req.Content),

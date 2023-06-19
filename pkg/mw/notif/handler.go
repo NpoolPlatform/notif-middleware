@@ -215,6 +215,9 @@ func WithNotifType(_type *npool.NotifType) func(context.Context, *Handler) error
 		case npool.NotifType_Broadcast:
 		case npool.NotifType_Multicast:
 		case npool.NotifType_Unicast:
+			if h.UserID == nil {
+				return fmt.Errorf("invalid userid")
+			}
 		default:
 			return fmt.Errorf("invalid type")
 		}
@@ -255,6 +258,7 @@ func WithIDs(ids *[]string) func(context.Context, *Handler) error {
 	}
 }
 
+// nolint:gocyclo
 func WithReqs(reqs []*npool.NotifReq) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		_reqs := []*notifcrud.Req{}
@@ -281,16 +285,65 @@ func WithReqs(reqs []*npool.NotifReq) func(context.Context, *Handler) error {
 				}
 				_req.LangID = &id
 			}
+			if req.EventID != nil {
+				id, err := uuid.Parse(req.GetEventID())
+				if err != nil {
+					return err
+				}
+				_req.EventID = &id
+			}
 			if req.NotifType != nil {
 				switch req.GetNotifType() {
 				case npool.NotifType_DefaultType:
 				case npool.NotifType_Broadcast:
 				case npool.NotifType_Multicast:
 				case npool.NotifType_Unicast:
+					if req.UserID != nil {
+						id, err := uuid.Parse(req.GetUserID())
+						if err != nil {
+							return err
+						}
+						_req.UserID = &id
+					}
 				default:
 					return fmt.Errorf("invalid Type")
 				}
 				_req.NotifType = req.NotifType
+			}
+			if req.EventType != nil {
+				switch req.GetEventType() {
+				case basetypes.UsedFor_WithdrawalRequest:
+				case basetypes.UsedFor_WithdrawalCompleted:
+				case basetypes.UsedFor_DepositReceived:
+				case basetypes.UsedFor_KYCApproved:
+				case basetypes.UsedFor_KYCRejected:
+				case basetypes.UsedFor_Announcement:
+				default:
+					return fmt.Errorf("invalid EventType")
+				}
+				_req.NotifType = req.NotifType
+			}
+			if req.Channel != nil {
+				switch req.GetChannel() {
+				case basetypes.NotifChannel_ChannelEmail:
+				case basetypes.NotifChannel_ChannelSMS:
+				case basetypes.NotifChannel_ChannelFrontend:
+				default:
+					return fmt.Errorf("invalid Channel")
+				}
+				_req.Channel = req.Channel
+			}
+			if req.UseTemplate != nil {
+				_req.UseTemplate = req.UseTemplate
+			}
+			if req.Title != nil {
+				_req.Title = req.Title
+			}
+			if req.Content != nil {
+				_req.Content = req.Content
+			}
+			if req.Extra != nil {
+				_req.Extra = req.Extra
 			}
 			_reqs = append(_reqs, _req)
 		}
@@ -299,6 +352,7 @@ func WithReqs(reqs []*npool.NotifReq) func(context.Context, *Handler) error {
 	}
 }
 
+// nolint:gocyclo
 func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		h.Conds = &notifcrud.Conds{}
@@ -324,20 +378,46 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 		}
 		if conds.NotifType != nil {
 			switch conds.GetNotifType().GetValue() {
-			case uint32(basetypes.UsedFor_Signup):
-			case uint32(basetypes.UsedFor_Signin):
-			case uint32(basetypes.UsedFor_Update):
-			case uint32(basetypes.UsedFor_Contact):
-			case uint32(basetypes.UsedFor_SetWithdrawAddress):
-			case uint32(basetypes.UsedFor_Withdraw):
-			case uint32(basetypes.UsedFor_CreateInvitationCode):
-			case uint32(basetypes.UsedFor_SetCommission):
+			case uint32(npool.NotifType_DefaultType):
+			case uint32(npool.NotifType_Broadcast):
+			case uint32(npool.NotifType_Multicast):
+			case uint32(npool.NotifType_Unicast):
 			default:
 				return fmt.Errorf("invalid Type")
 			}
 			h.Conds.Type = &cruder.Cond{
 				Op:  conds.GetNotifType().GetOp(),
 				Val: conds.GetNotifType().GetValue(),
+			}
+		}
+		if conds.EventType != nil {
+			switch conds.GetEventType().GetValue() {
+			case uint32(basetypes.UsedFor_WithdrawalRequest):
+			case uint32(basetypes.UsedFor_WithdrawalCompleted):
+			case uint32(basetypes.UsedFor_DepositReceived):
+			case uint32(basetypes.UsedFor_KYCApproved):
+			case uint32(basetypes.UsedFor_KYCRejected):
+			case uint32(basetypes.UsedFor_Announcement):
+			default:
+				return fmt.Errorf("invalid EventType")
+			}
+			h.Conds.EventType = &cruder.Cond{
+				Op:  conds.GetEventType().GetOp(),
+				Val: conds.GetEventType().GetValue(),
+			}
+		}
+		if conds.Channel != nil {
+			switch conds.GetChannel().GetValue() {
+			case uint32(basetypes.NotifChannel_ChannelFrontend):
+			case uint32(basetypes.NotifChannel_ChannelEmail):
+			case uint32(basetypes.NotifChannel_ChannelSMS):
+			default:
+				return fmt.Errorf("invalid channel")
+			}
+			channel := conds.GetChannel().GetValue()
+			h.Conds.Channel = &cruder.Cond{
+				Op:  conds.GetChannel().GetOp(),
+				Val: basetypes.NotifChannel(channel),
 			}
 		}
 		return nil

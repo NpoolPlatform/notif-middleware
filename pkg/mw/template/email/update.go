@@ -38,9 +38,6 @@ func (h *Handler) UpdateEmailTemplate(ctx context.Context) (*npool.EmailTemplate
 	if h.ID == nil {
 		return nil, fmt.Errorf("invalid id")
 	}
-	if h.LangID == nil {
-		return nil, fmt.Errorf("invalid langid")
-	}
 
 	lockKey := fmt.Sprintf(
 		"%v:%v",

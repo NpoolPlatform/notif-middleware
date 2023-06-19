@@ -4,12 +4,13 @@ import (
 	"context"
 	"fmt"
 
-	"entgo.io/ent/dialect/sql"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
 
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/sendstate"
 	entsendstate "github.com/NpoolPlatform/notif-middleware/pkg/db/ent/sendnotif"
+
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 
 	sendstatecrud "github.com/NpoolPlatform/notif-middleware/pkg/crud/notif/sendstate"
 )
@@ -49,6 +50,12 @@ func (h *queryHandler) querySendState(cli *ent.Client) error {
 	return nil
 }
 
+func (h *queryHandler) formalize() {
+	for _, info := range h.infos {
+		info.Channel = basetypes.NotifChannel(basetypes.NotifChannel_value[info.ChannelStr])
+	}
+}
+
 func (h *queryHandler) querySendStates(ctx context.Context, cli *ent.Client) error {
 	stm, err := sendstatecrud.SetQueryConds(cli.SendNotif.Query(), h.Conds)
 	if err != nil {
@@ -76,13 +83,10 @@ func (h *Handler) GetSendState(ctx context.Context) (*npool.SendState, error) {
 		if err := handler.querySendState(cli); err != nil {
 			return err
 		}
-		const limit = 2
-		handler.stm = handler.stm.
-			Offset(int(handler.Offset)).
-			Limit(limit).
-			Modify(func(s *sql.Selector) {})
-		if err := handler.scan(ctx); err != nil {
-			return nil
+		const singleRowLimit = 2
+		handler.stm.Offset(0).Limit(singleRowLimit)
+		if err := handler.scan(_ctx); err != nil {
+			return err
 		}
 		return nil
 	})
@@ -95,6 +99,7 @@ func (h *Handler) GetSendState(ctx context.Context) (*npool.SendState, error) {
 	if len(handler.infos) > 1 {
 		return nil, fmt.Errorf("too many record")
 	}
+	handler.formalize()
 
 	return handler.infos[0], nil
 }
@@ -108,10 +113,10 @@ func (h *Handler) GetSendStates(ctx context.Context) ([]*npool.SendState, uint32
 		if err := handler.querySendStates(ctx, cli); err != nil {
 			return err
 		}
-		handler.stm = handler.stm.
+		handler.
+			stm.
 			Offset(int(handler.Offset)).
-			Limit(int(handler.Limit)).
-			Modify(func(s *sql.Selector) {})
+			Limit(int(handler.Limit))
 		if err := handler.scan(ctx); err != nil {
 			return err
 		}
@@ -120,6 +125,7 @@ func (h *Handler) GetSendStates(ctx context.Context) ([]*npool.SendState, uint32
 	if err != nil {
 		return nil, 0, err
 	}
+	handler.formalize()
 
 	return handler.infos, handler.total, nil
 }

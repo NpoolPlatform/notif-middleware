@@ -101,6 +101,7 @@ func (h *Handler) CreateSendStates(ctx context.Context) ([]*npool.SendState, err
 			handler.ID = nil
 			handler.AppID = req.AppID
 			handler.UserID = req.UserID
+			handler.Channel = req.Channel
 			if err := handler.createSendState(ctx, cli); err != nil {
 				return err
 			}

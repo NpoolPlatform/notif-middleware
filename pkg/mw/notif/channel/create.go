@@ -10,6 +10,7 @@ import (
 	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/notif/channel"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
+	"github.com/google/uuid"
 )
 
 func (h *Handler) CreateChannel(ctx context.Context) (info *npool.Channel, err error) {
@@ -70,7 +71,17 @@ func (h *Handler) CreateChannels(ctx context.Context) (infos []*npool.Channel, e
 				return fmt.Errorf("too many record")
 			}
 			if len(rows) == 1 {
-				infos = append(infos, rows[0])
+				_id, err := uuid.Parse(rows[0].ID)
+				if err != nil {
+					return err
+				}
+				h.ID = &_id
+
+				row, err := h.GetChannel(ctx)
+				if err != nil {
+					return err
+				}
+				infos = append(infos, row)
 				continue
 			}
 

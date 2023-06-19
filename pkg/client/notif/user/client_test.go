@@ -24,6 +24,7 @@ import (
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	notifpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/user"
+	usernotifpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/user"
 	notifmw "github.com/NpoolPlatform/notif-middleware/pkg/mw/notif"
 	"github.com/stretchr/testify/assert"
 )
@@ -40,6 +41,7 @@ func init() {
 var (
 	userID1            = uuid.NewString()
 	userID2            = uuid.NewString()
+	userID3            = uuid.NewString()
 	appID              = uuid.NewString()
 	notifInfoMulticast = notifpb.Notif{
 		ID:           uuid.NewString(),
@@ -109,22 +111,36 @@ var (
 	ret = npool.UserNotif{
 		ID:      "",
 		AppID:   appID,
-		NotifID: "",
+		NotifID: notifInfoUnicast.ID,
 		UserID:  userID1,
 	}
 
 	rets = []npool.UserNotif{
 		{
-			ID:      "",
-			AppID:   appID,
-			NotifID: notifInfoMulticast.ID,
-			UserID:  userID1,
-		},
-		{
-			ID:      "",
+			ID:      uuid.NewString(),
 			AppID:   appID,
 			NotifID: notifInfoMulticast.ID,
 			UserID:  userID2,
+		},
+		{
+			ID:      uuid.NewString(),
+			AppID:   appID,
+			NotifID: notifInfoMulticast.ID,
+			UserID:  userID3,
+		},
+	}
+	retsReq = []*usernotifpb.UserNotifReq{
+		{
+			ID:      &rets[0].ID,
+			AppID:   &rets[0].AppID,
+			NotifID: &rets[0].NotifID,
+			UserID:  &rets[0].UserID,
+		},
+		{
+			ID:      &rets[1].ID,
+			AppID:   &rets[1].AppID,
+			NotifID: &rets[1].NotifID,
+			UserID:  &rets[1].UserID,
 		},
 	}
 )
@@ -155,19 +171,23 @@ func setupNotifUser(t *testing.T) func(*testing.T) {
 
 // nolint:gosec,vet
 func createNotifUser(t *testing.T) {
-	for i, item := range rets {
-		info, err := CreateUser(context.Background(), &npool.UserNotifReq{
-			AppID:   &item.AppID,
-			UserID:  &item.UserID,
-			NotifID: &item.NotifID,
-		})
-		if assert.Nil(t, err) {
-			item.CreatedAt = info.CreatedAt
-			item.UpdatedAt = info.UpdatedAt
-			item.ID = info.ID
-			rets[i].ID = info.ID
-			assert.Equal(t, info, &item)
-		}
+	info, err := CreateUser(context.Background(), &npool.UserNotifReq{
+		AppID:   &ret.AppID,
+		UserID:  &ret.UserID,
+		NotifID: &ret.NotifID,
+	})
+	if assert.Nil(t, err) {
+		ret.CreatedAt = info.CreatedAt
+		ret.UpdatedAt = info.UpdatedAt
+		ret.ID = info.ID
+		assert.Equal(t, info, &ret)
+	}
+}
+
+func createNotifUsers(t *testing.T) {
+	infos, err := CreateUsers(context.Background(), retsReq)
+	if assert.Nil(t, err) {
+		assert.NotEqual(t, len(infos), 0)
 	}
 }
 
@@ -194,6 +214,19 @@ func getNotifUsers(t *testing.T) {
 
 // nolint:gosec,vet
 func deleteNotifUser(t *testing.T) {
+	info, err := DeleteUser(context.Background(), &npool.UserNotifReq{
+		ID:    &ret.ID,
+		AppID: &ret.AppID,
+	})
+	if assert.Nil(t, err) {
+		ret.CreatedAt = info.CreatedAt
+		ret.UpdatedAt = info.UpdatedAt
+		assert.Equal(t, info, &ret)
+	}
+	info, err = GetUser(context.Background(), ret.ID)
+	assert.Nil(t, err)
+	assert.Nil(t, info)
+
 	for _, item := range rets {
 		info, err := DeleteUser(context.Background(), &npool.UserNotifReq{
 			ID:    &item.ID,
@@ -224,6 +257,7 @@ func TestClient(t *testing.T) {
 		return grpc.Dial(fmt.Sprintf("localhost:%v", gport), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	})
 	t.Run("createNotifUser", createNotifUser)
+	t.Run("createNotifUsers", createNotifUsers)
 	t.Run("getNotifUser", getNotifUser)
 	t.Run("getNotifUsers", getNotifUsers)
 	t.Run("deleteNotifUser", deleteNotifUser)

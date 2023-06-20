@@ -20,22 +20,22 @@ type createHandler struct {
 	*Handler
 }
 
-func (h *createHandler) createEmailTemplate(ctx context.Context, cli *ent.Client) error {
-	if h.AppID == nil {
+func (h *createHandler) createEmailTemplate(ctx context.Context, tx *ent.Tx, req *emailtemplatecrud.Req) error {
+	if req.AppID == nil {
 		return fmt.Errorf("invalid lang")
 	}
-	if h.LangID == nil {
+	if req.LangID == nil {
 		return fmt.Errorf("invalid logo")
 	}
-	if h.UsedFor == nil {
+	if req.UsedFor == nil {
 		return fmt.Errorf("invalid usedFor")
 	}
 	lockKey := fmt.Sprintf(
 		"%v:%v:%v:%v",
 		basetypes.Prefix_PrefixCreateAppCoin,
-		*h.AppID,
-		*h.LangID,
-		h.UsedFor,
+		*req.AppID,
+		*req.LangID,
+		req.UsedFor,
 	)
 	if err := redis2.TryLock(lockKey, 0); err != nil {
 		return err
@@ -45,9 +45,9 @@ func (h *createHandler) createEmailTemplate(ctx context.Context, cli *ent.Client
 	}()
 
 	h.Conds = &emailtemplatecrud.Conds{
-		AppID:   &cruder.Cond{Op: cruder.EQ, Val: *h.AppID},
-		LangID:  &cruder.Cond{Op: cruder.EQ, Val: *h.LangID},
-		UsedFor: &cruder.Cond{Op: cruder.EQ, Val: *h.UsedFor},
+		AppID:   &cruder.Cond{Op: cruder.EQ, Val: *req.AppID},
+		LangID:  &cruder.Cond{Op: cruder.EQ, Val: *req.LangID},
+		UsedFor: &cruder.Cond{Op: cruder.EQ, Val: *req.UsedFor},
 	}
 	exist, err := h.ExistEmailTemplateConds(ctx)
 	if err != nil {
@@ -58,29 +58,29 @@ func (h *createHandler) createEmailTemplate(ctx context.Context, cli *ent.Client
 	}
 
 	id := uuid.New()
-	if h.ID == nil {
-		h.ID = &id
+	if req.ID == nil {
+		req.ID = &id
 	}
 	info, err := emailtemplatecrud.CreateSet(
-		cli.EmailTemplate.Create(),
+		tx.EmailTemplate.Create(),
 		&emailtemplatecrud.Req{
-			ID:                h.ID,
-			AppID:             h.AppID,
-			LangID:            h.LangID,
-			UsedFor:           h.UsedFor,
-			Sender:            h.Sender,
-			ReplyTos:          h.ReplyTos,
-			CcTos:             h.CcTos,
-			Subject:           h.Subject,
-			Body:              h.Body,
-			DefaultToUsername: h.DefaultToUsername,
+			ID:                req.ID,
+			AppID:             req.AppID,
+			LangID:            req.LangID,
+			UsedFor:           req.UsedFor,
+			Sender:            req.Sender,
+			ReplyTos:          req.ReplyTos,
+			CcTos:             req.CcTos,
+			Subject:           req.Subject,
+			Body:              req.Body,
+			DefaultToUsername: req.DefaultToUsername,
 		},
 	).Save(ctx)
 	if err != nil {
 		return err
 	}
-	h.ID = &info.ID
 
+	h.ID = &info.ID
 	return nil
 }
 
@@ -88,8 +88,20 @@ func (h *Handler) CreateEmailTemplate(ctx context.Context) (*npool.EmailTemplate
 	handler := &createHandler{
 		Handler: h,
 	}
-	err := db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		if err := handler.createEmailTemplate(ctx, cli); err != nil {
+	req := &emailtemplatecrud.Req{
+		ID:                handler.ID,
+		AppID:             handler.AppID,
+		LangID:            handler.LangID,
+		UsedFor:           handler.UsedFor,
+		Sender:            handler.Sender,
+		ReplyTos:          handler.ReplyTos,
+		CcTos:             handler.CcTos,
+		Subject:           handler.Subject,
+		Body:              handler.Body,
+		DefaultToUsername: handler.DefaultToUsername,
+	}
+	err := db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
+		if err := handler.createEmailTemplate(ctx, tx, req); err != nil {
 			return err
 		}
 		return nil
@@ -107,19 +119,9 @@ func (h *Handler) CreateEmailTemplates(ctx context.Context) ([]*npool.EmailTempl
 	}
 	ids := []uuid.UUID{}
 
-	err := db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
+	err := db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
 		for _, req := range h.Reqs {
-			handler.ID = nil
-			handler.AppID = req.AppID
-			handler.LangID = req.LangID
-			handler.UsedFor = req.UsedFor
-			handler.Sender = req.Sender
-			handler.ReplyTos = req.ReplyTos
-			handler.CcTos = req.CcTos
-			handler.Subject = req.Subject
-			handler.Body = req.Body
-			handler.DefaultToUsername = req.DefaultToUsername
-			if err := handler.createEmailTemplate(ctx, cli); err != nil {
+			if err := handler.createEmailTemplate(ctx, tx, req); err != nil {
 				return err
 			}
 			ids = append(ids, *h.ID)

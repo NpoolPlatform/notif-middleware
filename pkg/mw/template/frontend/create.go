@@ -20,22 +20,22 @@ type createHandler struct {
 	*Handler
 }
 
-func (h *createHandler) createFrontendTemplate(ctx context.Context, cli *ent.Client) error {
-	if h.AppID == nil {
+func (h *createHandler) createFrontendTemplate(ctx context.Context, tx *ent.Tx, req *frontendtemplatecrud.Req) error {
+	if req.AppID == nil {
 		return fmt.Errorf("invalid lang")
 	}
-	if h.LangID == nil {
+	if req.LangID == nil {
 		return fmt.Errorf("invalid logo")
 	}
-	if h.UsedFor == nil {
+	if req.UsedFor == nil {
 		return fmt.Errorf("invalid create usedFor")
 	}
 	lockKey := fmt.Sprintf(
 		"%v:%v:%v:%v",
 		basetypes.Prefix_PrefixCreateAppCoin,
-		*h.AppID,
-		*h.LangID,
-		h.UsedFor,
+		*req.AppID,
+		*req.LangID,
+		req.UsedFor,
 	)
 	if err := redis2.TryLock(lockKey, 0); err != nil {
 		return err
@@ -45,9 +45,9 @@ func (h *createHandler) createFrontendTemplate(ctx context.Context, cli *ent.Cli
 	}()
 
 	h.Conds = &frontendtemplatecrud.Conds{
-		AppID:   &cruder.Cond{Op: cruder.EQ, Val: *h.AppID},
-		LangID:  &cruder.Cond{Op: cruder.EQ, Val: *h.LangID},
-		UsedFor: &cruder.Cond{Op: cruder.EQ, Val: *h.UsedFor},
+		AppID:   &cruder.Cond{Op: cruder.EQ, Val: *req.AppID},
+		LangID:  &cruder.Cond{Op: cruder.EQ, Val: *req.LangID},
+		UsedFor: &cruder.Cond{Op: cruder.EQ, Val: *req.UsedFor},
 	}
 	exist, err := h.ExistFrontendTemplateConds(ctx)
 	if err != nil {
@@ -58,19 +58,19 @@ func (h *createHandler) createFrontendTemplate(ctx context.Context, cli *ent.Cli
 	}
 
 	id := uuid.New()
-	if h.ID == nil {
-		h.ID = &id
+	if req.ID == nil {
+		req.ID = &id
 	}
 
 	info, err := frontendtemplatecrud.CreateSet(
-		cli.FrontendTemplate.Create(),
+		tx.FrontendTemplate.Create(),
 		&frontendtemplatecrud.Req{
-			ID:      h.ID,
-			AppID:   h.AppID,
-			LangID:  h.LangID,
-			UsedFor: h.UsedFor,
-			Title:   h.Title,
-			Content: h.Content,
+			ID:      req.ID,
+			AppID:   req.AppID,
+			LangID:  req.LangID,
+			UsedFor: req.UsedFor,
+			Title:   req.Title,
+			Content: req.Content,
 		},
 	).Save(ctx)
 	if err != nil {
@@ -86,8 +86,16 @@ func (h *Handler) CreateFrontendTemplate(ctx context.Context) (*npool.FrontendTe
 	handler := &createHandler{
 		Handler: h,
 	}
-	err := db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		if err := handler.createFrontendTemplate(ctx, cli); err != nil {
+	req := &frontendtemplatecrud.Req{
+		ID:      handler.ID,
+		AppID:   handler.AppID,
+		LangID:  handler.LangID,
+		UsedFor: handler.UsedFor,
+		Title:   handler.Title,
+		Content: handler.Content,
+	}
+	err := db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
+		if err := handler.createFrontendTemplate(ctx, tx, req); err != nil {
 			return err
 		}
 		return nil
@@ -106,15 +114,9 @@ func (h *Handler) CreateFrontendTemplates(ctx context.Context) ([]*npool.Fronten
 
 	ids := []uuid.UUID{}
 
-	err := db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
+	err := db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
 		for _, req := range h.Reqs {
-			handler.ID = nil
-			handler.AppID = req.AppID
-			handler.LangID = req.LangID
-			handler.UsedFor = req.UsedFor
-			handler.Title = req.Title
-			handler.Content = req.Content
-			if err := handler.createFrontendTemplate(ctx, cli); err != nil {
+			if err := handler.createFrontendTemplate(ctx, tx, req); err != nil {
 				return err
 			}
 			ids = append(ids, *h.ID)

@@ -20,13 +20,22 @@ type createHandler struct {
 	*Handler
 }
 
-func (h *createHandler) createSendState(ctx context.Context, cli *ent.Client) error {
+func (h *createHandler) createSendState(ctx context.Context, tx *ent.Tx, req *sendstatecrud.Req) error {
+	if req.AppID == nil {
+		return fmt.Errorf("invalid appid")
+	}
+	if req.UserID == nil {
+		return fmt.Errorf("invalid userid")
+	}
+	if req.NotifID == nil {
+		return fmt.Errorf("invalid notifid")
+	}
 	lockKey := fmt.Sprintf(
 		"%v:%v:%v:%v",
 		basetypes.Prefix_PrefixCreateAppCoin,
-		*h.AppID,
-		*h.UserID,
-		*h.NotifID,
+		*req.AppID,
+		*req.UserID,
+		*req.NotifID,
 	)
 	if err := redis2.TryLock(lockKey, 0); err != nil {
 		return err
@@ -35,10 +44,10 @@ func (h *createHandler) createSendState(ctx context.Context, cli *ent.Client) er
 		_ = redis2.Unlock(lockKey)
 	}()
 	h.Conds = &sendstatecrud.Conds{
-		AppID:   &cruder.Cond{Op: cruder.EQ, Val: *h.AppID},
-		UserID:  &cruder.Cond{Op: cruder.EQ, Val: *h.UserID},
-		NotifID: &cruder.Cond{Op: cruder.EQ, Val: *h.NotifID},
-		Channel: &cruder.Cond{Op: cruder.EQ, Val: *h.Channel},
+		AppID:   &cruder.Cond{Op: cruder.EQ, Val: *req.AppID},
+		UserID:  &cruder.Cond{Op: cruder.EQ, Val: *req.UserID},
+		NotifID: &cruder.Cond{Op: cruder.EQ, Val: *req.NotifID},
+		Channel: &cruder.Cond{Op: cruder.EQ, Val: *req.Channel},
 	}
 
 	exist, err := h.ExistSendStateConds(ctx)
@@ -50,18 +59,18 @@ func (h *createHandler) createSendState(ctx context.Context, cli *ent.Client) er
 	}
 
 	id := uuid.New()
-	if h.ID == nil {
-		h.ID = &id
+	if req.ID == nil {
+		req.ID = &id
 	}
 
 	info, err := sendstatecrud.CreateSet(
-		cli.SendNotif.Create(),
+		tx.SendNotif.Create(),
 		&sendstatecrud.Req{
-			ID:      h.ID,
-			AppID:   h.AppID,
-			UserID:  h.UserID,
-			NotifID: h.NotifID,
-			Channel: h.Channel,
+			ID:      req.ID,
+			AppID:   req.AppID,
+			UserID:  req.UserID,
+			NotifID: req.NotifID,
+			Channel: req.Channel,
 		},
 	).Save(ctx)
 	if err != nil {
@@ -77,8 +86,15 @@ func (h *Handler) CreateSendState(ctx context.Context) (*npool.SendState, error)
 	handler := &createHandler{
 		Handler: h,
 	}
-	err := db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		if err := handler.createSendState(ctx, cli); err != nil {
+	req := &sendstatecrud.Req{
+		ID:      handler.ID,
+		AppID:   handler.AppID,
+		UserID:  handler.UserID,
+		NotifID: handler.NotifID,
+		Channel: handler.Channel,
+	}
+	err := db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
+		if err := handler.createSendState(ctx, tx, req); err != nil {
 			return err
 		}
 		return nil
@@ -97,13 +113,9 @@ func (h *Handler) CreateSendStates(ctx context.Context) ([]*npool.SendState, err
 
 	ids := []uuid.UUID{}
 
-	err := db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
+	err := db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
 		for _, req := range h.Reqs {
-			handler.ID = nil
-			handler.AppID = req.AppID
-			handler.UserID = req.UserID
-			handler.Channel = req.Channel
-			if err := handler.createSendState(ctx, cli); err != nil {
+			if err := handler.createSendState(ctx, tx, req); err != nil {
 				return err
 			}
 			ids = append(ids, *h.ID)

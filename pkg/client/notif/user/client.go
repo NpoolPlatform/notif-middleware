@@ -115,10 +115,11 @@ func GetUsers(ctx context.Context, conds *npool.Conds, offset, limit int32) ([]*
 
 func GetUserOnly(ctx context.Context, conds *npool.Conds) (*npool.UserNotif, error) {
 	infos, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		const singleRowLimit = 2
 		resp, err := cli.GetUserNotifs(ctx, &npool.GetUserNotifsRequest{
 			Conds:  conds,
 			Offset: 0,
-			Limit:  2, //nolint
+			Limit:  singleRowLimit,
 		})
 		if err != nil {
 			return nil, err

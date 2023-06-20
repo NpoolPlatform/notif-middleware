@@ -116,10 +116,11 @@ func GetFrontendTemplates(ctx context.Context, conds *npool.Conds, offset, limit
 
 func GetFrontendTemplateOnly(ctx context.Context, conds *npool.Conds) (*npool.FrontendTemplate, error) {
 	infos, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		const singleRowLimit = 2
 		resp, err := cli.GetFrontendTemplates(ctx, &npool.GetFrontendTemplatesRequest{
 			Conds:  conds,
 			Offset: 0,
-			Limit:  2, //nolint
+			Limit:  singleRowLimit,
 		})
 		if err != nil {
 			return nil, err

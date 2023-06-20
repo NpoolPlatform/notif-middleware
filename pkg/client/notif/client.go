@@ -132,10 +132,11 @@ func GetNotifs(ctx context.Context, conds *npool.Conds, offset, limit int32) ([]
 
 func GetNotifOnly(ctx context.Context, conds *npool.Conds) (*npool.Notif, error) {
 	infos, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		const singleRowLimit = 2
 		resp, err := cli.GetNotifs(ctx, &npool.GetNotifsRequest{
 			Conds:  conds,
 			Offset: 0,
-			Limit:  2, //nolint
+			Limit:  singleRowLimit,
 		})
 		if err != nil {
 			return nil, err

@@ -116,10 +116,11 @@ func GetEmailTemplates(ctx context.Context, conds *npool.Conds, offset, limit in
 
 func GetEmailTemplateOnly(ctx context.Context, conds *npool.Conds) (*npool.EmailTemplate, error) {
 	infos, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		const singleRowLimit = 2
 		resp, err := cli.GetEmailTemplates(ctx, &npool.GetEmailTemplatesRequest{
 			Conds:  conds,
 			Offset: 0,
-			Limit:  2, //nolint
+			Limit:  singleRowLimit,
 		})
 		if err != nil {
 			return nil, err

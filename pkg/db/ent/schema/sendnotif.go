@@ -36,7 +36,7 @@ func (SendNotif) Fields() []ent.Field {
 			Optional().
 			Default(uuid.New),
 		field.
-			UUID("notif_id", uuid.UUID{}).
+			UUID("event_id", uuid.UUID{}).
 			Optional().
 			Default(uuid.New),
 		field.

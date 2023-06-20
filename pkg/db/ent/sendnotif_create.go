@@ -93,16 +93,16 @@ func (snc *SendNotifCreate) SetNillableUserID(u *uuid.UUID) *SendNotifCreate {
 	return snc
 }
 
-// SetNotifID sets the "notif_id" field.
-func (snc *SendNotifCreate) SetNotifID(u uuid.UUID) *SendNotifCreate {
-	snc.mutation.SetNotifID(u)
+// SetEventID sets the "event_id" field.
+func (snc *SendNotifCreate) SetEventID(u uuid.UUID) *SendNotifCreate {
+	snc.mutation.SetEventID(u)
 	return snc
 }
 
-// SetNillableNotifID sets the "notif_id" field if the given value is not nil.
-func (snc *SendNotifCreate) SetNillableNotifID(u *uuid.UUID) *SendNotifCreate {
+// SetNillableEventID sets the "event_id" field if the given value is not nil.
+func (snc *SendNotifCreate) SetNillableEventID(u *uuid.UUID) *SendNotifCreate {
 	if u != nil {
-		snc.SetNotifID(*u)
+		snc.SetEventID(*u)
 	}
 	return snc
 }
@@ -249,12 +249,12 @@ func (snc *SendNotifCreate) defaults() error {
 		v := sendnotif.DefaultUserID()
 		snc.mutation.SetUserID(v)
 	}
-	if _, ok := snc.mutation.NotifID(); !ok {
-		if sendnotif.DefaultNotifID == nil {
-			return fmt.Errorf("ent: uninitialized sendnotif.DefaultNotifID (forgotten import ent/runtime?)")
+	if _, ok := snc.mutation.EventID(); !ok {
+		if sendnotif.DefaultEventID == nil {
+			return fmt.Errorf("ent: uninitialized sendnotif.DefaultEventID (forgotten import ent/runtime?)")
 		}
-		v := sendnotif.DefaultNotifID()
-		snc.mutation.SetNotifID(v)
+		v := sendnotif.DefaultEventID()
+		snc.mutation.SetEventID(v)
 	}
 	if _, ok := snc.mutation.Channel(); !ok {
 		v := sendnotif.DefaultChannel
@@ -358,13 +358,13 @@ func (snc *SendNotifCreate) createSpec() (*SendNotif, *sqlgraph.CreateSpec) {
 		})
 		_node.UserID = value
 	}
-	if value, ok := snc.mutation.NotifID(); ok {
+	if value, ok := snc.mutation.EventID(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeUUID,
 			Value:  value,
-			Column: sendnotif.FieldNotifID,
+			Column: sendnotif.FieldEventID,
 		})
-		_node.NotifID = value
+		_node.EventID = value
 	}
 	if value, ok := snc.mutation.Channel(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -518,21 +518,21 @@ func (u *SendNotifUpsert) ClearUserID() *SendNotifUpsert {
 	return u
 }
 
-// SetNotifID sets the "notif_id" field.
-func (u *SendNotifUpsert) SetNotifID(v uuid.UUID) *SendNotifUpsert {
-	u.Set(sendnotif.FieldNotifID, v)
+// SetEventID sets the "event_id" field.
+func (u *SendNotifUpsert) SetEventID(v uuid.UUID) *SendNotifUpsert {
+	u.Set(sendnotif.FieldEventID, v)
 	return u
 }
 
-// UpdateNotifID sets the "notif_id" field to the value that was provided on create.
-func (u *SendNotifUpsert) UpdateNotifID() *SendNotifUpsert {
-	u.SetExcluded(sendnotif.FieldNotifID)
+// UpdateEventID sets the "event_id" field to the value that was provided on create.
+func (u *SendNotifUpsert) UpdateEventID() *SendNotifUpsert {
+	u.SetExcluded(sendnotif.FieldEventID)
 	return u
 }
 
-// ClearNotifID clears the value of the "notif_id" field.
-func (u *SendNotifUpsert) ClearNotifID() *SendNotifUpsert {
-	u.SetNull(sendnotif.FieldNotifID)
+// ClearEventID clears the value of the "event_id" field.
+func (u *SendNotifUpsert) ClearEventID() *SendNotifUpsert {
+	u.SetNull(sendnotif.FieldEventID)
 	return u
 }
 
@@ -709,24 +709,24 @@ func (u *SendNotifUpsertOne) ClearUserID() *SendNotifUpsertOne {
 	})
 }
 
-// SetNotifID sets the "notif_id" field.
-func (u *SendNotifUpsertOne) SetNotifID(v uuid.UUID) *SendNotifUpsertOne {
+// SetEventID sets the "event_id" field.
+func (u *SendNotifUpsertOne) SetEventID(v uuid.UUID) *SendNotifUpsertOne {
 	return u.Update(func(s *SendNotifUpsert) {
-		s.SetNotifID(v)
+		s.SetEventID(v)
 	})
 }
 
-// UpdateNotifID sets the "notif_id" field to the value that was provided on create.
-func (u *SendNotifUpsertOne) UpdateNotifID() *SendNotifUpsertOne {
+// UpdateEventID sets the "event_id" field to the value that was provided on create.
+func (u *SendNotifUpsertOne) UpdateEventID() *SendNotifUpsertOne {
 	return u.Update(func(s *SendNotifUpsert) {
-		s.UpdateNotifID()
+		s.UpdateEventID()
 	})
 }
 
-// ClearNotifID clears the value of the "notif_id" field.
-func (u *SendNotifUpsertOne) ClearNotifID() *SendNotifUpsertOne {
+// ClearEventID clears the value of the "event_id" field.
+func (u *SendNotifUpsertOne) ClearEventID() *SendNotifUpsertOne {
 	return u.Update(func(s *SendNotifUpsert) {
-		s.ClearNotifID()
+		s.ClearEventID()
 	})
 }
 
@@ -1072,24 +1072,24 @@ func (u *SendNotifUpsertBulk) ClearUserID() *SendNotifUpsertBulk {
 	})
 }
 
-// SetNotifID sets the "notif_id" field.
-func (u *SendNotifUpsertBulk) SetNotifID(v uuid.UUID) *SendNotifUpsertBulk {
+// SetEventID sets the "event_id" field.
+func (u *SendNotifUpsertBulk) SetEventID(v uuid.UUID) *SendNotifUpsertBulk {
 	return u.Update(func(s *SendNotifUpsert) {
-		s.SetNotifID(v)
+		s.SetEventID(v)
 	})
 }
 
-// UpdateNotifID sets the "notif_id" field to the value that was provided on create.
-func (u *SendNotifUpsertBulk) UpdateNotifID() *SendNotifUpsertBulk {
+// UpdateEventID sets the "event_id" field to the value that was provided on create.
+func (u *SendNotifUpsertBulk) UpdateEventID() *SendNotifUpsertBulk {
 	return u.Update(func(s *SendNotifUpsert) {
-		s.UpdateNotifID()
+		s.UpdateEventID()
 	})
 }
 
-// ClearNotifID clears the value of the "notif_id" field.
-func (u *SendNotifUpsertBulk) ClearNotifID() *SendNotifUpsertBulk {
+// ClearEventID clears the value of the "event_id" field.
+func (u *SendNotifUpsertBulk) ClearEventID() *SendNotifUpsertBulk {
 	return u.Update(func(s *SendNotifUpsert) {
-		s.ClearNotifID()
+		s.ClearEventID()
 	})
 }
 

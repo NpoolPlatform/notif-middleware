@@ -202,7 +202,7 @@ var (
 		{Name: "deleted_at", Type: field.TypeUint32},
 		{Name: "app_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
-		{Name: "notif_id", Type: field.TypeUUID, Nullable: true},
+		{Name: "event_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "channel", Type: field.TypeString, Nullable: true, Default: "DefaultChannel"},
 	}
 	// SendNotifsTable holds the schema information for the "send_notifs" table.

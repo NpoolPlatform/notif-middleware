@@ -578,10 +578,10 @@ func init() {
 	sendnotifDescUserID := sendnotifFields[2].Descriptor()
 	// sendnotif.DefaultUserID holds the default value on creation for the user_id field.
 	sendnotif.DefaultUserID = sendnotifDescUserID.Default.(func() uuid.UUID)
-	// sendnotifDescNotifID is the schema descriptor for notif_id field.
-	sendnotifDescNotifID := sendnotifFields[3].Descriptor()
-	// sendnotif.DefaultNotifID holds the default value on creation for the notif_id field.
-	sendnotif.DefaultNotifID = sendnotifDescNotifID.Default.(func() uuid.UUID)
+	// sendnotifDescEventID is the schema descriptor for event_id field.
+	sendnotifDescEventID := sendnotifFields[3].Descriptor()
+	// sendnotif.DefaultEventID holds the default value on creation for the event_id field.
+	sendnotif.DefaultEventID = sendnotifDescEventID.Default.(func() uuid.UUID)
 	// sendnotifDescChannel is the schema descriptor for channel field.
 	sendnotifDescChannel := sendnotifFields[4].Descriptor()
 	// sendnotif.DefaultChannel holds the default value on creation for the channel field.

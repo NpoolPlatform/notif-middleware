@@ -9337,7 +9337,7 @@ type SendNotifMutation struct {
 	adddeleted_at *int32
 	app_id        *uuid.UUID
 	user_id       *uuid.UUID
-	notif_id      *uuid.UUID
+	event_id      *uuid.UUID
 	channel       *string
 	clearedFields map[string]struct{}
 	done          bool
@@ -9715,53 +9715,53 @@ func (m *SendNotifMutation) ResetUserID() {
 	delete(m.clearedFields, sendnotif.FieldUserID)
 }
 
-// SetNotifID sets the "notif_id" field.
-func (m *SendNotifMutation) SetNotifID(u uuid.UUID) {
-	m.notif_id = &u
+// SetEventID sets the "event_id" field.
+func (m *SendNotifMutation) SetEventID(u uuid.UUID) {
+	m.event_id = &u
 }
 
-// NotifID returns the value of the "notif_id" field in the mutation.
-func (m *SendNotifMutation) NotifID() (r uuid.UUID, exists bool) {
-	v := m.notif_id
+// EventID returns the value of the "event_id" field in the mutation.
+func (m *SendNotifMutation) EventID() (r uuid.UUID, exists bool) {
+	v := m.event_id
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldNotifID returns the old "notif_id" field's value of the SendNotif entity.
+// OldEventID returns the old "event_id" field's value of the SendNotif entity.
 // If the SendNotif object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SendNotifMutation) OldNotifID(ctx context.Context) (v uuid.UUID, err error) {
+func (m *SendNotifMutation) OldEventID(ctx context.Context) (v uuid.UUID, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldNotifID is only allowed on UpdateOne operations")
+		return v, errors.New("OldEventID is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldNotifID requires an ID field in the mutation")
+		return v, errors.New("OldEventID requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldNotifID: %w", err)
+		return v, fmt.Errorf("querying old value for OldEventID: %w", err)
 	}
-	return oldValue.NotifID, nil
+	return oldValue.EventID, nil
 }
 
-// ClearNotifID clears the value of the "notif_id" field.
-func (m *SendNotifMutation) ClearNotifID() {
-	m.notif_id = nil
-	m.clearedFields[sendnotif.FieldNotifID] = struct{}{}
+// ClearEventID clears the value of the "event_id" field.
+func (m *SendNotifMutation) ClearEventID() {
+	m.event_id = nil
+	m.clearedFields[sendnotif.FieldEventID] = struct{}{}
 }
 
-// NotifIDCleared returns if the "notif_id" field was cleared in this mutation.
-func (m *SendNotifMutation) NotifIDCleared() bool {
-	_, ok := m.clearedFields[sendnotif.FieldNotifID]
+// EventIDCleared returns if the "event_id" field was cleared in this mutation.
+func (m *SendNotifMutation) EventIDCleared() bool {
+	_, ok := m.clearedFields[sendnotif.FieldEventID]
 	return ok
 }
 
-// ResetNotifID resets all changes to the "notif_id" field.
-func (m *SendNotifMutation) ResetNotifID() {
-	m.notif_id = nil
-	delete(m.clearedFields, sendnotif.FieldNotifID)
+// ResetEventID resets all changes to the "event_id" field.
+func (m *SendNotifMutation) ResetEventID() {
+	m.event_id = nil
+	delete(m.clearedFields, sendnotif.FieldEventID)
 }
 
 // SetChannel sets the "channel" field.
@@ -9848,8 +9848,8 @@ func (m *SendNotifMutation) Fields() []string {
 	if m.user_id != nil {
 		fields = append(fields, sendnotif.FieldUserID)
 	}
-	if m.notif_id != nil {
-		fields = append(fields, sendnotif.FieldNotifID)
+	if m.event_id != nil {
+		fields = append(fields, sendnotif.FieldEventID)
 	}
 	if m.channel != nil {
 		fields = append(fields, sendnotif.FieldChannel)
@@ -9872,8 +9872,8 @@ func (m *SendNotifMutation) Field(name string) (ent.Value, bool) {
 		return m.AppID()
 	case sendnotif.FieldUserID:
 		return m.UserID()
-	case sendnotif.FieldNotifID:
-		return m.NotifID()
+	case sendnotif.FieldEventID:
+		return m.EventID()
 	case sendnotif.FieldChannel:
 		return m.Channel()
 	}
@@ -9895,8 +9895,8 @@ func (m *SendNotifMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldAppID(ctx)
 	case sendnotif.FieldUserID:
 		return m.OldUserID(ctx)
-	case sendnotif.FieldNotifID:
-		return m.OldNotifID(ctx)
+	case sendnotif.FieldEventID:
+		return m.OldEventID(ctx)
 	case sendnotif.FieldChannel:
 		return m.OldChannel(ctx)
 	}
@@ -9943,12 +9943,12 @@ func (m *SendNotifMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetUserID(v)
 		return nil
-	case sendnotif.FieldNotifID:
+	case sendnotif.FieldEventID:
 		v, ok := value.(uuid.UUID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetNotifID(v)
+		m.SetEventID(v)
 		return nil
 	case sendnotif.FieldChannel:
 		v, ok := value.(string)
@@ -10032,8 +10032,8 @@ func (m *SendNotifMutation) ClearedFields() []string {
 	if m.FieldCleared(sendnotif.FieldUserID) {
 		fields = append(fields, sendnotif.FieldUserID)
 	}
-	if m.FieldCleared(sendnotif.FieldNotifID) {
-		fields = append(fields, sendnotif.FieldNotifID)
+	if m.FieldCleared(sendnotif.FieldEventID) {
+		fields = append(fields, sendnotif.FieldEventID)
 	}
 	if m.FieldCleared(sendnotif.FieldChannel) {
 		fields = append(fields, sendnotif.FieldChannel)
@@ -10058,8 +10058,8 @@ func (m *SendNotifMutation) ClearField(name string) error {
 	case sendnotif.FieldUserID:
 		m.ClearUserID()
 		return nil
-	case sendnotif.FieldNotifID:
-		m.ClearNotifID()
+	case sendnotif.FieldEventID:
+		m.ClearEventID()
 		return nil
 	case sendnotif.FieldChannel:
 		m.ClearChannel()
@@ -10087,8 +10087,8 @@ func (m *SendNotifMutation) ResetField(name string) error {
 	case sendnotif.FieldUserID:
 		m.ResetUserID()
 		return nil
-	case sendnotif.FieldNotifID:
-		m.ResetNotifID()
+	case sendnotif.FieldEventID:
+		m.ResetEventID()
 		return nil
 	case sendnotif.FieldChannel:
 		m.ResetChannel()

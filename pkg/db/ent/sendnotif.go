@@ -26,8 +26,8 @@ type SendNotif struct {
 	AppID uuid.UUID `json:"app_id,omitempty"`
 	// UserID holds the value of the "user_id" field.
 	UserID uuid.UUID `json:"user_id,omitempty"`
-	// NotifID holds the value of the "notif_id" field.
-	NotifID uuid.UUID `json:"notif_id,omitempty"`
+	// EventID holds the value of the "event_id" field.
+	EventID uuid.UUID `json:"event_id,omitempty"`
 	// Channel holds the value of the "channel" field.
 	Channel string `json:"channel,omitempty"`
 }
@@ -41,7 +41,7 @@ func (*SendNotif) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullInt64)
 		case sendnotif.FieldChannel:
 			values[i] = new(sql.NullString)
-		case sendnotif.FieldID, sendnotif.FieldAppID, sendnotif.FieldUserID, sendnotif.FieldNotifID:
+		case sendnotif.FieldID, sendnotif.FieldAppID, sendnotif.FieldUserID, sendnotif.FieldEventID:
 			values[i] = new(uuid.UUID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type SendNotif", columns[i])
@@ -94,11 +94,11 @@ func (sn *SendNotif) assignValues(columns []string, values []interface{}) error 
 			} else if value != nil {
 				sn.UserID = *value
 			}
-		case sendnotif.FieldNotifID:
+		case sendnotif.FieldEventID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
-				return fmt.Errorf("unexpected type %T for field notif_id", values[i])
+				return fmt.Errorf("unexpected type %T for field event_id", values[i])
 			} else if value != nil {
-				sn.NotifID = *value
+				sn.EventID = *value
 			}
 		case sendnotif.FieldChannel:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -149,8 +149,8 @@ func (sn *SendNotif) String() string {
 	builder.WriteString("user_id=")
 	builder.WriteString(fmt.Sprintf("%v", sn.UserID))
 	builder.WriteString(", ")
-	builder.WriteString("notif_id=")
-	builder.WriteString(fmt.Sprintf("%v", sn.NotifID))
+	builder.WriteString("event_id=")
+	builder.WriteString(fmt.Sprintf("%v", sn.EventID))
 	builder.WriteString(", ")
 	builder.WriteString("channel=")
 	builder.WriteString(sn.Channel)

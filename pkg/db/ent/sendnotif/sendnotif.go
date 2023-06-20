@@ -22,8 +22,8 @@ const (
 	FieldAppID = "app_id"
 	// FieldUserID holds the string denoting the user_id field in the database.
 	FieldUserID = "user_id"
-	// FieldNotifID holds the string denoting the notif_id field in the database.
-	FieldNotifID = "notif_id"
+	// FieldEventID holds the string denoting the event_id field in the database.
+	FieldEventID = "event_id"
 	// FieldChannel holds the string denoting the channel field in the database.
 	FieldChannel = "channel"
 	// Table holds the table name of the sendnotif in the database.
@@ -38,7 +38,7 @@ var Columns = []string{
 	FieldDeletedAt,
 	FieldAppID,
 	FieldUserID,
-	FieldNotifID,
+	FieldEventID,
 	FieldChannel,
 }
 
@@ -73,8 +73,8 @@ var (
 	DefaultAppID func() uuid.UUID
 	// DefaultUserID holds the default value on creation for the "user_id" field.
 	DefaultUserID func() uuid.UUID
-	// DefaultNotifID holds the default value on creation for the "notif_id" field.
-	DefaultNotifID func() uuid.UUID
+	// DefaultEventID holds the default value on creation for the "event_id" field.
+	DefaultEventID func() uuid.UUID
 	// DefaultChannel holds the default value on creation for the "channel" field.
 	DefaultChannel string
 	// DefaultID holds the default value on creation for the "id" field.

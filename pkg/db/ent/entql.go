@@ -259,7 +259,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			sendnotif.FieldDeletedAt: {Type: field.TypeUint32, Column: sendnotif.FieldDeletedAt},
 			sendnotif.FieldAppID:     {Type: field.TypeUUID, Column: sendnotif.FieldAppID},
 			sendnotif.FieldUserID:    {Type: field.TypeUUID, Column: sendnotif.FieldUserID},
-			sendnotif.FieldNotifID:   {Type: field.TypeUUID, Column: sendnotif.FieldNotifID},
+			sendnotif.FieldEventID:   {Type: field.TypeUUID, Column: sendnotif.FieldEventID},
 			sendnotif.FieldChannel:   {Type: field.TypeString, Column: sendnotif.FieldChannel},
 		},
 	}
@@ -1224,9 +1224,9 @@ func (f *SendNotifFilter) WhereUserID(p entql.ValueP) {
 	f.Where(p.Field(sendnotif.FieldUserID))
 }
 
-// WhereNotifID applies the entql [16]byte predicate on the notif_id field.
-func (f *SendNotifFilter) WhereNotifID(p entql.ValueP) {
-	f.Where(p.Field(sendnotif.FieldNotifID))
+// WhereEventID applies the entql [16]byte predicate on the event_id field.
+func (f *SendNotifFilter) WhereEventID(p entql.ValueP) {
+	f.Where(p.Field(sendnotif.FieldEventID))
 }
 
 // WhereChannel applies the entql string predicate on the channel field.

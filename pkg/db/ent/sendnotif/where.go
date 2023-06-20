@@ -114,10 +114,10 @@ func UserID(v uuid.UUID) predicate.SendNotif {
 	})
 }
 
-// NotifID applies equality check predicate on the "notif_id" field. It's identical to NotifIDEQ.
-func NotifID(v uuid.UUID) predicate.SendNotif {
+// EventID applies equality check predicate on the "event_id" field. It's identical to EventIDEQ.
+func EventID(v uuid.UUID) predicate.SendNotif {
 	return predicate.SendNotif(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldNotifID), v))
+		s.Where(sql.EQ(s.C(FieldEventID), v))
 	})
 }
 
@@ -476,81 +476,81 @@ func UserIDNotNil() predicate.SendNotif {
 	})
 }
 
-// NotifIDEQ applies the EQ predicate on the "notif_id" field.
-func NotifIDEQ(v uuid.UUID) predicate.SendNotif {
+// EventIDEQ applies the EQ predicate on the "event_id" field.
+func EventIDEQ(v uuid.UUID) predicate.SendNotif {
 	return predicate.SendNotif(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldNotifID), v))
+		s.Where(sql.EQ(s.C(FieldEventID), v))
 	})
 }
 
-// NotifIDNEQ applies the NEQ predicate on the "notif_id" field.
-func NotifIDNEQ(v uuid.UUID) predicate.SendNotif {
+// EventIDNEQ applies the NEQ predicate on the "event_id" field.
+func EventIDNEQ(v uuid.UUID) predicate.SendNotif {
 	return predicate.SendNotif(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldNotifID), v))
+		s.Where(sql.NEQ(s.C(FieldEventID), v))
 	})
 }
 
-// NotifIDIn applies the In predicate on the "notif_id" field.
-func NotifIDIn(vs ...uuid.UUID) predicate.SendNotif {
+// EventIDIn applies the In predicate on the "event_id" field.
+func EventIDIn(vs ...uuid.UUID) predicate.SendNotif {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
 	return predicate.SendNotif(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldNotifID), v...))
+		s.Where(sql.In(s.C(FieldEventID), v...))
 	})
 }
 
-// NotifIDNotIn applies the NotIn predicate on the "notif_id" field.
-func NotifIDNotIn(vs ...uuid.UUID) predicate.SendNotif {
+// EventIDNotIn applies the NotIn predicate on the "event_id" field.
+func EventIDNotIn(vs ...uuid.UUID) predicate.SendNotif {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
 	return predicate.SendNotif(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldNotifID), v...))
+		s.Where(sql.NotIn(s.C(FieldEventID), v...))
 	})
 }
 
-// NotifIDGT applies the GT predicate on the "notif_id" field.
-func NotifIDGT(v uuid.UUID) predicate.SendNotif {
+// EventIDGT applies the GT predicate on the "event_id" field.
+func EventIDGT(v uuid.UUID) predicate.SendNotif {
 	return predicate.SendNotif(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldNotifID), v))
+		s.Where(sql.GT(s.C(FieldEventID), v))
 	})
 }
 
-// NotifIDGTE applies the GTE predicate on the "notif_id" field.
-func NotifIDGTE(v uuid.UUID) predicate.SendNotif {
+// EventIDGTE applies the GTE predicate on the "event_id" field.
+func EventIDGTE(v uuid.UUID) predicate.SendNotif {
 	return predicate.SendNotif(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldNotifID), v))
+		s.Where(sql.GTE(s.C(FieldEventID), v))
 	})
 }
 
-// NotifIDLT applies the LT predicate on the "notif_id" field.
-func NotifIDLT(v uuid.UUID) predicate.SendNotif {
+// EventIDLT applies the LT predicate on the "event_id" field.
+func EventIDLT(v uuid.UUID) predicate.SendNotif {
 	return predicate.SendNotif(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldNotifID), v))
+		s.Where(sql.LT(s.C(FieldEventID), v))
 	})
 }
 
-// NotifIDLTE applies the LTE predicate on the "notif_id" field.
-func NotifIDLTE(v uuid.UUID) predicate.SendNotif {
+// EventIDLTE applies the LTE predicate on the "event_id" field.
+func EventIDLTE(v uuid.UUID) predicate.SendNotif {
 	return predicate.SendNotif(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldNotifID), v))
+		s.Where(sql.LTE(s.C(FieldEventID), v))
 	})
 }
 
-// NotifIDIsNil applies the IsNil predicate on the "notif_id" field.
-func NotifIDIsNil() predicate.SendNotif {
+// EventIDIsNil applies the IsNil predicate on the "event_id" field.
+func EventIDIsNil() predicate.SendNotif {
 	return predicate.SendNotif(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldNotifID)))
+		s.Where(sql.IsNull(s.C(FieldEventID)))
 	})
 }
 
-// NotifIDNotNil applies the NotNil predicate on the "notif_id" field.
-func NotifIDNotNil() predicate.SendNotif {
+// EventIDNotNil applies the NotNil predicate on the "event_id" field.
+func EventIDNotNil() predicate.SendNotif {
 	return predicate.SendNotif(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldNotifID)))
+		s.Where(sql.NotNull(s.C(FieldEventID)))
 	})
 }
 

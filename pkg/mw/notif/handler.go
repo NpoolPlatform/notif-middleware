@@ -319,7 +319,7 @@ func WithReqs(reqs []*npool.NotifReq) func(context.Context, *Handler) error {
 				default:
 					return fmt.Errorf("invalid EventType")
 				}
-				_req.NotifType = req.NotifType
+				_req.EventType = req.EventType
 			}
 			if req.Channel != nil {
 				switch req.GetChannel() {
@@ -377,9 +377,38 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 				Val: id,
 			}
 		}
+		if conds.UserID != nil {
+			id, err := uuid.Parse(conds.GetUserID().GetValue())
+			if err != nil {
+				return err
+			}
+			h.Conds.UserID = &cruder.Cond{
+				Op:  conds.GetUserID().GetOp(),
+				Val: id,
+			}
+		}
+		if conds.LangID != nil {
+			id, err := uuid.Parse(conds.GetLangID().GetValue())
+			if err != nil {
+				return err
+			}
+			h.Conds.LangID = &cruder.Cond{
+				Op:  conds.GetLangID().GetOp(),
+				Val: id,
+			}
+		}
+		if conds.EventID != nil {
+			id, err := uuid.Parse(conds.GetEventID().GetValue())
+			if err != nil {
+				return err
+			}
+			h.Conds.EventID = &cruder.Cond{
+				Op:  conds.GetEventID().GetOp(),
+				Val: id,
+			}
+		}
 		if conds.NotifType != nil {
 			switch conds.GetNotifType().GetValue() {
-			case uint32(npool.NotifType_DefaultType):
 			case uint32(npool.NotifType_Broadcast):
 			case uint32(npool.NotifType_Multicast):
 			case uint32(npool.NotifType_Unicast):

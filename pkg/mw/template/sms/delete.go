@@ -16,9 +16,13 @@ func (h *Handler) DeleteSMSTemplate(ctx context.Context) (*npool.SMSTemplate, er
 	if h.ID == nil {
 		return nil, fmt.Errorf("invalid id")
 	}
+
 	info, err := h.GetSMSTemplate(ctx)
 	if err != nil {
 		return nil, err
+	}
+	if info == nil {
+		return nil, nil
 	}
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {

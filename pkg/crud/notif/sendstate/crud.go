@@ -40,6 +40,9 @@ func CreateSet(c *ent.SendNotifCreate, req *Req) *ent.SendNotifCreate {
 }
 
 func UpdateSet(u *ent.SendNotifUpdateOne, req *Req) *ent.SendNotifUpdateOne {
+	if req.DeletedAt != nil {
+		u.SetDeletedAt(*req.DeletedAt)
+	}
 	return u
 }
 

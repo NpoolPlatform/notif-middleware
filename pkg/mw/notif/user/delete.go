@@ -16,9 +16,13 @@ func (h *Handler) DeleteUser(ctx context.Context) (*npool.UserNotif, error) {
 	if h.ID == nil {
 		return nil, fmt.Errorf("invalid id")
 	}
+
 	info, err := h.GetUser(ctx)
 	if err != nil {
 		return nil, err
+	}
+	if info == nil {
+		return nil, nil
 	}
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {

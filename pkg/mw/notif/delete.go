@@ -20,10 +20,13 @@ func (h *Handler) DeleteNotif(ctx context.Context) (*npool.Notif, error) {
 	if h.AppID == nil {
 		return nil, fmt.Errorf("invalid appid")
 	}
-	info, err := h.GetNotif(ctx)
 
+	info, err := h.GetNotif(ctx)
 	if err != nil {
 		return nil, err
+	}
+	if info == nil {
+		return nil, nil
 	}
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {

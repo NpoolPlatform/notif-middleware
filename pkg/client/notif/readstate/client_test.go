@@ -149,7 +149,7 @@ func deleteReadState(t *testing.T) {
 	}
 	info, err = GetReadState(context.Background(), info.ID)
 	assert.Nil(t, err)
-	assert.NotNil(t, info)
+	assert.Nil(t, info)
 }
 
 func TestClient(t *testing.T) {

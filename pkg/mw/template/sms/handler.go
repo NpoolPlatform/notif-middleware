@@ -8,6 +8,7 @@ import (
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	templatemwpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/template"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/template/sms"
+	constant "github.com/NpoolPlatform/notif-middleware/pkg/const"
 	smstemplatecrud "github.com/NpoolPlatform/notif-middleware/pkg/crud/template/sms"
 
 	"github.com/google/uuid"
@@ -284,6 +285,9 @@ func WithOffset(offset int32) func(context.Context, *Handler) error {
 
 func WithLimit(limit int32) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
+		if limit == 0 {
+			limit = constant.DefaultRowLimit
+		}
 		h.Limit = limit
 		return nil
 	}

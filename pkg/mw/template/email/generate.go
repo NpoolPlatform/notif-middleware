@@ -25,9 +25,6 @@ func (h *Handler) GenerateNotifs(ctx context.Context) ([]*notifmwpb.NotifReq, er
 	if h.UserID == nil {
 		return nil, fmt.Errorf("invalid userid")
 	}
-	if h.LangID == nil {
-		return nil, fmt.Errorf("invalid langid")
-	}
 	if h.UsedFor == nil {
 		return nil, fmt.Errorf("invalid usedfor")
 	}
@@ -48,7 +45,6 @@ func (h *Handler) GenerateNotifs(ctx context.Context) ([]*notifmwpb.NotifReq, er
 		AppID:   &cruder.Cond{Op: cruder.EQ, Val: *h.AppID},
 		UsedFor: &cruder.Cond{Op: cruder.EQ, Val: *h.UsedFor},
 	}
-
 	tmpls, _, err := emailtmplHandler.GetEmailTemplates(ctx)
 	if err != nil {
 		return nil, err

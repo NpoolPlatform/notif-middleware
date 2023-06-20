@@ -28,9 +28,6 @@ func (h *Handler) GenerateNotifs(
 	if h.UserID == nil {
 		return nil, fmt.Errorf("invalid userid")
 	}
-	if h.LangID == nil {
-		return nil, fmt.Errorf("invalid langid")
-	}
 	if h.UsedFor == nil {
 		return nil, fmt.Errorf("invalid usedfor")
 	}

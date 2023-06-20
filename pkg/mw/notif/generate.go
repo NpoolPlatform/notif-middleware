@@ -2,10 +2,10 @@ package notif
 
 import (
 	"context"
-
-	"github.com/NpoolPlatform/notif-middleware/pkg/mw/template"
+	"fmt"
 
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
+	templatemw "github.com/NpoolPlatform/notif-middleware/pkg/mw/template"
 )
 
 func (h *Handler) GenerateNotifs(
@@ -13,7 +13,30 @@ func (h *Handler) GenerateNotifs(
 ) (
 	[]*npool.Notif, error,
 ) {
-	reqs, err := template.GenerateNotifs(ctx, h.AppID.String(), h.UserID.String(), *h.EventType, h.Vars)
+	if h.AppID == nil {
+		return nil, fmt.Errorf("invalid appid")
+	}
+	if h.UserID == nil {
+		return nil, fmt.Errorf("invalid userid")
+	}
+	if h.EventType == nil {
+		return nil, fmt.Errorf("invalid eventtype")
+	}
+	appID := h.AppID.String()
+	userID := h.UserID.String()
+
+	templateHandler, err := templatemw.NewHandler(
+		ctx,
+		templatemw.WithAppID(&appID),
+		templatemw.WithUserID(&userID),
+		templatemw.WithUsedFor(h.EventType),
+		templatemw.WithVars(h.Vars),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	reqs, err := templateHandler.GenerateNotifs(ctx)
 	if err != nil {
 		return nil, err
 	}

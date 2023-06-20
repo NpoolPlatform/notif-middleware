@@ -10,7 +10,7 @@ import (
 	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 
 	notifmwpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
-	notifchanmwpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/channel"
+	notifchancrud "github.com/NpoolPlatform/notif-middleware/pkg/crud/notif/channel"
 
 	notifchanmw "github.com/NpoolPlatform/notif-middleware/pkg/mw/notif/channel"
 
@@ -19,30 +19,36 @@ import (
 	sms "github.com/NpoolPlatform/notif-middleware/pkg/mw/template/sms"
 )
 
-func GenerateNotifs(
+// nolint:gocyclo
+func (h *Handler) GenerateNotifs(
 	ctx context.Context,
-	appID, userID string,
-	usedFor basetypes.UsedFor,
-	vars *npool.TemplateVars,
-) ([]*notifmwpb.NotifReq, error) {
+) (
+	[]*notifmwpb.NotifReq,
+	error,
+) {
 	const maxChannels = int32(100)
+	if h.AppID == nil {
+		return nil, fmt.Errorf("invalid appid")
+	}
+	if h.UserID == nil {
+		return nil, fmt.Errorf("invalid userid")
+	}
+	if h.UsedFor == nil {
+		return nil, fmt.Errorf("invalid usedfor")
+	}
+	appID := h.AppID.String()
+	userID := h.UserID.String()
 	chanHandler, err := notifchanmw.NewHandler(
 		ctx,
-		notifchanmw.WithConds(&notifchanmwpb.Conds{
-			AppID: &basetypes.StringVal{
-				Op:    cruder.EQ,
-				Value: appID,
-			},
-			EventType: &basetypes.Uint32Val{
-				Op:    cruder.EQ,
-				Value: uint32(usedFor),
-			},
-		}),
 		notifchanmw.WithOffset(0),
 		notifchanmw.WithLimit(maxChannels),
 	)
 	if err != nil {
 		return nil, err
+	}
+	chanHandler.Conds = &notifchancrud.Conds{
+		AppID:     &cruder.Cond{Op: cruder.EQ, Val: *h.AppID},
+		EventType: &cruder.Cond{Op: cruder.EQ, Val: *h.UsedFor},
 	}
 
 	chans, _, err := chanHandler.GetChannels(ctx)
@@ -54,7 +60,6 @@ func GenerateNotifs(
 	}
 
 	reqs := []*notifmwpb.NotifReq{}
-
 	for _, ch := range chans {
 		switch ch.Channel {
 		case basetypes.NotifChannel_ChannelEmail:
@@ -62,8 +67,8 @@ func GenerateNotifs(
 				ctx,
 				email.WithAppID(&appID),
 				email.WithUserID(&userID),
-				email.WithUsedFor(&usedFor),
-				email.WithVars(vars),
+				email.WithUsedFor(h.UsedFor),
+				email.WithVars(h.Vars),
 			)
 			if err != nil {
 				return nil, err
@@ -78,8 +83,8 @@ func GenerateNotifs(
 				ctx,
 				sms.WithAppID(&appID),
 				sms.WithUserID(&userID),
-				sms.WithUsedFor(&usedFor),
-				sms.WithVars(vars),
+				sms.WithUsedFor(h.UsedFor),
+				sms.WithVars(h.Vars),
 			)
 			if err != nil {
 				return nil, err
@@ -94,8 +99,8 @@ func GenerateNotifs(
 				ctx,
 				frontend.WithAppID(&appID),
 				frontend.WithUserID(&userID),
-				frontend.WithUsedFor(&usedFor),
-				frontend.WithVars(vars),
+				frontend.WithUsedFor(h.UsedFor),
+				frontend.WithVars(h.Vars),
 			)
 			if err != nil {
 				return nil, err
@@ -111,21 +116,31 @@ func GenerateNotifs(
 	return reqs, nil
 }
 
-func GenerateText(
+func (h *Handler) GenerateText(
 	ctx context.Context,
-	appID, langID string,
-	usedFor basetypes.UsedFor,
-	channel basetypes.NotifChannel,
-	vars *npool.TemplateVars,
 ) (*npool.TextInfo, error) {
-	switch channel {
+	if h.AppID == nil {
+		return nil, fmt.Errorf("invalid appid")
+	}
+	if h.LangID == nil {
+		return nil, fmt.Errorf("invalid langid")
+	}
+	if h.UsedFor == nil {
+		return nil, fmt.Errorf("invalid usedfor")
+	}
+	if h.Channel == nil {
+		return nil, fmt.Errorf("invalid channel")
+	}
+	appID := h.AppID.String()
+	langID := h.LangID.String()
+	switch *h.Channel {
 	case basetypes.NotifChannel_ChannelEmail:
 		emailHandler, err := email.NewHandler(
 			ctx,
 			email.WithAppID(&appID),
 			email.WithLangID(&langID),
-			email.WithUsedFor(&usedFor),
-			email.WithVars(vars),
+			email.WithUsedFor(h.UsedFor),
+			email.WithVars(h.Vars),
 		)
 		if err != nil {
 			return nil, err
@@ -136,8 +151,8 @@ func GenerateText(
 			ctx,
 			sms.WithAppID(&appID),
 			sms.WithLangID(&langID),
-			sms.WithUsedFor(&usedFor),
-			sms.WithVars(vars),
+			sms.WithUsedFor(h.UsedFor),
+			sms.WithVars(h.Vars),
 		)
 		if err != nil {
 			return nil, err
@@ -148,8 +163,8 @@ func GenerateText(
 			ctx,
 			frontend.WithAppID(&appID),
 			frontend.WithLangID(&langID),
-			frontend.WithUsedFor(&usedFor),
-			frontend.WithVars(vars),
+			frontend.WithUsedFor(h.UsedFor),
+			frontend.WithVars(h.Vars),
 		)
 		if err != nil {
 			return nil, err

@@ -714,10 +714,10 @@ func init() {
 	usernotifDescUserID := usernotifFields[2].Descriptor()
 	// usernotif.DefaultUserID holds the default value on creation for the user_id field.
 	usernotif.DefaultUserID = usernotifDescUserID.Default.(func() uuid.UUID)
-	// usernotifDescNotifID is the schema descriptor for notif_id field.
-	usernotifDescNotifID := usernotifFields[3].Descriptor()
-	// usernotif.DefaultNotifID holds the default value on creation for the notif_id field.
-	usernotif.DefaultNotifID = usernotifDescNotifID.Default.(func() uuid.UUID)
+	// usernotifDescEventType is the schema descriptor for event_type field.
+	usernotifDescEventType := usernotifFields[3].Descriptor()
+	// usernotif.DefaultEventType holds the default value on creation for the event_type field.
+	usernotif.DefaultEventType = usernotifDescEventType.Default.(string)
 	// usernotifDescID is the schema descriptor for id field.
 	usernotifDescID := usernotifFields[0].Descriptor()
 	// usernotif.DefaultID holds the default value on creation for the id field.

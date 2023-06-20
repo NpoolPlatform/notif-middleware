@@ -114,10 +114,10 @@ func UserID(v uuid.UUID) predicate.UserNotif {
 	})
 }
 
-// NotifID applies equality check predicate on the "notif_id" field. It's identical to NotifIDEQ.
-func NotifID(v uuid.UUID) predicate.UserNotif {
+// EventType applies equality check predicate on the "event_type" field. It's identical to EventTypeEQ.
+func EventType(v string) predicate.UserNotif {
 	return predicate.UserNotif(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldNotifID), v))
+		s.Where(sql.EQ(s.C(FieldEventType), v))
 	})
 }
 
@@ -469,81 +469,116 @@ func UserIDNotNil() predicate.UserNotif {
 	})
 }
 
-// NotifIDEQ applies the EQ predicate on the "notif_id" field.
-func NotifIDEQ(v uuid.UUID) predicate.UserNotif {
+// EventTypeEQ applies the EQ predicate on the "event_type" field.
+func EventTypeEQ(v string) predicate.UserNotif {
 	return predicate.UserNotif(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldNotifID), v))
+		s.Where(sql.EQ(s.C(FieldEventType), v))
 	})
 }
 
-// NotifIDNEQ applies the NEQ predicate on the "notif_id" field.
-func NotifIDNEQ(v uuid.UUID) predicate.UserNotif {
+// EventTypeNEQ applies the NEQ predicate on the "event_type" field.
+func EventTypeNEQ(v string) predicate.UserNotif {
 	return predicate.UserNotif(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldNotifID), v))
+		s.Where(sql.NEQ(s.C(FieldEventType), v))
 	})
 }
 
-// NotifIDIn applies the In predicate on the "notif_id" field.
-func NotifIDIn(vs ...uuid.UUID) predicate.UserNotif {
+// EventTypeIn applies the In predicate on the "event_type" field.
+func EventTypeIn(vs ...string) predicate.UserNotif {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
 	return predicate.UserNotif(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldNotifID), v...))
+		s.Where(sql.In(s.C(FieldEventType), v...))
 	})
 }
 
-// NotifIDNotIn applies the NotIn predicate on the "notif_id" field.
-func NotifIDNotIn(vs ...uuid.UUID) predicate.UserNotif {
+// EventTypeNotIn applies the NotIn predicate on the "event_type" field.
+func EventTypeNotIn(vs ...string) predicate.UserNotif {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
 	return predicate.UserNotif(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldNotifID), v...))
+		s.Where(sql.NotIn(s.C(FieldEventType), v...))
 	})
 }
 
-// NotifIDGT applies the GT predicate on the "notif_id" field.
-func NotifIDGT(v uuid.UUID) predicate.UserNotif {
+// EventTypeGT applies the GT predicate on the "event_type" field.
+func EventTypeGT(v string) predicate.UserNotif {
 	return predicate.UserNotif(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldNotifID), v))
+		s.Where(sql.GT(s.C(FieldEventType), v))
 	})
 }
 
-// NotifIDGTE applies the GTE predicate on the "notif_id" field.
-func NotifIDGTE(v uuid.UUID) predicate.UserNotif {
+// EventTypeGTE applies the GTE predicate on the "event_type" field.
+func EventTypeGTE(v string) predicate.UserNotif {
 	return predicate.UserNotif(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldNotifID), v))
+		s.Where(sql.GTE(s.C(FieldEventType), v))
 	})
 }
 
-// NotifIDLT applies the LT predicate on the "notif_id" field.
-func NotifIDLT(v uuid.UUID) predicate.UserNotif {
+// EventTypeLT applies the LT predicate on the "event_type" field.
+func EventTypeLT(v string) predicate.UserNotif {
 	return predicate.UserNotif(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldNotifID), v))
+		s.Where(sql.LT(s.C(FieldEventType), v))
 	})
 }
 
-// NotifIDLTE applies the LTE predicate on the "notif_id" field.
-func NotifIDLTE(v uuid.UUID) predicate.UserNotif {
+// EventTypeLTE applies the LTE predicate on the "event_type" field.
+func EventTypeLTE(v string) predicate.UserNotif {
 	return predicate.UserNotif(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldNotifID), v))
+		s.Where(sql.LTE(s.C(FieldEventType), v))
 	})
 }
 
-// NotifIDIsNil applies the IsNil predicate on the "notif_id" field.
-func NotifIDIsNil() predicate.UserNotif {
+// EventTypeContains applies the Contains predicate on the "event_type" field.
+func EventTypeContains(v string) predicate.UserNotif {
 	return predicate.UserNotif(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldNotifID)))
+		s.Where(sql.Contains(s.C(FieldEventType), v))
 	})
 }
 
-// NotifIDNotNil applies the NotNil predicate on the "notif_id" field.
-func NotifIDNotNil() predicate.UserNotif {
+// EventTypeHasPrefix applies the HasPrefix predicate on the "event_type" field.
+func EventTypeHasPrefix(v string) predicate.UserNotif {
 	return predicate.UserNotif(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldNotifID)))
+		s.Where(sql.HasPrefix(s.C(FieldEventType), v))
+	})
+}
+
+// EventTypeHasSuffix applies the HasSuffix predicate on the "event_type" field.
+func EventTypeHasSuffix(v string) predicate.UserNotif {
+	return predicate.UserNotif(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldEventType), v))
+	})
+}
+
+// EventTypeIsNil applies the IsNil predicate on the "event_type" field.
+func EventTypeIsNil() predicate.UserNotif {
+	return predicate.UserNotif(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldEventType)))
+	})
+}
+
+// EventTypeNotNil applies the NotNil predicate on the "event_type" field.
+func EventTypeNotNil() predicate.UserNotif {
+	return predicate.UserNotif(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldEventType)))
+	})
+}
+
+// EventTypeEqualFold applies the EqualFold predicate on the "event_type" field.
+func EventTypeEqualFold(v string) predicate.UserNotif {
+	return predicate.UserNotif(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldEventType), v))
+	})
+}
+
+// EventTypeContainsFold applies the ContainsFold predicate on the "event_type" field.
+func EventTypeContainsFold(v string) predicate.UserNotif {
+	return predicate.UserNotif(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldEventType), v))
 	})
 }
 

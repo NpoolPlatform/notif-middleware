@@ -317,7 +317,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			usernotif.FieldDeletedAt: {Type: field.TypeUint32, Column: usernotif.FieldDeletedAt},
 			usernotif.FieldAppID:     {Type: field.TypeUUID, Column: usernotif.FieldAppID},
 			usernotif.FieldUserID:    {Type: field.TypeUUID, Column: usernotif.FieldUserID},
-			usernotif.FieldNotifID:   {Type: field.TypeUUID, Column: usernotif.FieldNotifID},
+			usernotif.FieldEventType: {Type: field.TypeString, Column: usernotif.FieldEventType},
 		},
 	}
 	return graph
@@ -1439,7 +1439,7 @@ func (f *UserNotifFilter) WhereUserID(p entql.ValueP) {
 	f.Where(p.Field(usernotif.FieldUserID))
 }
 
-// WhereNotifID applies the entql [16]byte predicate on the notif_id field.
-func (f *UserNotifFilter) WhereNotifID(p entql.ValueP) {
-	f.Where(p.Field(usernotif.FieldNotifID))
+// WhereEventType applies the entql string predicate on the event_type field.
+func (f *UserNotifFilter) WhereEventType(p entql.StringP) {
+	f.Where(p.Field(usernotif.FieldEventType))
 }

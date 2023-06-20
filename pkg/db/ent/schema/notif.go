@@ -7,7 +7,6 @@ import (
 	"github.com/google/uuid"
 
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
-	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
 )
 
 // Notif holds the schema definition for the Notif entity.
@@ -77,7 +76,7 @@ func (Notif) Fields() []ent.Field {
 		field.
 			String("type").
 			Optional().
-			Default(npool.NotifType_DefaultType.String()),
+			Default(basetypes.NotifType_DefaultNotifType.String()),
 	}
 }
 

@@ -11657,7 +11657,7 @@ type UserNotifMutation struct {
 	adddeleted_at *int32
 	app_id        *uuid.UUID
 	user_id       *uuid.UUID
-	notif_id      *uuid.UUID
+	event_type    *string
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*UserNotif, error)
@@ -12034,53 +12034,53 @@ func (m *UserNotifMutation) ResetUserID() {
 	delete(m.clearedFields, usernotif.FieldUserID)
 }
 
-// SetNotifID sets the "notif_id" field.
-func (m *UserNotifMutation) SetNotifID(u uuid.UUID) {
-	m.notif_id = &u
+// SetEventType sets the "event_type" field.
+func (m *UserNotifMutation) SetEventType(s string) {
+	m.event_type = &s
 }
 
-// NotifID returns the value of the "notif_id" field in the mutation.
-func (m *UserNotifMutation) NotifID() (r uuid.UUID, exists bool) {
-	v := m.notif_id
+// EventType returns the value of the "event_type" field in the mutation.
+func (m *UserNotifMutation) EventType() (r string, exists bool) {
+	v := m.event_type
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldNotifID returns the old "notif_id" field's value of the UserNotif entity.
+// OldEventType returns the old "event_type" field's value of the UserNotif entity.
 // If the UserNotif object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserNotifMutation) OldNotifID(ctx context.Context) (v uuid.UUID, err error) {
+func (m *UserNotifMutation) OldEventType(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldNotifID is only allowed on UpdateOne operations")
+		return v, errors.New("OldEventType is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldNotifID requires an ID field in the mutation")
+		return v, errors.New("OldEventType requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldNotifID: %w", err)
+		return v, fmt.Errorf("querying old value for OldEventType: %w", err)
 	}
-	return oldValue.NotifID, nil
+	return oldValue.EventType, nil
 }
 
-// ClearNotifID clears the value of the "notif_id" field.
-func (m *UserNotifMutation) ClearNotifID() {
-	m.notif_id = nil
-	m.clearedFields[usernotif.FieldNotifID] = struct{}{}
+// ClearEventType clears the value of the "event_type" field.
+func (m *UserNotifMutation) ClearEventType() {
+	m.event_type = nil
+	m.clearedFields[usernotif.FieldEventType] = struct{}{}
 }
 
-// NotifIDCleared returns if the "notif_id" field was cleared in this mutation.
-func (m *UserNotifMutation) NotifIDCleared() bool {
-	_, ok := m.clearedFields[usernotif.FieldNotifID]
+// EventTypeCleared returns if the "event_type" field was cleared in this mutation.
+func (m *UserNotifMutation) EventTypeCleared() bool {
+	_, ok := m.clearedFields[usernotif.FieldEventType]
 	return ok
 }
 
-// ResetNotifID resets all changes to the "notif_id" field.
-func (m *UserNotifMutation) ResetNotifID() {
-	m.notif_id = nil
-	delete(m.clearedFields, usernotif.FieldNotifID)
+// ResetEventType resets all changes to the "event_type" field.
+func (m *UserNotifMutation) ResetEventType() {
+	m.event_type = nil
+	delete(m.clearedFields, usernotif.FieldEventType)
 }
 
 // Where appends a list predicates to the UserNotifMutation builder.
@@ -12118,8 +12118,8 @@ func (m *UserNotifMutation) Fields() []string {
 	if m.user_id != nil {
 		fields = append(fields, usernotif.FieldUserID)
 	}
-	if m.notif_id != nil {
-		fields = append(fields, usernotif.FieldNotifID)
+	if m.event_type != nil {
+		fields = append(fields, usernotif.FieldEventType)
 	}
 	return fields
 }
@@ -12139,8 +12139,8 @@ func (m *UserNotifMutation) Field(name string) (ent.Value, bool) {
 		return m.AppID()
 	case usernotif.FieldUserID:
 		return m.UserID()
-	case usernotif.FieldNotifID:
-		return m.NotifID()
+	case usernotif.FieldEventType:
+		return m.EventType()
 	}
 	return nil, false
 }
@@ -12160,8 +12160,8 @@ func (m *UserNotifMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldAppID(ctx)
 	case usernotif.FieldUserID:
 		return m.OldUserID(ctx)
-	case usernotif.FieldNotifID:
-		return m.OldNotifID(ctx)
+	case usernotif.FieldEventType:
+		return m.OldEventType(ctx)
 	}
 	return nil, fmt.Errorf("unknown UserNotif field %s", name)
 }
@@ -12206,12 +12206,12 @@ func (m *UserNotifMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetUserID(v)
 		return nil
-	case usernotif.FieldNotifID:
-		v, ok := value.(uuid.UUID)
+	case usernotif.FieldEventType:
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetNotifID(v)
+		m.SetEventType(v)
 		return nil
 	}
 	return fmt.Errorf("unknown UserNotif field %s", name)
@@ -12288,8 +12288,8 @@ func (m *UserNotifMutation) ClearedFields() []string {
 	if m.FieldCleared(usernotif.FieldUserID) {
 		fields = append(fields, usernotif.FieldUserID)
 	}
-	if m.FieldCleared(usernotif.FieldNotifID) {
-		fields = append(fields, usernotif.FieldNotifID)
+	if m.FieldCleared(usernotif.FieldEventType) {
+		fields = append(fields, usernotif.FieldEventType)
 	}
 	return fields
 }
@@ -12311,8 +12311,8 @@ func (m *UserNotifMutation) ClearField(name string) error {
 	case usernotif.FieldUserID:
 		m.ClearUserID()
 		return nil
-	case usernotif.FieldNotifID:
-		m.ClearNotifID()
+	case usernotif.FieldEventType:
+		m.ClearEventType()
 		return nil
 	}
 	return fmt.Errorf("unknown UserNotif nullable field %s", name)
@@ -12337,8 +12337,8 @@ func (m *UserNotifMutation) ResetField(name string) error {
 	case usernotif.FieldUserID:
 		m.ResetUserID()
 		return nil
-	case usernotif.FieldNotifID:
-		m.ResetNotifID()
+	case usernotif.FieldEventType:
+		m.ResetEventType()
 		return nil
 	}
 	return fmt.Errorf("unknown UserNotif field %s", name)

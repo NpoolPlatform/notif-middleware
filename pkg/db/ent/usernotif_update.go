@@ -124,23 +124,23 @@ func (unu *UserNotifUpdate) ClearUserID() *UserNotifUpdate {
 	return unu
 }
 
-// SetNotifID sets the "notif_id" field.
-func (unu *UserNotifUpdate) SetNotifID(u uuid.UUID) *UserNotifUpdate {
-	unu.mutation.SetNotifID(u)
+// SetEventType sets the "event_type" field.
+func (unu *UserNotifUpdate) SetEventType(s string) *UserNotifUpdate {
+	unu.mutation.SetEventType(s)
 	return unu
 }
 
-// SetNillableNotifID sets the "notif_id" field if the given value is not nil.
-func (unu *UserNotifUpdate) SetNillableNotifID(u *uuid.UUID) *UserNotifUpdate {
-	if u != nil {
-		unu.SetNotifID(*u)
+// SetNillableEventType sets the "event_type" field if the given value is not nil.
+func (unu *UserNotifUpdate) SetNillableEventType(s *string) *UserNotifUpdate {
+	if s != nil {
+		unu.SetEventType(*s)
 	}
 	return unu
 }
 
-// ClearNotifID clears the value of the "notif_id" field.
-func (unu *UserNotifUpdate) ClearNotifID() *UserNotifUpdate {
-	unu.mutation.ClearNotifID()
+// ClearEventType clears the value of the "event_type" field.
+func (unu *UserNotifUpdate) ClearEventType() *UserNotifUpdate {
+	unu.mutation.ClearEventType()
 	return unu
 }
 
@@ -310,17 +310,17 @@ func (unu *UserNotifUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: usernotif.FieldUserID,
 		})
 	}
-	if value, ok := unu.mutation.NotifID(); ok {
+	if value, ok := unu.mutation.EventType(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
+			Type:   field.TypeString,
 			Value:  value,
-			Column: usernotif.FieldNotifID,
+			Column: usernotif.FieldEventType,
 		})
 	}
-	if unu.mutation.NotifIDCleared() {
+	if unu.mutation.EventTypeCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Column: usernotif.FieldNotifID,
+			Type:   field.TypeString,
+			Column: usernotif.FieldEventType,
 		})
 	}
 	_spec.Modifiers = unu.modifiers
@@ -439,23 +439,23 @@ func (unuo *UserNotifUpdateOne) ClearUserID() *UserNotifUpdateOne {
 	return unuo
 }
 
-// SetNotifID sets the "notif_id" field.
-func (unuo *UserNotifUpdateOne) SetNotifID(u uuid.UUID) *UserNotifUpdateOne {
-	unuo.mutation.SetNotifID(u)
+// SetEventType sets the "event_type" field.
+func (unuo *UserNotifUpdateOne) SetEventType(s string) *UserNotifUpdateOne {
+	unuo.mutation.SetEventType(s)
 	return unuo
 }
 
-// SetNillableNotifID sets the "notif_id" field if the given value is not nil.
-func (unuo *UserNotifUpdateOne) SetNillableNotifID(u *uuid.UUID) *UserNotifUpdateOne {
-	if u != nil {
-		unuo.SetNotifID(*u)
+// SetNillableEventType sets the "event_type" field if the given value is not nil.
+func (unuo *UserNotifUpdateOne) SetNillableEventType(s *string) *UserNotifUpdateOne {
+	if s != nil {
+		unuo.SetEventType(*s)
 	}
 	return unuo
 }
 
-// ClearNotifID clears the value of the "notif_id" field.
-func (unuo *UserNotifUpdateOne) ClearNotifID() *UserNotifUpdateOne {
-	unuo.mutation.ClearNotifID()
+// ClearEventType clears the value of the "event_type" field.
+func (unuo *UserNotifUpdateOne) ClearEventType() *UserNotifUpdateOne {
+	unuo.mutation.ClearEventType()
 	return unuo
 }
 
@@ -655,17 +655,17 @@ func (unuo *UserNotifUpdateOne) sqlSave(ctx context.Context) (_node *UserNotif, 
 			Column: usernotif.FieldUserID,
 		})
 	}
-	if value, ok := unuo.mutation.NotifID(); ok {
+	if value, ok := unuo.mutation.EventType(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
+			Type:   field.TypeString,
 			Value:  value,
-			Column: usernotif.FieldNotifID,
+			Column: usernotif.FieldEventType,
 		})
 	}
-	if unuo.mutation.NotifIDCleared() {
+	if unuo.mutation.EventTypeCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
-			Column: usernotif.FieldNotifID,
+			Type:   field.TypeString,
+			Column: usernotif.FieldEventType,
 		})
 	}
 	_spec.Modifiers = unuo.modifiers

@@ -22,8 +22,8 @@ const (
 	FieldAppID = "app_id"
 	// FieldUserID holds the string denoting the user_id field in the database.
 	FieldUserID = "user_id"
-	// FieldNotifID holds the string denoting the notif_id field in the database.
-	FieldNotifID = "notif_id"
+	// FieldEventType holds the string denoting the event_type field in the database.
+	FieldEventType = "event_type"
 	// Table holds the table name of the usernotif in the database.
 	Table = "user_notifs"
 )
@@ -36,7 +36,7 @@ var Columns = []string{
 	FieldDeletedAt,
 	FieldAppID,
 	FieldUserID,
-	FieldNotifID,
+	FieldEventType,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -70,8 +70,8 @@ var (
 	DefaultAppID func() uuid.UUID
 	// DefaultUserID holds the default value on creation for the "user_id" field.
 	DefaultUserID func() uuid.UUID
-	// DefaultNotifID holds the default value on creation for the "notif_id" field.
-	DefaultNotifID func() uuid.UUID
+	// DefaultEventType holds the default value on creation for the "event_type" field.
+	DefaultEventType string
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )

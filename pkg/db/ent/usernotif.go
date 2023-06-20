@@ -26,8 +26,8 @@ type UserNotif struct {
 	AppID uuid.UUID `json:"app_id,omitempty"`
 	// UserID holds the value of the "user_id" field.
 	UserID uuid.UUID `json:"user_id,omitempty"`
-	// NotifID holds the value of the "notif_id" field.
-	NotifID uuid.UUID `json:"notif_id,omitempty"`
+	// EventType holds the value of the "event_type" field.
+	EventType string `json:"event_type,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -37,7 +37,9 @@ func (*UserNotif) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case usernotif.FieldCreatedAt, usernotif.FieldUpdatedAt, usernotif.FieldDeletedAt:
 			values[i] = new(sql.NullInt64)
-		case usernotif.FieldID, usernotif.FieldAppID, usernotif.FieldUserID, usernotif.FieldNotifID:
+		case usernotif.FieldEventType:
+			values[i] = new(sql.NullString)
+		case usernotif.FieldID, usernotif.FieldAppID, usernotif.FieldUserID:
 			values[i] = new(uuid.UUID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type UserNotif", columns[i])
@@ -90,11 +92,11 @@ func (un *UserNotif) assignValues(columns []string, values []interface{}) error 
 			} else if value != nil {
 				un.UserID = *value
 			}
-		case usernotif.FieldNotifID:
-			if value, ok := values[i].(*uuid.UUID); !ok {
-				return fmt.Errorf("unexpected type %T for field notif_id", values[i])
-			} else if value != nil {
-				un.NotifID = *value
+		case usernotif.FieldEventType:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field event_type", values[i])
+			} else if value.Valid {
+				un.EventType = value.String
 			}
 		}
 	}
@@ -139,8 +141,8 @@ func (un *UserNotif) String() string {
 	builder.WriteString("user_id=")
 	builder.WriteString(fmt.Sprintf("%v", un.UserID))
 	builder.WriteString(", ")
-	builder.WriteString("notif_id=")
-	builder.WriteString(fmt.Sprintf("%v", un.NotifID))
+	builder.WriteString("event_type=")
+	builder.WriteString(un.EventType)
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -6,6 +6,8 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/mixin"
 	"github.com/google/uuid"
+
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 )
 
 // UserNotif holds the schema definition for the UserNotif entity.
@@ -35,9 +37,9 @@ func (UserNotif) Fields() []ent.Field {
 			Optional().
 			Default(uuid.New),
 		field.
-			UUID("notif_id", uuid.UUID{}).
+			String("event_type").
 			Optional().
-			Default(uuid.New),
+			Default(basetypes.UsedFor_DefaultUsedFor.String()),
 	}
 }
 

@@ -7,7 +7,6 @@ import (
 	"github.com/google/uuid"
 
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
-	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement"
 )
 
 // Announcement holds the schema definition for the Announcement entity.
@@ -55,7 +54,7 @@ func (Announcement) Fields() []ent.Field {
 		field.
 			String("type").
 			Optional().
-			Default(npool.AnnouncementType_DefaultType.String()),
+			Default(basetypes.NotifType_DefaultNotifType.String()),
 	}
 }
 

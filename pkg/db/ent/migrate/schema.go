@@ -20,7 +20,7 @@ var (
 		{Name: "content", Type: field.TypeString, Nullable: true, Size: 2147483647, Default: ""},
 		{Name: "channel", Type: field.TypeString, Nullable: true, Default: "DefaultChannel"},
 		{Name: "end_at", Type: field.TypeUint32, Nullable: true, Default: 0},
-		{Name: "type", Type: field.TypeString, Nullable: true, Default: "DefaultType"},
+		{Name: "type", Type: field.TypeString, Nullable: true, Default: "DefaultNotifType"},
 	}
 	// AnnouncementsTable holds the schema information for the "announcements" table.
 	AnnouncementsTable = &schema.Table{
@@ -103,7 +103,7 @@ var (
 		{Name: "content", Type: field.TypeString, Nullable: true, Size: 2147483647, Default: ""},
 		{Name: "channel", Type: field.TypeString, Nullable: true, Default: "DefaultChannel"},
 		{Name: "extra", Type: field.TypeString, Nullable: true, Size: 2147483647, Default: ""},
-		{Name: "type", Type: field.TypeString, Nullable: true, Default: "DefaultType"},
+		{Name: "type", Type: field.TypeString, Nullable: true, Default: "DefaultNotifType"},
 	}
 	// NotifsTable holds the schema information for the "notifs" table.
 	NotifsTable = &schema.Table{
@@ -251,7 +251,7 @@ var (
 		{Name: "deleted_at", Type: field.TypeUint32},
 		{Name: "app_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
-		{Name: "notif_id", Type: field.TypeUUID, Nullable: true},
+		{Name: "event_type", Type: field.TypeString, Nullable: true, Default: "DefaultUsedFor"},
 	}
 	// UserNotifsTable holds the schema information for the "user_notifs" table.
 	UserNotifsTable = &schema.Table{

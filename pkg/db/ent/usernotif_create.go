@@ -93,16 +93,16 @@ func (unc *UserNotifCreate) SetNillableUserID(u *uuid.UUID) *UserNotifCreate {
 	return unc
 }
 
-// SetNotifID sets the "notif_id" field.
-func (unc *UserNotifCreate) SetNotifID(u uuid.UUID) *UserNotifCreate {
-	unc.mutation.SetNotifID(u)
+// SetEventType sets the "event_type" field.
+func (unc *UserNotifCreate) SetEventType(s string) *UserNotifCreate {
+	unc.mutation.SetEventType(s)
 	return unc
 }
 
-// SetNillableNotifID sets the "notif_id" field if the given value is not nil.
-func (unc *UserNotifCreate) SetNillableNotifID(u *uuid.UUID) *UserNotifCreate {
-	if u != nil {
-		unc.SetNotifID(*u)
+// SetNillableEventType sets the "event_type" field if the given value is not nil.
+func (unc *UserNotifCreate) SetNillableEventType(s *string) *UserNotifCreate {
+	if s != nil {
+		unc.SetEventType(*s)
 	}
 	return unc
 }
@@ -235,12 +235,9 @@ func (unc *UserNotifCreate) defaults() error {
 		v := usernotif.DefaultUserID()
 		unc.mutation.SetUserID(v)
 	}
-	if _, ok := unc.mutation.NotifID(); !ok {
-		if usernotif.DefaultNotifID == nil {
-			return fmt.Errorf("ent: uninitialized usernotif.DefaultNotifID (forgotten import ent/runtime?)")
-		}
-		v := usernotif.DefaultNotifID()
-		unc.mutation.SetNotifID(v)
+	if _, ok := unc.mutation.EventType(); !ok {
+		v := usernotif.DefaultEventType
+		unc.mutation.SetEventType(v)
 	}
 	if _, ok := unc.mutation.ID(); !ok {
 		if usernotif.DefaultID == nil {
@@ -340,13 +337,13 @@ func (unc *UserNotifCreate) createSpec() (*UserNotif, *sqlgraph.CreateSpec) {
 		})
 		_node.UserID = value
 	}
-	if value, ok := unc.mutation.NotifID(); ok {
+	if value, ok := unc.mutation.EventType(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUUID,
+			Type:   field.TypeString,
 			Value:  value,
-			Column: usernotif.FieldNotifID,
+			Column: usernotif.FieldEventType,
 		})
-		_node.NotifID = value
+		_node.EventType = value
 	}
 	return _node, _spec
 }
@@ -492,21 +489,21 @@ func (u *UserNotifUpsert) ClearUserID() *UserNotifUpsert {
 	return u
 }
 
-// SetNotifID sets the "notif_id" field.
-func (u *UserNotifUpsert) SetNotifID(v uuid.UUID) *UserNotifUpsert {
-	u.Set(usernotif.FieldNotifID, v)
+// SetEventType sets the "event_type" field.
+func (u *UserNotifUpsert) SetEventType(v string) *UserNotifUpsert {
+	u.Set(usernotif.FieldEventType, v)
 	return u
 }
 
-// UpdateNotifID sets the "notif_id" field to the value that was provided on create.
-func (u *UserNotifUpsert) UpdateNotifID() *UserNotifUpsert {
-	u.SetExcluded(usernotif.FieldNotifID)
+// UpdateEventType sets the "event_type" field to the value that was provided on create.
+func (u *UserNotifUpsert) UpdateEventType() *UserNotifUpsert {
+	u.SetExcluded(usernotif.FieldEventType)
 	return u
 }
 
-// ClearNotifID clears the value of the "notif_id" field.
-func (u *UserNotifUpsert) ClearNotifID() *UserNotifUpsert {
-	u.SetNull(usernotif.FieldNotifID)
+// ClearEventType clears the value of the "event_type" field.
+func (u *UserNotifUpsert) ClearEventType() *UserNotifUpsert {
+	u.SetNull(usernotif.FieldEventType)
 	return u
 }
 
@@ -665,24 +662,24 @@ func (u *UserNotifUpsertOne) ClearUserID() *UserNotifUpsertOne {
 	})
 }
 
-// SetNotifID sets the "notif_id" field.
-func (u *UserNotifUpsertOne) SetNotifID(v uuid.UUID) *UserNotifUpsertOne {
+// SetEventType sets the "event_type" field.
+func (u *UserNotifUpsertOne) SetEventType(v string) *UserNotifUpsertOne {
 	return u.Update(func(s *UserNotifUpsert) {
-		s.SetNotifID(v)
+		s.SetEventType(v)
 	})
 }
 
-// UpdateNotifID sets the "notif_id" field to the value that was provided on create.
-func (u *UserNotifUpsertOne) UpdateNotifID() *UserNotifUpsertOne {
+// UpdateEventType sets the "event_type" field to the value that was provided on create.
+func (u *UserNotifUpsertOne) UpdateEventType() *UserNotifUpsertOne {
 	return u.Update(func(s *UserNotifUpsert) {
-		s.UpdateNotifID()
+		s.UpdateEventType()
 	})
 }
 
-// ClearNotifID clears the value of the "notif_id" field.
-func (u *UserNotifUpsertOne) ClearNotifID() *UserNotifUpsertOne {
+// ClearEventType clears the value of the "event_type" field.
+func (u *UserNotifUpsertOne) ClearEventType() *UserNotifUpsertOne {
 	return u.Update(func(s *UserNotifUpsert) {
-		s.ClearNotifID()
+		s.ClearEventType()
 	})
 }
 
@@ -1007,24 +1004,24 @@ func (u *UserNotifUpsertBulk) ClearUserID() *UserNotifUpsertBulk {
 	})
 }
 
-// SetNotifID sets the "notif_id" field.
-func (u *UserNotifUpsertBulk) SetNotifID(v uuid.UUID) *UserNotifUpsertBulk {
+// SetEventType sets the "event_type" field.
+func (u *UserNotifUpsertBulk) SetEventType(v string) *UserNotifUpsertBulk {
 	return u.Update(func(s *UserNotifUpsert) {
-		s.SetNotifID(v)
+		s.SetEventType(v)
 	})
 }
 
-// UpdateNotifID sets the "notif_id" field to the value that was provided on create.
-func (u *UserNotifUpsertBulk) UpdateNotifID() *UserNotifUpsertBulk {
+// UpdateEventType sets the "event_type" field to the value that was provided on create.
+func (u *UserNotifUpsertBulk) UpdateEventType() *UserNotifUpsertBulk {
 	return u.Update(func(s *UserNotifUpsert) {
-		s.UpdateNotifID()
+		s.UpdateEventType()
 	})
 }
 
-// ClearNotifID clears the value of the "notif_id" field.
-func (u *UserNotifUpsertBulk) ClearNotifID() *UserNotifUpsertBulk {
+// ClearEventType clears the value of the "event_type" field.
+func (u *UserNotifUpsertBulk) ClearEventType() *UserNotifUpsertBulk {
 	return u.Update(func(s *UserNotifUpsert) {
-		s.ClearNotifID()
+		s.ClearEventType()
 	})
 }
 

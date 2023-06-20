@@ -2,13 +2,14 @@ package frontend
 
 import (
 	"context"
+	"fmt"
 
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/template"
 
 	notifmwpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
 
-	frontendtmplmwpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/template/frontend"
+	frontendtemplatecrud "github.com/NpoolPlatform/notif-middleware/pkg/crud/template/frontend"
 
 	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 
@@ -21,27 +22,34 @@ func (h *Handler) GenerateNotifs(
 	ctx context.Context,
 ) ([]*notifmwpb.NotifReq, error) {
 	const maxTemplates = int32(100)
+	if h.AppID == nil {
+		return nil, fmt.Errorf("invalid appid")
+	}
+	if h.UserID == nil {
+		return nil, fmt.Errorf("invalid userid")
+	}
+	if h.LangID == nil {
+		return nil, fmt.Errorf("invalid langid")
+	}
+	if h.UsedFor == nil {
+		return nil, fmt.Errorf("invalid usedfor")
+	}
+
 	eventID := uuid.NewString()
 	appID := h.AppID.String()
 	userID := h.UserID.String()
 
 	frontendtmplHandler, err := NewHandler(
 		ctx,
-		WithConds(&frontendtmplmwpb.Conds{
-			AppID: &basetypes.StringVal{
-				Op:    cruder.EQ,
-				Value: appID,
-			},
-			UsedFor: &basetypes.Uint32Val{
-				Op:    cruder.EQ,
-				Value: uint32(*h.UsedFor),
-			},
-		}),
 		WithOffset(0),
 		WithLimit(maxTemplates),
 	)
 	if err != nil {
 		return nil, err
+	}
+	frontendtmplHandler.Conds = &frontendtemplatecrud.Conds{
+		AppID:   &cruder.Cond{Op: cruder.EQ, Val: *h.AppID},
+		UsedFor: &cruder.Cond{Op: cruder.EQ, Val: *h.UsedFor},
 	}
 
 	tmpls, _, err := frontendtmplHandler.GetFrontendTemplates(ctx)
@@ -76,27 +84,16 @@ func (h *Handler) GenerateNotifs(
 }
 
 func (h *Handler) GenerateText(ctx context.Context) (*npool.TextInfo, error) {
-	appID := h.AppID.String()
-	langID := h.LangID.String()
 	frontendtmplHandler, err := NewHandler(
 		ctx,
-		WithConds(&frontendtmplmwpb.Conds{
-			AppID: &basetypes.StringVal{
-				Op:    cruder.EQ,
-				Value: appID,
-			},
-			LangID: &basetypes.StringVal{
-				Op:    cruder.EQ,
-				Value: langID,
-			},
-			UsedFor: &basetypes.Uint32Val{
-				Op:    cruder.EQ,
-				Value: uint32(*h.UsedFor),
-			},
-		}),
 	)
 	if err != nil {
 		return nil, err
+	}
+	frontendtmplHandler.Conds = &frontendtemplatecrud.Conds{
+		AppID:   &cruder.Cond{Op: cruder.EQ, Val: *h.AppID},
+		LangID:  &cruder.Cond{Op: cruder.EQ, Val: *h.LangID},
+		UsedFor: &cruder.Cond{Op: cruder.EQ, Val: *h.UsedFor},
 	}
 
 	tmpl, err := frontendtmplHandler.GetFrontendTemplateOnly(ctx)

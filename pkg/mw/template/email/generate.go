@@ -2,13 +2,13 @@ package email
 
 import (
 	"context"
+	"fmt"
 
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/template"
 
 	notifmwpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
-
-	emailtmplmwpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/template/email"
+	emailtemplatecrud "github.com/NpoolPlatform/notif-middleware/pkg/crud/template/email"
 
 	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 
@@ -19,27 +19,34 @@ import (
 
 func (h *Handler) GenerateNotifs(ctx context.Context) ([]*notifmwpb.NotifReq, error) {
 	const maxTemplates = int32(100)
+	if h.AppID == nil {
+		return nil, fmt.Errorf("invalid appid")
+	}
+	if h.UserID == nil {
+		return nil, fmt.Errorf("invalid userid")
+	}
+	if h.LangID == nil {
+		return nil, fmt.Errorf("invalid langid")
+	}
+	if h.UsedFor == nil {
+		return nil, fmt.Errorf("invalid usedfor")
+	}
+
 	eventID := uuid.NewString()
 	appID := h.AppID.String()
 	userID := h.UserID.String()
 
 	emailtmplHandler, err := NewHandler(
 		ctx,
-		WithConds(&emailtmplmwpb.Conds{
-			AppID: &basetypes.StringVal{
-				Op:    cruder.EQ,
-				Value: appID,
-			},
-			UsedFor: &basetypes.Int32Val{
-				Op:    cruder.EQ,
-				Value: int32(*h.UsedFor),
-			},
-		}),
 		WithOffset(0),
 		WithLimit(maxTemplates),
 	)
 	if err != nil {
 		return nil, err
+	}
+	emailtmplHandler.Conds = &emailtemplatecrud.Conds{
+		AppID:   &cruder.Cond{Op: cruder.EQ, Val: *h.AppID},
+		UsedFor: &cruder.Cond{Op: cruder.EQ, Val: *h.UsedFor},
 	}
 
 	tmpls, _, err := emailtmplHandler.GetEmailTemplates(ctx)
@@ -69,33 +76,22 @@ func (h *Handler) GenerateNotifs(ctx context.Context) ([]*notifmwpb.NotifReq, er
 			EventID:     &eventID,
 		})
 	}
-
 	return reqs, nil
 }
 
 func (h *Handler) GenerateText(ctx context.Context) (*npool.TextInfo, error) {
-	appID := h.AppID.String()
-	langID := h.LangID.String()
 	emailtmplHandler, err := NewHandler(
 		ctx,
-		WithConds(&emailtmplmwpb.Conds{
-			AppID: &basetypes.StringVal{
-				Op:    cruder.EQ,
-				Value: appID,
-			},
-			LangID: &basetypes.StringVal{
-				Op:    cruder.EQ,
-				Value: langID,
-			},
-			UsedFor: &basetypes.Int32Val{
-				Op:    cruder.EQ,
-				Value: int32(*h.UsedFor),
-			},
-		}),
 	)
 	if err != nil {
 		return nil, err
 	}
+	emailtmplHandler.Conds = &emailtemplatecrud.Conds{
+		AppID:   &cruder.Cond{Op: cruder.EQ, Val: *h.AppID},
+		LangID:  &cruder.Cond{Op: cruder.EQ, Val: *h.LangID},
+		UsedFor: &cruder.Cond{Op: cruder.EQ, Val: *h.UsedFor},
+	}
+
 	tmpl, err := emailtmplHandler.GetEmailTemplateOnly(ctx)
 	if err != nil {
 		return nil, err

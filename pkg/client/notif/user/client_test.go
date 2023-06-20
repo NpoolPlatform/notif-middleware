@@ -24,7 +24,6 @@ import (
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	notifpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/user"
-	usernotifpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/user"
 	notifmw "github.com/NpoolPlatform/notif-middleware/pkg/mw/notif"
 	"github.com/stretchr/testify/assert"
 )
@@ -129,7 +128,7 @@ var (
 			UserID:  userID3,
 		},
 	}
-	retsReq = []*usernotifpb.UserNotifReq{
+	retsReq = []*npool.UserNotifReq{
 		{
 			ID:      &rets[0].ID,
 			AppID:   &rets[0].AppID,
@@ -169,7 +168,6 @@ func setupNotifUser(t *testing.T) func(*testing.T) {
 	}
 }
 
-// nolint:gosec,vet
 func createNotifUser(t *testing.T) {
 	info, err := CreateUser(context.Background(), &npool.UserNotifReq{
 		AppID:   &ret.AppID,

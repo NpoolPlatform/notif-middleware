@@ -94,7 +94,7 @@ func WithUsedFor(_usedFor *basetypes.UsedFor) func(context.Context, *Handler) er
 		case basetypes.UsedFor_KYCRejected:
 		case basetypes.UsedFor_Announcement:
 		default:
-			return fmt.Errorf("invalid UsedFor")
+			return fmt.Errorf("invalid usedfor")
 		}
 		h.UsedFor = _usedFor
 		return nil
@@ -184,7 +184,7 @@ func WithReqs(reqs []*npool.FrontendTemplateReq) func(context.Context, *Handler)
 				case basetypes.UsedFor_KYCRejected:
 				case basetypes.UsedFor_Announcement:
 				default:
-					return fmt.Errorf("invalid UsedFor")
+					return fmt.Errorf("invalid usedfor")
 				}
 				_req.UsedFor = req.UsedFor
 			}
@@ -233,7 +233,7 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			case uint32(basetypes.UsedFor_KYCRejected):
 			case uint32(basetypes.UsedFor_Announcement):
 			default:
-				return fmt.Errorf("invalid UsedFor")
+				return fmt.Errorf("invalid usedfor")
 			}
 			h.Conds.UsedFor = &cruder.Cond{
 				Op:  conds.GetUsedFor().GetOp(),

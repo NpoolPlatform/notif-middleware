@@ -28,7 +28,7 @@ func (h *createHandler) createSMSTemplate(ctx context.Context, tx *ent.Tx, req *
 		return fmt.Errorf("invalid logo")
 	}
 	if req.UsedFor == nil {
-		return fmt.Errorf("invalid usedFor")
+		return fmt.Errorf("invalid usedfor")
 	}
 	lockKey := fmt.Sprintf(
 		"%v:%v:%v:%v",

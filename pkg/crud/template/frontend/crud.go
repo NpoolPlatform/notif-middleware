@@ -115,7 +115,7 @@ func SetQueryConds(q *ent.FrontendTemplateQuery, conds *Conds) (*ent.FrontendTem
 	if conds.UsedFor != nil {
 		usedFor, ok := conds.UsedFor.Val.(basetypes.UsedFor)
 		if !ok {
-			return nil, fmt.Errorf("invalid usedFor")
+			return nil, fmt.Errorf("invalid usedfor")
 		}
 		switch conds.UsedFor.Op {
 		case cruder.EQ:

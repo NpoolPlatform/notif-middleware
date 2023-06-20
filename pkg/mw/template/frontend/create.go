@@ -28,7 +28,7 @@ func (h *createHandler) createFrontendTemplate(ctx context.Context, tx *ent.Tx, 
 		return fmt.Errorf("invalid logo")
 	}
 	if req.UsedFor == nil {
-		return fmt.Errorf("invalid create usedFor")
+		return fmt.Errorf("invalid create usedfor")
 	}
 	lockKey := fmt.Sprintf(
 		"%v:%v:%v:%v",

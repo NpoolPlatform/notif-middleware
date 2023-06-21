@@ -55,8 +55,8 @@ var (
 		Content:      "Content " + uuid.NewString(),
 		Channel:      basetypes.NotifChannel_ChannelEmail,
 		ChannelStr:   basetypes.NotifChannel_ChannelEmail.String(),
-		NotifType:    notifpb.NotifType_Multicast,
-		NotifTypeStr: notifpb.NotifType_Multicast.String(),
+		NotifType:    basetypes.NotifType_NotifMulticast,
+		NotifTypeStr: basetypes.NotifType_NotifMulticast.String(),
 	}
 
 	notifRet = &notifpb.NotifReq{

@@ -20,22 +20,22 @@ type createHandler struct {
 	*Handler
 }
 
-func (h *createHandler) createUser(ctx context.Context, tx *ent.Tx, req *usercrud.Req) error {
+func (h *createHandler) createNotifUser(ctx context.Context, tx *ent.Tx, req *usercrud.Req) error {
 	if req.AppID == nil {
 		return fmt.Errorf("invalid appid")
 	}
 	if req.UserID == nil {
 		return fmt.Errorf("invalid langid")
 	}
-	if req.NotifID == nil {
-		return fmt.Errorf("invalid eventid")
+	if req.EventType == nil {
+		return fmt.Errorf("invalid eventtype")
 	}
 	lockKey := fmt.Sprintf(
 		"%v:%v:%v:%v",
 		basetypes.Prefix_PrefixCreateAppCoin,
 		*req.AppID,
 		*req.UserID,
-		*req.NotifID,
+		*req.EventType,
 	)
 	if err := redis2.TryLock(lockKey, 0); err != nil {
 		return err
@@ -45,11 +45,11 @@ func (h *createHandler) createUser(ctx context.Context, tx *ent.Tx, req *usercru
 	}()
 
 	h.Conds = &usercrud.Conds{
-		AppID:   &cruder.Cond{Op: cruder.EQ, Val: *req.AppID},
-		UserID:  &cruder.Cond{Op: cruder.EQ, Val: *req.UserID},
-		NotifID: &cruder.Cond{Op: cruder.EQ, Val: *req.NotifID},
+		AppID:     &cruder.Cond{Op: cruder.EQ, Val: *req.AppID},
+		UserID:    &cruder.Cond{Op: cruder.EQ, Val: *req.UserID},
+		EventType: &cruder.Cond{Op: cruder.EQ, Val: *req.EventType},
 	}
-	exist, err := h.ExistUserConds(ctx)
+	exist, err := h.ExistNotifUserConds(ctx)
 	if err != nil {
 		return err
 	}
@@ -65,10 +65,10 @@ func (h *createHandler) createUser(ctx context.Context, tx *ent.Tx, req *usercru
 	info, err := usercrud.CreateSet(
 		tx.UserNotif.Create(),
 		&usercrud.Req{
-			ID:      req.ID,
-			AppID:   req.AppID,
-			UserID:  req.UserID,
-			NotifID: req.NotifID,
+			ID:        req.ID,
+			AppID:     req.AppID,
+			UserID:    req.UserID,
+			EventType: req.EventType,
 		},
 	).Save(ctx)
 	if err != nil {
@@ -80,18 +80,18 @@ func (h *createHandler) createUser(ctx context.Context, tx *ent.Tx, req *usercru
 	return nil
 }
 
-func (h *Handler) CreateUser(ctx context.Context) (*npool.UserNotif, error) {
+func (h *Handler) CreateNotifUser(ctx context.Context) (*npool.NotifUser, error) {
 	handler := &createHandler{
 		Handler: h,
 	}
 	req := &usercrud.Req{
-		ID:      handler.ID,
-		AppID:   handler.AppID,
-		UserID:  handler.UserID,
-		NotifID: handler.NotifID,
+		ID:        handler.ID,
+		AppID:     handler.AppID,
+		UserID:    handler.UserID,
+		EventType: handler.EventType,
 	}
 	err := db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
-		if err := handler.createUser(ctx, tx, req); err != nil {
+		if err := handler.createNotifUser(ctx, tx, req); err != nil {
 			return err
 		}
 		return nil
@@ -100,39 +100,5 @@ func (h *Handler) CreateUser(ctx context.Context) (*npool.UserNotif, error) {
 		return nil, err
 	}
 
-	return h.GetUser(ctx)
-}
-
-func (h *Handler) CreateUsers(ctx context.Context) ([]*npool.UserNotif, error) {
-	handler := &createHandler{
-		Handler: h,
-	}
-
-	ids := []uuid.UUID{}
-
-	err := db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
-		for _, req := range h.Reqs {
-			if err := handler.createUser(ctx, tx, req); err != nil {
-				return err
-			}
-			ids = append(ids, *h.ID)
-		}
-		return nil
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	h.Conds = &usercrud.Conds{
-		IDs: &cruder.Cond{Op: cruder.IN, Val: ids},
-	}
-	h.Offset = 0
-	h.Limit = int32(len(ids))
-
-	infos, _, err := h.GetUsers(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	return infos, err
+	return h.GetNotifUser(ctx)
 }

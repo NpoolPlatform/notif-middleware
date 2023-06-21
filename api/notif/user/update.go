@@ -12,33 +12,32 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s *Server) UpdateUserNotif(ctx context.Context, in *npool.UpdateUserNotifRequest) (*npool.UpdateUserNotifResponse, error) {
+func (s *Server) UpdateNotifUser(ctx context.Context, in *npool.UpdateNotifUserRequest) (*npool.UpdateNotifUserResponse, error) {
 	req := in.GetInfo()
 	handler, err := user1.NewHandler(
 		ctx,
 		user1.WithID(req.ID),
-		user1.WithAppID(req.AppID),
 		user1.WithUserID(req.UserID),
-		user1.WithNotifID(req.NotifID),
+		user1.WithEventType(req.EventType),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"UpdateUser",
+			"UpdateNotifUser",
 			"In", in,
 			"Error", err,
 		)
-		return &npool.UpdateUserNotifResponse{}, status.Error(codes.Aborted, err.Error())
+		return &npool.UpdateNotifUserResponse{}, status.Error(codes.Aborted, err.Error())
 	}
-	info, err := handler.UpdateUser(ctx)
+	info, err := handler.UpdateNotifUser(ctx)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"UpdateUser",
+			"UpdateNotifUser",
 			"In", in,
 			"Error", err,
 		)
-		return &npool.UpdateUserNotifResponse{}, status.Error(codes.Aborted, err.Error())
+		return &npool.UpdateNotifUserResponse{}, status.Error(codes.Aborted, err.Error())
 	}
-	return &npool.UpdateUserNotifResponse{
+	return &npool.UpdateNotifUserResponse{
 		Info: info,
 	}, nil
 }

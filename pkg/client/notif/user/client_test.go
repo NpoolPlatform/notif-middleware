@@ -56,8 +56,8 @@ var (
 		Content:      "Content " + uuid.NewString(),
 		Channel:      basetypes.NotifChannel_ChannelEmail,
 		ChannelStr:   basetypes.NotifChannel_ChannelEmail.String(),
-		NotifType:    notifpb.NotifType_Multicast,
-		NotifTypeStr: notifpb.NotifType_Multicast.String(),
+		NotifType:    basetypes.NotifType_NotifMulticast,
+		NotifTypeStr: basetypes.NotifType_NotifMulticast.String(),
 	}
 	notifInfoUnicast = notifpb.Notif{
 		ID:           uuid.NewString(),
@@ -73,8 +73,8 @@ var (
 		Content:      "Content " + uuid.NewString(),
 		Channel:      basetypes.NotifChannel_ChannelSMS,
 		ChannelStr:   basetypes.NotifChannel_ChannelSMS.String(),
-		NotifType:    notifpb.NotifType_Unicast,
-		NotifTypeStr: notifpb.NotifType_Unicast.String(),
+		NotifType:    basetypes.NotifType_NotifUnicast,
+		NotifTypeStr: basetypes.NotifType_NotifUnicast.String(),
 	}
 
 	notifReqs = []*notifpb.NotifReq{
@@ -107,39 +107,39 @@ var (
 		},
 	}
 
-	ret = npool.UserNotif{
-		ID:      "",
-		AppID:   appID,
-		NotifID: notifInfoUnicast.ID,
-		UserID:  userID1,
+	ret = npool.NotifUser{
+		ID:        "",
+		AppID:     appID,
+		EventType: notifInfoUnicast.EventType,
+		UserID:    userID1,
 	}
 
-	rets = []npool.UserNotif{
+	rets = []npool.NotifUser{
 		{
-			ID:      uuid.NewString(),
-			AppID:   appID,
-			NotifID: notifInfoMulticast.ID,
-			UserID:  userID2,
+			ID:        uuid.NewString(),
+			AppID:     appID,
+			EventType: notifInfoMulticast.EventType,
+			UserID:    userID2,
 		},
 		{
-			ID:      uuid.NewString(),
-			AppID:   appID,
-			NotifID: notifInfoMulticast.ID,
-			UserID:  userID3,
+			ID:        uuid.NewString(),
+			AppID:     appID,
+			EventType: notifInfoMulticast.EventType,
+			UserID:    userID3,
 		},
 	}
-	retsReq = []*npool.UserNotifReq{
+	retsReq = []*npool.NotifUserReq{
 		{
-			ID:      &rets[0].ID,
-			AppID:   &rets[0].AppID,
-			NotifID: &rets[0].NotifID,
-			UserID:  &rets[0].UserID,
+			ID:        &rets[0].ID,
+			AppID:     &rets[0].AppID,
+			UserID:    &rets[0].UserID,
+			EventType: &rets[0].EventType,
 		},
 		{
-			ID:      &rets[1].ID,
-			AppID:   &rets[1].AppID,
-			NotifID: &rets[1].NotifID,
-			UserID:  &rets[1].UserID,
+			ID:        &rets[1].ID,
+			AppID:     &rets[1].AppID,
+			UserID:    &rets[1].UserID,
+			EventType: &rets[1].EventType,
 		},
 	}
 )
@@ -155,8 +155,6 @@ func setupNotifUser(t *testing.T) func(*testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, _notif)
 
-	ret.NotifID = _notif[0].ID
-
 	return func(*testing.T) {
 		for _, row := range _notif {
 			id, _ := uuid.Parse(row.ID)
@@ -169,10 +167,10 @@ func setupNotifUser(t *testing.T) func(*testing.T) {
 }
 
 func createNotifUser(t *testing.T) {
-	info, err := CreateUser(context.Background(), &npool.UserNotifReq{
-		AppID:   &ret.AppID,
-		UserID:  &ret.UserID,
-		NotifID: &ret.NotifID,
+	info, err := CreateNotifUser(context.Background(), &npool.NotifUserReq{
+		AppID:     &ret.AppID,
+		UserID:    &ret.UserID,
+		EventType: &ret.EventType,
 	})
 	if assert.Nil(t, err) {
 		ret.CreatedAt = info.CreatedAt
@@ -182,24 +180,17 @@ func createNotifUser(t *testing.T) {
 	}
 }
 
-func createNotifUsers(t *testing.T) {
-	infos, err := CreateUsers(context.Background(), retsReq)
-	if assert.Nil(t, err) {
-		assert.NotEqual(t, len(infos), 0)
-	}
-}
-
 //nolint:vet
 func getNotifUser(t *testing.T) {
 	for _, item := range rets {
-		info, err := GetUser(context.Background(), item.ID)
+		info, err := GetNotifUser(context.Background(), item.ID)
 		assert.Nil(t, err)
 		assert.NotNil(t, info)
 	}
 }
 
 func getNotifUsers(t *testing.T) {
-	infos, _, err := GetUsers(context.Background(), &npool.Conds{
+	infos, _, err := GetNotifUsers(context.Background(), &npool.Conds{
 		ID: &basetypes.StringVal{
 			Op:    cruder.EQ,
 			Value: rets[0].ID,
@@ -212,7 +203,7 @@ func getNotifUsers(t *testing.T) {
 
 // nolint:gosec,vet
 func deleteNotifUser(t *testing.T) {
-	info, err := DeleteUser(context.Background(), &npool.UserNotifReq{
+	info, err := DeleteNotifUser(context.Background(), &npool.NotifUserReq{
 		ID:    &ret.ID,
 		AppID: &ret.AppID,
 	})
@@ -221,12 +212,12 @@ func deleteNotifUser(t *testing.T) {
 		ret.UpdatedAt = info.UpdatedAt
 		assert.Equal(t, info, &ret)
 	}
-	info, err = GetUser(context.Background(), ret.ID)
+	info, err = GetNotifUser(context.Background(), ret.ID)
 	assert.Nil(t, err)
 	assert.Nil(t, info)
 
 	for _, item := range rets {
-		info, err := DeleteUser(context.Background(), &npool.UserNotifReq{
+		info, err := DeleteNotifUser(context.Background(), &npool.NotifUserReq{
 			ID:    &item.ID,
 			AppID: &item.AppID,
 		})
@@ -235,7 +226,7 @@ func deleteNotifUser(t *testing.T) {
 			item.UpdatedAt = info.UpdatedAt
 			assert.Equal(t, info, &item)
 		}
-		info, err = GetUser(context.Background(), item.ID)
+		info, err = GetNotifUser(context.Background(), item.ID)
 		assert.Nil(t, err)
 		assert.Nil(t, info)
 	}
@@ -255,7 +246,6 @@ func TestClient(t *testing.T) {
 		return grpc.Dial(fmt.Sprintf("localhost:%v", gport), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	})
 	t.Run("createNotifUser", createNotifUser)
-	t.Run("createNotifUsers", createNotifUsers)
 	t.Run("getNotifUser", getNotifUser)
 	t.Run("getNotifUsers", getNotifUsers)
 	t.Run("deleteNotifUser", deleteNotifUser)

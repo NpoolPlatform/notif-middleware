@@ -12,12 +12,12 @@ import (
 	usercrud "github.com/NpoolPlatform/notif-middleware/pkg/crud/notif/user"
 )
 
-func (h *Handler) DeleteUser(ctx context.Context) (*npool.UserNotif, error) {
+func (h *Handler) DeleteNotifUser(ctx context.Context) (*npool.NotifUser, error) {
 	if h.ID == nil {
 		return nil, fmt.Errorf("invalid id")
 	}
 
-	info, err := h.GetUser(ctx)
+	info, err := h.GetNotifUser(ctx)
 	if err != nil {
 		return nil, err
 	}

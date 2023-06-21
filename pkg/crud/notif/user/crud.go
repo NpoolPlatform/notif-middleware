@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
 	entusernotif "github.com/NpoolPlatform/notif-middleware/pkg/db/ent/usernotif"
 
@@ -14,7 +15,7 @@ type Req struct {
 	ID        *uuid.UUID
 	AppID     *uuid.UUID
 	UserID    *uuid.UUID
-	NotifID   *uuid.UUID
+	EventType *basetypes.UsedFor
 	DeletedAt *uint32
 }
 
@@ -28,8 +29,8 @@ func CreateSet(c *ent.UserNotifCreate, req *Req) *ent.UserNotifCreate {
 	if req.UserID != nil {
 		c.SetUserID(*req.UserID)
 	}
-	if req.NotifID != nil {
-		c.SetNotifID(*req.NotifID)
+	if req.EventType != nil {
+		c.SetEventType(req.EventType.String())
 	}
 	return c
 }
@@ -42,11 +43,11 @@ func UpdateSet(u *ent.UserNotifUpdateOne, req *Req) *ent.UserNotifUpdateOne {
 }
 
 type Conds struct {
-	ID      *cruder.Cond
-	AppID   *cruder.Cond
-	UserID  *cruder.Cond
-	NotifID *cruder.Cond
-	IDs     *cruder.Cond
+	ID        *cruder.Cond
+	AppID     *cruder.Cond
+	UserID    *cruder.Cond
+	EventType *cruder.Cond
+	IDs       *cruder.Cond
 }
 
 // nolint:gocyclo
@@ -87,14 +88,14 @@ func SetQueryConds(q *ent.UserNotifQuery, conds *Conds) (*ent.UserNotifQuery, er
 			return nil, fmt.Errorf("invalid user field")
 		}
 	}
-	if conds.NotifID != nil {
-		notifid, ok := conds.NotifID.Val.(uuid.UUID)
+	if conds.EventType != nil {
+		eventtype, ok := conds.EventType.Val.(basetypes.UsedFor)
 		if !ok {
 			return nil, fmt.Errorf("invalid notifid")
 		}
-		switch conds.NotifID.Op {
+		switch conds.EventType.Op {
 		case cruder.EQ:
-			q.Where(entusernotif.NotifID(notifid))
+			q.Where(entusernotif.EventType(eventtype.String()))
 		default:
 			return nil, fmt.Errorf("invalid user field")
 		}

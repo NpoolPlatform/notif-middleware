@@ -2,8 +2,10 @@ package user
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/user"
 	constant "github.com/NpoolPlatform/notif-middleware/pkg/const"
 	usercrud "github.com/NpoolPlatform/notif-middleware/pkg/crud/notif/user"
@@ -12,14 +14,14 @@ import (
 )
 
 type Handler struct {
-	ID      *uuid.UUID
-	AppID   *uuid.UUID
-	UserID  *uuid.UUID
-	NotifID *uuid.UUID
-	Reqs    []*usercrud.Req
-	Conds   *usercrud.Conds
-	Offset  int32
-	Limit   int32
+	ID        *uuid.UUID
+	AppID     *uuid.UUID
+	UserID    *uuid.UUID
+	EventType *basetypes.UsedFor
+	Reqs      []*usercrud.Req
+	Conds     *usercrud.Conds
+	Offset    int32
+	Limit     int32
 }
 
 func NewHandler(ctx context.Context, options ...func(context.Context, *Handler) error) (*Handler, error) {
@@ -74,21 +76,27 @@ func WithUserID(userid *string) func(context.Context, *Handler) error {
 	}
 }
 
-func WithNotifID(notifid *string) func(context.Context, *Handler) error {
+func WithEventType(eventtype *basetypes.UsedFor) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		if notifid == nil {
+		if eventtype == nil {
 			return nil
 		}
-		_notifid, err := uuid.Parse(*notifid)
-		if err != nil {
-			return err
+		switch *eventtype {
+		case basetypes.UsedFor_WithdrawalRequest:
+		case basetypes.UsedFor_WithdrawalCompleted:
+		case basetypes.UsedFor_DepositReceived:
+		case basetypes.UsedFor_KYCApproved:
+		case basetypes.UsedFor_KYCRejected:
+		case basetypes.UsedFor_Announcement:
+		default:
+			return fmt.Errorf("invalid eventtype")
 		}
-		h.NotifID = &_notifid
+		h.EventType = eventtype
 		return nil
 	}
 }
 
-func WithReqs(reqs []*npool.UserNotifReq) func(context.Context, *Handler) error {
+func WithReqs(reqs []*npool.NotifUserReq) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		_reqs := []*usercrud.Req{}
 		for _, req := range reqs {
@@ -114,12 +122,18 @@ func WithReqs(reqs []*npool.UserNotifReq) func(context.Context, *Handler) error 
 				}
 				_req.UserID = &id
 			}
-			if req.NotifID != nil {
-				id, err := uuid.Parse(req.GetNotifID())
-				if err != nil {
-					return err
+			if req.EventType != nil {
+				switch req.GetEventType() {
+				case basetypes.UsedFor_WithdrawalRequest:
+				case basetypes.UsedFor_WithdrawalCompleted:
+				case basetypes.UsedFor_DepositReceived:
+				case basetypes.UsedFor_KYCApproved:
+				case basetypes.UsedFor_KYCRejected:
+				case basetypes.UsedFor_Announcement:
+				default:
+					return fmt.Errorf("invalid usedfor")
 				}
-				_req.NotifID = &id
+				_req.EventType = req.EventType
 			}
 			_reqs = append(_reqs, _req)
 		}
@@ -161,14 +175,20 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 				Val: id,
 			}
 		}
-		if conds.NotifID != nil {
-			id, err := uuid.Parse(conds.GetNotifID().GetValue())
-			if err != nil {
-				return err
+		if conds.EventType != nil {
+			switch conds.GetEventType().GetValue() {
+			case uint32(basetypes.UsedFor_WithdrawalRequest):
+			case uint32(basetypes.UsedFor_WithdrawalCompleted):
+			case uint32(basetypes.UsedFor_DepositReceived):
+			case uint32(basetypes.UsedFor_KYCApproved):
+			case uint32(basetypes.UsedFor_KYCRejected):
+			case uint32(basetypes.UsedFor_Announcement):
+			default:
+				return fmt.Errorf("invalid usedfor")
 			}
-			h.Conds.NotifID = &cruder.Cond{
-				Op:  conds.GetNotifID().GetOp(),
-				Val: id,
+			h.Conds.EventType = &cruder.Cond{
+				Op:  conds.GetEventType().GetOp(),
+				Val: conds.GetEventType().GetValue(),
 			}
 		}
 		return nil

@@ -16,27 +16,27 @@ import (
 type queryHandler struct {
 	*Handler
 	stm   *ent.UserNotifSelect
-	infos []*npool.UserNotif
+	infos []*npool.NotifUser
 	total uint32
 }
 
-func (h *queryHandler) selectUser(stm *ent.UserNotifQuery) {
+func (h *queryHandler) selectNotifUser(stm *ent.UserNotifQuery) {
 	h.stm = stm.Select(
 		entuser.FieldID,
 		entuser.FieldAppID,
 		entuser.FieldUserID,
-		entuser.FieldNotifID,
+		entuser.FieldEventType,
 		entuser.FieldCreatedAt,
 		entuser.FieldUpdatedAt,
 	)
 }
 
-func (h *queryHandler) queryUser(cli *ent.Client) error {
+func (h *queryHandler) queryNotifUser(cli *ent.Client) error {
 	if h.ID == nil {
 		return fmt.Errorf("invalid usernotifid")
 	}
 
-	h.selectUser(
+	h.selectNotifUser(
 		cli.UserNotif.
 			Query().
 			Where(
@@ -47,7 +47,7 @@ func (h *queryHandler) queryUser(cli *ent.Client) error {
 	return nil
 }
 
-func (h *queryHandler) queryUsers(ctx context.Context, cli *ent.Client) error {
+func (h *queryHandler) queryNotifUsers(ctx context.Context, cli *ent.Client) error {
 	stm, err := usercrud.SetQueryConds(cli.UserNotif.Query(), h.Conds)
 	if err != nil {
 		return err
@@ -57,7 +57,7 @@ func (h *queryHandler) queryUsers(ctx context.Context, cli *ent.Client) error {
 		return err
 	}
 	h.total = uint32(total)
-	h.selectUser(stm)
+	h.selectNotifUser(stm)
 	return nil
 }
 
@@ -65,13 +65,13 @@ func (h *queryHandler) scan(ctx context.Context) error {
 	return h.stm.Scan(ctx, &h.infos)
 }
 
-func (h *Handler) GetUser(ctx context.Context) (*npool.UserNotif, error) {
+func (h *Handler) GetNotifUser(ctx context.Context) (*npool.NotifUser, error) {
 	handler := &queryHandler{
 		Handler: h,
 	}
 
 	err := db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		if err := handler.queryUser(cli); err != nil {
+		if err := handler.queryNotifUser(cli); err != nil {
 			return err
 		}
 		const singleRowLimit = 2
@@ -94,13 +94,13 @@ func (h *Handler) GetUser(ctx context.Context) (*npool.UserNotif, error) {
 	return handler.infos[0], nil
 }
 
-func (h *Handler) GetUsers(ctx context.Context) ([]*npool.UserNotif, uint32, error) {
+func (h *Handler) GetNotifUsers(ctx context.Context) ([]*npool.NotifUser, uint32, error) {
 	handler := &queryHandler{
 		Handler: h,
 	}
 
 	err := db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		if err := handler.queryUsers(ctx, cli); err != nil {
+		if err := handler.queryNotifUsers(ctx, cli); err != nil {
 			return err
 		}
 		handler.
@@ -119,13 +119,13 @@ func (h *Handler) GetUsers(ctx context.Context) ([]*npool.UserNotif, uint32, err
 	return handler.infos, handler.total, nil
 }
 
-func (h *Handler) GetUserOnly(ctx context.Context) (info *npool.UserNotif, err error) {
+func (h *Handler) GetNotifUserOnly(ctx context.Context) (info *npool.NotifUser, err error) {
 	handler := &queryHandler{
 		Handler: h,
 	}
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		if err := handler.queryUsers(_ctx, cli); err != nil {
+		if err := handler.queryNotifUsers(_ctx, cli); err != nil {
 			return err
 		}
 		const singleRowLimit = 2

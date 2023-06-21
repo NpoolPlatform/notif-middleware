@@ -12,63 +12,63 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s *Server) GetUserNotif(ctx context.Context, in *npool.GetUserNotifRequest) (*npool.GetUserNotifResponse, error) {
+func (s *Server) GetNotifUser(ctx context.Context, in *npool.GetNotifUserRequest) (*npool.GetNotifUserResponse, error) {
 	handler, err := user1.NewHandler(
 		ctx,
 		user1.WithID(&in.ID),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"GetUser",
+			"GetNotifUser",
 			"In", in,
 			"Error", err,
 		)
-		return &npool.GetUserNotifResponse{}, status.Error(codes.Aborted, err.Error())
+		return &npool.GetNotifUserResponse{}, status.Error(codes.Aborted, err.Error())
 	}
-	info, err := handler.GetUser(ctx)
+	info, err := handler.GetNotifUser(ctx)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"GetUser",
+			"GetNotifUser",
 			"In", in,
 			"Error", err,
 		)
-		return &npool.GetUserNotifResponse{}, status.Error(codes.Aborted, err.Error())
+		return &npool.GetNotifUserResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
-	return &npool.GetUserNotifResponse{
+	return &npool.GetNotifUserResponse{
 		Info: info,
 	}, nil
 }
 
-func (s *Server) GetUserNotifOnly(ctx context.Context, in *npool.GetUserNotifOnlyRequest) (*npool.GetUserNotifOnlyResponse, error) {
+func (s *Server) GetNotifUserOnly(ctx context.Context, in *npool.GetNotifUserOnlyRequest) (*npool.GetNotifUserOnlyResponse, error) {
 	handler, err := user1.NewHandler(
 		ctx,
 		user1.WithConds(in.Conds),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"GetUserNotifOnly",
+			"GetNotifUserOnly",
 			"In", in,
 			"Error", err,
 		)
-		return &npool.GetUserNotifOnlyResponse{}, status.Error(codes.Aborted, err.Error())
+		return &npool.GetNotifUserOnlyResponse{}, status.Error(codes.Aborted, err.Error())
 	}
-	info, err := handler.GetUserOnly(ctx)
+	info, err := handler.GetNotifUserOnly(ctx)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"GetUserNotifOnly",
+			"GetNotifUserOnly",
 			"In", in,
 			"Error", err,
 		)
-		return &npool.GetUserNotifOnlyResponse{}, status.Error(codes.Aborted, err.Error())
+		return &npool.GetNotifUserOnlyResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
-	return &npool.GetUserNotifOnlyResponse{
+	return &npool.GetNotifUserOnlyResponse{
 		Info: info,
 	}, nil
 }
 
-func (s *Server) GetUserNotifs(ctx context.Context, in *npool.GetUserNotifsRequest) (*npool.GetUserNotifsResponse, error) {
+func (s *Server) GetNotifUsers(ctx context.Context, in *npool.GetNotifUsersRequest) (*npool.GetNotifUsersResponse, error) {
 	handler, err := user1.NewHandler(
 		ctx,
 		user1.WithConds(in.GetConds()),
@@ -77,23 +77,23 @@ func (s *Server) GetUserNotifs(ctx context.Context, in *npool.GetUserNotifsReque
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"GetUsers",
+			"GetNotifUsers",
 			"In", in,
 			"Error", err,
 		)
-		return &npool.GetUserNotifsResponse{}, status.Error(codes.Aborted, err.Error())
+		return &npool.GetNotifUsersResponse{}, status.Error(codes.Aborted, err.Error())
 	}
-	infos, total, err := handler.GetUsers(ctx)
+	infos, total, err := handler.GetNotifUsers(ctx)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"GetUsers",
+			"GetNotifUsers",
 			"In", in,
 			"Error", err,
 		)
-		return &npool.GetUserNotifsResponse{}, status.Error(codes.Aborted, err.Error())
+		return &npool.GetNotifUsersResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
-	return &npool.GetUserNotifsResponse{
+	return &npool.GetNotifUsersResponse{
 		Infos: infos,
 		Total: total,
 	}, nil

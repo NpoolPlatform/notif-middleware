@@ -11,40 +11,40 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s *Server) ExistUserNotif(ctx context.Context, in *npool.ExistUserNotifRequest) (*npool.ExistUserNotifResponse, error) {
+func (s *Server) ExistNotifUser(ctx context.Context, in *npool.ExistNotifUserRequest) (*npool.ExistNotifUserResponse, error) {
 	handler, err := user1.NewHandler(
 		ctx,
 		user1.WithID(&in.ID),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"ExistUser",
+			"ExistNotifUser",
 			"In", in,
 			"Error", err,
 		)
-		return &npool.ExistUserNotifResponse{}, status.Error(codes.Aborted, err.Error())
+		return &npool.ExistNotifUserResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
-	exist, err := handler.ExistUser(ctx)
+	exist, err := handler.ExistNotifUser(ctx)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"ExistUser",
+			"ExistNotifUser",
 			"In", in,
 			"Error", err,
 		)
-		return &npool.ExistUserNotifResponse{}, status.Error(codes.Aborted, err.Error())
+		return &npool.ExistNotifUserResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
-	return &npool.ExistUserNotifResponse{
+	return &npool.ExistNotifUserResponse{
 		Info: exist,
 	}, nil
 }
 
-func (s *Server) ExistUserNotifConds(
+func (s *Server) ExistNotifUserConds(
 	ctx context.Context,
-	in *npool.ExistUserNotifCondsRequest,
+	in *npool.ExistNotifUserCondsRequest,
 ) (
-	*npool.ExistUserNotifCondsResponse,
+	*npool.ExistNotifUserCondsResponse,
 	error,
 ) {
 	handler, err := user1.NewHandler(ctx,
@@ -52,24 +52,24 @@ func (s *Server) ExistUserNotifConds(
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"ExistUserNotif",
+			"ExistNotifUser",
 			"Req", in,
 			"Error", err,
 		)
-		return &npool.ExistUserNotifCondsResponse{}, status.Error(codes.InvalidArgument, err.Error())
+		return &npool.ExistNotifUserCondsResponse{}, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	info, err := handler.ExistUserConds(ctx)
+	info, err := handler.ExistNotifUserConds(ctx)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"ExistUserNotif",
+			"ExistNotifUser",
 			"Req", in,
 			"Error", err,
 		)
-		return &npool.ExistUserNotifCondsResponse{}, status.Error(codes.Internal, err.Error())
+		return &npool.ExistNotifUserCondsResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
-	return &npool.ExistUserNotifCondsResponse{
+	return &npool.ExistNotifUserCondsResponse{
 		Info: info,
 	}, nil
 }

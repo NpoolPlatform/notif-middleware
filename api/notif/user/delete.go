@@ -11,31 +11,30 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s *Server) DeleteUserNotif(ctx context.Context, in *npool.DeleteUserNotifRequest) (*npool.DeleteUserNotifResponse, error) {
+func (s *Server) DeleteNotifUser(ctx context.Context, in *npool.DeleteNotifUserRequest) (*npool.DeleteNotifUserResponse, error) {
 	req := in.GetInfo()
 	handler, err := user1.NewHandler(
 		ctx,
 		user1.WithID(req.ID),
-		user1.WithAppID(req.AppID),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"DeleteUserNotif",
+			"DeleteNotifUser",
 			"In", in,
 			"Error", err,
 		)
-		return &npool.DeleteUserNotifResponse{}, status.Error(codes.Aborted, err.Error())
+		return &npool.DeleteNotifUserResponse{}, status.Error(codes.Aborted, err.Error())
 	}
-	info, err := handler.DeleteUser(ctx)
+	info, err := handler.DeleteNotifUser(ctx)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"DeleteUserNotif",
+			"DeleteNotifUser",
 			"In", in,
 			"Error", err,
 		)
-		return &npool.DeleteUserNotifResponse{}, status.Error(codes.Aborted, err.Error())
+		return &npool.DeleteNotifUserResponse{}, status.Error(codes.Aborted, err.Error())
 	}
-	return &npool.DeleteUserNotifResponse{
+	return &npool.DeleteNotifUserResponse{
 		Info: info,
 	}, nil
 }

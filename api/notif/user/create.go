@@ -12,60 +12,33 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s *Server) CreateUserNotif(ctx context.Context, in *npool.CreateUserNotifRequest) (*npool.CreateUserNotifResponse, error) {
+func (s *Server) CreateNotifUser(ctx context.Context, in *npool.CreateNotifUserRequest) (*npool.CreateNotifUserResponse, error) {
 	req := in.GetInfo()
 	handler, err := user1.NewHandler(
 		ctx,
 		user1.WithID(req.ID),
 		user1.WithAppID(req.AppID),
 		user1.WithUserID(req.UserID),
-		user1.WithNotifID(req.NotifID),
+		user1.WithEventType(req.EventType),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"CreateUserNotif",
+			"CreateNotifUser",
 			"In", in,
 			"Error", err,
 		)
-		return &npool.CreateUserNotifResponse{}, status.Error(codes.Aborted, err.Error())
+		return &npool.CreateNotifUserResponse{}, status.Error(codes.Aborted, err.Error())
 	}
-	info, err := handler.CreateUser(ctx)
+	info, err := handler.CreateNotifUser(ctx)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"CreateUserNotif",
+			"CreateNotifUser",
 			"In", in,
 			"Error", err,
 		)
-		return &npool.CreateUserNotifResponse{}, status.Error(codes.Aborted, err.Error())
+		return &npool.CreateNotifUserResponse{}, status.Error(codes.Aborted, err.Error())
 	}
-	return &npool.CreateUserNotifResponse{
+	return &npool.CreateNotifUserResponse{
 		Info: info,
-	}, nil
-}
-
-func (s *Server) CreateUserNotifs(ctx context.Context, in *npool.CreateUserNotifsRequest) (*npool.CreateUserNotifsResponse, error) {
-	handler, err := user1.NewHandler(
-		ctx,
-		user1.WithReqs(in.GetInfos()),
-	)
-	if err != nil {
-		logger.Sugar().Errorw(
-			"CreateUserNotifs",
-			"In", in,
-			"Error", err,
-		)
-		return &npool.CreateUserNotifsResponse{}, status.Error(codes.Aborted, err.Error())
-	}
-	infos, err := handler.CreateUsers(ctx)
-	if err != nil {
-		logger.Sugar().Errorw(
-			"CreateUserNotifs",
-			"In", in,
-			"Error", err,
-		)
-		return &npool.CreateUserNotifsResponse{}, status.Error(codes.Aborted, err.Error())
-	}
-	return &npool.CreateUserNotifsResponse{
-		Infos: infos,
 	}, nil
 }

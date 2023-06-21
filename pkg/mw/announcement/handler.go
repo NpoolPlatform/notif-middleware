@@ -191,8 +191,7 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 				return err
 			}
 			h.Conds.ID = &cruder.Cond{
-				Op:  conds.GetID().GetOp(),
-				Val: id,
+				Op: conds.GetID().GetOp(), Val: id,
 			}
 		}
 		if conds.AppID != nil {
@@ -201,8 +200,7 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 				return err
 			}
 			h.Conds.AppID = &cruder.Cond{
-				Op:  conds.GetAppID().GetOp(),
-				Val: appID,
+				Op: conds.GetAppID().GetOp(), Val: appID,
 			}
 		}
 		if conds.LangID != nil {
@@ -211,21 +209,23 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 				return err
 			}
 			h.Conds.LangID = &cruder.Cond{
-				Op:  conds.GetLangID().GetOp(),
-				Val: langID,
+				Op: conds.GetLangID().GetOp(), Val: langID,
+			}
+		}
+		if conds.StartAt != nil {
+			h.Conds.StartAt = &cruder.Cond{
+				Op: conds.GetStartAt().GetOp(), Val: conds.GetStartAt().GetValue(),
 			}
 		}
 		if conds.EndAt != nil {
 			h.Conds.EndAt = &cruder.Cond{
-				Op:  conds.GetEndAt().GetOp(),
-				Val: conds.GetEndAt().GetValue(),
+				Op: conds.GetEndAt().GetOp(), Val: conds.GetEndAt().GetValue(),
 			}
 		}
 		if conds.Channel != nil {
 			channel := conds.GetChannel().GetValue()
 			h.Conds.Channel = &cruder.Cond{
-				Op:  conds.GetChannel().GetOp(),
-				Val: basetypes.NotifChannel(channel),
+				Op: conds.GetChannel().GetOp(), Val: basetypes.NotifChannel(channel),
 			}
 		}
 		return nil

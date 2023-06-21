@@ -19,7 +19,7 @@ type Req struct {
 	Content   *string
 	Channel   *basetypes.NotifChannel
 	Type      *basetypes.NotifType
-	StartAt    *uint32
+	StartAt   *uint32
 	EndAt     *uint32
 	DeletedAt *uint32
 }
@@ -84,6 +84,7 @@ type Conds struct {
 	ID      *cruder.Cond
 	AppID   *cruder.Cond
 	LangID  *cruder.Cond
+	StartAt *cruder.Cond
 	EndAt   *cruder.Cond
 	Channel *cruder.Cond
 }
@@ -127,6 +128,20 @@ func SetQueryConds(q *ent.AnnouncementQuery, conds *Conds) (*ent.AnnouncementQue
 			q.Where(entamt.LangID(langID))
 		default:
 			return nil, fmt.Errorf("invalid lang id op field")
+		}
+	}
+	if conds.StartAt != nil {
+		startAt, ok := conds.StartAt.Val.(uint32)
+		if !ok {
+			return nil, fmt.Errorf("invalid start at")
+		}
+		switch conds.StartAt.Op {
+		case cruder.GT:
+			q.Where(entamt.StartAtGT(startAt))
+		case cruder.GTE:
+			q.Where(entamt.StartAtGTE(startAt))
+		default:
+			return nil, fmt.Errorf("invalid start at op field")
 		}
 	}
 	if conds.EndAt != nil {

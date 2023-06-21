@@ -6,18 +6,18 @@ import (
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement"
-	announcement1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement"
+	amt1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 func (s *Server) GetAnnouncements(ctx context.Context, in *npool.GetAnnouncementsRequest) (*npool.GetAnnouncementsResponse, error) {
-	handler, err := announcement1.NewHandler(
+	handler, err := amt1.NewHandler(
 		ctx,
-		announcement1.WithConds(in.GetConds()),
-		announcement1.WithOffset(in.Offset),
-		announcement1.WithLimit(in.Limit),
+		amt1.WithConds(in.GetConds()),
+		amt1.WithOffset(in.Offset),
+		amt1.WithLimit(in.Limit),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
@@ -30,6 +30,11 @@ func (s *Server) GetAnnouncements(ctx context.Context, in *npool.GetAnnouncement
 
 	infos, total, err := handler.GetAnnouncements(ctx)
 	if err != nil {
+		logger.Sugar().Errorw(
+			"GetAnnouncements",
+			"In", in,
+			"Error", err,
+		)
 		return &npool.GetAnnouncementsResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
@@ -40,9 +45,9 @@ func (s *Server) GetAnnouncements(ctx context.Context, in *npool.GetAnnouncement
 }
 
 func (s *Server) GetAnnouncement(ctx context.Context, in *npool.GetAnnouncementRequest) (*npool.GetAnnouncementResponse, error) {
-	handler, err := announcement1.NewHandler(
+	handler, err := amt1.NewHandler(
 		ctx,
-		announcement1.WithID(&in.ID),
+		amt1.WithID(&in.ID),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
@@ -55,6 +60,11 @@ func (s *Server) GetAnnouncement(ctx context.Context, in *npool.GetAnnouncementR
 
 	info, err := handler.GetAnnouncement(ctx)
 	if err != nil {
+		logger.Sugar().Errorw(
+			"GetAnnouncement",
+			"In", in,
+			"error", err,
+		)
 		return &npool.GetAnnouncementResponse{}, status.Error(codes.Internal, err.Error())
 	}
 

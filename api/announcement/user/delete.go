@@ -5,17 +5,17 @@ import (
 
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/user"
-	"github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/handler"
-	announcement1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/user"
+	handler1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/handler"
+	amtuser1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/user"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 func (s *Server) DeleteAnnouncementUser(ctx context.Context, in *npool.DeleteAnnouncementUserRequest) (*npool.DeleteAnnouncementUserResponse, error) { // nolint
 	id := in.GetInfo().GetID()
-	handler1, err := announcement1.NewHandler(
+	handler, err := amtuser1.NewHandler(
 		ctx,
-		handler.WithID(&id),
+		handler1.WithID(&id),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
@@ -25,7 +25,7 @@ func (s *Server) DeleteAnnouncementUser(ctx context.Context, in *npool.DeleteAnn
 		)
 		return &npool.DeleteAnnouncementUserResponse{}, status.Error(codes.Aborted, err.Error())
 	}
-	info, err := handler1.DeleteAnnouncementUser(ctx)
+	info, err := handler.DeleteAnnouncementUser(ctx)
 	if err != nil {
 		logger.Sugar().Errorw(
 			"DeleteAnnouncementUser",

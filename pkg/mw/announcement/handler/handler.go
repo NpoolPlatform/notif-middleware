@@ -58,8 +58,11 @@ func WithAppID(appID *string) func(context.Context, *Handler) error {
 	}
 }
 
-func WithUserID(appID, userID *string) func(context.Context, *Handler) error {
+func WithUserID(userID *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
+		if userID == nil {
+			return fmt.Errorf("invalid user id")
+		}
 		_userID, err := uuid.Parse(*userID)
 		if err != nil {
 			return err
@@ -70,7 +73,7 @@ func WithUserID(appID, userID *string) func(context.Context, *Handler) error {
 	}
 }
 
-func WithAnnouncementID(appID, amtID *string) func(context.Context, *Handler) error {
+func WithAnnouncementID(amtID *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		_amtID, err := uuid.Parse(*amtID)
 		if err != nil {
@@ -79,7 +82,6 @@ func WithAnnouncementID(appID, amtID *string) func(context.Context, *Handler) er
 
 		handler, err := amt1.NewHandler(ctx,
 			amt1.WithID(amtID),
-			amt1.WithAppID(appID),
 		)
 		if err != nil {
 			return err

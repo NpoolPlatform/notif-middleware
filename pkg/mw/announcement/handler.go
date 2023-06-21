@@ -20,7 +20,7 @@ type Handler struct {
 	Title   *string
 	Content *string
 	Channel *basetypes.NotifChannel
-	Type    *npool.AnnouncementType
+	Type    *basetypes.NotifType
 	EndAt   *uint32
 	Conds   *crud.Conds
 	Offset  int32
@@ -119,14 +119,14 @@ func WithChannel(channel *basetypes.NotifChannel) func(context.Context, *Handler
 	}
 }
 
-func WithAnnouncementType(_type *npool.AnnouncementType) func(context.Context, *Handler) error {
+func WithAnnouncementType(_type *basetypes.NotifType) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if _type == nil {
 			return nil
 		}
 		switch *_type {
-		case npool.AnnouncementType_Broadcast:
-		case npool.AnnouncementType_Multicast:
+		case basetypes.NotifType_NotifBroadcast:
+		case basetypes.NotifType_NotifMulticast:
 		default:
 			return fmt.Errorf("type %v invalid", *_type)
 		}

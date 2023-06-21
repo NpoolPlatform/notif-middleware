@@ -51,7 +51,7 @@ func (h *queryHandler) queryAnnouncement(cli *ent.Client) error {
 
 func (h *queryHandler) formalize() {
 	for _, info := range h.infos {
-		info.AnnouncementType = npool.AnnouncementType(npool.AnnouncementType_value[info.AnnouncementTypeStr])
+		info.AnnouncementType = basetypes.NotifType(basetypes.NotifType_value[info.AnnouncementTypeStr])
 		info.Channel = basetypes.NotifChannel(basetypes.NotifChannel_value[info.ChannelStr])
 	}
 }

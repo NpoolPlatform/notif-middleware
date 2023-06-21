@@ -27,7 +27,7 @@ type Handler struct {
 	Content     *string
 	Channel     *basetypes.NotifChannel
 	Extra       *string
-	NotifType   *npool.NotifType
+	NotifType   *basetypes.NotifType
 	Vars        *templatemwpb.TemplateVars
 	IDs         *[]uuid.UUID
 	Reqs        []*notifcrud.Req
@@ -206,15 +206,15 @@ func WithEventType(eventtype *basetypes.UsedFor) func(context.Context, *Handler)
 	}
 }
 
-func WithNotifType(_type *npool.NotifType) func(context.Context, *Handler) error {
+func WithNotifType(_type *basetypes.NotifType) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if _type == nil {
 			return nil
 		}
 		switch *_type {
-		case npool.NotifType_Broadcast:
-		case npool.NotifType_Multicast:
-		case npool.NotifType_Unicast:
+		case basetypes.NotifType_NotifBroadcast:
+		case basetypes.NotifType_NotifMulticast:
+		case basetypes.NotifType_NotifUnicast:
 			if h.UserID == nil {
 				return fmt.Errorf("invalid userid")
 			}
@@ -294,9 +294,9 @@ func WithReqs(reqs []*npool.NotifReq) func(context.Context, *Handler) error {
 			}
 			if req.NotifType != nil {
 				switch req.GetNotifType() {
-				case npool.NotifType_Broadcast:
-				case npool.NotifType_Multicast:
-				case npool.NotifType_Unicast:
+				case basetypes.NotifType_NotifBroadcast:
+				case basetypes.NotifType_NotifMulticast:
+				case basetypes.NotifType_NotifUnicast:
 					if req.UserID != nil {
 						id, err := uuid.Parse(req.GetUserID())
 						if err != nil {
@@ -410,9 +410,9 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 		}
 		if conds.NotifType != nil {
 			switch conds.GetNotifType().GetValue() {
-			case uint32(npool.NotifType_Broadcast):
-			case uint32(npool.NotifType_Multicast):
-			case uint32(npool.NotifType_Unicast):
+			case uint32(basetypes.NotifType_NotifBroadcast):
+			case uint32(basetypes.NotifType_NotifMulticast):
+			case uint32(basetypes.NotifType_NotifUnicast):
 			default:
 				return fmt.Errorf("invalid Type")
 			}

@@ -56,8 +56,7 @@ func (s *Server) UpdateNotif(ctx context.Context, in *npool.UpdateNotifRequest) 
 func (s *Server) UpdateNotifs(ctx context.Context, in *npool.UpdateNotifsRequest) (*npool.UpdateNotifsResponse, error) {
 	handler, err := notif1.NewHandler(
 		ctx,
-		notif1.WithIDs(&in.IDs),
-		notif1.WithNotified(in.Notified),
+		notif1.WithReqs(in.GetInfos()),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

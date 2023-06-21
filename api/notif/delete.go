@@ -16,7 +16,6 @@ func (s *Server) DeleteNotif(ctx context.Context, in *npool.DeleteNotifRequest) 
 	handler, err := notif1.NewHandler(
 		ctx,
 		notif1.WithID(req.ID),
-		notif1.WithAppID(req.AppID),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

@@ -50,8 +50,8 @@ var (
 		Content:      "Content " + uuid.NewString(),
 		Channel:      basetypes.NotifChannel_ChannelSMS,
 		ChannelStr:   basetypes.NotifChannel_ChannelSMS.String(),
-		NotifType:    npool.NotifType_Multicast,
-		NotifTypeStr: npool.NotifType_Multicast.String(),
+		NotifType:    basetypes.NotifType_NotifMulticast,
+		NotifTypeStr: basetypes.NotifType_NotifMulticast.String(),
 	}
 
 	retReq = &npool.NotifReq{
@@ -95,7 +95,13 @@ func updateNotif(t *testing.T) {
 
 func updateNotifs(t *testing.T) {
 	b := true
-	infos, err := UpdateNotifs(context.Background(), []string{ret.ID}, b)
+	updReq := []*npool.NotifReq{
+		{
+			ID:       &ret.ID,
+			Notified: &b,
+		},
+	}
+	infos, err := UpdateNotifs(context.Background(), updReq)
 	if assert.Nil(t, err) {
 		ret.UserID = infos[0].UserID
 		ret.CreatedAt = infos[0].CreatedAt

@@ -5,7 +5,6 @@ import (
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
-	notifmwpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
 	entnotif "github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notif"
 
@@ -25,7 +24,7 @@ type Req struct {
 	Content     *string
 	Channel     *basetypes.NotifChannel
 	Extra       *string
-	NotifType   *notifmwpb.NotifType
+	NotifType   *basetypes.NotifType
 	DeletedAt   *uint32
 }
 
@@ -70,10 +69,10 @@ func CreateSet(c *ent.NotifCreate, req *Req) *ent.NotifCreate {
 	if req.NotifType != nil {
 		c.SetType(req.NotifType.String())
 		switch req.NotifType.String() {
-		case notifmwpb.NotifType_Multicast.Enum().String():
+		case basetypes.NotifType_NotifMulticast.Enum().String():
 			c.SetUserID(uuid.Nil)
 			fallthrough //nolint
-		case notifmwpb.NotifType_Broadcast.Enum().String():
+		case basetypes.NotifType_NotifBroadcast.Enum().String():
 			c.SetUserID(uuid.Nil)
 		default:
 		}

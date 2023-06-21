@@ -20,9 +20,6 @@ func (h *Handler) UpdateNotif(ctx context.Context) (*npool.Notif, error) {
 	if h.ID == nil {
 		return nil, fmt.Errorf("invalid id")
 	}
-	if h.LangID == nil {
-		return nil, fmt.Errorf("invalid langid")
-	}
 
 	lockKey := fmt.Sprintf(
 		"%v:%v",
@@ -65,17 +62,15 @@ func (h *Handler) UpdateNotifs(ctx context.Context) ([]*npool.Notif, error) {
 
 	err := db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
 		for _, req := range h.Reqs {
-			h.ID = req.ID
-			h.Notified = req.Notified
 			if _, err := notifcrud.UpdateSet(
-				cli.Notif.UpdateOneID(*h.ID),
+				cli.Debug().Notif.UpdateOneID(*req.ID),
 				&notifcrud.Req{
-					Notified: h.Notified,
+					Notified: req.Notified,
 				},
 			).Save(ctx); err != nil {
 				return err
 			}
-			ids = append(ids, *h.ID)
+			ids = append(ids, *req.ID)
 		}
 		return nil
 	})

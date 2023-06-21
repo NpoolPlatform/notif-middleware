@@ -61,7 +61,7 @@ func (h *queryHandler) formalize() {
 	for _, info := range h.infos {
 		info.EventType = basetypes.UsedFor(basetypes.UsedFor_value[info.EventTypeStr])
 		info.Channel = basetypes.NotifChannel(basetypes.NotifChannel_value[info.ChannelStr])
-		info.NotifType = npool.NotifType(npool.NotifType_value[info.NotifTypeStr])
+		info.NotifType = basetypes.NotifType(basetypes.NotifType_value[info.NotifTypeStr])
 	}
 }
 

@@ -9,6 +9,7 @@ import (
 	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/announcement/readstate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
+	"github.com/google/uuid"
 )
 
 type createHandler struct {
@@ -42,19 +43,22 @@ func (h *Handler) CreateReadState(ctx context.Context) (info *npool.ReadState, e
 			Val: *h.AnnouncementID,
 		},
 	}
-	h.Offset = 0
-	h.Limit = 1
 
-	infos, _, err := h.GetReadStates(ctx)
+	exist, err := h.ExistReadStateConds(ctx)
 	if err != nil {
 		return nil, err
 	}
-	if len(infos) > 0 {
+	if exist {
 		return nil, fmt.Errorf("read state exist")
 	}
 
+	id := uuid.New()
+	if h.ID == nil {
+		h.ID = &id
+	}
+
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		info, err := crud.CreateSet(
+		_, err := crud.CreateSet(
 			cli.ReadAnnouncement.Create(),
 			&crud.Req{
 				ID:             h.ID,
@@ -67,7 +71,6 @@ func (h *Handler) CreateReadState(ctx context.Context) (info *npool.ReadState, e
 			return err
 		}
 
-		h.ID = &info.ID
 		return nil
 	})
 	if err != nil {

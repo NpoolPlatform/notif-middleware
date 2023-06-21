@@ -57,6 +57,7 @@ var (
 		ChannelStr:          basetypes.NotifChannel_ChannelEmail.String(),
 		AnnouncementType:    basetypes.NotifType_NotifMulticast,
 		AnnouncementTypeStr: basetypes.NotifType_NotifMulticast.String(),
+		StartAt:             uint32(time.Now().Unix()),
 		EndAt:               uint32(time.Now().Add(1 * time.Hour).Unix()),
 	}
 )
@@ -107,6 +108,7 @@ func createAnnouncement(t *testing.T) {
 		Content:          &amt.Content,
 		Channel:          &amt.Channel,
 		AnnouncementType: &amt.AnnouncementType,
+		StartAt:          &amt.StartAt,
 		EndAt:            &amt.EndAt,
 	})
 	if assert.Nil(t, err) {

@@ -4,19 +4,23 @@ import (
 	"context"
 	"fmt"
 
+	"entgo.io/ent/dialect/sql"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement"
 	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/announcement"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
 	entamt "github.com/NpoolPlatform/notif-middleware/pkg/db/ent/announcement"
+	entread "github.com/NpoolPlatform/notif-middleware/pkg/db/ent/readannouncement"
+	"github.com/google/uuid"
 )
 
 type queryHandler struct {
 	*Handler
-	stm   *ent.AnnouncementSelect
-	infos []*npool.Announcement
-	total uint32
+	stm    *ent.AnnouncementSelect
+	infos  []*npool.Announcement
+	total  uint32
+	UserID *uuid.UUID
 }
 
 func (h *queryHandler) selectAnnouncement(stm *ent.AnnouncementQuery) {
@@ -33,6 +37,32 @@ func (h *queryHandler) selectAnnouncement(stm *ent.AnnouncementQuery) {
 		entamt.FieldCreatedAt,
 		entamt.FieldUpdatedAt,
 	)
+}
+
+func (h *queryHandler) queryJoinReadState(s *sql.Selector) {
+	t := sql.Table(entread.Table)
+	s.LeftJoin(t).
+		On(
+			s.C(entread.FieldAppID),
+			t.C(entamt.FieldAppID),
+		).
+		OnP(
+			sql.EQ(t.C(entread.FieldUserID), *h.UserID),
+		).
+		OnP(
+			sql.EQ(s.C(entamt.FieldLangID), *h.LangID),
+		).
+		AppendSelect(
+			sql.As(t.C(entread.FieldUserID), "user_id"),
+		)
+}
+
+func (h *queryHandler) queryJoin() {
+	h.stm.Modify(func(s *sql.Selector) {
+		if h.UserID != nil && h.LangID != nil {
+			h.queryJoinReadState(s)
+		}
+	})
 }
 
 func (h *queryHandler) queryAnnouncement(cli *ent.Client) error {
@@ -88,6 +118,7 @@ func (h *Handler) GetAnnouncements(ctx context.Context) ([]*npool.Announcement, 
 			return err
 		}
 
+		handler.queryJoin()
 		handler.
 			stm.
 			Offset(int(h.Offset)).
@@ -120,6 +151,8 @@ func (h *Handler) GetAnnouncement(ctx context.Context) (info *npool.Announcement
 		if err := handler.scan(_ctx); err != nil {
 			return err
 		}
+
+		handler.queryJoin()
 		handler.formalize()
 		return nil
 	})
@@ -132,26 +165,4 @@ func (h *Handler) GetAnnouncement(ctx context.Context) (info *npool.Announcement
 	}
 
 	return handler.infos[0], nil
-}
-
-func (h *Handler) GetAnnouncementConds(ctx context.Context) ([]*npool.Announcement, uint32, error) {
-	handler := &queryHandler{
-		Handler: h,
-	}
-
-	err := db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		if err := handler.queryAnnouncementsByConds(_ctx, cli); err != nil {
-			return err
-		}
-
-		if err := handler.scan(_ctx); err != nil {
-			return err
-		}
-		return nil
-	})
-	if err != nil {
-		return nil, 0, err
-	}
-
-	return handler.infos, handler.total, nil
 }

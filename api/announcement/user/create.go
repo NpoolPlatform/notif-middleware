@@ -16,8 +16,8 @@ func (s *Server) CreateAnnouncementUser(ctx context.Context, in *npool.CreateAnn
 	handler1, err := amtuser1.NewHandler(
 		ctx,
 		handler.WithAppID(req.AppID),
-		handler.WithUserID(req.AppID, req.UserID),
-		handler.WithAnnouncementID(req.AppID, req.AnnouncementID),
+		handler.WithUserID(req.UserID),
+		handler.WithAnnouncementID(req.AnnouncementID),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
@@ -25,7 +25,7 @@ func (s *Server) CreateAnnouncementUser(ctx context.Context, in *npool.CreateAnn
 			"Req", in,
 			"Error", err,
 		)
-		return &npool.CreateAnnouncementUserResponse{}, status.Error(codes.InvalidArgument, err.Error())
+		return &npool.CreateAnnouncementUserResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
 	info, err := handler1.CreateAnnouncementUser(ctx)

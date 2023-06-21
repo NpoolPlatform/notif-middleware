@@ -44,6 +44,7 @@ func (s *Server) GetAnnouncements(ctx context.Context, in *npool.GetAnnouncement
 	}, nil
 }
 
+//nolint
 func (s *Server) GetAnnouncement(ctx context.Context, in *npool.GetAnnouncementRequest) (*npool.GetAnnouncementResponse, error) {
 	handler, err := amt1.NewHandler(
 		ctx,

@@ -128,20 +128,6 @@ var (
 			UserID:    userID3,
 		},
 	}
-	retsReq = []*npool.NotifUserReq{
-		{
-			ID:        &rets[0].ID,
-			AppID:     &rets[0].AppID,
-			UserID:    &rets[0].UserID,
-			EventType: &rets[0].EventType,
-		},
-		{
-			ID:        &rets[1].ID,
-			AppID:     &rets[1].AppID,
-			UserID:    &rets[1].UserID,
-			EventType: &rets[1].EventType,
-		},
-	}
 )
 
 func setupNotifUser(t *testing.T) func(*testing.T) {

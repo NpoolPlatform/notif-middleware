@@ -363,50 +363,35 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			if err != nil {
 				return err
 			}
-			h.Conds.ID = &cruder.Cond{
-				Op:  conds.GetID().GetOp(),
-				Val: id,
-			}
+			h.Conds.ID = &cruder.Cond{Op: conds.GetID().GetOp(), Val: id}
 		}
 		if conds.AppID != nil {
 			id, err := uuid.Parse(conds.GetAppID().GetValue())
 			if err != nil {
 				return err
 			}
-			h.Conds.AppID = &cruder.Cond{
-				Op:  conds.GetAppID().GetOp(),
-				Val: id,
-			}
+			h.Conds.AppID = &cruder.Cond{Op: conds.GetAppID().GetOp(), Val: id}
 		}
 		if conds.UserID != nil {
 			id, err := uuid.Parse(conds.GetUserID().GetValue())
 			if err != nil {
 				return err
 			}
-			h.Conds.UserID = &cruder.Cond{
-				Op:  conds.GetUserID().GetOp(),
-				Val: id,
-			}
+			h.Conds.UserID = &cruder.Cond{Op: conds.GetUserID().GetOp(), Val: id}
 		}
 		if conds.LangID != nil {
 			id, err := uuid.Parse(conds.GetLangID().GetValue())
 			if err != nil {
 				return err
 			}
-			h.Conds.LangID = &cruder.Cond{
-				Op:  conds.GetLangID().GetOp(),
-				Val: id,
-			}
+			h.Conds.LangID = &cruder.Cond{Op: conds.GetLangID().GetOp(), Val: id}
 		}
 		if conds.EventID != nil {
 			id, err := uuid.Parse(conds.GetEventID().GetValue())
 			if err != nil {
 				return err
 			}
-			h.Conds.EventID = &cruder.Cond{
-				Op:  conds.GetEventID().GetOp(),
-				Val: id,
-			}
+			h.Conds.EventID = &cruder.Cond{Op: conds.GetEventID().GetOp(), Val: id}
 		}
 		if conds.NotifType != nil {
 			switch conds.GetNotifType().GetValue() {
@@ -416,10 +401,7 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			default:
 				return fmt.Errorf("invalid Type")
 			}
-			h.Conds.Type = &cruder.Cond{
-				Op:  conds.GetNotifType().GetOp(),
-				Val: conds.GetNotifType().GetValue(),
-			}
+			h.Conds.Type = &cruder.Cond{Op: conds.GetNotifType().GetOp(), Val: conds.GetNotifType().GetValue()}
 		}
 		if conds.EventType != nil {
 			switch conds.GetEventType().GetValue() {
@@ -432,10 +414,7 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			default:
 				return fmt.Errorf("invalid EventType")
 			}
-			h.Conds.EventType = &cruder.Cond{
-				Op:  conds.GetEventType().GetOp(),
-				Val: conds.GetEventType().GetValue(),
-			}
+			h.Conds.EventType = &cruder.Cond{Op: conds.GetEventType().GetOp(), Val: conds.GetEventType().GetValue()}
 		}
 		if conds.Channel != nil {
 			switch conds.GetChannel().GetValue() {
@@ -446,10 +425,7 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 				return fmt.Errorf("invalid channel")
 			}
 			channel := conds.GetChannel().GetValue()
-			h.Conds.Channel = &cruder.Cond{
-				Op:  conds.GetChannel().GetOp(),
-				Val: basetypes.NotifChannel(channel),
-			}
+			h.Conds.Channel = &cruder.Cond{Op: conds.GetChannel().GetOp(), Val: basetypes.NotifChannel(channel)}
 		}
 		if conds.IDs != nil {
 			ids := []uuid.UUID{}
@@ -460,10 +436,7 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 				}
 				ids = append(ids, _id)
 			}
-			h.Conds.IDs = &cruder.Cond{
-				Op:  conds.GetIDs().GetOp(),
-				Val: ids,
-			}
+			h.Conds.IDs = &cruder.Cond{Op: conds.GetIDs().GetOp(), Val: ids}
 		}
 		return nil
 	}

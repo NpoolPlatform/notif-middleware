@@ -16,8 +16,8 @@ func (s *Server) CreateReadState(ctx context.Context, in *npool.CreateReadStateR
 	handler, err := amtread1.NewHandler(
 		ctx,
 		handler1.WithAppID(req.AppID),
-		handler1.WithUserID(req.AppID, req.UserID),
-		handler1.WithAnnouncementID(req.AppID, req.AnnouncementID),
+		handler1.WithUserID(req.UserID),
+		handler1.WithAnnouncementID(req.AnnouncementID),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
@@ -25,7 +25,7 @@ func (s *Server) CreateReadState(ctx context.Context, in *npool.CreateReadStateR
 			"Req", in,
 			"Error", err,
 		)
-		return &npool.CreateReadStateResponse{}, status.Error(codes.InvalidArgument, err.Error())
+		return &npool.CreateReadStateResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
 	info, err := handler.CreateReadState(ctx)
@@ -35,7 +35,7 @@ func (s *Server) CreateReadState(ctx context.Context, in *npool.CreateReadStateR
 			"Req", in,
 			"Error", err,
 		)
-		return &npool.CreateReadStateResponse{}, status.Error(codes.Internal, err.Error())
+		return &npool.CreateReadStateResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
 	return &npool.CreateReadStateResponse{

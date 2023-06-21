@@ -30,6 +30,11 @@ func (s *Server) GetContacts(ctx context.Context, in *npool.GetContactsRequest) 
 
 	infos, total, err := handler.GetContacts(ctx)
 	if err != nil {
+		logger.Sugar().Errorw(
+			"GetContacts",
+			"In", in,
+			"Error", err,
+		)
 		return &npool.GetContactsResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
@@ -55,6 +60,11 @@ func (s *Server) GetContact(ctx context.Context, in *npool.GetContactRequest) (*
 
 	info, err := handler.GetContact(ctx)
 	if err != nil {
+		logger.Sugar().Errorw(
+			"GetContact",
+			"In", in,
+			"Error", err,
+		)
 		return &npool.GetContactResponse{}, status.Error(codes.Internal, err.Error())
 	}
 

@@ -10,6 +10,7 @@ import (
 	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/contact"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
+	"github.com/google/uuid"
 )
 
 type createHandler struct {
@@ -66,8 +67,13 @@ func (h *Handler) CreateContact(ctx context.Context) (info *npool.Contact, err e
 		return nil, fmt.Errorf("contact exist")
 	}
 
+	id := uuid.New()
+	if h.ID == nil {
+		h.ID = &id
+	}
+
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		info, err := crud.CreateSet(
+		_, err := crud.CreateSet(
 			cli.Contact.Create(),
 			&crud.Req{
 				ID:          h.ID,
@@ -81,8 +87,6 @@ func (h *Handler) CreateContact(ctx context.Context) (info *npool.Contact, err e
 		if err != nil {
 			return err
 		}
-
-		h.ID = &info.ID
 		return nil
 	})
 	if err != nil {

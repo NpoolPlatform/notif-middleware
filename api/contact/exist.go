@@ -16,7 +16,7 @@ func (s *Server) ExistContactConds(ctx context.Context, in *npool.ExistContactCo
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"ExistContact",
+			"ExistContactConds",
 			"Req", in,
 			"Error", err,
 		)
@@ -26,7 +26,7 @@ func (s *Server) ExistContactConds(ctx context.Context, in *npool.ExistContactCo
 	info, err := handler.ExistContactConds(ctx)
 	if err != nil {
 		logger.Sugar().Errorw(
-			"ExistContact",
+			"ExistContactConds",
 			"Req", in,
 			"Error", err,
 		)

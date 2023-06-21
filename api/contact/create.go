@@ -27,11 +27,16 @@ func (s *Server) CreateContact(ctx context.Context, in *npool.CreateContactReque
 			"Req", in,
 			"Error", err,
 		)
-		return &npool.CreateContactResponse{}, status.Error(codes.InvalidArgument, err.Error())
+		return &npool.CreateContactResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
 	info, err := handler.CreateContact(ctx)
 	if err != nil {
+		logger.Sugar().Errorw(
+			"CreateContact",
+			"Req", in,
+			"Error", err,
+		)
 		return &npool.CreateContactResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 

@@ -5,7 +5,6 @@ import (
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
-	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
 	entamt "github.com/NpoolPlatform/notif-middleware/pkg/db/ent/announcement"
 
@@ -19,7 +18,7 @@ type Req struct {
 	Title     *string
 	Content   *string
 	Channel   *basetypes.NotifChannel
-	Type      *npool.AnnouncementType
+	Type      *basetypes.NotifType
 	EndAt     *uint32
 	DeletedAt *uint32
 }

@@ -53,8 +53,8 @@ var (
 		Content:             uuid.NewString(),
 		Channel:             basetypes.NotifChannel_ChannelEmail,
 		ChannelStr:          basetypes.NotifChannel_ChannelEmail.String(),
-		AnnouncementType:    amtpb.AnnouncementType_Multicast,
-		AnnouncementTypeStr: amtpb.AnnouncementType_Multicast.String(),
+		AnnouncementType:    basetypes.NotifType_NotifMulticast,
+		AnnouncementTypeStr: basetypes.NotifType_NotifMulticast.String(),
 		EndAt:               uint32(time.Now().Add(1 * time.Hour).Unix()),
 	}
 

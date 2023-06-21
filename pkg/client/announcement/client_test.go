@@ -55,8 +55,8 @@ var (
 		Content:             uuid.NewString(),
 		Channel:             basetypes.NotifChannel_ChannelEmail,
 		ChannelStr:          basetypes.NotifChannel_ChannelEmail.String(),
-		AnnouncementType:    npool.AnnouncementType_Multicast,
-		AnnouncementTypeStr: npool.AnnouncementType_Multicast.String(),
+		AnnouncementType:    basetypes.NotifType_NotifMulticast,
+		AnnouncementTypeStr: basetypes.NotifType_NotifMulticast.String(),
 		EndAt:               uint32(time.Now().Add(1 * time.Hour).Unix()),
 	}
 )
@@ -120,8 +120,8 @@ func createAnnouncement(t *testing.T) {
 func updateAnnouncement(t *testing.T) {
 	amt.Title = uuid.NewString()
 	amt.Content = "-----" + uuid.NewString()
-	amt.AnnouncementType = npool.AnnouncementType_Broadcast
-	amt.AnnouncementTypeStr = npool.AnnouncementType_Broadcast.String()
+	amt.AnnouncementType = basetypes.NotifType_NotifBroadcast
+	amt.AnnouncementTypeStr = basetypes.NotifType_NotifBroadcast.String()
 	amt.EndAt = uint32(time.Now().Add(3 * time.Hour).Unix())
 	info, err := UpdateAnnouncement(context.Background(), &npool.AnnouncementReq{
 		ID:               &amt.ID,
@@ -164,7 +164,7 @@ func getAnnouncements(t *testing.T) {
 }
 
 func existAnnouncement(t *testing.T) {
-	exist, err := ExistAnnouncement(context.Background(), amt.ID, amt.AppID)
+	exist, err := ExistAnnouncement(context.Background(), amt.ID)
 	assert.Nil(t, err)
 	assert.True(t, exist)
 }

@@ -48,6 +48,10 @@ func (Announcement) Fields() []ent.Field {
 			Optional().
 			Default(basetypes.NotifChannel_DefaultChannel.String()),
 		field.
+			Uint32("start_at").
+			Optional().
+			Default(0),
+		field.
 			Uint32("end_at").
 			Optional().
 			Default(0),

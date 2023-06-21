@@ -70,6 +70,8 @@ type AnnouncementMutation struct {
 	title         *string
 	content       *string
 	channel       *string
+	start_at      *uint32
+	addstart_at   *int32
 	end_at        *uint32
 	addend_at     *int32
 	_type         *string
@@ -596,6 +598,76 @@ func (m *AnnouncementMutation) ResetChannel() {
 	delete(m.clearedFields, announcement.FieldChannel)
 }
 
+// SetStartAt sets the "start_at" field.
+func (m *AnnouncementMutation) SetStartAt(u uint32) {
+	m.start_at = &u
+	m.addstart_at = nil
+}
+
+// StartAt returns the value of the "start_at" field in the mutation.
+func (m *AnnouncementMutation) StartAt() (r uint32, exists bool) {
+	v := m.start_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStartAt returns the old "start_at" field's value of the Announcement entity.
+// If the Announcement object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AnnouncementMutation) OldStartAt(ctx context.Context) (v uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStartAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStartAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStartAt: %w", err)
+	}
+	return oldValue.StartAt, nil
+}
+
+// AddStartAt adds u to the "start_at" field.
+func (m *AnnouncementMutation) AddStartAt(u int32) {
+	if m.addstart_at != nil {
+		*m.addstart_at += u
+	} else {
+		m.addstart_at = &u
+	}
+}
+
+// AddedStartAt returns the value that was added to the "start_at" field in this mutation.
+func (m *AnnouncementMutation) AddedStartAt() (r int32, exists bool) {
+	v := m.addstart_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearStartAt clears the value of the "start_at" field.
+func (m *AnnouncementMutation) ClearStartAt() {
+	m.start_at = nil
+	m.addstart_at = nil
+	m.clearedFields[announcement.FieldStartAt] = struct{}{}
+}
+
+// StartAtCleared returns if the "start_at" field was cleared in this mutation.
+func (m *AnnouncementMutation) StartAtCleared() bool {
+	_, ok := m.clearedFields[announcement.FieldStartAt]
+	return ok
+}
+
+// ResetStartAt resets all changes to the "start_at" field.
+func (m *AnnouncementMutation) ResetStartAt() {
+	m.start_at = nil
+	m.addstart_at = nil
+	delete(m.clearedFields, announcement.FieldStartAt)
+}
+
 // SetEndAt sets the "end_at" field.
 func (m *AnnouncementMutation) SetEndAt(u uint32) {
 	m.end_at = &u
@@ -734,7 +806,7 @@ func (m *AnnouncementMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AnnouncementMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 11)
 	if m.created_at != nil {
 		fields = append(fields, announcement.FieldCreatedAt)
 	}
@@ -758,6 +830,9 @@ func (m *AnnouncementMutation) Fields() []string {
 	}
 	if m.channel != nil {
 		fields = append(fields, announcement.FieldChannel)
+	}
+	if m.start_at != nil {
+		fields = append(fields, announcement.FieldStartAt)
 	}
 	if m.end_at != nil {
 		fields = append(fields, announcement.FieldEndAt)
@@ -789,6 +864,8 @@ func (m *AnnouncementMutation) Field(name string) (ent.Value, bool) {
 		return m.Content()
 	case announcement.FieldChannel:
 		return m.Channel()
+	case announcement.FieldStartAt:
+		return m.StartAt()
 	case announcement.FieldEndAt:
 		return m.EndAt()
 	case announcement.FieldType:
@@ -818,6 +895,8 @@ func (m *AnnouncementMutation) OldField(ctx context.Context, name string) (ent.V
 		return m.OldContent(ctx)
 	case announcement.FieldChannel:
 		return m.OldChannel(ctx)
+	case announcement.FieldStartAt:
+		return m.OldStartAt(ctx)
 	case announcement.FieldEndAt:
 		return m.OldEndAt(ctx)
 	case announcement.FieldType:
@@ -887,6 +966,13 @@ func (m *AnnouncementMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetChannel(v)
 		return nil
+	case announcement.FieldStartAt:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStartAt(v)
+		return nil
 	case announcement.FieldEndAt:
 		v, ok := value.(uint32)
 		if !ok {
@@ -918,6 +1004,9 @@ func (m *AnnouncementMutation) AddedFields() []string {
 	if m.adddeleted_at != nil {
 		fields = append(fields, announcement.FieldDeletedAt)
 	}
+	if m.addstart_at != nil {
+		fields = append(fields, announcement.FieldStartAt)
+	}
 	if m.addend_at != nil {
 		fields = append(fields, announcement.FieldEndAt)
 	}
@@ -935,6 +1024,8 @@ func (m *AnnouncementMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedUpdatedAt()
 	case announcement.FieldDeletedAt:
 		return m.AddedDeletedAt()
+	case announcement.FieldStartAt:
+		return m.AddedStartAt()
 	case announcement.FieldEndAt:
 		return m.AddedEndAt()
 	}
@@ -967,6 +1058,13 @@ func (m *AnnouncementMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddDeletedAt(v)
 		return nil
+	case announcement.FieldStartAt:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddStartAt(v)
+		return nil
 	case announcement.FieldEndAt:
 		v, ok := value.(int32)
 		if !ok {
@@ -996,6 +1094,9 @@ func (m *AnnouncementMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(announcement.FieldChannel) {
 		fields = append(fields, announcement.FieldChannel)
+	}
+	if m.FieldCleared(announcement.FieldStartAt) {
+		fields = append(fields, announcement.FieldStartAt)
 	}
 	if m.FieldCleared(announcement.FieldEndAt) {
 		fields = append(fields, announcement.FieldEndAt)
@@ -1031,6 +1132,9 @@ func (m *AnnouncementMutation) ClearField(name string) error {
 		return nil
 	case announcement.FieldChannel:
 		m.ClearChannel()
+		return nil
+	case announcement.FieldStartAt:
+		m.ClearStartAt()
 		return nil
 	case announcement.FieldEndAt:
 		m.ClearEndAt()
@@ -1069,6 +1173,9 @@ func (m *AnnouncementMutation) ResetField(name string) error {
 		return nil
 	case announcement.FieldChannel:
 		m.ResetChannel()
+		return nil
+	case announcement.FieldStartAt:
+		m.ResetStartAt()
 		return nil
 	case announcement.FieldEndAt:
 		m.ResetEndAt()

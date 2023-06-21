@@ -184,6 +184,33 @@ func (au *AnnouncementUpdate) ClearChannel() *AnnouncementUpdate {
 	return au
 }
 
+// SetStartAt sets the "start_at" field.
+func (au *AnnouncementUpdate) SetStartAt(u uint32) *AnnouncementUpdate {
+	au.mutation.ResetStartAt()
+	au.mutation.SetStartAt(u)
+	return au
+}
+
+// SetNillableStartAt sets the "start_at" field if the given value is not nil.
+func (au *AnnouncementUpdate) SetNillableStartAt(u *uint32) *AnnouncementUpdate {
+	if u != nil {
+		au.SetStartAt(*u)
+	}
+	return au
+}
+
+// AddStartAt adds u to the "start_at" field.
+func (au *AnnouncementUpdate) AddStartAt(u int32) *AnnouncementUpdate {
+	au.mutation.AddStartAt(u)
+	return au
+}
+
+// ClearStartAt clears the value of the "start_at" field.
+func (au *AnnouncementUpdate) ClearStartAt() *AnnouncementUpdate {
+	au.mutation.ClearStartAt()
+	return au
+}
+
 // SetEndAt sets the "end_at" field.
 func (au *AnnouncementUpdate) SetEndAt(u uint32) *AnnouncementUpdate {
 	au.mutation.ResetEndAt()
@@ -436,6 +463,26 @@ func (au *AnnouncementUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: announcement.FieldChannel,
 		})
 	}
+	if value, ok := au.mutation.StartAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint32,
+			Value:  value,
+			Column: announcement.FieldStartAt,
+		})
+	}
+	if value, ok := au.mutation.AddedStartAt(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint32,
+			Value:  value,
+			Column: announcement.FieldStartAt,
+		})
+	}
+	if au.mutation.StartAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint32,
+			Column: announcement.FieldStartAt,
+		})
+	}
 	if value, ok := au.mutation.EndAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeUint32,
@@ -642,6 +689,33 @@ func (auo *AnnouncementUpdateOne) SetNillableChannel(s *string) *AnnouncementUpd
 // ClearChannel clears the value of the "channel" field.
 func (auo *AnnouncementUpdateOne) ClearChannel() *AnnouncementUpdateOne {
 	auo.mutation.ClearChannel()
+	return auo
+}
+
+// SetStartAt sets the "start_at" field.
+func (auo *AnnouncementUpdateOne) SetStartAt(u uint32) *AnnouncementUpdateOne {
+	auo.mutation.ResetStartAt()
+	auo.mutation.SetStartAt(u)
+	return auo
+}
+
+// SetNillableStartAt sets the "start_at" field if the given value is not nil.
+func (auo *AnnouncementUpdateOne) SetNillableStartAt(u *uint32) *AnnouncementUpdateOne {
+	if u != nil {
+		auo.SetStartAt(*u)
+	}
+	return auo
+}
+
+// AddStartAt adds u to the "start_at" field.
+func (auo *AnnouncementUpdateOne) AddStartAt(u int32) *AnnouncementUpdateOne {
+	auo.mutation.AddStartAt(u)
+	return auo
+}
+
+// ClearStartAt clears the value of the "start_at" field.
+func (auo *AnnouncementUpdateOne) ClearStartAt() *AnnouncementUpdateOne {
+	auo.mutation.ClearStartAt()
 	return auo
 }
 
@@ -925,6 +999,26 @@ func (auo *AnnouncementUpdateOne) sqlSave(ctx context.Context) (_node *Announcem
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: announcement.FieldChannel,
+		})
+	}
+	if value, ok := auo.mutation.StartAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint32,
+			Value:  value,
+			Column: announcement.FieldStartAt,
+		})
+	}
+	if value, ok := auo.mutation.AddedStartAt(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint32,
+			Value:  value,
+			Column: announcement.FieldStartAt,
+		})
+	}
+	if auo.mutation.StartAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint32,
+			Column: announcement.FieldStartAt,
 		})
 	}
 	if value, ok := auo.mutation.EndAt(); ok {

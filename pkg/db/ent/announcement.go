@@ -32,6 +32,8 @@ type Announcement struct {
 	Content string `json:"content,omitempty"`
 	// Channel holds the value of the "channel" field.
 	Channel string `json:"channel,omitempty"`
+	// StartAt holds the value of the "start_at" field.
+	StartAt uint32 `json:"start_at,omitempty"`
 	// EndAt holds the value of the "end_at" field.
 	EndAt uint32 `json:"end_at,omitempty"`
 	// Type holds the value of the "type" field.
@@ -43,7 +45,7 @@ func (*Announcement) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case announcement.FieldCreatedAt, announcement.FieldUpdatedAt, announcement.FieldDeletedAt, announcement.FieldEndAt:
+		case announcement.FieldCreatedAt, announcement.FieldUpdatedAt, announcement.FieldDeletedAt, announcement.FieldStartAt, announcement.FieldEndAt:
 			values[i] = new(sql.NullInt64)
 		case announcement.FieldTitle, announcement.FieldContent, announcement.FieldChannel, announcement.FieldType:
 			values[i] = new(sql.NullString)
@@ -118,6 +120,12 @@ func (a *Announcement) assignValues(columns []string, values []interface{}) erro
 			} else if value.Valid {
 				a.Channel = value.String
 			}
+		case announcement.FieldStartAt:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field start_at", values[i])
+			} else if value.Valid {
+				a.StartAt = uint32(value.Int64)
+			}
 		case announcement.FieldEndAt:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field end_at", values[i])
@@ -181,6 +189,9 @@ func (a *Announcement) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("channel=")
 	builder.WriteString(a.Channel)
+	builder.WriteString(", ")
+	builder.WriteString("start_at=")
+	builder.WriteString(fmt.Sprintf("%v", a.StartAt))
 	builder.WriteString(", ")
 	builder.WriteString("end_at=")
 	builder.WriteString(fmt.Sprintf("%v", a.EndAt))

@@ -19,6 +19,7 @@ var (
 		{Name: "title", Type: field.TypeString, Nullable: true, Default: ""},
 		{Name: "content", Type: field.TypeString, Nullable: true, Size: 2147483647, Default: ""},
 		{Name: "channel", Type: field.TypeString, Nullable: true, Default: "DefaultChannel"},
+		{Name: "start_at", Type: field.TypeUint32, Nullable: true, Default: 0},
 		{Name: "end_at", Type: field.TypeUint32, Nullable: true, Default: 0},
 		{Name: "type", Type: field.TypeString, Nullable: true, Default: "DefaultNotifType"},
 	}

@@ -135,6 +135,13 @@ func Channel(v string) predicate.Announcement {
 	})
 }
 
+// StartAt applies equality check predicate on the "start_at" field. It's identical to StartAtEQ.
+func StartAt(v uint32) predicate.Announcement {
+	return predicate.Announcement(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldStartAt), v))
+	})
+}
+
 // EndAt applies equality check predicate on the "end_at" field. It's identical to EndAtEQ.
 func EndAt(v uint32) predicate.Announcement {
 	return predicate.Announcement(func(s *sql.Selector) {
@@ -833,6 +840,84 @@ func ChannelEqualFold(v string) predicate.Announcement {
 func ChannelContainsFold(v string) predicate.Announcement {
 	return predicate.Announcement(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldChannel), v))
+	})
+}
+
+// StartAtEQ applies the EQ predicate on the "start_at" field.
+func StartAtEQ(v uint32) predicate.Announcement {
+	return predicate.Announcement(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldStartAt), v))
+	})
+}
+
+// StartAtNEQ applies the NEQ predicate on the "start_at" field.
+func StartAtNEQ(v uint32) predicate.Announcement {
+	return predicate.Announcement(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldStartAt), v))
+	})
+}
+
+// StartAtIn applies the In predicate on the "start_at" field.
+func StartAtIn(vs ...uint32) predicate.Announcement {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Announcement(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldStartAt), v...))
+	})
+}
+
+// StartAtNotIn applies the NotIn predicate on the "start_at" field.
+func StartAtNotIn(vs ...uint32) predicate.Announcement {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Announcement(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldStartAt), v...))
+	})
+}
+
+// StartAtGT applies the GT predicate on the "start_at" field.
+func StartAtGT(v uint32) predicate.Announcement {
+	return predicate.Announcement(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldStartAt), v))
+	})
+}
+
+// StartAtGTE applies the GTE predicate on the "start_at" field.
+func StartAtGTE(v uint32) predicate.Announcement {
+	return predicate.Announcement(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldStartAt), v))
+	})
+}
+
+// StartAtLT applies the LT predicate on the "start_at" field.
+func StartAtLT(v uint32) predicate.Announcement {
+	return predicate.Announcement(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldStartAt), v))
+	})
+}
+
+// StartAtLTE applies the LTE predicate on the "start_at" field.
+func StartAtLTE(v uint32) predicate.Announcement {
+	return predicate.Announcement(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldStartAt), v))
+	})
+}
+
+// StartAtIsNil applies the IsNil predicate on the "start_at" field.
+func StartAtIsNil() predicate.Announcement {
+	return predicate.Announcement(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldStartAt)))
+	})
+}
+
+// StartAtNotNil applies the NotNil predicate on the "start_at" field.
+func StartAtNotNil() predicate.Announcement {
+	return predicate.Announcement(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldStartAt)))
 	})
 }
 

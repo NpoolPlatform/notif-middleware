@@ -46,6 +46,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			announcement.FieldTitle:     {Type: field.TypeString, Column: announcement.FieldTitle},
 			announcement.FieldContent:   {Type: field.TypeString, Column: announcement.FieldContent},
 			announcement.FieldChannel:   {Type: field.TypeString, Column: announcement.FieldChannel},
+			announcement.FieldStartAt:   {Type: field.TypeUint32, Column: announcement.FieldStartAt},
 			announcement.FieldEndAt:     {Type: field.TypeUint32, Column: announcement.FieldEndAt},
 			announcement.FieldType:      {Type: field.TypeString, Column: announcement.FieldType},
 		},
@@ -407,6 +408,11 @@ func (f *AnnouncementFilter) WhereContent(p entql.StringP) {
 // WhereChannel applies the entql string predicate on the channel field.
 func (f *AnnouncementFilter) WhereChannel(p entql.StringP) {
 	f.Where(p.Field(announcement.FieldChannel))
+}
+
+// WhereStartAt applies the entql uint32 predicate on the start_at field.
+func (f *AnnouncementFilter) WhereStartAt(p entql.Uint32P) {
+	f.Where(p.Field(announcement.FieldStartAt))
 }
 
 // WhereEndAt applies the entql uint32 predicate on the end_at field.

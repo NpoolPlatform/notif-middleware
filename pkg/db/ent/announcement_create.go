@@ -135,6 +135,20 @@ func (ac *AnnouncementCreate) SetNillableChannel(s *string) *AnnouncementCreate 
 	return ac
 }
 
+// SetStartAt sets the "start_at" field.
+func (ac *AnnouncementCreate) SetStartAt(u uint32) *AnnouncementCreate {
+	ac.mutation.SetStartAt(u)
+	return ac
+}
+
+// SetNillableStartAt sets the "start_at" field if the given value is not nil.
+func (ac *AnnouncementCreate) SetNillableStartAt(u *uint32) *AnnouncementCreate {
+	if u != nil {
+		ac.SetStartAt(*u)
+	}
+	return ac
+}
+
 // SetEndAt sets the "end_at" field.
 func (ac *AnnouncementCreate) SetEndAt(u uint32) *AnnouncementCreate {
 	ac.mutation.SetEndAt(u)
@@ -303,6 +317,10 @@ func (ac *AnnouncementCreate) defaults() error {
 		v := announcement.DefaultChannel
 		ac.mutation.SetChannel(v)
 	}
+	if _, ok := ac.mutation.StartAt(); !ok {
+		v := announcement.DefaultStartAt
+		ac.mutation.SetStartAt(v)
+	}
 	if _, ok := ac.mutation.EndAt(); !ok {
 		v := announcement.DefaultEndAt
 		ac.mutation.SetEndAt(v)
@@ -432,6 +450,14 @@ func (ac *AnnouncementCreate) createSpec() (*Announcement, *sqlgraph.CreateSpec)
 			Column: announcement.FieldChannel,
 		})
 		_node.Channel = value
+	}
+	if value, ok := ac.mutation.StartAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint32,
+			Value:  value,
+			Column: announcement.FieldStartAt,
+		})
+		_node.StartAt = value
 	}
 	if value, ok := ac.mutation.EndAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -644,6 +670,30 @@ func (u *AnnouncementUpsert) UpdateChannel() *AnnouncementUpsert {
 // ClearChannel clears the value of the "channel" field.
 func (u *AnnouncementUpsert) ClearChannel() *AnnouncementUpsert {
 	u.SetNull(announcement.FieldChannel)
+	return u
+}
+
+// SetStartAt sets the "start_at" field.
+func (u *AnnouncementUpsert) SetStartAt(v uint32) *AnnouncementUpsert {
+	u.Set(announcement.FieldStartAt, v)
+	return u
+}
+
+// UpdateStartAt sets the "start_at" field to the value that was provided on create.
+func (u *AnnouncementUpsert) UpdateStartAt() *AnnouncementUpsert {
+	u.SetExcluded(announcement.FieldStartAt)
+	return u
+}
+
+// AddStartAt adds v to the "start_at" field.
+func (u *AnnouncementUpsert) AddStartAt(v uint32) *AnnouncementUpsert {
+	u.Add(announcement.FieldStartAt, v)
+	return u
+}
+
+// ClearStartAt clears the value of the "start_at" field.
+func (u *AnnouncementUpsert) ClearStartAt() *AnnouncementUpsert {
+	u.SetNull(announcement.FieldStartAt)
 	return u
 }
 
@@ -904,6 +954,34 @@ func (u *AnnouncementUpsertOne) UpdateChannel() *AnnouncementUpsertOne {
 func (u *AnnouncementUpsertOne) ClearChannel() *AnnouncementUpsertOne {
 	return u.Update(func(s *AnnouncementUpsert) {
 		s.ClearChannel()
+	})
+}
+
+// SetStartAt sets the "start_at" field.
+func (u *AnnouncementUpsertOne) SetStartAt(v uint32) *AnnouncementUpsertOne {
+	return u.Update(func(s *AnnouncementUpsert) {
+		s.SetStartAt(v)
+	})
+}
+
+// AddStartAt adds v to the "start_at" field.
+func (u *AnnouncementUpsertOne) AddStartAt(v uint32) *AnnouncementUpsertOne {
+	return u.Update(func(s *AnnouncementUpsert) {
+		s.AddStartAt(v)
+	})
+}
+
+// UpdateStartAt sets the "start_at" field to the value that was provided on create.
+func (u *AnnouncementUpsertOne) UpdateStartAt() *AnnouncementUpsertOne {
+	return u.Update(func(s *AnnouncementUpsert) {
+		s.UpdateStartAt()
+	})
+}
+
+// ClearStartAt clears the value of the "start_at" field.
+func (u *AnnouncementUpsertOne) ClearStartAt() *AnnouncementUpsertOne {
+	return u.Update(func(s *AnnouncementUpsert) {
+		s.ClearStartAt()
 	})
 }
 
@@ -1337,6 +1415,34 @@ func (u *AnnouncementUpsertBulk) UpdateChannel() *AnnouncementUpsertBulk {
 func (u *AnnouncementUpsertBulk) ClearChannel() *AnnouncementUpsertBulk {
 	return u.Update(func(s *AnnouncementUpsert) {
 		s.ClearChannel()
+	})
+}
+
+// SetStartAt sets the "start_at" field.
+func (u *AnnouncementUpsertBulk) SetStartAt(v uint32) *AnnouncementUpsertBulk {
+	return u.Update(func(s *AnnouncementUpsert) {
+		s.SetStartAt(v)
+	})
+}
+
+// AddStartAt adds v to the "start_at" field.
+func (u *AnnouncementUpsertBulk) AddStartAt(v uint32) *AnnouncementUpsertBulk {
+	return u.Update(func(s *AnnouncementUpsert) {
+		s.AddStartAt(v)
+	})
+}
+
+// UpdateStartAt sets the "start_at" field to the value that was provided on create.
+func (u *AnnouncementUpsertBulk) UpdateStartAt() *AnnouncementUpsertBulk {
+	return u.Update(func(s *AnnouncementUpsert) {
+		s.UpdateStartAt()
+	})
+}
+
+// ClearStartAt clears the value of the "start_at" field.
+func (u *AnnouncementUpsertBulk) ClearStartAt() *AnnouncementUpsertBulk {
+	return u.Update(func(s *AnnouncementUpsert) {
+		s.ClearStartAt()
 	})
 }
 

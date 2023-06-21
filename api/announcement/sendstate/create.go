@@ -16,8 +16,8 @@ func (s *Server) CreateSendState(ctx context.Context, in *npool.CreateSendStateR
 	handler, err := sendamt.NewHandler(
 		ctx,
 		handler1.WithAppID(req.AppID),
-		handler1.WithUserID(req.AppID, req.UserID),
-		handler1.WithAnnouncementID(req.AppID, req.AnnouncementID),
+		handler1.WithUserID(req.UserID),
+		handler1.WithAnnouncementID(req.AnnouncementID),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
@@ -25,7 +25,7 @@ func (s *Server) CreateSendState(ctx context.Context, in *npool.CreateSendStateR
 			"Req", in,
 			"Error", err,
 		)
-		return &npool.CreateSendStateResponse{}, status.Error(codes.InvalidArgument, err.Error())
+		return &npool.CreateSendStateResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
 	info, err := handler.CreateSendState(ctx)

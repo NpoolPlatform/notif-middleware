@@ -451,6 +451,20 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 				Val: basetypes.NotifChannel(channel),
 			}
 		}
+		if conds.IDs != nil {
+			ids := []uuid.UUID{}
+			for _, id := range conds.GetIDs().GetValue() {
+				_id, err := uuid.Parse(id)
+				if err != nil {
+					return err
+				}
+				ids = append(ids, _id)
+			}
+			h.Conds.IDs = &cruder.Cond{
+				Op:  conds.GetIDs().GetOp(),
+				Val: ids,
+			}
+		}
 		return nil
 	}
 }

@@ -19,6 +19,7 @@ type Req struct {
 	Content   *string
 	Channel   *basetypes.NotifChannel
 	Type      *basetypes.NotifType
+	StartAt    *uint32
 	EndAt     *uint32
 	DeletedAt *uint32
 }
@@ -45,6 +46,9 @@ func CreateSet(c *ent.AnnouncementCreate, req *Req) *ent.AnnouncementCreate {
 	if req.Type != nil {
 		c.SetType(req.Type.String())
 	}
+	if req.StartAt != nil {
+		c.SetStartAt(*req.StartAt)
+	}
 	if req.EndAt != nil {
 		c.SetEndAt(*req.EndAt)
 	}
@@ -63,6 +67,9 @@ func UpdateSet(u *ent.AnnouncementUpdateOne, req *Req) *ent.AnnouncementUpdateOn
 	}
 	if req.Type != nil {
 		u.SetType(req.Type.String())
+	}
+	if req.StartAt != nil {
+		u.SetStartAt(*req.StartAt)
 	}
 	if req.EndAt != nil {
 		u.SetEndAt(*req.EndAt)

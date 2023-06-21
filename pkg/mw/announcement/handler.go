@@ -22,6 +22,7 @@ type Handler struct {
 	Channel *basetypes.NotifChannel
 	Type    *basetypes.NotifType
 	EndAt   *uint32
+	StartAt *uint32
 	Conds   *crud.Conds
 	Offset  int32
 	Limit   int32
@@ -131,6 +132,19 @@ func WithAnnouncementType(_type *basetypes.NotifType) func(context.Context, *Han
 			return fmt.Errorf("type %v invalid", *_type)
 		}
 		h.Type = _type
+		return nil
+	}
+}
+
+func WithStartAt(startAt *uint32) func(context.Context, *Handler) error {
+	return func(ctx context.Context, h *Handler) error {
+		if startAt == nil {
+			return nil
+		}
+		if *startAt < uint32(time.Now().Unix()) {
+			return fmt.Errorf("invalid start at")
+		}
+		h.StartAt = startAt
 		return nil
 	}
 }

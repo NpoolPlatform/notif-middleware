@@ -21,6 +21,7 @@ func (s *Server) CreateAnnouncement(ctx context.Context, in *npool.CreateAnnounc
 		announcement1.WithLangID(req.AppID, req.LangID),
 		announcement1.WithChannel(req.Channel),
 		announcement1.WithAnnouncementType(req.AnnouncementType),
+		announcement1.WithStartAt(req.StartAt),
 		announcement1.WithEndAt(req.EndAt),
 	)
 	if err != nil {

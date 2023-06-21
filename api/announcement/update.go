@@ -19,6 +19,7 @@ func (s *Server) UpdateAnnouncement(ctx context.Context, in *npool.UpdateAnnounc
 		announcement1.WithTitle(req.Title),
 		announcement1.WithContent(req.Content),
 		announcement1.WithAnnouncementType(req.AnnouncementType),
+		announcement1.WithStartAt(req.StartAt),
 		announcement1.WithEndAt(req.EndAt),
 	)
 	if err != nil {

@@ -45,7 +45,7 @@ func CreateAnnouncementUser(ctx context.Context, in *npool.AnnouncementUserReq) 
 	return info.(*npool.AnnouncementUser), nil
 }
 
-func DeleteAnnouncementUser(ctx context.Context, appID, id string) (*npool.AnnouncementUser, error) {
+func DeleteAnnouncementUser(ctx context.Context, id string) (*npool.AnnouncementUser, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.DeleteAnnouncementUser(ctx, &npool.DeleteAnnouncementUserRequest{
 			Info: &npool.AnnouncementUserReq{

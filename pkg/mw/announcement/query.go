@@ -28,6 +28,7 @@ func (h *queryHandler) selectAnnouncement(stm *ent.AnnouncementQuery) {
 		entamt.FieldContent,
 		entamt.FieldChannel,
 		entamt.FieldType,
+		entamt.FieldStartAt,
 		entamt.FieldEndAt,
 		entamt.FieldCreatedAt,
 		entamt.FieldUpdatedAt,

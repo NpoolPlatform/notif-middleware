@@ -106,7 +106,7 @@ func setupAnnouncementUser(t *testing.T) func(*testing.T) {
 		amt1.WithTitle(&amt.Title),
 		amt1.WithContent(&amt.Content),
 		amt1.WithAppID(&amt.AppID),
-		amt1.WithLangID(&amt.AppID, &amt.LangID),
+		amt1.WithLangID(&amt.AppID),
 		amt1.WithChannel(&amt.Channel),
 		amt1.WithAnnouncementType(&amt.AnnouncementType),
 		amt1.WithEndAt(&amt.EndAt),

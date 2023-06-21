@@ -8,6 +8,7 @@ import (
 	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/announcement"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
+	"github.com/google/uuid"
 )
 
 type createHandler struct {
@@ -15,6 +16,9 @@ type createHandler struct {
 }
 
 func (h *createHandler) validate() error {
+	if h.AppID == nil {
+		return fmt.Errorf("app is empty")
+	}
 	if h.Title == nil {
 		return fmt.Errorf("title is empty")
 	}
@@ -24,8 +28,14 @@ func (h *createHandler) validate() error {
 	if h.Type == nil {
 		return fmt.Errorf("type is empty")
 	}
+	if h.Channel == nil {
+		return fmt.Errorf("channel is empty")
+	}
+	if h.StartAt == nil {
+		return fmt.Errorf("start at is empty")
+	}
 	if h.EndAt == nil {
-		return fmt.Errorf("endat is empty")
+		return fmt.Errorf("end at is empty")
 	}
 	return nil
 }
@@ -39,8 +49,13 @@ func (h *Handler) CreateAnnouncement(ctx context.Context) (info *npool.Announcem
 		return nil, err
 	}
 
+	id := uuid.New()
+	if h.ID == nil {
+		h.ID = &id
+	}
+
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		info, err := crud.CreateSet(
+		_, err := crud.CreateSet(
 			cli.Announcement.Create(),
 			&crud.Req{
 				ID:      h.ID,
@@ -57,8 +72,6 @@ func (h *Handler) CreateAnnouncement(ctx context.Context) (info *npool.Announcem
 		if err != nil {
 			return err
 		}
-
-		h.ID = &info.ID
 		return nil
 	})
 	if err != nil {

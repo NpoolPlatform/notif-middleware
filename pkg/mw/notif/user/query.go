@@ -7,6 +7,7 @@ import (
 	"github.com/NpoolPlatform/notif-middleware/pkg/db"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
 
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/user"
 	entuser "github.com/NpoolPlatform/notif-middleware/pkg/db/ent/usernotif"
 
@@ -45,6 +46,12 @@ func (h *queryHandler) queryNotifUser(cli *ent.Client) error {
 			),
 	)
 	return nil
+}
+
+func (h *queryHandler) formalize() {
+	for _, info := range h.infos {
+		info.EventType = basetypes.UsedFor(basetypes.UsedFor_value[info.EventTypeStr])
+	}
 }
 
 func (h *queryHandler) queryNotifUsers(ctx context.Context, cli *ent.Client) error {
@@ -90,6 +97,7 @@ func (h *Handler) GetNotifUser(ctx context.Context) (*npool.NotifUser, error) {
 	if len(handler.infos) > 1 {
 		return nil, fmt.Errorf("too many record")
 	}
+	handler.formalize()
 
 	return handler.infos[0], nil
 }
@@ -115,6 +123,7 @@ func (h *Handler) GetNotifUsers(ctx context.Context) ([]*npool.NotifUser, uint32
 	if err != nil {
 		return nil, 0, err
 	}
+	handler.formalize()
 
 	return handler.infos, handler.total, nil
 }
@@ -141,6 +150,7 @@ func (h *Handler) GetNotifUserOnly(ctx context.Context) (info *npool.NotifUser, 
 	if len(handler.infos) > 1 {
 		return nil, fmt.Errorf("too many records")
 	}
+	handler.formalize()
 
 	return handler.infos[0], nil
 }

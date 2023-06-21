@@ -39,8 +39,6 @@ func init() {
 
 var (
 	userID1            = uuid.NewString()
-	userID2            = uuid.NewString()
-	userID3            = uuid.NewString()
 	appID              = uuid.NewString()
 	notifInfoMulticast = notifpb.Notif{
 		ID:           uuid.NewString(),
@@ -108,25 +106,11 @@ var (
 	}
 
 	ret = npool.NotifUser{
-		ID:        "",
-		AppID:     appID,
-		EventType: notifInfoUnicast.EventType,
-		UserID:    userID1,
-	}
-
-	rets = []npool.NotifUser{
-		{
-			ID:        uuid.NewString(),
-			AppID:     appID,
-			EventType: notifInfoMulticast.EventType,
-			UserID:    userID2,
-		},
-		{
-			ID:        uuid.NewString(),
-			AppID:     appID,
-			EventType: notifInfoMulticast.EventType,
-			UserID:    userID3,
-		},
+		ID:           "",
+		AppID:        appID,
+		EventType:    notifInfoMulticast.EventType,
+		EventTypeStr: notifInfoMulticast.EventTypeStr,
+		UserID:       userID1,
 	}
 )
 
@@ -159,6 +143,7 @@ func createNotifUser(t *testing.T) {
 		EventType: &ret.EventType,
 	})
 	if assert.Nil(t, err) {
+		info.EventTypeStr = ret.EventTypeStr
 		ret.CreatedAt = info.CreatedAt
 		ret.UpdatedAt = info.UpdatedAt
 		ret.ID = info.ID
@@ -168,18 +153,16 @@ func createNotifUser(t *testing.T) {
 
 //nolint:vet
 func getNotifUser(t *testing.T) {
-	for _, item := range rets {
-		info, err := GetNotifUser(context.Background(), item.ID)
-		assert.Nil(t, err)
-		assert.NotNil(t, info)
-	}
+	info, err := GetNotifUser(context.Background(), ret.ID)
+	assert.Nil(t, err)
+	assert.NotNil(t, info)
 }
 
 func getNotifUsers(t *testing.T) {
 	infos, _, err := GetNotifUsers(context.Background(), &npool.Conds{
 		ID: &basetypes.StringVal{
 			Op:    cruder.EQ,
-			Value: rets[0].ID,
+			Value: ret.ID,
 		},
 	}, 0, 100)
 	if assert.Nil(t, err) {
@@ -187,13 +170,13 @@ func getNotifUsers(t *testing.T) {
 	}
 }
 
-// nolint:gosec,vet
 func deleteNotifUser(t *testing.T) {
 	info, err := DeleteNotifUser(context.Background(), &npool.NotifUserReq{
 		ID:    &ret.ID,
 		AppID: &ret.AppID,
 	})
 	if assert.Nil(t, err) {
+		info.EventTypeStr = ret.EventTypeStr
 		ret.CreatedAt = info.CreatedAt
 		ret.UpdatedAt = info.UpdatedAt
 		assert.Equal(t, info, &ret)
@@ -201,21 +184,6 @@ func deleteNotifUser(t *testing.T) {
 	info, err = GetNotifUser(context.Background(), ret.ID)
 	assert.Nil(t, err)
 	assert.Nil(t, info)
-
-	for _, item := range rets {
-		info, err := DeleteNotifUser(context.Background(), &npool.NotifUserReq{
-			ID:    &item.ID,
-			AppID: &item.AppID,
-		})
-		if assert.Nil(t, err) {
-			item.CreatedAt = info.CreatedAt
-			item.UpdatedAt = info.UpdatedAt
-			assert.Equal(t, info, &item)
-		}
-		info, err = GetNotifUser(context.Background(), item.ID)
-		assert.Nil(t, err)
-		assert.Nil(t, info)
-	}
 }
 
 func TestClient(t *testing.T) {

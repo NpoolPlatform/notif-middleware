@@ -54,6 +54,7 @@ var (
 		ChannelStr:          basetypes.NotifChannel_ChannelEmail.String(),
 		AnnouncementType:    basetypes.NotifType_NotifMulticast,
 		AnnouncementTypeStr: basetypes.NotifType_NotifMulticast.String(),
+		StartAt:             uint32(time.Now().Unix()),
 		EndAt:               uint32(time.Now().Add(1 * time.Hour).Unix()),
 	}
 
@@ -110,6 +111,7 @@ func setupSendState(t *testing.T) func(*testing.T) {
 		amt1.WithLangID(&amt.AppID),
 		amt1.WithChannel(&amt.Channel),
 		amt1.WithAnnouncementType(&amt.AnnouncementType),
+		amt1.WithStartAt(&amt.StartAt),
 		amt1.WithEndAt(&amt.EndAt),
 	)
 	assert.Nil(t, err)

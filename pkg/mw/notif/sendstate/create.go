@@ -27,15 +27,15 @@ func (h *createHandler) createSendState(ctx context.Context, tx *ent.Tx, req *se
 	if req.UserID == nil {
 		return fmt.Errorf("invalid userid")
 	}
-	if req.NotifID == nil {
-		return fmt.Errorf("invalid notifid")
+	if req.EventID == nil {
+		return fmt.Errorf("invalid eventid")
 	}
 	lockKey := fmt.Sprintf(
 		"%v:%v:%v:%v",
 		basetypes.Prefix_PrefixCreateAppCoin,
 		*req.AppID,
 		*req.UserID,
-		*req.NotifID,
+		*req.EventID,
 	)
 	if err := redis2.TryLock(lockKey, 0); err != nil {
 		return err
@@ -46,7 +46,7 @@ func (h *createHandler) createSendState(ctx context.Context, tx *ent.Tx, req *se
 	h.Conds = &sendstatecrud.Conds{
 		AppID:   &cruder.Cond{Op: cruder.EQ, Val: *req.AppID},
 		UserID:  &cruder.Cond{Op: cruder.EQ, Val: *req.UserID},
-		NotifID: &cruder.Cond{Op: cruder.EQ, Val: *req.NotifID},
+		EventID: &cruder.Cond{Op: cruder.EQ, Val: *req.EventID},
 		Channel: &cruder.Cond{Op: cruder.EQ, Val: *req.Channel},
 	}
 
@@ -69,7 +69,7 @@ func (h *createHandler) createSendState(ctx context.Context, tx *ent.Tx, req *se
 			ID:      req.ID,
 			AppID:   req.AppID,
 			UserID:  req.UserID,
-			NotifID: req.NotifID,
+			EventID: req.EventID,
 			Channel: req.Channel,
 		},
 	).Save(ctx)
@@ -90,7 +90,7 @@ func (h *Handler) CreateSendState(ctx context.Context) (*npool.SendState, error)
 		ID:      handler.ID,
 		AppID:   handler.AppID,
 		UserID:  handler.UserID,
-		NotifID: handler.NotifID,
+		EventID: handler.EventID,
 		Channel: handler.Channel,
 	}
 	err := db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {

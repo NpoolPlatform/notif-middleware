@@ -22,7 +22,7 @@ func (h *updateHandler) updateSendState(ctx context.Context, cli *ent.Client) er
 	if _, err := sendstatecrud.UpdateSet(
 		cli.SendNotif.UpdateOneID(*h.ID),
 		&sendstatecrud.Req{
-			NotifID: h.NotifID,
+			EventID: h.EventID,
 			Channel: h.Channel,
 		},
 	).Save(ctx); err != nil {

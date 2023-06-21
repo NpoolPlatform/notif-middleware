@@ -19,7 +19,7 @@ func (s *Server) CreateSendState(ctx context.Context, in *npool.CreateSendStateR
 		sendstate1.WithID(req.ID),
 		sendstate1.WithAppID(req.AppID),
 		sendstate1.WithUserID(req.UserID),
-		sendstate1.WithNotifID(req.NotifID),
+		sendstate1.WithEventID(req.EventID),
 		sendstate1.WithChannel(req.Channel),
 	)
 	if err != nil {

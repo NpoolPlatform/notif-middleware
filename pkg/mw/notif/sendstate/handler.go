@@ -17,7 +17,7 @@ type Handler struct {
 	ID      *uuid.UUID
 	AppID   *uuid.UUID
 	UserID  *uuid.UUID
-	NotifID *uuid.UUID
+	EventID *uuid.UUID
 	Channel *basetypes.NotifChannel
 	Reqs    []*sendstatecrud.Req
 	Conds   *sendstatecrud.Conds
@@ -94,16 +94,16 @@ func WithChannel(_channel *basetypes.NotifChannel) func(context.Context, *Handle
 	}
 }
 
-func WithNotifID(notifid *string) func(context.Context, *Handler) error {
+func WithEventID(eventid *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		if notifid == nil {
+		if eventid == nil {
 			return nil
 		}
-		_notifid, err := uuid.Parse(*notifid)
+		_eventid, err := uuid.Parse(*eventid)
 		if err != nil {
 			return err
 		}
-		h.NotifID = &_notifid
+		h.EventID = &_eventid
 		return nil
 	}
 }
@@ -134,12 +134,12 @@ func WithReqs(reqs []*npool.SendStateReq) func(context.Context, *Handler) error 
 				}
 				_req.UserID = &id
 			}
-			if req.NotifID != nil {
-				id, err := uuid.Parse(req.GetNotifID())
+			if req.EventID != nil {
+				id, err := uuid.Parse(req.GetEventID())
 				if err != nil {
 					return err
 				}
-				_req.NotifID = &id
+				_req.EventID = &id
 			}
 			if req.Channel != nil {
 				switch req.GetChannel() {
@@ -191,13 +191,13 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 				Val: id,
 			}
 		}
-		if conds.NotifID != nil {
-			id, err := uuid.Parse(conds.GetNotifID().GetValue())
+		if conds.EventID != nil {
+			id, err := uuid.Parse(conds.GetEventID().GetValue())
 			if err != nil {
 				return err
 			}
-			h.Conds.NotifID = &cruder.Cond{
-				Op:  conds.GetNotifID().GetOp(),
+			h.Conds.EventID = &cruder.Cond{
+				Op:  conds.GetEventID().GetOp(),
 				Val: id,
 			}
 		}

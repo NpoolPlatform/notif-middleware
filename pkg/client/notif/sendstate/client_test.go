@@ -54,8 +54,8 @@ var (
 		Content:      "Content " + uuid.NewString(),
 		Channel:      basetypes.NotifChannel_ChannelEmail,
 		ChannelStr:   basetypes.NotifChannel_ChannelEmail.String(),
-		NotifType:    notifpb.NotifType_Multicast,
-		NotifTypeStr: notifpb.NotifType_Multicast.String(),
+		NotifType:    basetypes.NotifType_NotifMulticast,
+		NotifTypeStr: basetypes.NotifType_NotifMulticast.String(),
 	}
 
 	notifRet = &notifpb.NotifReq{
@@ -74,7 +74,7 @@ var (
 
 	ret = npool.SendState{
 		AppID:      appID,
-		NotifID:    "",
+		EventID:    "",
 		UserID:     userID,
 		Channel:    notifData.Channel,
 		ChannelStr: notifData.ChannelStr,
@@ -102,7 +102,7 @@ func setupSendState(t *testing.T) func(*testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, _notif)
 
-	ret.NotifID = _notif.ID
+	ret.EventID = _notif.EventID
 
 	return func(*testing.T) {
 		_, _ = n1.DeleteNotif(context.Background())
@@ -113,7 +113,7 @@ func createSendState(t *testing.T) {
 	info, err := CreateSendState(context.Background(), &npool.SendStateReq{
 		AppID:   &ret.AppID,
 		UserID:  &ret.UserID,
-		NotifID: &ret.NotifID,
+		EventID: &ret.EventID,
 		Channel: &ret.Channel,
 	})
 	if assert.Nil(t, err) {

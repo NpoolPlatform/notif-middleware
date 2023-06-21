@@ -15,7 +15,7 @@ type Req struct {
 	ID        *uuid.UUID
 	AppID     *uuid.UUID
 	UserID    *uuid.UUID
-	NotifID   *uuid.UUID
+	EventID   *uuid.UUID
 	Channel   *basetypes.NotifChannel
 	DeletedAt *uint32
 }
@@ -30,8 +30,8 @@ func CreateSet(c *ent.SendNotifCreate, req *Req) *ent.SendNotifCreate {
 	if req.UserID != nil {
 		c.SetUserID(*req.UserID)
 	}
-	if req.NotifID != nil {
-		c.SetNotifID(*req.NotifID)
+	if req.EventID != nil {
+		c.SetEventID(*req.EventID)
 	}
 	if req.Channel != nil {
 		c.SetChannel(req.Channel.String())
@@ -50,7 +50,7 @@ type Conds struct {
 	ID      *cruder.Cond
 	AppID   *cruder.Cond
 	UserID  *cruder.Cond
-	NotifID *cruder.Cond
+	EventID *cruder.Cond
 	Channel *cruder.Cond
 	EndAt   *cruder.Cond
 	IDs     *cruder.Cond
@@ -95,14 +95,14 @@ func SetQueryConds(q *ent.SendNotifQuery, conds *Conds) (*ent.SendNotifQuery, er
 			return nil, fmt.Errorf("invalid sendstate field")
 		}
 	}
-	if conds.NotifID != nil {
-		notifid, ok := conds.NotifID.Val.(uuid.UUID)
+	if conds.EventID != nil {
+		eventid, ok := conds.EventID.Val.(uuid.UUID)
 		if !ok {
-			return nil, fmt.Errorf("invalid notifid")
+			return nil, fmt.Errorf("invalid eventid")
 		}
-		switch conds.NotifID.Op {
+		switch conds.EventID.Op {
 		case cruder.EQ:
-			q.Where(entsendnotif.NotifID(notifid))
+			q.Where(entsendnotif.EventID(eventid))
 		default:
 			return nil, fmt.Errorf("invalid sendstate field")
 		}

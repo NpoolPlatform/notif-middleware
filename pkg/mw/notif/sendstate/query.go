@@ -27,7 +27,7 @@ func (h *queryHandler) selectSendState(stm *ent.SendNotifQuery) {
 		entsendstate.FieldID,
 		entsendstate.FieldAppID,
 		entsendstate.FieldUserID,
-		entsendstate.FieldNotifID,
+		entsendstate.FieldEventID,
 		entsendstate.FieldChannel,
 		entsendstate.FieldCreatedAt,
 		entsendstate.FieldUpdatedAt,
@@ -36,7 +36,7 @@ func (h *queryHandler) selectSendState(stm *ent.SendNotifQuery) {
 
 func (h *queryHandler) querySendState(cli *ent.Client) error {
 	if h.ID == nil {
-		return fmt.Errorf("invalid sendnotifid")
+		return fmt.Errorf("invalid sendeventid")
 	}
 
 	h.selectSendState(

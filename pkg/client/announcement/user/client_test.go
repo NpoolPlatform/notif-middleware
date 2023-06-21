@@ -54,7 +54,7 @@ var (
 		ChannelStr:          basetypes.NotifChannel_ChannelEmail.String(),
 		AnnouncementType:    basetypes.NotifType_NotifMulticast,
 		AnnouncementTypeStr: basetypes.NotifType_NotifMulticast.String(),
-		StartAt:             uint32(time.Now().Unix()),
+		StartAt:             uint32(time.Now().Add(10 * time.Minute).Unix()),
 		EndAt:               uint32(time.Now().Add(1 * time.Hour).Unix()),
 	}
 

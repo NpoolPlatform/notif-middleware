@@ -10,8 +10,13 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// nolint
-func (s *Server) ExistChannelConds(ctx context.Context, in *npool.ExistChannelCondsRequest) (*npool.ExistChannelCondsResponse, error) {
+func (s *Server) ExistChannelConds(
+	ctx context.Context,
+	in *npool.ExistChannelCondsRequest,
+) (
+	*npool.ExistChannelCondsResponse,
+	error,
+) {
 	handler, err := channel1.NewHandler(
 		ctx,
 		channel1.WithConds(in.GetConds()),

@@ -46,22 +46,6 @@ func CreateSendState(ctx context.Context, in *npool.SendStateReq) (*npool.SendSt
 	return info.(*npool.SendState), nil
 }
 
-func CreateSendStates(ctx context.Context, in []*npool.SendStateReq) ([]*npool.SendState, error) {
-	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		resp, err := cli.CreateSendStates(ctx, &npool.CreateSendStatesRequest{
-			Infos: in,
-		})
-		if err != nil {
-			return nil, err
-		}
-		return resp.Infos, nil
-	})
-	if err != nil {
-		return nil, err
-	}
-	return info.([]*npool.SendState), nil
-}
-
 func DeleteSendState(ctx context.Context, id string) (*npool.SendState, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.DeleteSendState(ctx, &npool.DeleteSendStateRequest{

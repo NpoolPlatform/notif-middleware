@@ -42,33 +42,3 @@ func (s *Server) CreateAnnouncementUser(ctx context.Context, in *npool.CreateAnn
 		Info: info,
 	}, nil
 }
-
-// nolint
-func (s *Server) CreateAnnouncementUsers(ctx context.Context, in *npool.CreateAnnouncementUsersRequest) (*npool.CreateAnnouncementUsersResponse, error) {
-	handler1, err := amtuser1.NewHandler(
-		ctx,
-		amtuser1.WithReqs(in.GetInfos()),
-	)
-	if err != nil {
-		logger.Sugar().Errorw(
-			"CreateAnnouncementUsers",
-			"Req", in,
-			"Error", err,
-		)
-		return &npool.CreateAnnouncementUsersResponse{}, status.Error(codes.InvalidArgument, err.Error())
-	}
-
-	info, err := handler1.CreateAnnouncementUsers(ctx)
-	if err != nil {
-		logger.Sugar().Errorw(
-			"CreateAnnouncementUsers",
-			"Req", in,
-			"Error", err,
-		)
-		return &npool.CreateAnnouncementUsersResponse{}, status.Error(codes.Aborted, err.Error())
-	}
-
-	return &npool.CreateAnnouncementUsersResponse{
-		Infos: info,
-	}, nil
-}

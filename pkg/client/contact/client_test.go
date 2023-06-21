@@ -103,13 +103,13 @@ func existContactConds(t *testing.T) {
 				Op:    cruder.EQ,
 				Value: ret.AppID,
 			},
-			AccountType: &basetypes.Int32Val{
+			AccountType: &basetypes.Uint32Val{
 				Op:    cruder.EQ,
-				Value: int32(ret.AccountType),
+				Value: uint32(ret.AccountType),
 			},
-			UsedFor: &basetypes.Int32Val{
+			UsedFor: &basetypes.Uint32Val{
 				Op:    cruder.EQ,
-				Value: int32(ret.UsedFor),
+				Value: uint32(ret.UsedFor),
 			},
 		},
 	})
@@ -130,13 +130,13 @@ func getContacts(t *testing.T) {
 			Op:    cruder.EQ,
 			Value: ret.AppID,
 		},
-		UsedFor: &basetypes.Int32Val{
+		UsedFor: &basetypes.Uint32Val{
 			Op:    cruder.EQ,
-			Value: int32(ret.UsedFor),
+			Value: uint32(ret.UsedFor),
 		},
-		AccountType: &basetypes.Int32Val{
+		AccountType: &basetypes.Uint32Val{
 			Op:    cruder.EQ,
-			Value: int32(ret.AccountType),
+			Value: uint32(ret.AccountType),
 		},
 	}, 0, 1)
 	if assert.Nil(t, err) {

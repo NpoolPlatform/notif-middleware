@@ -46,33 +46,3 @@ func (s *Server) CreateChannel(ctx context.Context, in *npool.CreateChannelReque
 		Info: info,
 	}, nil
 }
-
-// nolint
-func (s *Server) CreateChannels(ctx context.Context, in *npool.CreateChannelsRequest) (*npool.CreateChannelsResponse, error) {
-	handler, err := channel1.NewHandler(
-		ctx,
-		channel1.WithReqs(in.GetInfos()),
-	)
-	if err != nil {
-		logger.Sugar().Errorw(
-			"CreateChannels",
-			"Req", in,
-			"Error", err,
-		)
-		return &npool.CreateChannelsResponse{}, status.Error(codes.InvalidArgument, err.Error())
-	}
-
-	info, err := handler.CreateChannels(ctx)
-	if err != nil {
-		logger.Sugar().Errorw(
-			"CreateChannels",
-			"Req", in,
-			"Error", err,
-		)
-		return &npool.CreateChannelsResponse{}, status.Error(codes.Internal, err.Error())
-	}
-
-	return &npool.CreateChannelsResponse{
-		Infos: info,
-	}, nil
-}

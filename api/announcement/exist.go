@@ -10,6 +10,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+//nolint
 func (s *Server) ExistAnnouncement(
 	ctx context.Context,
 	in *npool.ExistAnnouncementRequest,

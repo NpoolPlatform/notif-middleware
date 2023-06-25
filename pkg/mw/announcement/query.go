@@ -12,15 +12,13 @@ import (
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
 	entamt "github.com/NpoolPlatform/notif-middleware/pkg/db/ent/announcement"
 	entread "github.com/NpoolPlatform/notif-middleware/pkg/db/ent/readannouncement"
-	"github.com/google/uuid"
 )
 
 type queryHandler struct {
 	*Handler
-	stm    *ent.AnnouncementSelect
-	infos  []*npool.Announcement
-	total  uint32
-	UserID *uuid.UUID
+	stm   *ent.AnnouncementSelect
+	infos []*npool.Announcement
+	total uint32
 }
 
 func (h *queryHandler) selectAnnouncement(stm *ent.AnnouncementQuery) {

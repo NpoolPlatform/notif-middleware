@@ -26,7 +26,7 @@ type Handler struct {
 	Conds   *crud.Conds
 	Offset  int32
 	Limit   int32
-	UserID  *uuid.UUID
+	UserID  *string
 }
 
 func NewHandler(ctx context.Context, options ...func(context.Context, *Handler) error) (*Handler, error) {
@@ -231,7 +231,8 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			if err != nil {
 				return err
 			}
-			h.UserID = &userID
+			_userID := userID.String()
+			h.UserID = &_userID
 		}
 		return nil
 	}

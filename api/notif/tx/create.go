@@ -16,6 +16,7 @@ func (s *Server) CreateTx(ctx context.Context, in *npool.CreateTxRequest) (*npoo
 	req := in.GetInfo()
 	handler, err := tx1.NewHandler(
 		ctx,
+		tx1.WithID(req.ID),
 		tx1.WithTxID(req.TxID),
 		tx1.WithTxType(req.TxType),
 		tx1.WithNotifState(req.NotifState),

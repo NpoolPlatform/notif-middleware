@@ -6,6 +6,7 @@ import (
 
 	"github.com/NpoolPlatform/notif-middleware/pkg/db"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
+	"github.com/google/uuid"
 
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/tx"
 	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/notif/tx"
@@ -29,6 +30,11 @@ func (h *Handler) CreateTx(ctx context.Context) (info *npool.Tx, err error) {
 
 	if err := handler.validate(); err != nil {
 		return nil, err
+	}
+
+	id := uuid.New()
+	if h.ID == nil {
+		h.ID = &id
 	}
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {

@@ -2,6 +2,7 @@ package tx
 
 import (
 	"context"
+	"fmt"
 
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/tx"
 	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/notif/tx"
@@ -10,6 +11,9 @@ import (
 )
 
 func (h *Handler) UpdateTx(ctx context.Context) (info *npool.Tx, err error) {
+	if h.ID == nil {
+		return nil, fmt.Errorf("invalid id")
+	}
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
 		if _, err := crud.UpdateSet(
 			cli.TxNotifState.UpdateOneID(*h.ID),

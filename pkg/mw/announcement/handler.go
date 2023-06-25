@@ -26,6 +26,7 @@ type Handler struct {
 	Conds   *crud.Conds
 	Offset  int32
 	Limit   int32
+	UserID  *uuid.UUID
 }
 
 func NewHandler(ctx context.Context, options ...func(context.Context, *Handler) error) (*Handler, error) {
@@ -224,6 +225,13 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			h.Conds.Channel = &cruder.Cond{
 				Op: conds.GetChannel().GetOp(), Val: basetypes.NotifChannel(channel),
 			}
+		}
+		if conds.UserID != nil {
+			userID, err := uuid.Parse(conds.GetUserID().GetValue())
+			if err != nil {
+				return err
+			}
+			h.UserID = &userID
 		}
 		return nil
 	}

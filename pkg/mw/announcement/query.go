@@ -40,26 +40,24 @@ func (h *queryHandler) selectAnnouncement(stm *ent.AnnouncementQuery) {
 }
 
 func (h *queryHandler) queryJoinReadState(s *sql.Selector) {
-	t := sql.Table(entread.Table)
-	s.LeftJoin(t).
+	t1 := sql.Table(entread.Table)
+	s.
+		LeftJoin(t1).
 		On(
-			s.C(entread.FieldAppID),
-			t.C(entamt.FieldAppID),
+			s.C(entamt.FieldID),
+			t1.C(entread.FieldAnnouncementID),
 		).
 		OnP(
-			sql.EQ(t.C(entread.FieldUserID), *h.UserID),
-		).
-		OnP(
-			sql.EQ(s.C(entamt.FieldLangID), *h.LangID),
-		).
-		AppendSelect(
-			sql.As(t.C(entread.FieldUserID), "user_id"),
+			sql.EQ(t1.C(entread.FieldUserID), *h.UserID),
 		)
+	s.Select(
+		sql.As(t1.C(entread.FieldUserID), "user_id"),
+	)
 }
 
 func (h *queryHandler) queryJoin() {
 	h.stm.Modify(func(s *sql.Selector) {
-		if h.UserID != nil && h.LangID != nil {
+		if h.UserID != nil {
 			h.queryJoinReadState(s)
 		}
 	})
@@ -82,6 +80,7 @@ func (h *queryHandler) queryAnnouncement(cli *ent.Client) error {
 
 func (h *queryHandler) formalize() {
 	for _, info := range h.infos {
+		info.Notified = info.UserID != ""
 		info.AnnouncementType = basetypes.NotifType(basetypes.NotifType_value[info.AnnouncementTypeStr])
 		info.Channel = basetypes.NotifChannel(basetypes.NotifChannel_value[info.ChannelStr])
 	}

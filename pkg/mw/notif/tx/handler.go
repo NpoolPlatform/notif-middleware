@@ -45,6 +45,9 @@ func WithID(id *string) func(context.Context, *Handler) error {
 
 func WithTxID(txID *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
+		if txID == nil {
+			return fmt.Errorf("invalid txID")
+		}
 		txID, err := uuid.Parse(*txID)
 		if err != nil {
 			return err
@@ -54,14 +57,17 @@ func WithTxID(txID *string) func(context.Context, *Handler) error {
 	}
 }
 
-func WithTxType(tx *basetypes.TxType) func(context.Context, *Handler) error {
+func WithTxType(txType *basetypes.TxType) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		switch *tx {
+		if txType == nil {
+			return fmt.Errorf("invalid tx type")
+		}
+		switch *txType {
 		case basetypes.TxType_TxWithdraw:
 		default:
-			return fmt.Errorf("tx %v invalid", *tx)
+			return fmt.Errorf("tx type %v invalid", *txType)
 		}
-		h.TxType = tx
+		h.TxType = txType
 		return nil
 	}
 }

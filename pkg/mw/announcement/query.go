@@ -47,10 +47,10 @@ func (h *queryHandler) queryJoinReadState(s *sql.Selector) {
 		).
 		OnP(
 			sql.EQ(t1.C(entread.FieldUserID), *h.UserID),
+		).
+		AppendSelect(
+			sql.As(t1.C(entread.FieldUserID), "user_id"),
 		)
-	s.Select(
-		sql.As(t1.C(entread.FieldUserID), "user_id"),
-	)
 }
 
 func (h *queryHandler) queryJoin() {

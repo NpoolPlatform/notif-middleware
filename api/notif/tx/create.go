@@ -26,7 +26,7 @@ func (s *Server) CreateTx(ctx context.Context, in *npool.CreateTxRequest) (*npoo
 			"Req", in,
 			"Error", err,
 		)
-		return &npool.CreateTxResponse{}, status.Error(codes.InvalidArgument, err.Error())
+		return &npool.CreateTxResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
 	info, err := handler.CreateTx(ctx)
@@ -36,7 +36,7 @@ func (s *Server) CreateTx(ctx context.Context, in *npool.CreateTxRequest) (*npoo
 			"Req", in,
 			"Error", err,
 		)
-		return &npool.CreateTxResponse{}, status.Error(codes.Internal, err.Error())
+		return &npool.CreateTxResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
 	return &npool.CreateTxResponse{

@@ -19,8 +19,8 @@ func (s *Server) UpdateAnnouncement(ctx context.Context, in *npool.UpdateAnnounc
 		amt1.WithTitle(req.Title),
 		amt1.WithContent(req.Content),
 		amt1.WithAnnouncementType(req.AnnouncementType),
-		amt1.WithStartAt(req.StartAt),
-		amt1.WithEndAt(req.EndAt),
+		amt1.WithStartAt(req.StartAt, req.EndAt),
+		amt1.WithEndAt(req.StartAt, req.EndAt),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

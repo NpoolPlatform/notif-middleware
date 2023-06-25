@@ -49,4 +49,3 @@ func (h *Handler) CreateChannel(ctx context.Context) (info *npool.Channel, err e
 
 	return h.GetChannel(ctx)
 }
-

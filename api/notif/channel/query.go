@@ -68,6 +68,7 @@ func (s *Server) GetChannel(ctx context.Context, in *npool.GetChannelRequest) (*
 	}, nil
 }
 
+//nolint
 func (s *Server) GetChannelOnly(ctx context.Context, in *npool.GetChannelOnlyRequest) (*npool.GetChannelOnlyResponse, error) {
 	handler, err := channel1.NewHandler(
 		ctx,

@@ -117,6 +117,16 @@ func (h *Handler) CreateNotifs(ctx context.Context) ([]*npool.Notif, error) {
 
 	err := db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
 		for _, req := range h.Reqs {
+			if req.ID != nil {
+				handler.ID = req.ID
+				exist, err := handler.ExistNotif(ctx)
+				if err != nil {
+					return err
+				}
+				if exist {
+					return fmt.Errorf("notif id is exist")
+				}
+			}
 			if err := handler.createNotif(ctx, tx, req); err != nil {
 				return err
 			}

@@ -10,7 +10,6 @@ import (
 	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/notif/channel"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
-	"github.com/google/uuid"
 )
 
 func (h *Handler) CreateChannel(ctx context.Context) (info *npool.Channel, err error) {
@@ -51,51 +50,3 @@ func (h *Handler) CreateChannel(ctx context.Context) (info *npool.Channel, err e
 	return h.GetChannel(ctx)
 }
 
-func (h *Handler) CreateChannels(ctx context.Context) (infos []*npool.Channel, err error) {
-	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		for _, req := range h.Reqs {
-			h.AppID = req.AppID
-			h.Channel = req.Channel
-			h.EventType = req.EventType
-			h.Conds = &crud.Conds{
-				AppID:     &cruder.Cond{Op: cruder.EQ, Val: *h.AppID},
-				Channel:   &cruder.Cond{Op: cruder.EQ, Val: basetypes.NotifChannel(basetypes.NotifChannel_value[h.Channel.String()])},
-				EventType: &cruder.Cond{Op: cruder.EQ, Val: basetypes.UsedFor(basetypes.UsedFor_value[h.EventType.String()])},
-			}
-
-			rows, _, err := h.GetChannelConds(ctx)
-			if err != nil {
-				return err
-			}
-			if len(rows) > 1 {
-				return fmt.Errorf("too many record")
-			}
-			if len(rows) == 1 {
-				_id, err := uuid.Parse(rows[0].ID)
-				if err != nil {
-					return err
-				}
-				h.ID = &_id
-
-				row, err := h.GetChannel(ctx)
-				if err != nil {
-					return err
-				}
-				infos = append(infos, row)
-				continue
-			}
-
-			info, err := h.CreateChannel(ctx)
-			if err != nil {
-				return err
-			}
-			infos = append(infos, info)
-		}
-		return nil
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	return infos, nil
-}

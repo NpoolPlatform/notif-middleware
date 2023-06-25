@@ -154,6 +154,8 @@ func SetQueryConds(q *ent.AnnouncementQuery, conds *Conds) (*ent.AnnouncementQue
 			q.Where(entamt.EndAtGT(endAt))
 		case cruder.GTE:
 			q.Where(entamt.EndAtGTE(endAt))
+		case cruder.LTE:
+			q.Where(entamt.EndAtLTE(endAt))
 		default:
 			return nil, fmt.Errorf("invalid end at op field")
 		}

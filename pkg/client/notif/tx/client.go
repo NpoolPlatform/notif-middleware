@@ -95,3 +95,35 @@ func GetTxs(ctx context.Context, conds *npool.Conds, offset, limit int32) ([]*np
 	}
 	return infos.([]*npool.Tx), total, nil
 }
+
+func ExistTx(ctx context.Context, id string) (bool, error) {
+	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		resp, err := cli.ExistTx(ctx, &npool.ExistTxRequest{
+			ID: id,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("fail exist tx: %v", err)
+		}
+		return resp.Info, nil
+	})
+	if err != nil {
+		return false, err
+	}
+	return info.(bool), nil
+}
+
+func ExistTxConds(ctx context.Context, conds *npool.Conds) (bool, error) {
+	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		resp, err := cli.ExistTxConds(ctx, &npool.ExistTxCondsRequest{
+			Conds: conds,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("fail exist tx conds: %v", err)
+		}
+		return resp.Info, nil
+	})
+	if err != nil {
+		return false, err
+	}
+	return info.(bool), nil
+}

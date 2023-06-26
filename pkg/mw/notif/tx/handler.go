@@ -138,6 +138,13 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			_state := conds.GetNotifState().GetValue()
 			h.Conds.NotifState = &cruder.Cond{Op: conds.GetNotifState().GetOp(), Val: npool.TxState(_state)}
 		}
+		if conds.TxTypes != nil {
+			txTypes := []basetypes.TxType{}
+			for _, _type := range conds.GetTxTypes().GetValue() {
+				txTypes = append(txTypes, basetypes.TxType(_type))
+			}
+			h.Conds.TxTypes = &cruder.Cond{Op: conds.GetTxTypes().GetOp(), Val: txTypes}
+		}
 		return nil
 	}
 }

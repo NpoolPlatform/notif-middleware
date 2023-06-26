@@ -23,6 +23,7 @@ func (s *Server) GenerateNotifs(ctx context.Context, in *npool.GenerateNotifsReq
 		notif1.WithEventType(&in.EventType),
 		notif1.WithExtra(in.Extra),
 		notif1.WithVars(in.Vars),
+		notif1.WithNotifType(&in.NotifType),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

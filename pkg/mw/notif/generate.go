@@ -22,6 +22,9 @@ func (h *Handler) GenerateNotifs(
 	if h.EventType == nil {
 		return nil, fmt.Errorf("invalid eventtype")
 	}
+	if h.NotifType == nil {
+		return nil, fmt.Errorf("invalid notiftype")
+	}
 	appID := h.AppID.String()
 	userID := h.UserID.String()
 
@@ -40,8 +43,10 @@ func (h *Handler) GenerateNotifs(
 	if err != nil {
 		return nil, err
 	}
+
 	for _, req := range reqs {
 		req.Extra = h.Extra
+		req.NotifType = h.NotifType
 	}
 
 	notifGenerateHandler, err := NewHandler(

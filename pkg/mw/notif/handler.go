@@ -212,7 +212,6 @@ func WithNotifType(_type *basetypes.NotifType) func(context.Context, *Handler) e
 			return nil
 		}
 		switch *_type {
-		case basetypes.NotifType_NotifBroadcast:
 		case basetypes.NotifType_NotifMulticast:
 		case basetypes.NotifType_NotifUnicast:
 			if h.UserID == nil {
@@ -394,7 +393,6 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 		}
 		if conds.NotifType != nil {
 			switch conds.GetNotifType().GetValue() {
-			case uint32(basetypes.NotifType_NotifBroadcast):
 			case uint32(basetypes.NotifType_NotifMulticast):
 			case uint32(basetypes.NotifType_NotifUnicast):
 			default:

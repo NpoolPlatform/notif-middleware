@@ -144,22 +144,6 @@ var (
 		Columns:    ReadAnnouncementsColumns,
 		PrimaryKey: []*schema.Column{ReadAnnouncementsColumns[0]},
 	}
-	// ReadNotifsColumns holds the columns for the "read_notifs" table.
-	ReadNotifsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID, Unique: true},
-		{Name: "created_at", Type: field.TypeUint32},
-		{Name: "updated_at", Type: field.TypeUint32},
-		{Name: "deleted_at", Type: field.TypeUint32},
-		{Name: "app_id", Type: field.TypeUUID, Nullable: true},
-		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
-		{Name: "notif_id", Type: field.TypeUUID, Nullable: true},
-	}
-	// ReadNotifsTable holds the schema information for the "read_notifs" table.
-	ReadNotifsTable = &schema.Table{
-		Name:       "read_notifs",
-		Columns:    ReadNotifsColumns,
-		PrimaryKey: []*schema.Column{ReadNotifsColumns[0]},
-	}
 	// SmsTemplatesColumns holds the columns for the "sms_templates" table.
 	SmsTemplatesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID, Unique: true},
@@ -194,23 +178,6 @@ var (
 		Name:       "send_announcements",
 		Columns:    SendAnnouncementsColumns,
 		PrimaryKey: []*schema.Column{SendAnnouncementsColumns[0]},
-	}
-	// SendNotifsColumns holds the columns for the "send_notifs" table.
-	SendNotifsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID, Unique: true},
-		{Name: "created_at", Type: field.TypeUint32},
-		{Name: "updated_at", Type: field.TypeUint32},
-		{Name: "deleted_at", Type: field.TypeUint32},
-		{Name: "app_id", Type: field.TypeUUID, Nullable: true},
-		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
-		{Name: "event_id", Type: field.TypeUUID, Nullable: true},
-		{Name: "channel", Type: field.TypeString, Nullable: true, Default: "DefaultChannel"},
-	}
-	// SendNotifsTable holds the schema information for the "send_notifs" table.
-	SendNotifsTable = &schema.Table{
-		Name:       "send_notifs",
-		Columns:    SendNotifsColumns,
-		PrimaryKey: []*schema.Column{SendNotifsColumns[0]},
 	}
 	// TxNotifStatesColumns holds the columns for the "tx_notif_states" table.
 	TxNotifStatesColumns = []*schema.Column{
@@ -269,10 +236,8 @@ var (
 		NotifsTable,
 		NotifChannelsTable,
 		ReadAnnouncementsTable,
-		ReadNotifsTable,
 		SmsTemplatesTable,
 		SendAnnouncementsTable,
-		SendNotifsTable,
 		TxNotifStatesTable,
 		UserAnnouncementsTable,
 		UserNotifsTable,

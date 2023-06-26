@@ -28,14 +28,10 @@ type Tx struct {
 	NotifChannel *NotifChannelClient
 	// ReadAnnouncement is the client for interacting with the ReadAnnouncement builders.
 	ReadAnnouncement *ReadAnnouncementClient
-	// ReadNotif is the client for interacting with the ReadNotif builders.
-	ReadNotif *ReadNotifClient
 	// SMSTemplate is the client for interacting with the SMSTemplate builders.
 	SMSTemplate *SMSTemplateClient
 	// SendAnnouncement is the client for interacting with the SendAnnouncement builders.
 	SendAnnouncement *SendAnnouncementClient
-	// SendNotif is the client for interacting with the SendNotif builders.
-	SendNotif *SendNotifClient
 	// TxNotifState is the client for interacting with the TxNotifState builders.
 	TxNotifState *TxNotifStateClient
 	// UserAnnouncement is the client for interacting with the UserAnnouncement builders.
@@ -184,10 +180,8 @@ func (tx *Tx) init() {
 	tx.Notif = NewNotifClient(tx.config)
 	tx.NotifChannel = NewNotifChannelClient(tx.config)
 	tx.ReadAnnouncement = NewReadAnnouncementClient(tx.config)
-	tx.ReadNotif = NewReadNotifClient(tx.config)
 	tx.SMSTemplate = NewSMSTemplateClient(tx.config)
 	tx.SendAnnouncement = NewSendAnnouncementClient(tx.config)
-	tx.SendNotif = NewSendNotifClient(tx.config)
 	tx.TxNotifState = NewTxNotifStateClient(tx.config)
 	tx.UserAnnouncement = NewUserAnnouncementClient(tx.config)
 	tx.UserNotif = NewUserNotifClient(tx.config)

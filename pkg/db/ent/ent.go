@@ -17,9 +17,7 @@ import (
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notif"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notifchannel"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/readannouncement"
-	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/readnotif"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/sendannouncement"
-	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/sendnotif"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/smstemplate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/txnotifstate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/userannouncement"
@@ -51,10 +49,8 @@ func columnChecker(table string) func(string) error {
 		notif.Table:            notif.ValidColumn,
 		notifchannel.Table:     notifchannel.ValidColumn,
 		readannouncement.Table: readannouncement.ValidColumn,
-		readnotif.Table:        readnotif.ValidColumn,
 		smstemplate.Table:      smstemplate.ValidColumn,
 		sendannouncement.Table: sendannouncement.ValidColumn,
-		sendnotif.Table:        sendnotif.ValidColumn,
 		txnotifstate.Table:     txnotifstate.ValidColumn,
 		userannouncement.Table: userannouncement.ValidColumn,
 		usernotif.Table:        usernotif.ValidColumn,

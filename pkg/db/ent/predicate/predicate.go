@@ -27,17 +27,11 @@ type NotifChannel func(*sql.Selector)
 // ReadAnnouncement is the predicate function for readannouncement builders.
 type ReadAnnouncement func(*sql.Selector)
 
-// ReadNotif is the predicate function for readnotif builders.
-type ReadNotif func(*sql.Selector)
-
 // SMSTemplate is the predicate function for smstemplate builders.
 type SMSTemplate func(*sql.Selector)
 
 // SendAnnouncement is the predicate function for sendannouncement builders.
 type SendAnnouncement func(*sql.Selector)
-
-// SendNotif is the predicate function for sendnotif builders.
-type SendNotif func(*sql.Selector)
 
 // TxNotifState is the predicate function for txnotifstate builders.
 type TxNotifState func(*sql.Selector)

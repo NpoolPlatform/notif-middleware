@@ -12,10 +12,8 @@ import (
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notif"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notifchannel"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/readannouncement"
-	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/readnotif"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/schema"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/sendannouncement"
-	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/sendnotif"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/smstemplate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/txnotifstate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/userannouncement"
@@ -410,50 +408,6 @@ func init() {
 	readannouncementDescID := readannouncementFields[0].Descriptor()
 	// readannouncement.DefaultID holds the default value on creation for the id field.
 	readannouncement.DefaultID = readannouncementDescID.Default.(func() uuid.UUID)
-	readnotifMixin := schema.ReadNotif{}.Mixin()
-	readnotif.Policy = privacy.NewPolicies(readnotifMixin[0], schema.ReadNotif{})
-	readnotif.Hooks[0] = func(next ent.Mutator) ent.Mutator {
-		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-			if err := readnotif.Policy.EvalMutation(ctx, m); err != nil {
-				return nil, err
-			}
-			return next.Mutate(ctx, m)
-		})
-	}
-	readnotifMixinFields0 := readnotifMixin[0].Fields()
-	_ = readnotifMixinFields0
-	readnotifFields := schema.ReadNotif{}.Fields()
-	_ = readnotifFields
-	// readnotifDescCreatedAt is the schema descriptor for created_at field.
-	readnotifDescCreatedAt := readnotifMixinFields0[0].Descriptor()
-	// readnotif.DefaultCreatedAt holds the default value on creation for the created_at field.
-	readnotif.DefaultCreatedAt = readnotifDescCreatedAt.Default.(func() uint32)
-	// readnotifDescUpdatedAt is the schema descriptor for updated_at field.
-	readnotifDescUpdatedAt := readnotifMixinFields0[1].Descriptor()
-	// readnotif.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	readnotif.DefaultUpdatedAt = readnotifDescUpdatedAt.Default.(func() uint32)
-	// readnotif.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	readnotif.UpdateDefaultUpdatedAt = readnotifDescUpdatedAt.UpdateDefault.(func() uint32)
-	// readnotifDescDeletedAt is the schema descriptor for deleted_at field.
-	readnotifDescDeletedAt := readnotifMixinFields0[2].Descriptor()
-	// readnotif.DefaultDeletedAt holds the default value on creation for the deleted_at field.
-	readnotif.DefaultDeletedAt = readnotifDescDeletedAt.Default.(func() uint32)
-	// readnotifDescAppID is the schema descriptor for app_id field.
-	readnotifDescAppID := readnotifFields[1].Descriptor()
-	// readnotif.DefaultAppID holds the default value on creation for the app_id field.
-	readnotif.DefaultAppID = readnotifDescAppID.Default.(func() uuid.UUID)
-	// readnotifDescUserID is the schema descriptor for user_id field.
-	readnotifDescUserID := readnotifFields[2].Descriptor()
-	// readnotif.DefaultUserID holds the default value on creation for the user_id field.
-	readnotif.DefaultUserID = readnotifDescUserID.Default.(func() uuid.UUID)
-	// readnotifDescNotifID is the schema descriptor for notif_id field.
-	readnotifDescNotifID := readnotifFields[3].Descriptor()
-	// readnotif.DefaultNotifID holds the default value on creation for the notif_id field.
-	readnotif.DefaultNotifID = readnotifDescNotifID.Default.(func() uuid.UUID)
-	// readnotifDescID is the schema descriptor for id field.
-	readnotifDescID := readnotifFields[0].Descriptor()
-	// readnotif.DefaultID holds the default value on creation for the id field.
-	readnotif.DefaultID = readnotifDescID.Default.(func() uuid.UUID)
 	smstemplateMixin := schema.SMSTemplate{}.Mixin()
 	smstemplate.Policy = privacy.NewPolicies(smstemplateMixin[0], schema.SMSTemplate{})
 	smstemplate.Hooks[0] = func(next ent.Mutator) ent.Mutator {
@@ -546,54 +500,6 @@ func init() {
 	sendannouncementDescID := sendannouncementFields[0].Descriptor()
 	// sendannouncement.DefaultID holds the default value on creation for the id field.
 	sendannouncement.DefaultID = sendannouncementDescID.Default.(func() uuid.UUID)
-	sendnotifMixin := schema.SendNotif{}.Mixin()
-	sendnotif.Policy = privacy.NewPolicies(sendnotifMixin[0], schema.SendNotif{})
-	sendnotif.Hooks[0] = func(next ent.Mutator) ent.Mutator {
-		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-			if err := sendnotif.Policy.EvalMutation(ctx, m); err != nil {
-				return nil, err
-			}
-			return next.Mutate(ctx, m)
-		})
-	}
-	sendnotifMixinFields0 := sendnotifMixin[0].Fields()
-	_ = sendnotifMixinFields0
-	sendnotifFields := schema.SendNotif{}.Fields()
-	_ = sendnotifFields
-	// sendnotifDescCreatedAt is the schema descriptor for created_at field.
-	sendnotifDescCreatedAt := sendnotifMixinFields0[0].Descriptor()
-	// sendnotif.DefaultCreatedAt holds the default value on creation for the created_at field.
-	sendnotif.DefaultCreatedAt = sendnotifDescCreatedAt.Default.(func() uint32)
-	// sendnotifDescUpdatedAt is the schema descriptor for updated_at field.
-	sendnotifDescUpdatedAt := sendnotifMixinFields0[1].Descriptor()
-	// sendnotif.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	sendnotif.DefaultUpdatedAt = sendnotifDescUpdatedAt.Default.(func() uint32)
-	// sendnotif.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	sendnotif.UpdateDefaultUpdatedAt = sendnotifDescUpdatedAt.UpdateDefault.(func() uint32)
-	// sendnotifDescDeletedAt is the schema descriptor for deleted_at field.
-	sendnotifDescDeletedAt := sendnotifMixinFields0[2].Descriptor()
-	// sendnotif.DefaultDeletedAt holds the default value on creation for the deleted_at field.
-	sendnotif.DefaultDeletedAt = sendnotifDescDeletedAt.Default.(func() uint32)
-	// sendnotifDescAppID is the schema descriptor for app_id field.
-	sendnotifDescAppID := sendnotifFields[1].Descriptor()
-	// sendnotif.DefaultAppID holds the default value on creation for the app_id field.
-	sendnotif.DefaultAppID = sendnotifDescAppID.Default.(func() uuid.UUID)
-	// sendnotifDescUserID is the schema descriptor for user_id field.
-	sendnotifDescUserID := sendnotifFields[2].Descriptor()
-	// sendnotif.DefaultUserID holds the default value on creation for the user_id field.
-	sendnotif.DefaultUserID = sendnotifDescUserID.Default.(func() uuid.UUID)
-	// sendnotifDescEventID is the schema descriptor for event_id field.
-	sendnotifDescEventID := sendnotifFields[3].Descriptor()
-	// sendnotif.DefaultEventID holds the default value on creation for the event_id field.
-	sendnotif.DefaultEventID = sendnotifDescEventID.Default.(func() uuid.UUID)
-	// sendnotifDescChannel is the schema descriptor for channel field.
-	sendnotifDescChannel := sendnotifFields[4].Descriptor()
-	// sendnotif.DefaultChannel holds the default value on creation for the channel field.
-	sendnotif.DefaultChannel = sendnotifDescChannel.Default.(string)
-	// sendnotifDescID is the schema descriptor for id field.
-	sendnotifDescID := sendnotifFields[0].Descriptor()
-	// sendnotif.DefaultID holds the default value on creation for the id field.
-	sendnotif.DefaultID = sendnotifDescID.Default.(func() uuid.UUID)
 	txnotifstateMixin := schema.TxNotifState{}.Mixin()
 	txnotifstate.Policy = privacy.NewPolicies(txnotifstateMixin[0], schema.TxNotifState{})
 	txnotifstate.Hooks[0] = func(next ent.Mutator) ent.Mutator {

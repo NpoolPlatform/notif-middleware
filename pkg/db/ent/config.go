@@ -35,10 +35,8 @@ type hooks struct {
 	Notif            []ent.Hook
 	NotifChannel     []ent.Hook
 	ReadAnnouncement []ent.Hook
-	ReadNotif        []ent.Hook
 	SMSTemplate      []ent.Hook
 	SendAnnouncement []ent.Hook
-	SendNotif        []ent.Hook
 	TxNotifState     []ent.Hook
 	UserAnnouncement []ent.Hook
 	UserNotif        []ent.Hook

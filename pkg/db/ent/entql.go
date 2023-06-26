@@ -10,9 +10,7 @@ import (
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notif"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notifchannel"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/readannouncement"
-	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/readnotif"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/sendannouncement"
-	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/sendnotif"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/smstemplate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/txnotifstate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/userannouncement"
@@ -26,7 +24,7 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 14)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 12)}
 	graph.Nodes[0] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   announcement.Table,
@@ -186,25 +184,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 	}
 	graph.Nodes[7] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
-			Table:   readnotif.Table,
-			Columns: readnotif.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: readnotif.FieldID,
-			},
-		},
-		Type: "ReadNotif",
-		Fields: map[string]*sqlgraph.FieldSpec{
-			readnotif.FieldCreatedAt: {Type: field.TypeUint32, Column: readnotif.FieldCreatedAt},
-			readnotif.FieldUpdatedAt: {Type: field.TypeUint32, Column: readnotif.FieldUpdatedAt},
-			readnotif.FieldDeletedAt: {Type: field.TypeUint32, Column: readnotif.FieldDeletedAt},
-			readnotif.FieldAppID:     {Type: field.TypeUUID, Column: readnotif.FieldAppID},
-			readnotif.FieldUserID:    {Type: field.TypeUUID, Column: readnotif.FieldUserID},
-			readnotif.FieldNotifID:   {Type: field.TypeUUID, Column: readnotif.FieldNotifID},
-		},
-	}
-	graph.Nodes[8] = &sqlgraph.Node{
-		NodeSpec: sqlgraph.NodeSpec{
 			Table:   smstemplate.Table,
 			Columns: smstemplate.Columns,
 			ID: &sqlgraph.FieldSpec{
@@ -224,7 +203,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			smstemplate.FieldMessage:   {Type: field.TypeString, Column: smstemplate.FieldMessage},
 		},
 	}
-	graph.Nodes[9] = &sqlgraph.Node{
+	graph.Nodes[8] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   sendannouncement.Table,
 			Columns: sendannouncement.Columns,
@@ -244,27 +223,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			sendannouncement.FieldChannel:        {Type: field.TypeString, Column: sendannouncement.FieldChannel},
 		},
 	}
-	graph.Nodes[10] = &sqlgraph.Node{
-		NodeSpec: sqlgraph.NodeSpec{
-			Table:   sendnotif.Table,
-			Columns: sendnotif.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: sendnotif.FieldID,
-			},
-		},
-		Type: "SendNotif",
-		Fields: map[string]*sqlgraph.FieldSpec{
-			sendnotif.FieldCreatedAt: {Type: field.TypeUint32, Column: sendnotif.FieldCreatedAt},
-			sendnotif.FieldUpdatedAt: {Type: field.TypeUint32, Column: sendnotif.FieldUpdatedAt},
-			sendnotif.FieldDeletedAt: {Type: field.TypeUint32, Column: sendnotif.FieldDeletedAt},
-			sendnotif.FieldAppID:     {Type: field.TypeUUID, Column: sendnotif.FieldAppID},
-			sendnotif.FieldUserID:    {Type: field.TypeUUID, Column: sendnotif.FieldUserID},
-			sendnotif.FieldEventID:   {Type: field.TypeUUID, Column: sendnotif.FieldEventID},
-			sendnotif.FieldChannel:   {Type: field.TypeString, Column: sendnotif.FieldChannel},
-		},
-	}
-	graph.Nodes[11] = &sqlgraph.Node{
+	graph.Nodes[9] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   txnotifstate.Table,
 			Columns: txnotifstate.Columns,
@@ -283,7 +242,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			txnotifstate.FieldTxType:     {Type: field.TypeString, Column: txnotifstate.FieldTxType},
 		},
 	}
-	graph.Nodes[12] = &sqlgraph.Node{
+	graph.Nodes[10] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   userannouncement.Table,
 			Columns: userannouncement.Columns,
@@ -302,7 +261,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			userannouncement.FieldAnnouncementID: {Type: field.TypeUUID, Column: userannouncement.FieldAnnouncementID},
 		},
 	}
-	graph.Nodes[13] = &sqlgraph.Node{
+	graph.Nodes[11] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   usernotif.Table,
 			Columns: usernotif.Columns,
@@ -941,76 +900,6 @@ func (f *ReadAnnouncementFilter) WhereAnnouncementID(p entql.ValueP) {
 }
 
 // addPredicate implements the predicateAdder interface.
-func (rnq *ReadNotifQuery) addPredicate(pred func(s *sql.Selector)) {
-	rnq.predicates = append(rnq.predicates, pred)
-}
-
-// Filter returns a Filter implementation to apply filters on the ReadNotifQuery builder.
-func (rnq *ReadNotifQuery) Filter() *ReadNotifFilter {
-	return &ReadNotifFilter{config: rnq.config, predicateAdder: rnq}
-}
-
-// addPredicate implements the predicateAdder interface.
-func (m *ReadNotifMutation) addPredicate(pred func(s *sql.Selector)) {
-	m.predicates = append(m.predicates, pred)
-}
-
-// Filter returns an entql.Where implementation to apply filters on the ReadNotifMutation builder.
-func (m *ReadNotifMutation) Filter() *ReadNotifFilter {
-	return &ReadNotifFilter{config: m.config, predicateAdder: m}
-}
-
-// ReadNotifFilter provides a generic filtering capability at runtime for ReadNotifQuery.
-type ReadNotifFilter struct {
-	predicateAdder
-	config
-}
-
-// Where applies the entql predicate on the query filter.
-func (f *ReadNotifFilter) Where(p entql.P) {
-	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[7].Type, p, s); err != nil {
-			s.AddError(err)
-		}
-	})
-}
-
-// WhereID applies the entql [16]byte predicate on the id field.
-func (f *ReadNotifFilter) WhereID(p entql.ValueP) {
-	f.Where(p.Field(readnotif.FieldID))
-}
-
-// WhereCreatedAt applies the entql uint32 predicate on the created_at field.
-func (f *ReadNotifFilter) WhereCreatedAt(p entql.Uint32P) {
-	f.Where(p.Field(readnotif.FieldCreatedAt))
-}
-
-// WhereUpdatedAt applies the entql uint32 predicate on the updated_at field.
-func (f *ReadNotifFilter) WhereUpdatedAt(p entql.Uint32P) {
-	f.Where(p.Field(readnotif.FieldUpdatedAt))
-}
-
-// WhereDeletedAt applies the entql uint32 predicate on the deleted_at field.
-func (f *ReadNotifFilter) WhereDeletedAt(p entql.Uint32P) {
-	f.Where(p.Field(readnotif.FieldDeletedAt))
-}
-
-// WhereAppID applies the entql [16]byte predicate on the app_id field.
-func (f *ReadNotifFilter) WhereAppID(p entql.ValueP) {
-	f.Where(p.Field(readnotif.FieldAppID))
-}
-
-// WhereUserID applies the entql [16]byte predicate on the user_id field.
-func (f *ReadNotifFilter) WhereUserID(p entql.ValueP) {
-	f.Where(p.Field(readnotif.FieldUserID))
-}
-
-// WhereNotifID applies the entql [16]byte predicate on the notif_id field.
-func (f *ReadNotifFilter) WhereNotifID(p entql.ValueP) {
-	f.Where(p.Field(readnotif.FieldNotifID))
-}
-
-// addPredicate implements the predicateAdder interface.
 func (stq *SMSTemplateQuery) addPredicate(pred func(s *sql.Selector)) {
 	stq.predicates = append(stq.predicates, pred)
 }
@@ -1039,7 +928,7 @@ type SMSTemplateFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SMSTemplateFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[8].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[7].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -1119,7 +1008,7 @@ type SendAnnouncementFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SendAnnouncementFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[9].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[8].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -1166,81 +1055,6 @@ func (f *SendAnnouncementFilter) WhereChannel(p entql.StringP) {
 }
 
 // addPredicate implements the predicateAdder interface.
-func (snq *SendNotifQuery) addPredicate(pred func(s *sql.Selector)) {
-	snq.predicates = append(snq.predicates, pred)
-}
-
-// Filter returns a Filter implementation to apply filters on the SendNotifQuery builder.
-func (snq *SendNotifQuery) Filter() *SendNotifFilter {
-	return &SendNotifFilter{config: snq.config, predicateAdder: snq}
-}
-
-// addPredicate implements the predicateAdder interface.
-func (m *SendNotifMutation) addPredicate(pred func(s *sql.Selector)) {
-	m.predicates = append(m.predicates, pred)
-}
-
-// Filter returns an entql.Where implementation to apply filters on the SendNotifMutation builder.
-func (m *SendNotifMutation) Filter() *SendNotifFilter {
-	return &SendNotifFilter{config: m.config, predicateAdder: m}
-}
-
-// SendNotifFilter provides a generic filtering capability at runtime for SendNotifQuery.
-type SendNotifFilter struct {
-	predicateAdder
-	config
-}
-
-// Where applies the entql predicate on the query filter.
-func (f *SendNotifFilter) Where(p entql.P) {
-	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[10].Type, p, s); err != nil {
-			s.AddError(err)
-		}
-	})
-}
-
-// WhereID applies the entql [16]byte predicate on the id field.
-func (f *SendNotifFilter) WhereID(p entql.ValueP) {
-	f.Where(p.Field(sendnotif.FieldID))
-}
-
-// WhereCreatedAt applies the entql uint32 predicate on the created_at field.
-func (f *SendNotifFilter) WhereCreatedAt(p entql.Uint32P) {
-	f.Where(p.Field(sendnotif.FieldCreatedAt))
-}
-
-// WhereUpdatedAt applies the entql uint32 predicate on the updated_at field.
-func (f *SendNotifFilter) WhereUpdatedAt(p entql.Uint32P) {
-	f.Where(p.Field(sendnotif.FieldUpdatedAt))
-}
-
-// WhereDeletedAt applies the entql uint32 predicate on the deleted_at field.
-func (f *SendNotifFilter) WhereDeletedAt(p entql.Uint32P) {
-	f.Where(p.Field(sendnotif.FieldDeletedAt))
-}
-
-// WhereAppID applies the entql [16]byte predicate on the app_id field.
-func (f *SendNotifFilter) WhereAppID(p entql.ValueP) {
-	f.Where(p.Field(sendnotif.FieldAppID))
-}
-
-// WhereUserID applies the entql [16]byte predicate on the user_id field.
-func (f *SendNotifFilter) WhereUserID(p entql.ValueP) {
-	f.Where(p.Field(sendnotif.FieldUserID))
-}
-
-// WhereEventID applies the entql [16]byte predicate on the event_id field.
-func (f *SendNotifFilter) WhereEventID(p entql.ValueP) {
-	f.Where(p.Field(sendnotif.FieldEventID))
-}
-
-// WhereChannel applies the entql string predicate on the channel field.
-func (f *SendNotifFilter) WhereChannel(p entql.StringP) {
-	f.Where(p.Field(sendnotif.FieldChannel))
-}
-
-// addPredicate implements the predicateAdder interface.
 func (tnsq *TxNotifStateQuery) addPredicate(pred func(s *sql.Selector)) {
 	tnsq.predicates = append(tnsq.predicates, pred)
 }
@@ -1269,7 +1083,7 @@ type TxNotifStateFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *TxNotifStateFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[11].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[9].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -1339,7 +1153,7 @@ type UserAnnouncementFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *UserAnnouncementFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[12].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[10].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -1409,7 +1223,7 @@ type UserNotifFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *UserNotifFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[13].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[11].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})

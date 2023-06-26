@@ -100,19 +100,6 @@ func (f ReadAnnouncementFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.V
 	return f(ctx, mv)
 }
 
-// The ReadNotifFunc type is an adapter to allow the use of ordinary
-// function as ReadNotif mutator.
-type ReadNotifFunc func(context.Context, *ent.ReadNotifMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f ReadNotifFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.ReadNotifMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ReadNotifMutation", m)
-	}
-	return f(ctx, mv)
-}
-
 // The SMSTemplateFunc type is an adapter to allow the use of ordinary
 // function as SMSTemplate mutator.
 type SMSTemplateFunc func(context.Context, *ent.SMSTemplateMutation) (ent.Value, error)
@@ -135,19 +122,6 @@ func (f SendAnnouncementFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.V
 	mv, ok := m.(*ent.SendAnnouncementMutation)
 	if !ok {
 		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SendAnnouncementMutation", m)
-	}
-	return f(ctx, mv)
-}
-
-// The SendNotifFunc type is an adapter to allow the use of ordinary
-// function as SendNotif mutator.
-type SendNotifFunc func(context.Context, *ent.SendNotifMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f SendNotifFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.SendNotifMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SendNotifMutation", m)
 	}
 	return f(ctx, mv)
 }

@@ -10,8 +10,6 @@ import (
 	"github.com/NpoolPlatform/notif-middleware/api/contact"
 	"github.com/NpoolPlatform/notif-middleware/api/notif"
 	"github.com/NpoolPlatform/notif-middleware/api/notif/channel"
-	notifreadstate "github.com/NpoolPlatform/notif-middleware/api/notif/readstate"
-	notifsendstate "github.com/NpoolPlatform/notif-middleware/api/notif/sendstate"
 	"github.com/NpoolPlatform/notif-middleware/api/notif/tx"
 	notifuser "github.com/NpoolPlatform/notif-middleware/api/notif/user"
 	"github.com/NpoolPlatform/notif-middleware/api/template"
@@ -43,8 +41,6 @@ func Register(server grpc.ServiceRegistrar) {
 	user.Register(server)
 	tx.Register(server)
 	channel.Register(server)
-	notifreadstate.Register(server)
-	notifsendstate.Register(server)
 	notifuser.Register(server)
 }
 

@@ -68,7 +68,7 @@ func SetQueryConds(q *ent.SendAnnouncementQuery, conds *Conds) (*ent.SendAnnounc
 		case cruder.EQ:
 			q.Where(entsendamt.ID(id))
 		default:
-			return nil, fmt.Errorf("invalid read announcement id op field")
+			return nil, fmt.Errorf("invalid read announcement id op field %s", conds.ID.Op)
 		}
 	}
 	if conds.AppID != nil {
@@ -80,7 +80,7 @@ func SetQueryConds(q *ent.SendAnnouncementQuery, conds *Conds) (*ent.SendAnnounc
 		case cruder.EQ:
 			q.Where(entsendamt.AppID(id))
 		default:
-			return nil, fmt.Errorf("invalid app id op field")
+			return nil, fmt.Errorf("invalid app id op field %s", conds.AppID.Op)
 		}
 	}
 	if conds.AnnouncementID != nil {
@@ -92,7 +92,7 @@ func SetQueryConds(q *ent.SendAnnouncementQuery, conds *Conds) (*ent.SendAnnounc
 		case cruder.EQ:
 			q.Where(entsendamt.AnnouncementID(id))
 		default:
-			return nil, fmt.Errorf("invalid announcement id op field")
+			return nil, fmt.Errorf("invalid announcement id op field %s", conds.AnnouncementID.Op)
 		}
 	}
 	if conds.Channel != nil {
@@ -104,7 +104,7 @@ func SetQueryConds(q *ent.SendAnnouncementQuery, conds *Conds) (*ent.SendAnnounc
 		case cruder.EQ:
 			q.Where(entsendamt.Channel(channel.String()))
 		default:
-			return nil, fmt.Errorf("invalid channel op field")
+			return nil, fmt.Errorf("invalid channel op field %s", conds.Channel.Op)
 		}
 	}
 	if conds.UserID != nil {
@@ -116,7 +116,7 @@ func SetQueryConds(q *ent.SendAnnouncementQuery, conds *Conds) (*ent.SendAnnounc
 		case cruder.EQ:
 			q.Where(entsendamt.UserID(id))
 		default:
-			return nil, fmt.Errorf("invalid user id op field")
+			return nil, fmt.Errorf("invalid user id op field %s", conds.UserID.Op)
 		}
 	}
 	if conds.UserIDs != nil {
@@ -128,7 +128,7 @@ func SetQueryConds(q *ent.SendAnnouncementQuery, conds *Conds) (*ent.SendAnnounc
 		case cruder.IN:
 			q.Where(entsendamt.UserIDIn(ids...))
 		default:
-			return nil, fmt.Errorf("invalid user ids op field")
+			return nil, fmt.Errorf("invalid user ids op field %s", conds.UserID.Op)
 		}
 	}
 	return q, nil

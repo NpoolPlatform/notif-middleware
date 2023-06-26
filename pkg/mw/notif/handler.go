@@ -214,9 +214,6 @@ func WithNotifType(_type *basetypes.NotifType) func(context.Context, *Handler) e
 		switch *_type {
 		case basetypes.NotifType_NotifMulticast:
 		case basetypes.NotifType_NotifUnicast:
-			if h.UserID == nil {
-				return fmt.Errorf("invalid userid")
-			}
 		default:
 			return fmt.Errorf("invalid type")
 		}

@@ -36,11 +36,10 @@ func init() {
 }
 
 var (
-	multUserID1 = uuid.NewString()
-	multUserID2 = uuid.NewString()
-	ret         = &npool.Notif{
+	ret = &npool.Notif{
 		ID:           uuid.NewString(),
 		AppID:        uuid.NewString(),
+		UserID:       uuid.NewString(),
 		Notified:     false,
 		LangID:       uuid.NewString(),
 		EventID:      uuid.NewString(),
@@ -58,7 +57,7 @@ var (
 	retReq = &npool.NotifReq{
 		ID:          &ret.ID,
 		AppID:       &ret.AppID,
-		UserID:      nil,
+		UserID:      &ret.UserID,
 		Notified:    &ret.Notified,
 		LangID:      &ret.LangID,
 		EventID:     &ret.EventID,
@@ -91,6 +90,7 @@ var (
 		{
 			ID:           uuid.NewString(),
 			AppID:        ret.AppID,
+			UserID:       uuid.NewString(),
 			Notified:     false,
 			LangID:       uuid.NewString(),
 			EventID:      uuid.NewString(),
@@ -124,7 +124,7 @@ var (
 		{
 			ID:          &rets[1].ID,
 			AppID:       &rets[1].AppID,
-			UserID:      nil,
+			UserID:      &rets[1].UserID,
 			Notified:    &rets[1].Notified,
 			LangID:      &rets[1].LangID,
 			EventID:     &rets[1].EventID,
@@ -158,7 +158,6 @@ func createNotifs(t *testing.T) {
 
 func updateNotif(t *testing.T) {
 	ret.Notified = true
-	retReq.UserID = &multUserID1
 	info, err := UpdateNotif(context.Background(), retReq)
 	if assert.Nil(t, err) {
 		ret.UserID = info.UserID
@@ -178,7 +177,6 @@ func updateNotifs(t *testing.T) {
 		},
 		{
 			ID:       &rets[1].ID,
-			UserID:   &multUserID2,
 			Notified: &b,
 		},
 	}

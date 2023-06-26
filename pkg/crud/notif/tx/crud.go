@@ -53,6 +53,7 @@ type Conds struct {
 	TxTypes    *cruder.Cond
 }
 
+//nolint
 func SetQueryConds(q *ent.TxNotifStateQuery, conds *Conds) (*ent.TxNotifStateQuery, error) {
 	if conds == nil {
 		return q, nil

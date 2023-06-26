@@ -47,6 +47,22 @@ func GetChannels(ctx context.Context, conds *npool.Conds, offset, limit int32) (
 	return infos.([]*npool.Channel), total, nil
 }
 
+func GetChannelOnly(ctx context.Context, conds *npool.Conds) (*npool.Channel, error) {
+	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		resp, err := cli.GetChannelOnly(ctx, &npool.GetChannelOnlyRequest{
+			Conds: conds,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("fail get channel only: %v", err)
+		}
+		return resp.Info, nil
+	})
+	if err != nil {
+		return nil, fmt.Errorf("fail get channel only: %v", err)
+	}
+	return info.(*npool.Channel), nil
+}
+
 func CreateChannel(ctx context.Context, in *npool.ChannelReq) (*npool.Channel, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.CreateChannel(ctx, &npool.CreateChannelRequest{

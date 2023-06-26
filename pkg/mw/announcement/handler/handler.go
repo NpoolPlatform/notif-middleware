@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	constant "github.com/NpoolPlatform/notif-middleware/pkg/const"
 	amt1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement"
 	"github.com/google/uuid"
@@ -73,7 +74,7 @@ func WithUserID(userID *string) func(context.Context, *Handler) error {
 	}
 }
 
-func WithAnnouncementID(amtID *string) func(context.Context, *Handler) error {
+func WithAnnouncementID(appID, amtID *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		_amtID, err := uuid.Parse(*amtID)
 		if err != nil {
@@ -87,12 +88,18 @@ func WithAnnouncementID(amtID *string) func(context.Context, *Handler) error {
 			return err
 		}
 
-		exist, err := handler.ExistAnnouncement(ctx)
+		amt, err := handler.GetAnnouncement(ctx)
 		if err != nil {
 			return err
 		}
-		if !exist {
-			return fmt.Errorf("invalid announcement id")
+		if amt == nil {
+			return fmt.Errorf("announcement id not exist")
+		}
+		if amt.AppID != *appID {
+			return fmt.Errorf("wrong app id or announcement id")
+		}
+		if amt.AnnouncementType != basetypes.NotifType_NotifMulticast {
+			return fmt.Errorf("wrong announcement type %v", amt.AnnouncementType.String())
 		}
 
 		h.AnnouncementID = &_amtID

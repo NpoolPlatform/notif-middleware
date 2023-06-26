@@ -10,6 +10,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+//nolint
 func (s *Server) ExistSendStateConds(
 	ctx context.Context,
 	in *npool.ExistSendStateCondsRequest,

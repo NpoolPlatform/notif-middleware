@@ -121,30 +121,22 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			if err != nil {
 				return err
 			}
-			h.Conds.ID = &cruder.Cond{
-				Op: conds.GetID().GetOp(), Val: id,
-			}
+			h.Conds.ID = &cruder.Cond{Op: conds.GetID().GetOp(), Val: id}
 		}
 		if conds.TxID != nil {
 			appID, err := uuid.Parse(conds.GetTxID().GetValue())
 			if err != nil {
 				return err
 			}
-			h.Conds.TxID = &cruder.Cond{
-				Op: conds.GetTxID().GetOp(), Val: appID,
-			}
+			h.Conds.TxID = &cruder.Cond{Op: conds.GetTxID().GetOp(), Val: appID}
 		}
 		if conds.TxType != nil {
 			_type := conds.GetTxType().GetValue()
-			h.Conds.TxType = &cruder.Cond{
-				Op: conds.GetTxType().GetOp(), Val: basetypes.TxType(_type),
-			}
+			h.Conds.TxType = &cruder.Cond{Op: conds.GetTxType().GetOp(), Val: basetypes.TxType(_type)}
 		}
 		if conds.NotifState != nil {
 			_state := conds.GetNotifState().GetValue()
-			h.Conds.NotifState = &cruder.Cond{
-				Op: conds.GetNotifState().GetOp(), Val: npool.TxState(_state),
-			}
+			h.Conds.NotifState = &cruder.Cond{Op: conds.GetNotifState().GetOp(), Val: npool.TxState(_state)}
 		}
 		return nil
 	}

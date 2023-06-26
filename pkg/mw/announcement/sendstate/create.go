@@ -82,3 +82,40 @@ func (h *Handler) CreateSendState(ctx context.Context) (info *npool.SendState, e
 
 	return h.GetSendState(ctx)
 }
+
+func (h *Handler) CreateSendStates(ctx context.Context) (infos []*npool.SendState, err error) {
+	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
+		for _, req := range h.Reqs {
+			h.AppID = req.AppID
+			h.UserID = req.UserID
+			h.AnnouncementID = req.AnnouncementID
+			h.Channel = req.Channel
+
+			h.Conds = &crud.Conds{
+				AppID:          &cruder.Cond{Op: cruder.EQ, Val: *h.AppID},
+				UserID:         &cruder.Cond{Op: cruder.EQ, Val: *h.UserID},
+				AnnouncementID: &cruder.Cond{Op: cruder.EQ, Val: *h.AnnouncementID},
+			}
+
+			exist, err := h.ExistSendStateConds(ctx)
+			if err != nil {
+				return err
+			}
+			if exist {
+				continue
+			}
+
+			info, err := h.CreateSendState(ctx)
+			if err != nil {
+				return err
+			}
+			infos = append(infos, info)
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return infos, nil
+}

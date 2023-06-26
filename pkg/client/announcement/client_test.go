@@ -124,12 +124,14 @@ func updateAnnouncement(t *testing.T) {
 	amt.Content = "-----" + uuid.NewString()
 	amt.AnnouncementType = basetypes.NotifType_NotifBroadcast
 	amt.AnnouncementTypeStr = basetypes.NotifType_NotifBroadcast.String()
-	amt.EndAt = uint32(time.Now().Add(3 * time.Hour).Unix())
+	amt.StartAt = uint32(time.Now().Add(3 * time.Hour).Unix())
+	amt.EndAt = uint32(time.Now().Add(10 * time.Hour).Unix())
 	info, err := UpdateAnnouncement(context.Background(), &npool.AnnouncementReq{
 		ID:               &amt.ID,
 		Title:            &amt.Title,
 		Content:          &amt.Content,
 		AnnouncementType: &amt.AnnouncementType,
+		StartAt:          &amt.StartAt,
 		EndAt:            &amt.EndAt,
 	})
 	if assert.Nil(t, err) {

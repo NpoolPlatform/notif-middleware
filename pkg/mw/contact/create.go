@@ -46,18 +46,9 @@ func (h *Handler) CreateContact(ctx context.Context) (info *npool.Contact, err e
 	}
 
 	h.Conds = &crud.Conds{
-		AppID: &cruder.Cond{
-			Op:  cruder.EQ,
-			Val: *h.AppID,
-		},
-		AccountType: &cruder.Cond{
-			Op:  cruder.EQ,
-			Val: basetypes.SignMethod(basetypes.SignMethod_value[h.AccountType.String()]),
-		},
-		UsedFor: &cruder.Cond{
-			Op:  cruder.EQ,
-			Val: basetypes.UsedFor(basetypes.UsedFor_value[h.UsedFor.String()]),
-		},
+		AppID:       &cruder.Cond{Op: cruder.EQ, Val: *h.AppID},
+		AccountType: &cruder.Cond{Op: cruder.EQ, Val: basetypes.SignMethod(basetypes.SignMethod_value[h.AccountType.String()])},
+		UsedFor:     &cruder.Cond{Op: cruder.EQ, Val: basetypes.UsedFor(basetypes.UsedFor_value[h.UsedFor.String()])},
 	}
 	exist, err := h.ExistContactConds(ctx)
 	if err != nil {

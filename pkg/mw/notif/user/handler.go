@@ -186,9 +186,10 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			default:
 				return fmt.Errorf("invalid usedfor")
 			}
+			_type := conds.GetEventType().GetValue()
 			h.Conds.EventType = &cruder.Cond{
 				Op:  conds.GetEventType().GetOp(),
-				Val: conds.GetEventType().GetValue(),
+				Val: basetypes.UsedFor(_type),
 			}
 		}
 		return nil

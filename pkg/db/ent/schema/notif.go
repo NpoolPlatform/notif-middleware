@@ -34,7 +34,9 @@ func (Notif) Fields() []ent.Field {
 		field.
 			UUID("user_id", uuid.UUID{}).
 			Optional().
-			Default(uuid.New),
+			Default(func() uuid.UUID {
+				return uuid.UUID{}
+			}),
 		field.
 			Bool("notified").
 			Optional().

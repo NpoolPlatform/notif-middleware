@@ -28,7 +28,6 @@ type Req struct {
 	DeletedAt   *uint32
 }
 
-// nolint:gocyclo
 func CreateSet(c *ent.NotifCreate, req *Req) *ent.NotifCreate {
 	if req.ID != nil {
 		c.SetID(*req.ID)
@@ -38,9 +37,6 @@ func CreateSet(c *ent.NotifCreate, req *Req) *ent.NotifCreate {
 	}
 	if req.LangID != nil {
 		c.SetLangID(*req.LangID)
-	}
-	if req.UserID != nil {
-		c.SetUserID(*req.UserID)
 	}
 	if req.EventID != nil {
 		c.SetEventID(*req.EventID)
@@ -68,13 +64,10 @@ func CreateSet(c *ent.NotifCreate, req *Req) *ent.NotifCreate {
 	}
 	if req.NotifType != nil {
 		c.SetType(req.NotifType.String())
-		switch req.NotifType.String() {
-		case basetypes.NotifType_NotifMulticast.Enum().String():
-			c.SetUserID(uuid.Nil)
-			fallthrough //nolint
-		case basetypes.NotifType_NotifBroadcast.Enum().String():
-			c.SetUserID(uuid.Nil)
-		default:
+		if req.NotifType.String() == basetypes.NotifType_NotifUnicast.Enum().String() {
+			if req.UserID != nil {
+				c.SetUserID(*req.UserID)
+			}
 		}
 	}
 	return c
@@ -202,13 +195,13 @@ func SetQueryConds(q *ent.NotifQuery, conds *Conds) (*ent.NotifQuery, error) {
 		}
 	}
 	if conds.EventType != nil {
-		eventType, ok := conds.EventType.Val.(string)
+		eventType, ok := conds.EventType.Val.(basetypes.UsedFor)
 		if !ok {
 			return nil, fmt.Errorf("invalid eventType")
 		}
 		switch conds.EventType.Op {
 		case cruder.EQ:
-			q.Where(entnotif.EventType(eventType))
+			q.Where(entnotif.EventType(eventType.String()))
 		default:
 			return nil, fmt.Errorf("invalid notif field")
 		}

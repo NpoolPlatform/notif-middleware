@@ -130,28 +130,19 @@ func GetNotifs(ctx context.Context, conds *npool.Conds, offset, limit int32) ([]
 }
 
 func GetNotifOnly(ctx context.Context, conds *npool.Conds) (*npool.Notif, error) {
-	infos, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		const singleRowLimit = 2
-		resp, err := cli.GetNotifs(ctx, &npool.GetNotifsRequest{
-			Conds:  conds,
-			Offset: 0,
-			Limit:  singleRowLimit,
+	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		resp, err := cli.GetNotifOnly(ctx, &npool.GetNotifOnlyRequest{
+			Conds: conds,
 		})
 		if err != nil {
 			return nil, err
 		}
-		return resp.Infos, nil
+		return resp.Info, nil
 	})
 	if err != nil {
 		return nil, err
 	}
-	if len(infos.([]*npool.Notif)) == 0 {
-		return nil, nil
-	}
-	if len(infos.([]*npool.Notif)) > 1 {
-		return nil, fmt.Errorf("too many record")
-	}
-	return infos.([]*npool.Notif)[0], nil
+	return info.(*npool.Notif), nil
 }
 
 func DeleteNotif(ctx context.Context, req *npool.NotifReq) (*npool.Notif, error) {

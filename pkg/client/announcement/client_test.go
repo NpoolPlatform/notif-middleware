@@ -157,12 +157,12 @@ func getAnnouncements(t *testing.T) {
 			Value: uint32(basetypes.NotifChannel_value[amt.Channel.String()]),
 		},
 		StartAt: &basetypes.Uint32Val{
-			Op:    cruder.GTE,
+			Op:    cruder.LTE,
 			Value: amt.StartAt,
 		},
 		EndAt: &basetypes.Uint32Val{
 			Op:    cruder.GTE,
-			Value: amt.EndAt,
+			Value: amt.StartAt,
 		},
 	}, 0, 1)
 	if assert.Nil(t, err) {

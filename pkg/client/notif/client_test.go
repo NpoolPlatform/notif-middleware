@@ -36,11 +36,12 @@ func init() {
 }
 
 var (
-	ret = &npool.Notif{
+	multUserID1 = uuid.NewString()
+	multUserID2 = uuid.NewString()
+	ret         = &npool.Notif{
 		ID:           uuid.NewString(),
 		AppID:        uuid.NewString(),
-		UserID:       uuid.NewString(),
-		Notified:     true,
+		Notified:     false,
 		LangID:       uuid.NewString(),
 		EventID:      uuid.NewString(),
 		EventType:    basetypes.UsedFor_KYCApproved,
@@ -57,7 +58,7 @@ var (
 	retReq = &npool.NotifReq{
 		ID:          &ret.ID,
 		AppID:       &ret.AppID,
-		UserID:      &ret.UserID,
+		UserID:      nil,
 		Notified:    &ret.Notified,
 		LangID:      &ret.LangID,
 		EventID:     &ret.EventID,
@@ -67,6 +68,73 @@ var (
 		Content:     &ret.Content,
 		Channel:     &ret.Channel,
 		NotifType:   &ret.NotifType,
+	}
+
+	rets = []npool.Notif{
+		{
+			ID:           uuid.NewString(),
+			AppID:        ret.AppID,
+			UserID:       uuid.NewString(),
+			Notified:     false,
+			LangID:       uuid.NewString(),
+			EventID:      uuid.NewString(),
+			EventType:    basetypes.UsedFor_WithdrawalRequest,
+			EventTypeStr: basetypes.UsedFor_WithdrawalRequest.String(),
+			UseTemplate:  true,
+			Title:        "Title1 " + uuid.NewString(),
+			Content:      "Content1 " + uuid.NewString(),
+			Channel:      basetypes.NotifChannel_ChannelSMS,
+			ChannelStr:   basetypes.NotifChannel_ChannelSMS.String(),
+			NotifType:    basetypes.NotifType_NotifUnicast,
+			NotifTypeStr: basetypes.NotifType_NotifUnicast.String(),
+		},
+		{
+			ID:           uuid.NewString(),
+			AppID:        ret.AppID,
+			Notified:     false,
+			LangID:       uuid.NewString(),
+			EventID:      uuid.NewString(),
+			EventType:    basetypes.UsedFor_KYCRejected,
+			EventTypeStr: basetypes.UsedFor_KYCRejected.String(),
+			UseTemplate:  true,
+			Title:        "Title2 " + uuid.NewString(),
+			Content:      "Content2 " + uuid.NewString(),
+			Channel:      basetypes.NotifChannel_ChannelSMS,
+			ChannelStr:   basetypes.NotifChannel_ChannelSMS.String(),
+			NotifType:    basetypes.NotifType_NotifMulticast,
+			NotifTypeStr: basetypes.NotifType_NotifMulticast.String(),
+		},
+	}
+
+	retsReq = []*npool.NotifReq{
+		{
+			ID:          &rets[0].ID,
+			AppID:       &rets[0].AppID,
+			UserID:      &rets[0].UserID,
+			Notified:    &rets[0].Notified,
+			LangID:      &rets[0].LangID,
+			EventID:     &rets[0].EventID,
+			EventType:   &rets[0].EventType,
+			UseTemplate: &rets[0].UseTemplate,
+			Title:       &rets[0].Title,
+			Content:     &rets[0].Content,
+			Channel:     &rets[0].Channel,
+			NotifType:   &rets[0].NotifType,
+		},
+		{
+			ID:          &rets[1].ID,
+			AppID:       &rets[1].AppID,
+			UserID:      nil,
+			Notified:    &rets[1].Notified,
+			LangID:      &rets[1].LangID,
+			EventID:     &rets[1].EventID,
+			EventType:   &rets[1].EventType,
+			UseTemplate: &rets[1].UseTemplate,
+			Title:       &rets[1].Title,
+			Content:     &rets[1].Content,
+			Channel:     &rets[1].Channel,
+			NotifType:   &rets[1].NotifType,
+		},
 	}
 )
 
@@ -81,8 +149,16 @@ func createNotif(t *testing.T) {
 	}
 }
 
+func createNotifs(t *testing.T) {
+	infos, err := CreateNotifs(context.Background(), retsReq)
+	if assert.Nil(t, err) {
+		assert.Equal(t, len(infos), 2)
+	}
+}
+
 func updateNotif(t *testing.T) {
 	ret.Notified = true
+	retReq.UserID = &multUserID1
 	info, err := UpdateNotif(context.Background(), retReq)
 	if assert.Nil(t, err) {
 		ret.UserID = info.UserID
@@ -97,16 +173,18 @@ func updateNotifs(t *testing.T) {
 	b := true
 	updReq := []*npool.NotifReq{
 		{
-			ID:       &ret.ID,
+			ID:       &rets[0].ID,
+			Notified: &b,
+		},
+		{
+			ID:       &rets[1].ID,
+			UserID:   &multUserID2,
 			Notified: &b,
 		},
 	}
 	infos, err := UpdateNotifs(context.Background(), updReq)
 	if assert.Nil(t, err) {
-		ret.UserID = infos[0].UserID
-		ret.CreatedAt = infos[0].CreatedAt
-		ret.UpdatedAt = infos[0].UpdatedAt
-		assert.Equal(t, infos[0].String(), ret.String())
+		assert.Equal(t, len(infos), 2)
 	}
 }
 
@@ -119,14 +197,14 @@ func getNotif(t *testing.T) {
 
 func getNotifs(t *testing.T) {
 	infos, total, err := GetNotifs(context.Background(), &npool.Conds{
-		ID: &basetypes.StringVal{
+		AppID: &basetypes.StringVal{
 			Op:    cruder.EQ,
-			Value: ret.ID,
+			Value: ret.AppID,
 		},
-	}, 0, 1)
+	}, 0, 3)
 	if assert.Nil(t, err) {
-		assert.Equal(t, total, uint32(1))
-		assert.Equal(t, infos[0].String(), ret.String())
+		assert.Equal(t, total, uint32(3))
+		assert.Equal(t, len(infos), 3)
 	}
 }
 
@@ -141,6 +219,33 @@ func getNotifOnly(t *testing.T) {
 		assert.Equal(t, info.String(), ret.String())
 	}
 }
+
+func existNotifConds(t *testing.T) {
+	exist, err := ExistNotifConds(context.Background(), &npool.Conds{
+		AppID: &basetypes.StringVal{
+			Op:    cruder.EQ,
+			Value: ret.AppID,
+		},
+		LangID: &basetypes.StringVal{
+			Op:    cruder.EQ,
+			Value: ret.LangID,
+		},
+	})
+	if assert.Nil(t, err) {
+		assert.Equal(t, exist, true)
+	}
+}
+
+func deleteNotif(t *testing.T) {
+	info, err := DeleteNotif(context.Background(), &npool.NotifReq{
+		ID: &ret.ID,
+	})
+	assert.Nil(t, err)
+	info, err = GetNotif(context.Background(), info.ID)
+	assert.Nil(t, err)
+	assert.Nil(t, info)
+}
+
 func TestClient(t *testing.T) {
 	if runByGithubAction, err := strconv.ParseBool(os.Getenv("RUN_BY_GITHUB_ACTION")); err == nil && runByGithubAction {
 		return
@@ -153,9 +258,12 @@ func TestClient(t *testing.T) {
 	})
 
 	t.Run("createNotif", createNotif)
+	t.Run("createNotifs", createNotifs)
 	t.Run("updateNotif", updateNotif)
 	t.Run("updateNotifs", updateNotifs)
 	t.Run("getNotif", getNotif)
 	t.Run("getNotifs", getNotifs)
 	t.Run("getNotifOnly", getNotifOnly)
+	t.Run("existNotifConds", existNotifConds)
+	t.Run("deleteNotif", deleteNotif)
 }

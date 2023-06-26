@@ -278,6 +278,13 @@ func WithReqs(reqs []*npool.NotifReq) func(context.Context, *Handler) error {
 				}
 				_req.AppID = &id
 			}
+			if req.UserID != nil {
+				id, err := uuid.Parse(req.GetUserID())
+				if err != nil {
+					return err
+				}
+				_req.UserID = &id
+			}
 			if req.LangID != nil {
 				id, err := uuid.Parse(req.GetLangID())
 				if err != nil {
@@ -294,16 +301,8 @@ func WithReqs(reqs []*npool.NotifReq) func(context.Context, *Handler) error {
 			}
 			if req.NotifType != nil {
 				switch req.GetNotifType() {
-				case basetypes.NotifType_NotifBroadcast:
 				case basetypes.NotifType_NotifMulticast:
 				case basetypes.NotifType_NotifUnicast:
-					if req.UserID != nil {
-						id, err := uuid.Parse(req.GetUserID())
-						if err != nil {
-							return err
-						}
-						_req.UserID = &id
-					}
 				default:
 					return fmt.Errorf("invalid Type")
 				}
@@ -414,7 +413,8 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			default:
 				return fmt.Errorf("invalid EventType")
 			}
-			h.Conds.EventType = &cruder.Cond{Op: conds.GetEventType().GetOp(), Val: conds.GetEventType().GetValue()}
+			_type := conds.GetEventType().GetValue()
+			h.Conds.EventType = &cruder.Cond{Op: conds.GetEventType().GetOp(), Val: basetypes.UsedFor(_type)}
 		}
 		if conds.Channel != nil {
 			switch conds.GetChannel().GetValue() {

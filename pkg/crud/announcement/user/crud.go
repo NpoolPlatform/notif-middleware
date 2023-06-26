@@ -61,7 +61,7 @@ func SetQueryConds(q *ent.UserAnnouncementQuery, conds *Conds) (*ent.UserAnnounc
 		case cruder.EQ:
 			q.Where(entuseramt.ID(id))
 		default:
-			return nil, fmt.Errorf("invalid user announcement id op field")
+			return nil, fmt.Errorf("invalid user announcement id op field %s", conds.ID.Op)
 		}
 	}
 	if conds.AppID != nil {
@@ -73,7 +73,7 @@ func SetQueryConds(q *ent.UserAnnouncementQuery, conds *Conds) (*ent.UserAnnounc
 		case cruder.EQ:
 			q.Where(entuseramt.AppID(id))
 		default:
-			return nil, fmt.Errorf("invalid app id op field")
+			return nil, fmt.Errorf("invalid app id op field %s", conds.AppID.Op)
 		}
 	}
 	if conds.UserID != nil {
@@ -85,7 +85,7 @@ func SetQueryConds(q *ent.UserAnnouncementQuery, conds *Conds) (*ent.UserAnnounc
 		case cruder.EQ:
 			q.Where(entuseramt.UserID(id))
 		default:
-			return nil, fmt.Errorf("invalid user id op field")
+			return nil, fmt.Errorf("invalid user id op field %s", conds.UserID.Op)
 		}
 	}
 	if conds.AnnouncementID != nil {
@@ -97,7 +97,7 @@ func SetQueryConds(q *ent.UserAnnouncementQuery, conds *Conds) (*ent.UserAnnounc
 		case cruder.EQ:
 			q.Where(entuseramt.AnnouncementID(id))
 		default:
-			return nil, fmt.Errorf("invalid announcement id op field")
+			return nil, fmt.Errorf("invalid announcement id op field %s", conds.AnnouncementID.Op)
 		}
 	}
 	return q, nil

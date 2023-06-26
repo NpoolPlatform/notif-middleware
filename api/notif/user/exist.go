@@ -47,7 +47,8 @@ func (s *Server) ExistNotifUserConds(
 	*npool.ExistNotifUserCondsResponse,
 	error,
 ) {
-	handler, err := user1.NewHandler(ctx,
+	handler, err := user1.NewHandler(
+		ctx,
 		user1.WithConds(in.GetConds()),
 	)
 	if err != nil {

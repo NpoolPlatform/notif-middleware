@@ -18,7 +18,8 @@ func (s *Server) ExistNotifConds(
 	*npool.ExistNotifCondsResponse,
 	error,
 ) {
-	handler, err := notif1.NewHandler(ctx,
+	handler, err := notif1.NewHandler(
+		ctx,
 		notif1.WithConds(in.GetConds()),
 	)
 	if err != nil {

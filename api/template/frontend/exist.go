@@ -53,7 +53,8 @@ func (s *Server) ExistFrontendTemplateConds(
 	*npool.ExistFrontendTemplateCondsResponse,
 	error,
 ) {
-	handler, err := frontendtemplate1.NewHandler(ctx,
+	handler, err := frontendtemplate1.NewHandler(
+		ctx,
 		frontendtemplate1.WithConds(in.GetConds()),
 	)
 	if err != nil {

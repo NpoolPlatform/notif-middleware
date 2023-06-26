@@ -30,7 +30,7 @@ import (
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	amtpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/user"
-	amt1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement"
+	announcement1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -102,16 +102,16 @@ func setupAnnouncementUser(t *testing.T) func(*testing.T) {
 
 	ret.UserID = user.ID
 
-	handler, err := amt1.NewHandler(
+	handler, err := announcement1.NewHandler(
 		context.Background(),
-		amt1.WithTitle(&amt.Title),
-		amt1.WithContent(&amt.Content),
-		amt1.WithAppID(&amt.AppID),
-		amt1.WithLangID(&amt.LangID),
-		amt1.WithChannel(&amt.Channel),
-		amt1.WithAnnouncementType(&amt.AnnouncementType),
-		amt1.WithStartAt(&amt.StartAt),
-		amt1.WithEndAt(&amt.EndAt),
+		announcement1.WithTitle(&amt.Title),
+		announcement1.WithContent(&amt.Content),
+		announcement1.WithAppID(&amt.AppID),
+		announcement1.WithLangID(&amt.LangID),
+		announcement1.WithChannel(&amt.Channel),
+		announcement1.WithAnnouncementType(&amt.AnnouncementType),
+		announcement1.WithStartAt(&amt.StartAt),
+		announcement1.WithEndAt(&amt.EndAt),
 	)
 	assert.Nil(t, err)
 

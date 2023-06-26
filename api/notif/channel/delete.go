@@ -12,11 +12,9 @@ import (
 
 func (s *Server) DeleteChannel(ctx context.Context, in *npool.DeleteChannelRequest) (*npool.DeleteChannelResponse, error) {
 	id := in.GetInfo().GetID()
-	appID := in.GetInfo().GetAppID()
 	handler, err := channel1.NewHandler(
 		ctx,
 		channel1.WithID(&id),
-		channel1.WithAppID(&appID),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

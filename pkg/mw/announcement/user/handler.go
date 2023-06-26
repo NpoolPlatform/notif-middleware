@@ -7,7 +7,7 @@ import (
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/user"
 	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/announcement/user"
-	amt1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement"
+	announcement1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement"
 	"github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement/handler"
 	"github.com/google/uuid"
 )
@@ -114,7 +114,7 @@ func WithReqs(reqs []*npool.AnnouncementUserReq) func(context.Context, *Handler)
 				return err
 			}
 			_amtID := req.AnnouncementID.String()
-			amtHandler, err := amt1.NewHandler(_ctx, amt1.WithID(&_amtID))
+			amtHandler, err := announcement1.NewHandler(_ctx, announcement1.WithID(&_amtID))
 			if err != nil {
 				return err
 			}

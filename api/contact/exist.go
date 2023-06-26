@@ -11,7 +11,8 @@ import (
 )
 
 func (s *Server) ExistContactConds(ctx context.Context, in *npool.ExistContactCondsRequest) (*npool.ExistContactCondsResponse, error) {
-	handler, err := contact1.NewHandler(ctx,
+	handler, err := contact1.NewHandler(
+		ctx,
 		contact1.WithConds(in.GetConds()),
 	)
 	if err != nil {

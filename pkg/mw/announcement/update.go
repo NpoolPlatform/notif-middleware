@@ -19,6 +19,9 @@ func (h *Handler) UpdateAnnouncement(ctx context.Context) (info *npool.Announcem
 		return nil, fmt.Errorf("announcement not found")
 	}
 
+	if h.StartAt != nil && h.EndAt != nil {
+		return nil, fmt.Errorf("start at less than end at")
+	}
 	if h.StartAt != nil && h.EndAt == nil {
 		if *h.StartAt > info.EndAt {
 			return nil, fmt.Errorf("start at less than end at")

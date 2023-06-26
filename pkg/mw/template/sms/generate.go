@@ -14,8 +14,6 @@ import (
 	cruder "github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 
 	tmplreplace "github.com/NpoolPlatform/notif-middleware/pkg/mw/template/replace"
-
-	"github.com/google/uuid"
 )
 
 func (h *Handler) GenerateNotifs(ctx context.Context) ([]*notifmwpb.NotifReq, error) {
@@ -30,7 +28,6 @@ func (h *Handler) GenerateNotifs(ctx context.Context) ([]*notifmwpb.NotifReq, er
 		return nil, fmt.Errorf("invalid usedfor")
 	}
 
-	eventID := uuid.NewString()
 	appID := h.AppID.String()
 	userID := h.UserID.String()
 
@@ -52,7 +49,7 @@ func (h *Handler) GenerateNotifs(ctx context.Context) ([]*notifmwpb.NotifReq, er
 		return nil, err
 	}
 	if len(tmpls) == 0 {
-		return nil, nil
+		return nil, fmt.Errorf("invalid sms template")
 	}
 
 	reqs := []*notifmwpb.NotifReq{}
@@ -71,7 +68,6 @@ func (h *Handler) GenerateNotifs(ctx context.Context) ([]*notifmwpb.NotifReq, er
 			Title:       &title,
 			Content:     &content,
 			Channel:     &channel1,
-			EventID:     &eventID,
 		})
 	}
 

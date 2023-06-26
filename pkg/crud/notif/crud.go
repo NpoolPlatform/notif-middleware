@@ -35,6 +35,9 @@ func CreateSet(c *ent.NotifCreate, req *Req) *ent.NotifCreate {
 	if req.AppID != nil {
 		c.SetAppID(*req.AppID)
 	}
+	if req.UserID != nil {
+		c.SetUserID(*req.UserID)
+	}
 	if req.LangID != nil {
 		c.SetLangID(*req.LangID)
 	}
@@ -64,11 +67,6 @@ func CreateSet(c *ent.NotifCreate, req *Req) *ent.NotifCreate {
 	}
 	if req.NotifType != nil {
 		c.SetType(req.NotifType.String())
-		if req.NotifType.String() == basetypes.NotifType_NotifUnicast.Enum().String() {
-			if req.UserID != nil {
-				c.SetUserID(*req.UserID)
-			}
-		}
 	}
 	return c
 }
@@ -248,8 +246,8 @@ func SetQueryConds(q *ent.NotifQuery, conds *Conds) (*ent.NotifQuery, error) {
 			return nil, fmt.Errorf("invalid extra")
 		}
 		switch conds.Extra.Op {
-		case cruder.EQ:
-			q.Where(entnotif.Extra(extra))
+		case cruder.LIKE:
+			q.Where(entnotif.ExtraContains(extra))
 		default:
 			return nil, fmt.Errorf("invalid notif field")
 		}

@@ -9,11 +9,7 @@ import (
 
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
 	entnotif "github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notif"
-	entreadnotif "github.com/NpoolPlatform/notif-middleware/pkg/db/ent/readnotif"
-	entsendnotif "github.com/NpoolPlatform/notif-middleware/pkg/db/ent/sendnotif"
-	entusernotif "github.com/NpoolPlatform/notif-middleware/pkg/db/ent/usernotif"
 
-	"entgo.io/ent/dialect/sql"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	notifcrud "github.com/NpoolPlatform/notif-middleware/pkg/crud/notif"
 )
@@ -61,76 +57,11 @@ func (h *queryHandler) queryNotif(cli *ent.Client) error {
 	return nil
 }
 
-func (h *queryHandler) queryJoin() {
-	h.stm.Modify(func(s *sql.Selector) {
-		h.queryJoinNotifUser(s)
-		h.queryJoinSendNotif(s)
-		h.queryJoinReadNotif(s)
-	})
-}
-
-func (h *queryHandler) queryJoinNotifUser(s *sql.Selector) {
-	t := sql.Table(entusernotif.Table)
-	s.LeftJoin(t).
-		On(
-			t.C(entusernotif.FieldEventType),
-			s.C(entnotif.FieldEventType),
-		).
-		AppendSelect(
-			sql.As(t.C(entusernotif.FieldUserID), "notif_user_id"),
-		)
-}
-
-func (h *queryHandler) queryJoinSendNotif(s *sql.Selector) {
-	t := sql.Table(entsendnotif.Table)
-	s.LeftJoin(t).
-		On(
-			t.C(entsendnotif.FieldEventID),
-			s.C(entnotif.FieldEventID),
-		).
-		On(
-			t.C(entsendnotif.FieldChannel),
-			s.C(entnotif.FieldChannel),
-		).
-		AppendSelect(
-			sql.As(t.C(entsendnotif.FieldUserID), "send_user_id"),
-		)
-}
-
-func (h *queryHandler) queryJoinReadNotif(s *sql.Selector) {
-	t := sql.Table(entreadnotif.Table)
-	s.LeftJoin(t).
-		On(
-			t.C(entreadnotif.FieldNotifID),
-			s.C(entnotif.FieldID),
-		).
-		AppendSelect(
-			sql.As(t.C(entreadnotif.FieldUserID), "read_user_id"),
-		)
-}
-
 func (h *queryHandler) formalize() {
 	for _, info := range h.infos {
 		info.EventType = basetypes.UsedFor(basetypes.UsedFor_value[info.EventTypeStr])
 		info.Channel = basetypes.NotifChannel(basetypes.NotifChannel_value[info.ChannelStr])
 		info.NotifType = basetypes.NotifType(basetypes.NotifType_value[info.NotifTypeStr])
-		switch info.NotifType {
-		case basetypes.NotifType_NotifMulticast:
-			info.UserID = info.NotifUserID
-			switch info.NotifType {
-			case basetypes.NotifType(basetypes.NotifChannel_ChannelEmail):
-				fallthrough //nolint
-			case basetypes.NotifType(basetypes.NotifChannel_ChannelSMS):
-				if info.UserID == info.SendUserID {
-					info.Notified = true
-				}
-			case basetypes.NotifType(basetypes.NotifChannel_ChannelFrontend):
-				if info.UserID == info.ReadUserID {
-					info.Notified = true
-				}
-			}
-		case basetypes.NotifType_NotifUnicast:
-		}
 	}
 }
 
@@ -196,7 +127,6 @@ func (h *Handler) GetNotifs(ctx context.Context) ([]*npool.Notif, uint32, error)
 			stm.
 			Offset(int(handler.Offset)).
 			Limit(int(handler.Limit))
-		handler.queryJoin()
 		if err := handler.scan(ctx); err != nil {
 			return err
 		}

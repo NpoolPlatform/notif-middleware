@@ -9,8 +9,6 @@ import (
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
 	notifcrud "github.com/NpoolPlatform/notif-middleware/pkg/crud/notif"
-	readstatecrud "github.com/NpoolPlatform/notif-middleware/pkg/crud/notif/readstate"
-	readstatemw "github.com/NpoolPlatform/notif-middleware/pkg/mw/notif/readstate"
 	"github.com/google/uuid"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
@@ -21,6 +19,9 @@ import (
 func (h *Handler) UpdateNotif(ctx context.Context) (*npool.Notif, error) {
 	if h.ID == nil {
 		return nil, fmt.Errorf("invalid id")
+	}
+	if h.Notified == nil {
+		return nil, fmt.Errorf("invalid notified")
 	}
 
 	lockKey := fmt.Sprintf(
@@ -42,14 +43,13 @@ func (h *Handler) UpdateNotif(ctx context.Context) (*npool.Notif, error) {
 	if info == nil {
 		return nil, fmt.Errorf("notif not exist")
 	}
+	if info.Notified {
+		if *h.Notified != info.Notified {
+			return nil, fmt.Errorf("invalid notified")
+		}
+	}
 
 	err = db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
-		switch info.NotifType {
-		case basetypes.NotifType_NotifMulticast:
-			break
-		case basetypes.NotifType_NotifUnicast:
-			break
-		}
 		if _, err := notifcrud.UpdateSet(
 			tx.Notif.UpdateOneID(*h.ID),
 			&notifcrud.Req{
@@ -82,6 +82,10 @@ func (h *Handler) UpdateNotifs(ctx context.Context) ([]*npool.Notif, error) {
 			if req.ID == nil {
 				return fmt.Errorf("invalid id")
 			}
+			if req.Notified == nil {
+				return fmt.Errorf("invalid notified")
+			}
+
 			h.ID = req.ID
 			info, err := h.GetNotif(ctx)
 			if err != nil {
@@ -90,51 +94,19 @@ func (h *Handler) UpdateNotifs(ctx context.Context) ([]*npool.Notif, error) {
 			if info == nil {
 				return fmt.Errorf("notif not exist")
 			}
+			if info.Notified {
+				if *req.Notified != info.Notified {
+					return fmt.Errorf("invalid notified")
+				}
+			}
 
-			switch info.NotifType {
-			case basetypes.NotifType_NotifMulticast:
-				if req.UserID == nil {
-					return fmt.Errorf("invalid userid")
-				}
-
-				readstateHandler, err := readstatemw.NewHandler(
-					ctx,
-					readstatemw.WithAppID(&info.AppID),
-				)
-				if err != nil {
-					return err
-				}
-				readstateHandler.Conds = &readstatecrud.Conds{
-					AppID:   &cruder.Cond{Op: cruder.EQ, Val: *readstateHandler.AppID},
-					UserID:  &cruder.Cond{Op: cruder.EQ, Val: *req.UserID},
-					NotifID: &cruder.Cond{Op: cruder.EQ, Val: *req.ID},
-				}
-				exist, err := readstateHandler.ExistReadStateConds(ctx)
-				if err != nil {
-					return err
-				}
-				if !exist {
-					readstateHandler.UserID = req.UserID
-					readstateHandler.NotifID = req.ID
-					_, err := readstateHandler.CreateReadState(ctx)
-					if err != nil {
-						return err
-					}
-				}
-			case basetypes.NotifType_NotifUnicast:
-				if info.Notified {
-					if *h.Notified != info.Notified {
-						return fmt.Errorf("invalid notified")
-					}
-				}
-				if _, err := notifcrud.UpdateSet(
-					tx.Notif.UpdateOneID(*req.ID),
-					&notifcrud.Req{
-						Notified: req.Notified,
-					},
-				).Save(ctx); err != nil {
-					return err
-				}
+			if _, err := notifcrud.UpdateSet(
+				tx.Notif.UpdateOneID(*req.ID),
+				&notifcrud.Req{
+					Notified: req.Notified,
+				},
+			).Save(ctx); err != nil {
+				return err
 			}
 
 			ids = append(ids, *req.ID)

@@ -56,7 +56,7 @@ func (h *Handler) GenerateNotifs(
 		return nil, err
 	}
 	if len(chans) == 0 {
-		return nil, err
+		return nil, fmt.Errorf("invalid channels")
 	}
 
 	reqs := []*notifmwpb.NotifReq{}

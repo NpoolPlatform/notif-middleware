@@ -436,6 +436,9 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			}
 			h.Conds.IDs = &cruder.Cond{Op: conds.GetIDs().GetOp(), Val: ids}
 		}
+		if conds.Extra != nil {
+			h.Conds.EventID = &cruder.Cond{Op: conds.GetExtra().GetOp(), Val: conds.GetExtra().GetValue()}
+		}
 		return nil
 	}
 }

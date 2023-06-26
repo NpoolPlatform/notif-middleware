@@ -235,9 +235,10 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			default:
 				return fmt.Errorf("invalid usedfor")
 			}
+			usedFor := conds.GetUsedFor().GetValue()
 			h.Conds.UsedFor = &cruder.Cond{
 				Op:  conds.GetUsedFor().GetOp(),
-				Val: conds.GetUsedFor().GetValue(),
+				Val: basetypes.UsedFor(usedFor),
 			}
 		}
 		return nil

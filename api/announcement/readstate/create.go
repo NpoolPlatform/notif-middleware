@@ -17,7 +17,7 @@ func (s *Server) CreateReadState(ctx context.Context, in *npool.CreateReadStateR
 		ctx,
 		handler1.WithAppID(req.AppID),
 		handler1.WithUserID(req.UserID),
-		handler1.WithAnnouncementID(req.AnnouncementID),
+		handler1.WithAnnouncementID(req.AppID, req.AnnouncementID),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

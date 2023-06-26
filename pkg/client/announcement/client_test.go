@@ -147,7 +147,6 @@ func getAnnouncement(t *testing.T) {
 }
 
 func getAnnouncements(t *testing.T) {
-	// now := uint32(time.Now().Unix())
 	infos, _, err := GetAnnouncements(context.Background(), &npool.Conds{
 		ID: &basetypes.StringVal{
 			Op:    cruder.EQ,

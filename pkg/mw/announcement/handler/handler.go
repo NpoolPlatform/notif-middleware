@@ -6,7 +6,7 @@ import (
 
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	constant "github.com/NpoolPlatform/notif-middleware/pkg/const"
-	amt1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement"
+	announcement1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement"
 	"github.com/google/uuid"
 )
 
@@ -81,8 +81,8 @@ func WithAnnouncementID(appID, amtID *string) func(context.Context, *Handler) er
 			return err
 		}
 
-		handler, err := amt1.NewHandler(ctx,
-			amt1.WithID(amtID),
+		handler, err := announcement1.NewHandler(ctx,
+			announcement1.WithID(amtID),
 		)
 		if err != nil {
 			return err

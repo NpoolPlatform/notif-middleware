@@ -129,31 +129,22 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 				return err
 			}
 			h.Conds.ID = &cruder.Cond{
-				Op:  conds.GetID().GetOp(),
-				Val: id,
-			}
+				Op: conds.GetID().GetOp(), Val: id}
 		}
 		if conds.AppID != nil {
 			id, err := uuid.Parse(conds.GetAppID().GetValue())
 			if err != nil {
 				return err
 			}
-			h.Conds.AppID = &cruder.Cond{
-				Op:  conds.GetAppID().GetOp(),
-				Val: id,
-			}
+			h.Conds.AppID = &cruder.Cond{Op: conds.GetAppID().GetOp(), Val: id}
 		}
 		if conds.AccountType != nil {
 			accountType := conds.GetAccountType().GetValue()
-			h.Conds.AccountType = &cruder.Cond{
-				Op: conds.GetAccountType().GetOp(), Val: basetypes.SignMethod(accountType),
-			}
+			h.Conds.AccountType = &cruder.Cond{Op: conds.GetAccountType().GetOp(), Val: basetypes.SignMethod(accountType)}
 		}
 		if conds.UsedFor != nil {
 			usedFor := conds.GetUsedFor().GetValue()
-			h.Conds.UsedFor = &cruder.Cond{
-				Op: conds.GetUsedFor().GetOp(), Val: basetypes.UsedFor(usedFor),
-			}
+			h.Conds.UsedFor = &cruder.Cond{Op: conds.GetUsedFor().GetOp(), Val: basetypes.UsedFor(usedFor)}
 		}
 		return nil
 	}

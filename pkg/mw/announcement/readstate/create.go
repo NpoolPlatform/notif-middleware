@@ -30,18 +30,9 @@ func (h *Handler) CreateReadState(ctx context.Context) (info *npool.ReadState, e
 	}
 
 	h.Conds = &crud.Conds{
-		AppID: &cruder.Cond{
-			Op:  cruder.EQ,
-			Val: *h.AppID,
-		},
-		UserID: &cruder.Cond{
-			Op:  cruder.EQ,
-			Val: *h.UserID,
-		},
-		AnnouncementID: &cruder.Cond{
-			Op:  cruder.EQ,
-			Val: *h.AnnouncementID,
-		},
+		AppID:          &cruder.Cond{Op: cruder.EQ, Val: *h.AppID},
+		UserID:         &cruder.Cond{Op: cruder.EQ, Val: *h.UserID},
+		AnnouncementID: &cruder.Cond{Op: cruder.EQ, Val: *h.AnnouncementID},
 	}
 
 	exist, err := h.ExistReadStateConds(ctx)

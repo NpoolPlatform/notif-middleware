@@ -125,34 +125,22 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			if err != nil {
 				return err
 			}
-			h.Conds.ID = &cruder.Cond{
-				Op:  conds.GetID().GetOp(),
-				Val: id,
-			}
+			h.Conds.ID = &cruder.Cond{Op: conds.GetID().GetOp(), Val: id}
 		}
 		if conds.AppID != nil {
 			appID, err := uuid.Parse(conds.GetAppID().GetValue())
 			if err != nil {
 				return err
 			}
-			h.Conds.AppID = &cruder.Cond{
-				Op:  conds.GetAppID().GetOp(),
-				Val: appID,
-			}
+			h.Conds.AppID = &cruder.Cond{Op: conds.GetAppID().GetOp(), Val: appID}
 		}
 		if conds.Channel != nil {
 			channel := conds.GetChannel().GetValue()
-			h.Conds.Channel = &cruder.Cond{
-				Op:  conds.GetChannel().GetOp(),
-				Val: basetypes.NotifChannel(channel),
-			}
+			h.Conds.Channel = &cruder.Cond{Op: conds.GetChannel().GetOp(), Val: basetypes.NotifChannel(channel)}
 		}
 		if conds.EventType != nil {
 			_type := conds.GetEventType().GetValue()
-			h.Conds.EventType = &cruder.Cond{
-				Op:  conds.GetEventType().GetOp(),
-				Val: basetypes.UsedFor(_type),
-			}
+			h.Conds.EventType = &cruder.Cond{Op: conds.GetEventType().GetOp(), Val: basetypes.UsedFor(_type)}
 		}
 		return nil
 	}

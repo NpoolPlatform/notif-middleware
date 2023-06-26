@@ -47,7 +47,8 @@ func (s *Server) ExistEmailTemplateConds(
 	*npool.ExistEmailTemplateCondsResponse,
 	error,
 ) {
-	handler, err := emailtemplate1.NewHandler(ctx,
+	handler, err := emailtemplate1.NewHandler(
+		ctx,
 		emailtemplate1.WithConds(in.GetConds()),
 	)
 	if err != nil {

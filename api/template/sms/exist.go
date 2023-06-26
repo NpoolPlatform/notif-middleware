@@ -47,7 +47,8 @@ func (s *Server) ExistSMSTemplateConds(
 	*npool.ExistSMSTemplateCondsResponse,
 	error,
 ) {
-	handler, err := smstemplate1.NewHandler(ctx,
+	handler, err := smstemplate1.NewHandler(
+		ctx,
 		smstemplate1.WithConds(in.GetConds()),
 	)
 	if err != nil {

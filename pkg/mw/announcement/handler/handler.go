@@ -101,7 +101,7 @@ func WithAnnouncementID(appID, amtID *string) func(context.Context, *Handler) er
 		if amt.AnnouncementType != basetypes.NotifType_NotifMulticast {
 			return fmt.Errorf("wrong announcement type %v", amt.AnnouncementType.String())
 		}
-		
+
 		h.AnnouncementID = &_amtID
 		return nil
 	}

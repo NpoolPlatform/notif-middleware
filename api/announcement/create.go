@@ -21,8 +21,8 @@ func (s *Server) CreateAnnouncement(ctx context.Context, in *npool.CreateAnnounc
 		amt1.WithContent(req.Content),
 		amt1.WithChannel(req.Channel),
 		amt1.WithAnnouncementType(req.AnnouncementType),
-		amt1.WithStartAt(req.StartAt, req.EndAt),
-		amt1.WithEndAt(req.StartAt, req.EndAt),
+		amt1.WithStartAt(req.StartAt),
+		amt1.WithEndAt(req.EndAt),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

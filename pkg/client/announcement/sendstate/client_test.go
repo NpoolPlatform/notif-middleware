@@ -111,8 +111,8 @@ func setupSendState(t *testing.T) func(*testing.T) {
 		amt1.WithLangID(&amt.LangID),
 		amt1.WithChannel(&amt.Channel),
 		amt1.WithAnnouncementType(&amt.AnnouncementType),
-		amt1.WithStartAt(&amt.StartAt, &amt.EndAt),
-		amt1.WithEndAt(&amt.StartAt, &amt.EndAt),
+		amt1.WithStartAt(&amt.StartAt),
+		amt1.WithEndAt(&amt.EndAt),
 	)
 	assert.Nil(t, err)
 

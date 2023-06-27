@@ -7,12 +7,12 @@ import (
 	"strings"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/usernotif"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notifuser"
 	"github.com/google/uuid"
 )
 
-// UserNotif is the model entity for the UserNotif schema.
-type UserNotif struct {
+// NotifUser is the model entity for the NotifUser schema.
+type NotifUser struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID uuid.UUID `json:"id,omitempty"`
@@ -31,127 +31,127 @@ type UserNotif struct {
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*UserNotif) scanValues(columns []string) ([]interface{}, error) {
+func (*NotifUser) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case usernotif.FieldCreatedAt, usernotif.FieldUpdatedAt, usernotif.FieldDeletedAt:
+		case notifuser.FieldCreatedAt, notifuser.FieldUpdatedAt, notifuser.FieldDeletedAt:
 			values[i] = new(sql.NullInt64)
-		case usernotif.FieldEventType:
+		case notifuser.FieldEventType:
 			values[i] = new(sql.NullString)
-		case usernotif.FieldID, usernotif.FieldAppID, usernotif.FieldUserID:
+		case notifuser.FieldID, notifuser.FieldAppID, notifuser.FieldUserID:
 			values[i] = new(uuid.UUID)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type UserNotif", columns[i])
+			return nil, fmt.Errorf("unexpected column %q for type NotifUser", columns[i])
 		}
 	}
 	return values, nil
 }
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
-// to the UserNotif fields.
-func (un *UserNotif) assignValues(columns []string, values []interface{}) error {
+// to the NotifUser fields.
+func (nu *NotifUser) assignValues(columns []string, values []interface{}) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
 	for i := range columns {
 		switch columns[i] {
-		case usernotif.FieldID:
+		case notifuser.FieldID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				un.ID = *value
+				nu.ID = *value
 			}
-		case usernotif.FieldCreatedAt:
+		case notifuser.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				un.CreatedAt = uint32(value.Int64)
+				nu.CreatedAt = uint32(value.Int64)
 			}
-		case usernotif.FieldUpdatedAt:
+		case notifuser.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
-				un.UpdatedAt = uint32(value.Int64)
+				nu.UpdatedAt = uint32(value.Int64)
 			}
-		case usernotif.FieldDeletedAt:
+		case notifuser.FieldDeletedAt:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
 			} else if value.Valid {
-				un.DeletedAt = uint32(value.Int64)
+				nu.DeletedAt = uint32(value.Int64)
 			}
-		case usernotif.FieldAppID:
+		case notifuser.FieldAppID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field app_id", values[i])
 			} else if value != nil {
-				un.AppID = *value
+				nu.AppID = *value
 			}
-		case usernotif.FieldUserID:
+		case notifuser.FieldUserID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field user_id", values[i])
 			} else if value != nil {
-				un.UserID = *value
+				nu.UserID = *value
 			}
-		case usernotif.FieldEventType:
+		case notifuser.FieldEventType:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field event_type", values[i])
 			} else if value.Valid {
-				un.EventType = value.String
+				nu.EventType = value.String
 			}
 		}
 	}
 	return nil
 }
 
-// Update returns a builder for updating this UserNotif.
-// Note that you need to call UserNotif.Unwrap() before calling this method if this UserNotif
+// Update returns a builder for updating this NotifUser.
+// Note that you need to call NotifUser.Unwrap() before calling this method if this NotifUser
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (un *UserNotif) Update() *UserNotifUpdateOne {
-	return (&UserNotifClient{config: un.config}).UpdateOne(un)
+func (nu *NotifUser) Update() *NotifUserUpdateOne {
+	return (&NotifUserClient{config: nu.config}).UpdateOne(nu)
 }
 
-// Unwrap unwraps the UserNotif entity that was returned from a transaction after it was closed,
+// Unwrap unwraps the NotifUser entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (un *UserNotif) Unwrap() *UserNotif {
-	_tx, ok := un.config.driver.(*txDriver)
+func (nu *NotifUser) Unwrap() *NotifUser {
+	_tx, ok := nu.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: UserNotif is not a transactional entity")
+		panic("ent: NotifUser is not a transactional entity")
 	}
-	un.config.driver = _tx.drv
-	return un
+	nu.config.driver = _tx.drv
+	return nu
 }
 
 // String implements the fmt.Stringer.
-func (un *UserNotif) String() string {
+func (nu *NotifUser) String() string {
 	var builder strings.Builder
-	builder.WriteString("UserNotif(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", un.ID))
+	builder.WriteString("NotifUser(")
+	builder.WriteString(fmt.Sprintf("id=%v, ", nu.ID))
 	builder.WriteString("created_at=")
-	builder.WriteString(fmt.Sprintf("%v", un.CreatedAt))
+	builder.WriteString(fmt.Sprintf("%v", nu.CreatedAt))
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
-	builder.WriteString(fmt.Sprintf("%v", un.UpdatedAt))
+	builder.WriteString(fmt.Sprintf("%v", nu.UpdatedAt))
 	builder.WriteString(", ")
 	builder.WriteString("deleted_at=")
-	builder.WriteString(fmt.Sprintf("%v", un.DeletedAt))
+	builder.WriteString(fmt.Sprintf("%v", nu.DeletedAt))
 	builder.WriteString(", ")
 	builder.WriteString("app_id=")
-	builder.WriteString(fmt.Sprintf("%v", un.AppID))
+	builder.WriteString(fmt.Sprintf("%v", nu.AppID))
 	builder.WriteString(", ")
 	builder.WriteString("user_id=")
-	builder.WriteString(fmt.Sprintf("%v", un.UserID))
+	builder.WriteString(fmt.Sprintf("%v", nu.UserID))
 	builder.WriteString(", ")
 	builder.WriteString("event_type=")
-	builder.WriteString(un.EventType)
+	builder.WriteString(nu.EventType)
 	builder.WriteByte(')')
 	return builder.String()
 }
 
-// UserNotifs is a parsable slice of UserNotif.
-type UserNotifs []*UserNotif
+// NotifUsers is a parsable slice of NotifUser.
+type NotifUsers []*NotifUser
 
-func (un UserNotifs) config(cfg config) {
-	for _i := range un {
-		un[_i].config = cfg
+func (nu NotifUsers) config(cfg config) {
+	for _i := range nu {
+		nu[_i].config = cfg
 	}
 }

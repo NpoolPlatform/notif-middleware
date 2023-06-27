@@ -433,8 +433,11 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			}
 			h.Conds.IDs = &cruder.Cond{Op: conds.GetIDs().GetOp(), Val: ids}
 		}
+		if conds.Notified != nil {
+			h.Conds.Notified = &cruder.Cond{Op: conds.GetNotified().GetOp(), Val: conds.GetNotified().GetValue()}
+		}
 		if conds.Extra != nil {
-			h.Conds.EventID = &cruder.Cond{Op: conds.GetExtra().GetOp(), Val: conds.GetExtra().GetValue()}
+			h.Conds.Extra = &cruder.Cond{Op: conds.GetExtra().GetOp(), Val: conds.GetExtra().GetValue()}
 		}
 		return nil
 	}

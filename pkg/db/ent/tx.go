@@ -26,6 +26,8 @@ type Tx struct {
 	Notif *NotifClient
 	// NotifChannel is the client for interacting with the NotifChannel builders.
 	NotifChannel *NotifChannelClient
+	// NotifUser is the client for interacting with the NotifUser builders.
+	NotifUser *NotifUserClient
 	// ReadAnnouncement is the client for interacting with the ReadAnnouncement builders.
 	ReadAnnouncement *ReadAnnouncementClient
 	// SMSTemplate is the client for interacting with the SMSTemplate builders.
@@ -36,8 +38,6 @@ type Tx struct {
 	TxNotifState *TxNotifStateClient
 	// UserAnnouncement is the client for interacting with the UserAnnouncement builders.
 	UserAnnouncement *UserAnnouncementClient
-	// UserNotif is the client for interacting with the UserNotif builders.
-	UserNotif *UserNotifClient
 
 	// lazily loaded.
 	client     *Client
@@ -179,12 +179,12 @@ func (tx *Tx) init() {
 	tx.FrontendTemplate = NewFrontendTemplateClient(tx.config)
 	tx.Notif = NewNotifClient(tx.config)
 	tx.NotifChannel = NewNotifChannelClient(tx.config)
+	tx.NotifUser = NewNotifUserClient(tx.config)
 	tx.ReadAnnouncement = NewReadAnnouncementClient(tx.config)
 	tx.SMSTemplate = NewSMSTemplateClient(tx.config)
 	tx.SendAnnouncement = NewSendAnnouncementClient(tx.config)
 	tx.TxNotifState = NewTxNotifStateClient(tx.config)
 	tx.UserAnnouncement = NewUserAnnouncementClient(tx.config)
-	tx.UserNotif = NewUserNotifClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.

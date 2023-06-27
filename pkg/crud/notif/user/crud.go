@@ -6,7 +6,7 @@ import (
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
-	entusernotif "github.com/NpoolPlatform/notif-middleware/pkg/db/ent/usernotif"
+	entnotifuser "github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notifuser"
 
 	"github.com/google/uuid"
 )
@@ -19,7 +19,7 @@ type Req struct {
 	DeletedAt *uint32
 }
 
-func CreateSet(c *ent.UserNotifCreate, req *Req) *ent.UserNotifCreate {
+func CreateSet(c *ent.NotifUserCreate, req *Req) *ent.NotifUserCreate {
 	if req.ID != nil {
 		c.SetID(*req.ID)
 	}
@@ -35,7 +35,7 @@ func CreateSet(c *ent.UserNotifCreate, req *Req) *ent.UserNotifCreate {
 	return c
 }
 
-func UpdateSet(u *ent.UserNotifUpdateOne, req *Req) *ent.UserNotifUpdateOne {
+func UpdateSet(u *ent.NotifUserUpdateOne, req *Req) *ent.NotifUserUpdateOne {
 	if req.DeletedAt != nil {
 		u.SetDeletedAt(*req.DeletedAt)
 	}
@@ -51,7 +51,7 @@ type Conds struct {
 }
 
 // nolint:gocyclo
-func SetQueryConds(q *ent.UserNotifQuery, conds *Conds) (*ent.UserNotifQuery, error) {
+func SetQueryConds(q *ent.NotifUserQuery, conds *Conds) (*ent.NotifUserQuery, error) {
 	if conds.ID != nil {
 		id, ok := conds.ID.Val.(uuid.UUID)
 		if !ok {
@@ -59,7 +59,7 @@ func SetQueryConds(q *ent.UserNotifQuery, conds *Conds) (*ent.UserNotifQuery, er
 		}
 		switch conds.ID.Op {
 		case cruder.EQ:
-			q.Where(entusernotif.ID(id))
+			q.Where(entnotifuser.ID(id))
 		default:
 			return nil, fmt.Errorf("invalid user field")
 		}
@@ -71,7 +71,7 @@ func SetQueryConds(q *ent.UserNotifQuery, conds *Conds) (*ent.UserNotifQuery, er
 		}
 		switch conds.AppID.Op {
 		case cruder.EQ:
-			q.Where(entusernotif.AppID(appid))
+			q.Where(entnotifuser.AppID(appid))
 		default:
 			return nil, fmt.Errorf("invalid user field")
 		}
@@ -83,7 +83,7 @@ func SetQueryConds(q *ent.UserNotifQuery, conds *Conds) (*ent.UserNotifQuery, er
 		}
 		switch conds.UserID.Op {
 		case cruder.EQ:
-			q.Where(entusernotif.UserID(userid))
+			q.Where(entnotifuser.UserID(userid))
 		default:
 			return nil, fmt.Errorf("invalid user field")
 		}
@@ -95,7 +95,7 @@ func SetQueryConds(q *ent.UserNotifQuery, conds *Conds) (*ent.UserNotifQuery, er
 		}
 		switch conds.EventType.Op {
 		case cruder.EQ:
-			q.Where(entusernotif.EventType(eventtype.String()))
+			q.Where(entnotifuser.EventType(eventtype.String()))
 		default:
 			return nil, fmt.Errorf("invalid user field")
 		}
@@ -107,11 +107,11 @@ func SetQueryConds(q *ent.UserNotifQuery, conds *Conds) (*ent.UserNotifQuery, er
 		}
 		switch conds.IDs.Op {
 		case cruder.IN:
-			q.Where(entusernotif.IDIn(ids...))
+			q.Where(entnotifuser.IDIn(ids...))
 		default:
 			return nil, fmt.Errorf("invalid user field")
 		}
 	}
-	q.Where(entusernotif.DeletedAt(0))
+	q.Where(entnotifuser.DeletedAt(0))
 	return q, nil
 }

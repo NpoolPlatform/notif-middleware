@@ -9,19 +9,19 @@ import (
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 )
 
-// UserNotif holds the schema definition for the UserNotif entity.
-type UserNotif struct {
+// NotifUser holds the schema definition for the NotifUser entity.
+type NotifUser struct {
 	ent.Schema
 }
 
-func (UserNotif) Mixin() []ent.Mixin {
+func (NotifUser) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		mixin.TimeMixin{},
 	}
 }
 
-// Fields of the UserNotif.
-func (UserNotif) Fields() []ent.Field {
+// Fields of the NotifUser.
+func (NotifUser) Fields() []ent.Field {
 	return []ent.Field{
 		field.
 			UUID("id", uuid.UUID{}).
@@ -42,7 +42,7 @@ func (UserNotif) Fields() []ent.Field {
 	}
 }
 
-// Edges of the UserNotif.
-func (UserNotif) Edges() []ent.Edge {
+// Edges of the NotifUser.
+func (NotifUser) Edges() []ent.Edge {
 	return nil
 }

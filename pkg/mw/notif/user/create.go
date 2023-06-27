@@ -63,7 +63,7 @@ func (h *createHandler) createNotifUser(ctx context.Context, tx *ent.Tx, req *us
 	}
 
 	info, err := usercrud.CreateSet(
-		tx.UserNotif.Create(),
+		tx.NotifUser.Create(),
 		&usercrud.Req{
 			ID:        req.ID,
 			AppID:     req.AppID,

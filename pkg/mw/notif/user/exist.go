@@ -8,7 +8,7 @@ import (
 
 	"github.com/NpoolPlatform/notif-middleware/pkg/db"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
-	entusernotif "github.com/NpoolPlatform/notif-middleware/pkg/db/ent/usernotif"
+	entnotifuser "github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notifuser"
 )
 
 func (h *Handler) ExistNotifUser(ctx context.Context) (exist bool, err error) {
@@ -18,11 +18,11 @@ func (h *Handler) ExistNotifUser(ctx context.Context) (exist bool, err error) {
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
 		exist, err = cli.
-			UserNotif.
+			NotifUser.
 			Query().
 			Where(
-				entusernotif.ID(*h.ID),
-				entusernotif.DeletedAt(0),
+				entnotifuser.ID(*h.ID),
+				entnotifuser.DeletedAt(0),
 			).
 			Exist(_ctx)
 		return err
@@ -36,7 +36,7 @@ func (h *Handler) ExistNotifUser(ctx context.Context) (exist bool, err error) {
 
 func (h *Handler) ExistNotifUserConds(ctx context.Context) (exist bool, err error) {
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		stm, err := usercrud.SetQueryConds(cli.UserNotif.Query(), h.Conds)
+		stm, err := usercrud.SetQueryConds(cli.NotifUser.Query(), h.Conds)
 		if err != nil {
 			return err
 		}

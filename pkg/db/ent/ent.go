@@ -16,12 +16,12 @@ import (
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/frontendtemplate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notif"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notifchannel"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notifuser"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/readannouncement"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/sendannouncement"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/smstemplate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/txnotifstate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/userannouncement"
-	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/usernotif"
 )
 
 // ent aliases to avoid import conflicts in user's code.
@@ -48,12 +48,12 @@ func columnChecker(table string) func(string) error {
 		frontendtemplate.Table: frontendtemplate.ValidColumn,
 		notif.Table:            notif.ValidColumn,
 		notifchannel.Table:     notifchannel.ValidColumn,
+		notifuser.Table:        notifuser.ValidColumn,
 		readannouncement.Table: readannouncement.ValidColumn,
 		smstemplate.Table:      smstemplate.ValidColumn,
 		sendannouncement.Table: sendannouncement.ValidColumn,
 		txnotifstate.Table:     txnotifstate.ValidColumn,
 		userannouncement.Table: userannouncement.ValidColumn,
-		usernotif.Table:        usernotif.ValidColumn,
 	}
 	check, ok := checks[table]
 	if !ok {

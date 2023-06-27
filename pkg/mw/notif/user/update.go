@@ -19,7 +19,7 @@ type updateHandler struct {
 
 func (h *updateHandler) updateNotifUser(ctx context.Context, cli *ent.Client) error {
 	if _, err := usercrud.UpdateSet(
-		cli.UserNotif.UpdateOneID(*h.ID),
+		cli.NotifUser.UpdateOneID(*h.ID),
 		&usercrud.Req{},
 	).Save(ctx); err != nil {
 		return err

@@ -28,7 +28,7 @@ func (h *Handler) DeleteNotifUser(ctx context.Context) (*npool.NotifUser, error)
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
 		now := uint32(time.Now().Unix())
 		if _, err := usercrud.UpdateSet(
-			cli.UserNotif.UpdateOneID(*h.ID),
+			cli.NotifUser.UpdateOneID(*h.ID),
 			&usercrud.Req{
 				ID:        h.ID,
 				DeletedAt: &now,

@@ -141,6 +141,20 @@ func createSendState(t *testing.T) {
 	}
 }
 
+func createSendStates(t *testing.T) {
+	userID := uuid.NewString()
+	appID := uuid.NewString()
+	reqs := []*npool.SendStateReq{{
+		AppID:          &appID,
+		UserID:         &userID,
+		AnnouncementID: &ret.AnnouncementID,
+	}}
+	infos, err := CreateSendStates(context.Background(), reqs)
+	assert.Nil(t, err)
+	assert.Equal(t, 1, len(infos))
+	DeleteSendState(context.Background(), infos[0].ID)
+}
+
 func getSendState(t *testing.T) {
 	info, err := GetSendState(context.Background(), ret.ID)
 	assert.Nil(t, err)
@@ -183,6 +197,7 @@ func TestClient(t *testing.T) {
 		return grpc.Dial(fmt.Sprintf("localhost:%v", gport), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	})
 	t.Run("createSendState", createSendState)
+	t.Run("createSendStates", createSendStates)
 	t.Run("getSendState", getSendState)
 	t.Run("getSendStates", getSendStates)
 	t.Run("deleteSendState", deleteSendState)

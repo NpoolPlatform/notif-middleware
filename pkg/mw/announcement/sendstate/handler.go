@@ -124,34 +124,35 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 
 func WithReqs(reqs []*npool.SendStateReq) func(context.Context, *Handler) error {
 	return func(_ctx context.Context, h *Handler) error {
-		_reqs := []*crud.Req{}
-		for _, req := range _reqs {
+		if len(reqs) == 0 {
+			return fmt.Errorf("invalid reqs")
+		}
+		for _, req := range reqs {
 			if req.AppID == nil || req.UserID == nil || req.AnnouncementID == nil {
 				continue
 			}
 
 			// AppID
 			_req := &crud.Req{}
-			appID, err := uuid.Parse(req.AppID.String())
+			appID, err := uuid.Parse(*req.AppID)
 			if err != nil {
 				return err
 			}
 			_req.AppID = &appID
 
 			// UserID
-			userID, err := uuid.Parse(req.UserID.String())
+			userID, err := uuid.Parse(*req.UserID)
 			if err != nil {
 				return err
 			}
 			_req.UserID = &userID
 
 			// AnnouncementID
-			amtID, err := uuid.Parse(req.AnnouncementID.String())
+			amtID, err := uuid.Parse(*req.AnnouncementID)
 			if err != nil {
 				return err
 			}
-			_amtID := req.AnnouncementID.String()
-			amtHandler, err := announcement1.NewHandler(_ctx, announcement1.WithID(&_amtID))
+			amtHandler, err := announcement1.NewHandler(_ctx, announcement1.WithID(req.AnnouncementID))
 			if err != nil {
 				return err
 			}
@@ -164,9 +165,8 @@ func WithReqs(reqs []*npool.SendStateReq) func(context.Context, *Handler) error 
 			}
 			_req.Channel = &info.Channel
 
-			_reqs = append(_reqs, _req)
+			h.Reqs = append(h.Reqs, _req)
 		}
-		h.Reqs = _reqs
 		return nil
 	}
 }

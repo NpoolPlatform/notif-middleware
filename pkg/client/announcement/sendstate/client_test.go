@@ -152,7 +152,8 @@ func createSendStates(t *testing.T) {
 	infos, err := CreateSendStates(context.Background(), reqs)
 	assert.Nil(t, err)
 	assert.Equal(t, 1, len(infos))
-	DeleteSendState(context.Background(), infos[0].ID)
+	_, err = DeleteSendState(context.Background(), infos[0].ID)
+	assert.Nil(t, err)
 }
 
 func getSendState(t *testing.T) {

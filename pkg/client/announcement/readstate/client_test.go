@@ -123,6 +123,10 @@ func setupReadState(t *testing.T) func(*testing.T) {
 	amt.ID = announcement.ID
 	ret.AnnouncementID = announcement.ID
 
+	_id, err := uuid.Parse(announcement.ID)
+	assert.Nil(t, err)
+	amtHandler.ID = &_id
+
 	return func(*testing.T) {
 		_, _ = appmwcli.DeleteApp(context.Background(), ret.AppID)
 		_, _ = appusercli.DeleteUser(context.Background(), ret.AppID, ret.UserID)

@@ -121,6 +121,10 @@ func setupAnnouncementUser(t *testing.T) func(*testing.T) {
 
 	ret.AnnouncementID = _amt.ID
 
+	_id, err := uuid.Parse(_amt.ID)
+	assert.Nil(t, err)
+	handler.ID = &_id
+
 	return func(*testing.T) {
 		_, _ = appmwcli.DeleteApp(context.Background(), ret.AppID)
 		_, _ = appusercli.DeleteUser(context.Background(), ret.AppID, ret.UserID)

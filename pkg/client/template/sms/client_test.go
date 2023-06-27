@@ -64,6 +64,8 @@ func createSMSTemplate(t *testing.T) {
 	var err error
 	info, err = CreateSMSTemplate(context.Background(), &appInfo)
 	if assert.Nil(t, err) {
+		ret.UpdatedAt = info.UpdatedAt
+		ret.CreatedAt = info.CreatedAt
 		assert.Equal(t, info, &ret)
 	}
 }
@@ -148,6 +150,8 @@ func getSMSTemplateOnly(t *testing.T) {
 			},
 		})
 	if assert.Nil(t, err) {
+		ret.UpdatedAt = info.UpdatedAt
+		ret.CreatedAt = info.CreatedAt
 		assert.Equal(t, info, &ret)
 	}
 }

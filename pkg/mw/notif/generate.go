@@ -26,6 +26,7 @@ func (h *generateHandler) getNotifUsers(ctx context.Context) ([]string, error) {
 			return nil, err
 		}
 		usernotifHandler.Conds = &usernotifcrud.Conds{
+			AppID:     &cruder.Cond{Op: cruder.EQ, Val: *h.AppID},
 			EventType: &cruder.Cond{Op: cruder.EQ, Val: *h.EventType},
 		}
 		userNotifs, _, err := usernotifHandler.GetNotifUsers(ctx)
@@ -33,7 +34,7 @@ func (h *generateHandler) getNotifUsers(ctx context.Context) ([]string, error) {
 			return nil, err
 		}
 		if len(userNotifs) == 0 {
-			return nil, fmt.Errorf("invalid userid")
+			return nil, fmt.Errorf("invalid user notif")
 		}
 		for _, row := range userNotifs {
 			userIDs = append(userIDs, row.UserID)

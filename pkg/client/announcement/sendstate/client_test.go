@@ -168,9 +168,21 @@ func getSendState(t *testing.T) {
 
 func getSendStates(t *testing.T) {
 	infos, _, err := GetSendStates(context.Background(), &npool.Conds{
-		ID: &basetypes.StringVal{
+		AppID: &basetypes.StringVal{
 			Op:    cruder.EQ,
-			Value: ret.ID,
+			Value: ret.AppID,
+		},
+		AnnouncementID: &basetypes.StringVal{
+			Op:    cruder.EQ,
+			Value: ret.AnnouncementID,
+		},
+		Channel: &basetypes.Uint32Val{
+			Op:    cruder.EQ,
+			Value: uint32(basetypes.NotifChannel(basetypes.NotifChannel_value[ret.Channel])),
+		},
+		UserIDs: &basetypes.StringSliceVal{
+			Op:    cruder.IN,
+			Value: []string{ret.UserID},
 		},
 	}, 0, 1)
 	if assert.Nil(t, err) {

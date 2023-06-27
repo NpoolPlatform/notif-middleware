@@ -19,9 +19,14 @@ type generateHandler struct {
 
 func (h *generateHandler) getNotifUsers(ctx context.Context) ([]string, error) {
 	userIDs := []string{}
+	maxLimit := int32(100)
 	switch *h.NotifType {
 	case basetypes.NotifType_NotifMulticast:
-		usernotifHandler, err := usernotifmw.NewHandler(ctx)
+		usernotifHandler, err := usernotifmw.NewHandler(
+			ctx,
+			usernotifmw.WithOffset(0),
+			usernotifmw.WithLimit(maxLimit),
+		)
 		if err != nil {
 			return nil, err
 		}

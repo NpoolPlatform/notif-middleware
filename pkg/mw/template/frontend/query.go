@@ -29,6 +29,8 @@ func (h *queryHandler) selectFrontendTemplate(stm *ent.FrontendTemplateQuery) {
 		entfrontendtemplate.FieldUsedFor,
 		entfrontendtemplate.FieldTitle,
 		entfrontendtemplate.FieldContent,
+		entfrontendtemplate.FieldCreatedAt,
+		entfrontendtemplate.FieldUpdatedAt,
 	)
 }
 

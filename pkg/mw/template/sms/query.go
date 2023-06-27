@@ -29,6 +29,8 @@ func (h *queryHandler) selectSMSTemplate(stm *ent.SMSTemplateQuery) {
 		entsmstemplate.FieldUsedFor,
 		entsmstemplate.FieldSubject,
 		entsmstemplate.FieldMessage,
+		entsmstemplate.FieldCreatedAt,
+		entsmstemplate.FieldUpdatedAt,
 	)
 }
 

@@ -87,6 +87,19 @@ func (f NotifChannelFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value
 	return f(ctx, mv)
 }
 
+// The NotifUserFunc type is an adapter to allow the use of ordinary
+// function as NotifUser mutator.
+type NotifUserFunc func(context.Context, *ent.NotifUserMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f NotifUserFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.NotifUserMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.NotifUserMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The ReadAnnouncementFunc type is an adapter to allow the use of ordinary
 // function as ReadAnnouncement mutator.
 type ReadAnnouncementFunc func(context.Context, *ent.ReadAnnouncementMutation) (ent.Value, error)
@@ -148,19 +161,6 @@ func (f UserAnnouncementFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.V
 	mv, ok := m.(*ent.UserAnnouncementMutation)
 	if !ok {
 		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserAnnouncementMutation", m)
-	}
-	return f(ctx, mv)
-}
-
-// The UserNotifFunc type is an adapter to allow the use of ordinary
-// function as UserNotif mutator.
-type UserNotifFunc func(context.Context, *ent.UserNotifMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f UserNotifFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.UserNotifMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserNotifMutation", m)
 	}
 	return f(ctx, mv)
 }

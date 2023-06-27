@@ -128,6 +128,22 @@ var (
 		Columns:    NotifChannelsColumns,
 		PrimaryKey: []*schema.Column{NotifChannelsColumns[0]},
 	}
+	// NotifUsersColumns holds the columns for the "notif_users" table.
+	NotifUsersColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "created_at", Type: field.TypeUint32},
+		{Name: "updated_at", Type: field.TypeUint32},
+		{Name: "deleted_at", Type: field.TypeUint32},
+		{Name: "app_id", Type: field.TypeUUID, Nullable: true},
+		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
+		{Name: "event_type", Type: field.TypeString, Nullable: true, Default: "DefaultUsedFor"},
+	}
+	// NotifUsersTable holds the schema information for the "notif_users" table.
+	NotifUsersTable = &schema.Table{
+		Name:       "notif_users",
+		Columns:    NotifUsersColumns,
+		PrimaryKey: []*schema.Column{NotifUsersColumns[0]},
+	}
 	// ReadAnnouncementsColumns holds the columns for the "read_announcements" table.
 	ReadAnnouncementsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID, Unique: true},
@@ -211,22 +227,6 @@ var (
 		Columns:    UserAnnouncementsColumns,
 		PrimaryKey: []*schema.Column{UserAnnouncementsColumns[0]},
 	}
-	// UserNotifsColumns holds the columns for the "user_notifs" table.
-	UserNotifsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID, Unique: true},
-		{Name: "created_at", Type: field.TypeUint32},
-		{Name: "updated_at", Type: field.TypeUint32},
-		{Name: "deleted_at", Type: field.TypeUint32},
-		{Name: "app_id", Type: field.TypeUUID, Nullable: true},
-		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
-		{Name: "event_type", Type: field.TypeString, Nullable: true, Default: "DefaultUsedFor"},
-	}
-	// UserNotifsTable holds the schema information for the "user_notifs" table.
-	UserNotifsTable = &schema.Table{
-		Name:       "user_notifs",
-		Columns:    UserNotifsColumns,
-		PrimaryKey: []*schema.Column{UserNotifsColumns[0]},
-	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		AnnouncementsTable,
@@ -235,12 +235,12 @@ var (
 		FrontendTemplatesTable,
 		NotifsTable,
 		NotifChannelsTable,
+		NotifUsersTable,
 		ReadAnnouncementsTable,
 		SmsTemplatesTable,
 		SendAnnouncementsTable,
 		TxNotifStatesTable,
 		UserAnnouncementsTable,
-		UserNotifsTable,
 	}
 )
 

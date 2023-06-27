@@ -34,12 +34,12 @@ type hooks struct {
 	FrontendTemplate []ent.Hook
 	Notif            []ent.Hook
 	NotifChannel     []ent.Hook
+	NotifUser        []ent.Hook
 	ReadAnnouncement []ent.Hook
 	SMSTemplate      []ent.Hook
 	SendAnnouncement []ent.Hook
 	TxNotifState     []ent.Hook
 	UserAnnouncement []ent.Hook
-	UserNotif        []ent.Hook
 }
 
 // Options applies the options on the config object.

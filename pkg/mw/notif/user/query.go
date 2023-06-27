@@ -9,26 +9,26 @@ import (
 
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/user"
-	entuser "github.com/NpoolPlatform/notif-middleware/pkg/db/ent/usernotif"
+	entnotifuser "github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notifuser"
 
 	usercrud "github.com/NpoolPlatform/notif-middleware/pkg/crud/notif/user"
 )
 
 type queryHandler struct {
 	*Handler
-	stm   *ent.UserNotifSelect
+	stm   *ent.NotifUserSelect
 	infos []*npool.NotifUser
 	total uint32
 }
 
-func (h *queryHandler) selectNotifUser(stm *ent.UserNotifQuery) {
+func (h *queryHandler) selectNotifUser(stm *ent.NotifUserQuery) {
 	h.stm = stm.Select(
-		entuser.FieldID,
-		entuser.FieldAppID,
-		entuser.FieldUserID,
-		entuser.FieldEventType,
-		entuser.FieldCreatedAt,
-		entuser.FieldUpdatedAt,
+		entnotifuser.FieldID,
+		entnotifuser.FieldAppID,
+		entnotifuser.FieldUserID,
+		entnotifuser.FieldEventType,
+		entnotifuser.FieldCreatedAt,
+		entnotifuser.FieldUpdatedAt,
 	)
 }
 
@@ -38,11 +38,11 @@ func (h *queryHandler) queryNotifUser(cli *ent.Client) error {
 	}
 
 	h.selectNotifUser(
-		cli.UserNotif.
+		cli.NotifUser.
 			Query().
 			Where(
-				entuser.ID(*h.ID),
-				entuser.DeletedAt(0),
+				entnotifuser.ID(*h.ID),
+				entnotifuser.DeletedAt(0),
 			),
 	)
 	return nil
@@ -55,7 +55,7 @@ func (h *queryHandler) formalize() {
 }
 
 func (h *queryHandler) queryNotifUsers(ctx context.Context, cli *ent.Client) error {
-	stm, err := usercrud.SetQueryConds(cli.UserNotif.Query(), h.Conds)
+	stm, err := usercrud.SetQueryConds(cli.NotifUser.Query(), h.Conds)
 	if err != nil {
 		return err
 	}

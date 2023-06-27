@@ -24,6 +24,9 @@ type Notif func(*sql.Selector)
 // NotifChannel is the predicate function for notifchannel builders.
 type NotifChannel func(*sql.Selector)
 
+// NotifUser is the predicate function for notifuser builders.
+type NotifUser func(*sql.Selector)
+
 // ReadAnnouncement is the predicate function for readannouncement builders.
 type ReadAnnouncement func(*sql.Selector)
 
@@ -38,6 +41,3 @@ type TxNotifState func(*sql.Selector)
 
 // UserAnnouncement is the predicate function for userannouncement builders.
 type UserAnnouncement func(*sql.Selector)
-
-// UserNotif is the predicate function for usernotif builders.
-type UserNotif func(*sql.Selector)

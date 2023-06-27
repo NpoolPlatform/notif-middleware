@@ -14,13 +14,13 @@ import (
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/frontendtemplate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notif"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notifchannel"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notifuser"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/predicate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/readannouncement"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/sendannouncement"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/smstemplate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/txnotifstate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/userannouncement"
-	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/usernotif"
 	"github.com/google/uuid"
 
 	"entgo.io/ent"
@@ -41,12 +41,12 @@ const (
 	TypeFrontendTemplate = "FrontendTemplate"
 	TypeNotif            = "Notif"
 	TypeNotifChannel     = "NotifChannel"
+	TypeNotifUser        = "NotifUser"
 	TypeReadAnnouncement = "ReadAnnouncement"
 	TypeSMSTemplate      = "SMSTemplate"
 	TypeSendAnnouncement = "SendAnnouncement"
 	TypeTxNotifState     = "TxNotifState"
 	TypeUserAnnouncement = "UserAnnouncement"
-	TypeUserNotif        = "UserNotif"
 )
 
 // AnnouncementMutation represents an operation that mutates the Announcement nodes in the graph.
@@ -6249,6 +6249,755 @@ func (m *NotifChannelMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown NotifChannel edge %s", name)
 }
 
+// NotifUserMutation represents an operation that mutates the NotifUser nodes in the graph.
+type NotifUserMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *uuid.UUID
+	created_at    *uint32
+	addcreated_at *int32
+	updated_at    *uint32
+	addupdated_at *int32
+	deleted_at    *uint32
+	adddeleted_at *int32
+	app_id        *uuid.UUID
+	user_id       *uuid.UUID
+	event_type    *string
+	clearedFields map[string]struct{}
+	done          bool
+	oldValue      func(context.Context) (*NotifUser, error)
+	predicates    []predicate.NotifUser
+}
+
+var _ ent.Mutation = (*NotifUserMutation)(nil)
+
+// notifuserOption allows management of the mutation configuration using functional options.
+type notifuserOption func(*NotifUserMutation)
+
+// newNotifUserMutation creates new mutation for the NotifUser entity.
+func newNotifUserMutation(c config, op Op, opts ...notifuserOption) *NotifUserMutation {
+	m := &NotifUserMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeNotifUser,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withNotifUserID sets the ID field of the mutation.
+func withNotifUserID(id uuid.UUID) notifuserOption {
+	return func(m *NotifUserMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *NotifUser
+		)
+		m.oldValue = func(ctx context.Context) (*NotifUser, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().NotifUser.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withNotifUser sets the old NotifUser of the mutation.
+func withNotifUser(node *NotifUser) notifuserOption {
+	return func(m *NotifUserMutation) {
+		m.oldValue = func(context.Context) (*NotifUser, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m NotifUserMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m NotifUserMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of NotifUser entities.
+func (m *NotifUserMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *NotifUserMutation) ID() (id uuid.UUID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *NotifUserMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uuid.UUID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().NotifUser.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *NotifUserMutation) SetCreatedAt(u uint32) {
+	m.created_at = &u
+	m.addcreated_at = nil
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *NotifUserMutation) CreatedAt() (r uint32, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the NotifUser entity.
+// If the NotifUser object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *NotifUserMutation) OldCreatedAt(ctx context.Context) (v uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// AddCreatedAt adds u to the "created_at" field.
+func (m *NotifUserMutation) AddCreatedAt(u int32) {
+	if m.addcreated_at != nil {
+		*m.addcreated_at += u
+	} else {
+		m.addcreated_at = &u
+	}
+}
+
+// AddedCreatedAt returns the value that was added to the "created_at" field in this mutation.
+func (m *NotifUserMutation) AddedCreatedAt() (r int32, exists bool) {
+	v := m.addcreated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *NotifUserMutation) ResetCreatedAt() {
+	m.created_at = nil
+	m.addcreated_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *NotifUserMutation) SetUpdatedAt(u uint32) {
+	m.updated_at = &u
+	m.addupdated_at = nil
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *NotifUserMutation) UpdatedAt() (r uint32, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the NotifUser entity.
+// If the NotifUser object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *NotifUserMutation) OldUpdatedAt(ctx context.Context) (v uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// AddUpdatedAt adds u to the "updated_at" field.
+func (m *NotifUserMutation) AddUpdatedAt(u int32) {
+	if m.addupdated_at != nil {
+		*m.addupdated_at += u
+	} else {
+		m.addupdated_at = &u
+	}
+}
+
+// AddedUpdatedAt returns the value that was added to the "updated_at" field in this mutation.
+func (m *NotifUserMutation) AddedUpdatedAt() (r int32, exists bool) {
+	v := m.addupdated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *NotifUserMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+	m.addupdated_at = nil
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *NotifUserMutation) SetDeletedAt(u uint32) {
+	m.deleted_at = &u
+	m.adddeleted_at = nil
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *NotifUserMutation) DeletedAt() (r uint32, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the NotifUser entity.
+// If the NotifUser object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *NotifUserMutation) OldDeletedAt(ctx context.Context) (v uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// AddDeletedAt adds u to the "deleted_at" field.
+func (m *NotifUserMutation) AddDeletedAt(u int32) {
+	if m.adddeleted_at != nil {
+		*m.adddeleted_at += u
+	} else {
+		m.adddeleted_at = &u
+	}
+}
+
+// AddedDeletedAt returns the value that was added to the "deleted_at" field in this mutation.
+func (m *NotifUserMutation) AddedDeletedAt() (r int32, exists bool) {
+	v := m.adddeleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *NotifUserMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	m.adddeleted_at = nil
+}
+
+// SetAppID sets the "app_id" field.
+func (m *NotifUserMutation) SetAppID(u uuid.UUID) {
+	m.app_id = &u
+}
+
+// AppID returns the value of the "app_id" field in the mutation.
+func (m *NotifUserMutation) AppID() (r uuid.UUID, exists bool) {
+	v := m.app_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAppID returns the old "app_id" field's value of the NotifUser entity.
+// If the NotifUser object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *NotifUserMutation) OldAppID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAppID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAppID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAppID: %w", err)
+	}
+	return oldValue.AppID, nil
+}
+
+// ClearAppID clears the value of the "app_id" field.
+func (m *NotifUserMutation) ClearAppID() {
+	m.app_id = nil
+	m.clearedFields[notifuser.FieldAppID] = struct{}{}
+}
+
+// AppIDCleared returns if the "app_id" field was cleared in this mutation.
+func (m *NotifUserMutation) AppIDCleared() bool {
+	_, ok := m.clearedFields[notifuser.FieldAppID]
+	return ok
+}
+
+// ResetAppID resets all changes to the "app_id" field.
+func (m *NotifUserMutation) ResetAppID() {
+	m.app_id = nil
+	delete(m.clearedFields, notifuser.FieldAppID)
+}
+
+// SetUserID sets the "user_id" field.
+func (m *NotifUserMutation) SetUserID(u uuid.UUID) {
+	m.user_id = &u
+}
+
+// UserID returns the value of the "user_id" field in the mutation.
+func (m *NotifUserMutation) UserID() (r uuid.UUID, exists bool) {
+	v := m.user_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserID returns the old "user_id" field's value of the NotifUser entity.
+// If the NotifUser object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *NotifUserMutation) OldUserID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
+	}
+	return oldValue.UserID, nil
+}
+
+// ClearUserID clears the value of the "user_id" field.
+func (m *NotifUserMutation) ClearUserID() {
+	m.user_id = nil
+	m.clearedFields[notifuser.FieldUserID] = struct{}{}
+}
+
+// UserIDCleared returns if the "user_id" field was cleared in this mutation.
+func (m *NotifUserMutation) UserIDCleared() bool {
+	_, ok := m.clearedFields[notifuser.FieldUserID]
+	return ok
+}
+
+// ResetUserID resets all changes to the "user_id" field.
+func (m *NotifUserMutation) ResetUserID() {
+	m.user_id = nil
+	delete(m.clearedFields, notifuser.FieldUserID)
+}
+
+// SetEventType sets the "event_type" field.
+func (m *NotifUserMutation) SetEventType(s string) {
+	m.event_type = &s
+}
+
+// EventType returns the value of the "event_type" field in the mutation.
+func (m *NotifUserMutation) EventType() (r string, exists bool) {
+	v := m.event_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEventType returns the old "event_type" field's value of the NotifUser entity.
+// If the NotifUser object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *NotifUserMutation) OldEventType(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEventType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEventType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEventType: %w", err)
+	}
+	return oldValue.EventType, nil
+}
+
+// ClearEventType clears the value of the "event_type" field.
+func (m *NotifUserMutation) ClearEventType() {
+	m.event_type = nil
+	m.clearedFields[notifuser.FieldEventType] = struct{}{}
+}
+
+// EventTypeCleared returns if the "event_type" field was cleared in this mutation.
+func (m *NotifUserMutation) EventTypeCleared() bool {
+	_, ok := m.clearedFields[notifuser.FieldEventType]
+	return ok
+}
+
+// ResetEventType resets all changes to the "event_type" field.
+func (m *NotifUserMutation) ResetEventType() {
+	m.event_type = nil
+	delete(m.clearedFields, notifuser.FieldEventType)
+}
+
+// Where appends a list predicates to the NotifUserMutation builder.
+func (m *NotifUserMutation) Where(ps ...predicate.NotifUser) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *NotifUserMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (NotifUser).
+func (m *NotifUserMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *NotifUserMutation) Fields() []string {
+	fields := make([]string, 0, 6)
+	if m.created_at != nil {
+		fields = append(fields, notifuser.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, notifuser.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, notifuser.FieldDeletedAt)
+	}
+	if m.app_id != nil {
+		fields = append(fields, notifuser.FieldAppID)
+	}
+	if m.user_id != nil {
+		fields = append(fields, notifuser.FieldUserID)
+	}
+	if m.event_type != nil {
+		fields = append(fields, notifuser.FieldEventType)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *NotifUserMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case notifuser.FieldCreatedAt:
+		return m.CreatedAt()
+	case notifuser.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case notifuser.FieldDeletedAt:
+		return m.DeletedAt()
+	case notifuser.FieldAppID:
+		return m.AppID()
+	case notifuser.FieldUserID:
+		return m.UserID()
+	case notifuser.FieldEventType:
+		return m.EventType()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *NotifUserMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case notifuser.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case notifuser.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case notifuser.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case notifuser.FieldAppID:
+		return m.OldAppID(ctx)
+	case notifuser.FieldUserID:
+		return m.OldUserID(ctx)
+	case notifuser.FieldEventType:
+		return m.OldEventType(ctx)
+	}
+	return nil, fmt.Errorf("unknown NotifUser field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *NotifUserMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case notifuser.FieldCreatedAt:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case notifuser.FieldUpdatedAt:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case notifuser.FieldDeletedAt:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case notifuser.FieldAppID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAppID(v)
+		return nil
+	case notifuser.FieldUserID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserID(v)
+		return nil
+	case notifuser.FieldEventType:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEventType(v)
+		return nil
+	}
+	return fmt.Errorf("unknown NotifUser field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *NotifUserMutation) AddedFields() []string {
+	var fields []string
+	if m.addcreated_at != nil {
+		fields = append(fields, notifuser.FieldCreatedAt)
+	}
+	if m.addupdated_at != nil {
+		fields = append(fields, notifuser.FieldUpdatedAt)
+	}
+	if m.adddeleted_at != nil {
+		fields = append(fields, notifuser.FieldDeletedAt)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *NotifUserMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case notifuser.FieldCreatedAt:
+		return m.AddedCreatedAt()
+	case notifuser.FieldUpdatedAt:
+		return m.AddedUpdatedAt()
+	case notifuser.FieldDeletedAt:
+		return m.AddedDeletedAt()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *NotifUserMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case notifuser.FieldCreatedAt:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCreatedAt(v)
+		return nil
+	case notifuser.FieldUpdatedAt:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUpdatedAt(v)
+		return nil
+	case notifuser.FieldDeletedAt:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDeletedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown NotifUser numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *NotifUserMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(notifuser.FieldAppID) {
+		fields = append(fields, notifuser.FieldAppID)
+	}
+	if m.FieldCleared(notifuser.FieldUserID) {
+		fields = append(fields, notifuser.FieldUserID)
+	}
+	if m.FieldCleared(notifuser.FieldEventType) {
+		fields = append(fields, notifuser.FieldEventType)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *NotifUserMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *NotifUserMutation) ClearField(name string) error {
+	switch name {
+	case notifuser.FieldAppID:
+		m.ClearAppID()
+		return nil
+	case notifuser.FieldUserID:
+		m.ClearUserID()
+		return nil
+	case notifuser.FieldEventType:
+		m.ClearEventType()
+		return nil
+	}
+	return fmt.Errorf("unknown NotifUser nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *NotifUserMutation) ResetField(name string) error {
+	switch name {
+	case notifuser.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case notifuser.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case notifuser.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case notifuser.FieldAppID:
+		m.ResetAppID()
+		return nil
+	case notifuser.FieldUserID:
+		m.ResetUserID()
+		return nil
+	case notifuser.FieldEventType:
+		m.ResetEventType()
+		return nil
+	}
+	return fmt.Errorf("unknown NotifUser field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *NotifUserMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *NotifUserMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *NotifUserMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *NotifUserMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *NotifUserMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *NotifUserMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *NotifUserMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown NotifUser unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *NotifUserMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown NotifUser edge %s", name)
+}
+
 // ReadAnnouncementMutation represents an operation that mutates the ReadAnnouncement nodes in the graph.
 type ReadAnnouncementMutation struct {
 	config
@@ -10173,753 +10922,4 @@ func (m *UserAnnouncementMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *UserAnnouncementMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown UserAnnouncement edge %s", name)
-}
-
-// UserNotifMutation represents an operation that mutates the UserNotif nodes in the graph.
-type UserNotifMutation struct {
-	config
-	op            Op
-	typ           string
-	id            *uuid.UUID
-	created_at    *uint32
-	addcreated_at *int32
-	updated_at    *uint32
-	addupdated_at *int32
-	deleted_at    *uint32
-	adddeleted_at *int32
-	app_id        *uuid.UUID
-	user_id       *uuid.UUID
-	event_type    *string
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*UserNotif, error)
-	predicates    []predicate.UserNotif
-}
-
-var _ ent.Mutation = (*UserNotifMutation)(nil)
-
-// usernotifOption allows management of the mutation configuration using functional options.
-type usernotifOption func(*UserNotifMutation)
-
-// newUserNotifMutation creates new mutation for the UserNotif entity.
-func newUserNotifMutation(c config, op Op, opts ...usernotifOption) *UserNotifMutation {
-	m := &UserNotifMutation{
-		config:        c,
-		op:            op,
-		typ:           TypeUserNotif,
-		clearedFields: make(map[string]struct{}),
-	}
-	for _, opt := range opts {
-		opt(m)
-	}
-	return m
-}
-
-// withUserNotifID sets the ID field of the mutation.
-func withUserNotifID(id uuid.UUID) usernotifOption {
-	return func(m *UserNotifMutation) {
-		var (
-			err   error
-			once  sync.Once
-			value *UserNotif
-		)
-		m.oldValue = func(ctx context.Context) (*UserNotif, error) {
-			once.Do(func() {
-				if m.done {
-					err = errors.New("querying old values post mutation is not allowed")
-				} else {
-					value, err = m.Client().UserNotif.Get(ctx, id)
-				}
-			})
-			return value, err
-		}
-		m.id = &id
-	}
-}
-
-// withUserNotif sets the old UserNotif of the mutation.
-func withUserNotif(node *UserNotif) usernotifOption {
-	return func(m *UserNotifMutation) {
-		m.oldValue = func(context.Context) (*UserNotif, error) {
-			return node, nil
-		}
-		m.id = &node.ID
-	}
-}
-
-// Client returns a new `ent.Client` from the mutation. If the mutation was
-// executed in a transaction (ent.Tx), a transactional client is returned.
-func (m UserNotifMutation) Client() *Client {
-	client := &Client{config: m.config}
-	client.init()
-	return client
-}
-
-// Tx returns an `ent.Tx` for mutations that were executed in transactions;
-// it returns an error otherwise.
-func (m UserNotifMutation) Tx() (*Tx, error) {
-	if _, ok := m.driver.(*txDriver); !ok {
-		return nil, errors.New("ent: mutation is not running in a transaction")
-	}
-	tx := &Tx{config: m.config}
-	tx.init()
-	return tx, nil
-}
-
-// SetID sets the value of the id field. Note that this
-// operation is only accepted on creation of UserNotif entities.
-func (m *UserNotifMutation) SetID(id uuid.UUID) {
-	m.id = &id
-}
-
-// ID returns the ID value in the mutation. Note that the ID is only available
-// if it was provided to the builder or after it was returned from the database.
-func (m *UserNotifMutation) ID() (id uuid.UUID, exists bool) {
-	if m.id == nil {
-		return
-	}
-	return *m.id, true
-}
-
-// IDs queries the database and returns the entity ids that match the mutation's predicate.
-// That means, if the mutation is applied within a transaction with an isolation level such
-// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
-// or updated by the mutation.
-func (m *UserNotifMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
-	switch {
-	case m.op.Is(OpUpdateOne | OpDeleteOne):
-		id, exists := m.ID()
-		if exists {
-			return []uuid.UUID{id}, nil
-		}
-		fallthrough
-	case m.op.Is(OpUpdate | OpDelete):
-		return m.Client().UserNotif.Query().Where(m.predicates...).IDs(ctx)
-	default:
-		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
-	}
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (m *UserNotifMutation) SetCreatedAt(u uint32) {
-	m.created_at = &u
-	m.addcreated_at = nil
-}
-
-// CreatedAt returns the value of the "created_at" field in the mutation.
-func (m *UserNotifMutation) CreatedAt() (r uint32, exists bool) {
-	v := m.created_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCreatedAt returns the old "created_at" field's value of the UserNotif entity.
-// If the UserNotif object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserNotifMutation) OldCreatedAt(ctx context.Context) (v uint32, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
-	}
-	return oldValue.CreatedAt, nil
-}
-
-// AddCreatedAt adds u to the "created_at" field.
-func (m *UserNotifMutation) AddCreatedAt(u int32) {
-	if m.addcreated_at != nil {
-		*m.addcreated_at += u
-	} else {
-		m.addcreated_at = &u
-	}
-}
-
-// AddedCreatedAt returns the value that was added to the "created_at" field in this mutation.
-func (m *UserNotifMutation) AddedCreatedAt() (r int32, exists bool) {
-	v := m.addcreated_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetCreatedAt resets all changes to the "created_at" field.
-func (m *UserNotifMutation) ResetCreatedAt() {
-	m.created_at = nil
-	m.addcreated_at = nil
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (m *UserNotifMutation) SetUpdatedAt(u uint32) {
-	m.updated_at = &u
-	m.addupdated_at = nil
-}
-
-// UpdatedAt returns the value of the "updated_at" field in the mutation.
-func (m *UserNotifMutation) UpdatedAt() (r uint32, exists bool) {
-	v := m.updated_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUpdatedAt returns the old "updated_at" field's value of the UserNotif entity.
-// If the UserNotif object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserNotifMutation) OldUpdatedAt(ctx context.Context) (v uint32, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
-	}
-	return oldValue.UpdatedAt, nil
-}
-
-// AddUpdatedAt adds u to the "updated_at" field.
-func (m *UserNotifMutation) AddUpdatedAt(u int32) {
-	if m.addupdated_at != nil {
-		*m.addupdated_at += u
-	} else {
-		m.addupdated_at = &u
-	}
-}
-
-// AddedUpdatedAt returns the value that was added to the "updated_at" field in this mutation.
-func (m *UserNotifMutation) AddedUpdatedAt() (r int32, exists bool) {
-	v := m.addupdated_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetUpdatedAt resets all changes to the "updated_at" field.
-func (m *UserNotifMutation) ResetUpdatedAt() {
-	m.updated_at = nil
-	m.addupdated_at = nil
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (m *UserNotifMutation) SetDeletedAt(u uint32) {
-	m.deleted_at = &u
-	m.adddeleted_at = nil
-}
-
-// DeletedAt returns the value of the "deleted_at" field in the mutation.
-func (m *UserNotifMutation) DeletedAt() (r uint32, exists bool) {
-	v := m.deleted_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldDeletedAt returns the old "deleted_at" field's value of the UserNotif entity.
-// If the UserNotif object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserNotifMutation) OldDeletedAt(ctx context.Context) (v uint32, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
-	}
-	return oldValue.DeletedAt, nil
-}
-
-// AddDeletedAt adds u to the "deleted_at" field.
-func (m *UserNotifMutation) AddDeletedAt(u int32) {
-	if m.adddeleted_at != nil {
-		*m.adddeleted_at += u
-	} else {
-		m.adddeleted_at = &u
-	}
-}
-
-// AddedDeletedAt returns the value that was added to the "deleted_at" field in this mutation.
-func (m *UserNotifMutation) AddedDeletedAt() (r int32, exists bool) {
-	v := m.adddeleted_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetDeletedAt resets all changes to the "deleted_at" field.
-func (m *UserNotifMutation) ResetDeletedAt() {
-	m.deleted_at = nil
-	m.adddeleted_at = nil
-}
-
-// SetAppID sets the "app_id" field.
-func (m *UserNotifMutation) SetAppID(u uuid.UUID) {
-	m.app_id = &u
-}
-
-// AppID returns the value of the "app_id" field in the mutation.
-func (m *UserNotifMutation) AppID() (r uuid.UUID, exists bool) {
-	v := m.app_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldAppID returns the old "app_id" field's value of the UserNotif entity.
-// If the UserNotif object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserNotifMutation) OldAppID(ctx context.Context) (v uuid.UUID, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldAppID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldAppID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldAppID: %w", err)
-	}
-	return oldValue.AppID, nil
-}
-
-// ClearAppID clears the value of the "app_id" field.
-func (m *UserNotifMutation) ClearAppID() {
-	m.app_id = nil
-	m.clearedFields[usernotif.FieldAppID] = struct{}{}
-}
-
-// AppIDCleared returns if the "app_id" field was cleared in this mutation.
-func (m *UserNotifMutation) AppIDCleared() bool {
-	_, ok := m.clearedFields[usernotif.FieldAppID]
-	return ok
-}
-
-// ResetAppID resets all changes to the "app_id" field.
-func (m *UserNotifMutation) ResetAppID() {
-	m.app_id = nil
-	delete(m.clearedFields, usernotif.FieldAppID)
-}
-
-// SetUserID sets the "user_id" field.
-func (m *UserNotifMutation) SetUserID(u uuid.UUID) {
-	m.user_id = &u
-}
-
-// UserID returns the value of the "user_id" field in the mutation.
-func (m *UserNotifMutation) UserID() (r uuid.UUID, exists bool) {
-	v := m.user_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUserID returns the old "user_id" field's value of the UserNotif entity.
-// If the UserNotif object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserNotifMutation) OldUserID(ctx context.Context) (v uuid.UUID, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUserID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
-	}
-	return oldValue.UserID, nil
-}
-
-// ClearUserID clears the value of the "user_id" field.
-func (m *UserNotifMutation) ClearUserID() {
-	m.user_id = nil
-	m.clearedFields[usernotif.FieldUserID] = struct{}{}
-}
-
-// UserIDCleared returns if the "user_id" field was cleared in this mutation.
-func (m *UserNotifMutation) UserIDCleared() bool {
-	_, ok := m.clearedFields[usernotif.FieldUserID]
-	return ok
-}
-
-// ResetUserID resets all changes to the "user_id" field.
-func (m *UserNotifMutation) ResetUserID() {
-	m.user_id = nil
-	delete(m.clearedFields, usernotif.FieldUserID)
-}
-
-// SetEventType sets the "event_type" field.
-func (m *UserNotifMutation) SetEventType(s string) {
-	m.event_type = &s
-}
-
-// EventType returns the value of the "event_type" field in the mutation.
-func (m *UserNotifMutation) EventType() (r string, exists bool) {
-	v := m.event_type
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldEventType returns the old "event_type" field's value of the UserNotif entity.
-// If the UserNotif object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserNotifMutation) OldEventType(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldEventType is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldEventType requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldEventType: %w", err)
-	}
-	return oldValue.EventType, nil
-}
-
-// ClearEventType clears the value of the "event_type" field.
-func (m *UserNotifMutation) ClearEventType() {
-	m.event_type = nil
-	m.clearedFields[usernotif.FieldEventType] = struct{}{}
-}
-
-// EventTypeCleared returns if the "event_type" field was cleared in this mutation.
-func (m *UserNotifMutation) EventTypeCleared() bool {
-	_, ok := m.clearedFields[usernotif.FieldEventType]
-	return ok
-}
-
-// ResetEventType resets all changes to the "event_type" field.
-func (m *UserNotifMutation) ResetEventType() {
-	m.event_type = nil
-	delete(m.clearedFields, usernotif.FieldEventType)
-}
-
-// Where appends a list predicates to the UserNotifMutation builder.
-func (m *UserNotifMutation) Where(ps ...predicate.UserNotif) {
-	m.predicates = append(m.predicates, ps...)
-}
-
-// Op returns the operation name.
-func (m *UserNotifMutation) Op() Op {
-	return m.op
-}
-
-// Type returns the node type of this mutation (UserNotif).
-func (m *UserNotifMutation) Type() string {
-	return m.typ
-}
-
-// Fields returns all fields that were changed during this mutation. Note that in
-// order to get all numeric fields that were incremented/decremented, call
-// AddedFields().
-func (m *UserNotifMutation) Fields() []string {
-	fields := make([]string, 0, 6)
-	if m.created_at != nil {
-		fields = append(fields, usernotif.FieldCreatedAt)
-	}
-	if m.updated_at != nil {
-		fields = append(fields, usernotif.FieldUpdatedAt)
-	}
-	if m.deleted_at != nil {
-		fields = append(fields, usernotif.FieldDeletedAt)
-	}
-	if m.app_id != nil {
-		fields = append(fields, usernotif.FieldAppID)
-	}
-	if m.user_id != nil {
-		fields = append(fields, usernotif.FieldUserID)
-	}
-	if m.event_type != nil {
-		fields = append(fields, usernotif.FieldEventType)
-	}
-	return fields
-}
-
-// Field returns the value of a field with the given name. The second boolean
-// return value indicates that this field was not set, or was not defined in the
-// schema.
-func (m *UserNotifMutation) Field(name string) (ent.Value, bool) {
-	switch name {
-	case usernotif.FieldCreatedAt:
-		return m.CreatedAt()
-	case usernotif.FieldUpdatedAt:
-		return m.UpdatedAt()
-	case usernotif.FieldDeletedAt:
-		return m.DeletedAt()
-	case usernotif.FieldAppID:
-		return m.AppID()
-	case usernotif.FieldUserID:
-		return m.UserID()
-	case usernotif.FieldEventType:
-		return m.EventType()
-	}
-	return nil, false
-}
-
-// OldField returns the old value of the field from the database. An error is
-// returned if the mutation operation is not UpdateOne, or the query to the
-// database failed.
-func (m *UserNotifMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
-	switch name {
-	case usernotif.FieldCreatedAt:
-		return m.OldCreatedAt(ctx)
-	case usernotif.FieldUpdatedAt:
-		return m.OldUpdatedAt(ctx)
-	case usernotif.FieldDeletedAt:
-		return m.OldDeletedAt(ctx)
-	case usernotif.FieldAppID:
-		return m.OldAppID(ctx)
-	case usernotif.FieldUserID:
-		return m.OldUserID(ctx)
-	case usernotif.FieldEventType:
-		return m.OldEventType(ctx)
-	}
-	return nil, fmt.Errorf("unknown UserNotif field %s", name)
-}
-
-// SetField sets the value of a field with the given name. It returns an error if
-// the field is not defined in the schema, or if the type mismatched the field
-// type.
-func (m *UserNotifMutation) SetField(name string, value ent.Value) error {
-	switch name {
-	case usernotif.FieldCreatedAt:
-		v, ok := value.(uint32)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCreatedAt(v)
-		return nil
-	case usernotif.FieldUpdatedAt:
-		v, ok := value.(uint32)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUpdatedAt(v)
-		return nil
-	case usernotif.FieldDeletedAt:
-		v, ok := value.(uint32)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetDeletedAt(v)
-		return nil
-	case usernotif.FieldAppID:
-		v, ok := value.(uuid.UUID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetAppID(v)
-		return nil
-	case usernotif.FieldUserID:
-		v, ok := value.(uuid.UUID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUserID(v)
-		return nil
-	case usernotif.FieldEventType:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetEventType(v)
-		return nil
-	}
-	return fmt.Errorf("unknown UserNotif field %s", name)
-}
-
-// AddedFields returns all numeric fields that were incremented/decremented during
-// this mutation.
-func (m *UserNotifMutation) AddedFields() []string {
-	var fields []string
-	if m.addcreated_at != nil {
-		fields = append(fields, usernotif.FieldCreatedAt)
-	}
-	if m.addupdated_at != nil {
-		fields = append(fields, usernotif.FieldUpdatedAt)
-	}
-	if m.adddeleted_at != nil {
-		fields = append(fields, usernotif.FieldDeletedAt)
-	}
-	return fields
-}
-
-// AddedField returns the numeric value that was incremented/decremented on a field
-// with the given name. The second boolean return value indicates that this field
-// was not set, or was not defined in the schema.
-func (m *UserNotifMutation) AddedField(name string) (ent.Value, bool) {
-	switch name {
-	case usernotif.FieldCreatedAt:
-		return m.AddedCreatedAt()
-	case usernotif.FieldUpdatedAt:
-		return m.AddedUpdatedAt()
-	case usernotif.FieldDeletedAt:
-		return m.AddedDeletedAt()
-	}
-	return nil, false
-}
-
-// AddField adds the value to the field with the given name. It returns an error if
-// the field is not defined in the schema, or if the type mismatched the field
-// type.
-func (m *UserNotifMutation) AddField(name string, value ent.Value) error {
-	switch name {
-	case usernotif.FieldCreatedAt:
-		v, ok := value.(int32)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddCreatedAt(v)
-		return nil
-	case usernotif.FieldUpdatedAt:
-		v, ok := value.(int32)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddUpdatedAt(v)
-		return nil
-	case usernotif.FieldDeletedAt:
-		v, ok := value.(int32)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddDeletedAt(v)
-		return nil
-	}
-	return fmt.Errorf("unknown UserNotif numeric field %s", name)
-}
-
-// ClearedFields returns all nullable fields that were cleared during this
-// mutation.
-func (m *UserNotifMutation) ClearedFields() []string {
-	var fields []string
-	if m.FieldCleared(usernotif.FieldAppID) {
-		fields = append(fields, usernotif.FieldAppID)
-	}
-	if m.FieldCleared(usernotif.FieldUserID) {
-		fields = append(fields, usernotif.FieldUserID)
-	}
-	if m.FieldCleared(usernotif.FieldEventType) {
-		fields = append(fields, usernotif.FieldEventType)
-	}
-	return fields
-}
-
-// FieldCleared returns a boolean indicating if a field with the given name was
-// cleared in this mutation.
-func (m *UserNotifMutation) FieldCleared(name string) bool {
-	_, ok := m.clearedFields[name]
-	return ok
-}
-
-// ClearField clears the value of the field with the given name. It returns an
-// error if the field is not defined in the schema.
-func (m *UserNotifMutation) ClearField(name string) error {
-	switch name {
-	case usernotif.FieldAppID:
-		m.ClearAppID()
-		return nil
-	case usernotif.FieldUserID:
-		m.ClearUserID()
-		return nil
-	case usernotif.FieldEventType:
-		m.ClearEventType()
-		return nil
-	}
-	return fmt.Errorf("unknown UserNotif nullable field %s", name)
-}
-
-// ResetField resets all changes in the mutation for the field with the given name.
-// It returns an error if the field is not defined in the schema.
-func (m *UserNotifMutation) ResetField(name string) error {
-	switch name {
-	case usernotif.FieldCreatedAt:
-		m.ResetCreatedAt()
-		return nil
-	case usernotif.FieldUpdatedAt:
-		m.ResetUpdatedAt()
-		return nil
-	case usernotif.FieldDeletedAt:
-		m.ResetDeletedAt()
-		return nil
-	case usernotif.FieldAppID:
-		m.ResetAppID()
-		return nil
-	case usernotif.FieldUserID:
-		m.ResetUserID()
-		return nil
-	case usernotif.FieldEventType:
-		m.ResetEventType()
-		return nil
-	}
-	return fmt.Errorf("unknown UserNotif field %s", name)
-}
-
-// AddedEdges returns all edge names that were set/added in this mutation.
-func (m *UserNotifMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
-	return edges
-}
-
-// AddedIDs returns all IDs (to other nodes) that were added for the given edge
-// name in this mutation.
-func (m *UserNotifMutation) AddedIDs(name string) []ent.Value {
-	return nil
-}
-
-// RemovedEdges returns all edge names that were removed in this mutation.
-func (m *UserNotifMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
-	return edges
-}
-
-// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
-// the given name in this mutation.
-func (m *UserNotifMutation) RemovedIDs(name string) []ent.Value {
-	return nil
-}
-
-// ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *UserNotifMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
-	return edges
-}
-
-// EdgeCleared returns a boolean which indicates if the edge with the given name
-// was cleared in this mutation.
-func (m *UserNotifMutation) EdgeCleared(name string) bool {
-	return false
-}
-
-// ClearEdge clears the value of the edge with the given name. It returns an error
-// if that edge is not defined in the schema.
-func (m *UserNotifMutation) ClearEdge(name string) error {
-	return fmt.Errorf("unknown UserNotif unique edge %s", name)
-}
-
-// ResetEdge resets all changes to the edge with the given name in this mutation.
-// It returns an error if the edge is not defined in the schema.
-func (m *UserNotifMutation) ResetEdge(name string) error {
-	return fmt.Errorf("unknown UserNotif edge %s", name)
 }

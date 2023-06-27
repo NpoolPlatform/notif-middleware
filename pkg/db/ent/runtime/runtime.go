@@ -11,13 +11,13 @@ import (
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/frontendtemplate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notif"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notifchannel"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notifuser"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/readannouncement"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/schema"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/sendannouncement"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/smstemplate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/txnotifstate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/userannouncement"
-	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/usernotif"
 	"github.com/google/uuid"
 
 	"entgo.io/ent"
@@ -364,6 +364,50 @@ func init() {
 	notifchannelDescID := notifchannelFields[0].Descriptor()
 	// notifchannel.DefaultID holds the default value on creation for the id field.
 	notifchannel.DefaultID = notifchannelDescID.Default.(func() uuid.UUID)
+	notifuserMixin := schema.NotifUser{}.Mixin()
+	notifuser.Policy = privacy.NewPolicies(notifuserMixin[0], schema.NotifUser{})
+	notifuser.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+			if err := notifuser.Policy.EvalMutation(ctx, m); err != nil {
+				return nil, err
+			}
+			return next.Mutate(ctx, m)
+		})
+	}
+	notifuserMixinFields0 := notifuserMixin[0].Fields()
+	_ = notifuserMixinFields0
+	notifuserFields := schema.NotifUser{}.Fields()
+	_ = notifuserFields
+	// notifuserDescCreatedAt is the schema descriptor for created_at field.
+	notifuserDescCreatedAt := notifuserMixinFields0[0].Descriptor()
+	// notifuser.DefaultCreatedAt holds the default value on creation for the created_at field.
+	notifuser.DefaultCreatedAt = notifuserDescCreatedAt.Default.(func() uint32)
+	// notifuserDescUpdatedAt is the schema descriptor for updated_at field.
+	notifuserDescUpdatedAt := notifuserMixinFields0[1].Descriptor()
+	// notifuser.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	notifuser.DefaultUpdatedAt = notifuserDescUpdatedAt.Default.(func() uint32)
+	// notifuser.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	notifuser.UpdateDefaultUpdatedAt = notifuserDescUpdatedAt.UpdateDefault.(func() uint32)
+	// notifuserDescDeletedAt is the schema descriptor for deleted_at field.
+	notifuserDescDeletedAt := notifuserMixinFields0[2].Descriptor()
+	// notifuser.DefaultDeletedAt holds the default value on creation for the deleted_at field.
+	notifuser.DefaultDeletedAt = notifuserDescDeletedAt.Default.(func() uint32)
+	// notifuserDescAppID is the schema descriptor for app_id field.
+	notifuserDescAppID := notifuserFields[1].Descriptor()
+	// notifuser.DefaultAppID holds the default value on creation for the app_id field.
+	notifuser.DefaultAppID = notifuserDescAppID.Default.(func() uuid.UUID)
+	// notifuserDescUserID is the schema descriptor for user_id field.
+	notifuserDescUserID := notifuserFields[2].Descriptor()
+	// notifuser.DefaultUserID holds the default value on creation for the user_id field.
+	notifuser.DefaultUserID = notifuserDescUserID.Default.(func() uuid.UUID)
+	// notifuserDescEventType is the schema descriptor for event_type field.
+	notifuserDescEventType := notifuserFields[3].Descriptor()
+	// notifuser.DefaultEventType holds the default value on creation for the event_type field.
+	notifuser.DefaultEventType = notifuserDescEventType.Default.(string)
+	// notifuserDescID is the schema descriptor for id field.
+	notifuserDescID := notifuserFields[0].Descriptor()
+	// notifuser.DefaultID holds the default value on creation for the id field.
+	notifuser.DefaultID = notifuserDescID.Default.(func() uuid.UUID)
 	readannouncementMixin := schema.ReadAnnouncement{}.Mixin()
 	readannouncement.Policy = privacy.NewPolicies(readannouncementMixin[0], schema.ReadAnnouncement{})
 	readannouncement.Hooks[0] = func(next ent.Mutator) ent.Mutator {
@@ -588,50 +632,6 @@ func init() {
 	userannouncementDescID := userannouncementFields[0].Descriptor()
 	// userannouncement.DefaultID holds the default value on creation for the id field.
 	userannouncement.DefaultID = userannouncementDescID.Default.(func() uuid.UUID)
-	usernotifMixin := schema.UserNotif{}.Mixin()
-	usernotif.Policy = privacy.NewPolicies(usernotifMixin[0], schema.UserNotif{})
-	usernotif.Hooks[0] = func(next ent.Mutator) ent.Mutator {
-		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-			if err := usernotif.Policy.EvalMutation(ctx, m); err != nil {
-				return nil, err
-			}
-			return next.Mutate(ctx, m)
-		})
-	}
-	usernotifMixinFields0 := usernotifMixin[0].Fields()
-	_ = usernotifMixinFields0
-	usernotifFields := schema.UserNotif{}.Fields()
-	_ = usernotifFields
-	// usernotifDescCreatedAt is the schema descriptor for created_at field.
-	usernotifDescCreatedAt := usernotifMixinFields0[0].Descriptor()
-	// usernotif.DefaultCreatedAt holds the default value on creation for the created_at field.
-	usernotif.DefaultCreatedAt = usernotifDescCreatedAt.Default.(func() uint32)
-	// usernotifDescUpdatedAt is the schema descriptor for updated_at field.
-	usernotifDescUpdatedAt := usernotifMixinFields0[1].Descriptor()
-	// usernotif.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	usernotif.DefaultUpdatedAt = usernotifDescUpdatedAt.Default.(func() uint32)
-	// usernotif.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	usernotif.UpdateDefaultUpdatedAt = usernotifDescUpdatedAt.UpdateDefault.(func() uint32)
-	// usernotifDescDeletedAt is the schema descriptor for deleted_at field.
-	usernotifDescDeletedAt := usernotifMixinFields0[2].Descriptor()
-	// usernotif.DefaultDeletedAt holds the default value on creation for the deleted_at field.
-	usernotif.DefaultDeletedAt = usernotifDescDeletedAt.Default.(func() uint32)
-	// usernotifDescAppID is the schema descriptor for app_id field.
-	usernotifDescAppID := usernotifFields[1].Descriptor()
-	// usernotif.DefaultAppID holds the default value on creation for the app_id field.
-	usernotif.DefaultAppID = usernotifDescAppID.Default.(func() uuid.UUID)
-	// usernotifDescUserID is the schema descriptor for user_id field.
-	usernotifDescUserID := usernotifFields[2].Descriptor()
-	// usernotif.DefaultUserID holds the default value on creation for the user_id field.
-	usernotif.DefaultUserID = usernotifDescUserID.Default.(func() uuid.UUID)
-	// usernotifDescEventType is the schema descriptor for event_type field.
-	usernotifDescEventType := usernotifFields[3].Descriptor()
-	// usernotif.DefaultEventType holds the default value on creation for the event_type field.
-	usernotif.DefaultEventType = usernotifDescEventType.Default.(string)
-	// usernotifDescID is the schema descriptor for id field.
-	usernotifDescID := usernotifFields[0].Descriptor()
-	// usernotif.DefaultID holds the default value on creation for the id field.
-	usernotif.DefaultID = usernotifDescID.Default.(func() uuid.UUID)
 }
 
 const (

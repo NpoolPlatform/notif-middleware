@@ -17,12 +17,12 @@ import (
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/frontendtemplate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notif"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notifchannel"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notifuser"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/readannouncement"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/sendannouncement"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/smstemplate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/txnotifstate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/userannouncement"
-	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/usernotif"
 
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
@@ -45,6 +45,8 @@ type Client struct {
 	Notif *NotifClient
 	// NotifChannel is the client for interacting with the NotifChannel builders.
 	NotifChannel *NotifChannelClient
+	// NotifUser is the client for interacting with the NotifUser builders.
+	NotifUser *NotifUserClient
 	// ReadAnnouncement is the client for interacting with the ReadAnnouncement builders.
 	ReadAnnouncement *ReadAnnouncementClient
 	// SMSTemplate is the client for interacting with the SMSTemplate builders.
@@ -55,8 +57,6 @@ type Client struct {
 	TxNotifState *TxNotifStateClient
 	// UserAnnouncement is the client for interacting with the UserAnnouncement builders.
 	UserAnnouncement *UserAnnouncementClient
-	// UserNotif is the client for interacting with the UserNotif builders.
-	UserNotif *UserNotifClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -76,12 +76,12 @@ func (c *Client) init() {
 	c.FrontendTemplate = NewFrontendTemplateClient(c.config)
 	c.Notif = NewNotifClient(c.config)
 	c.NotifChannel = NewNotifChannelClient(c.config)
+	c.NotifUser = NewNotifUserClient(c.config)
 	c.ReadAnnouncement = NewReadAnnouncementClient(c.config)
 	c.SMSTemplate = NewSMSTemplateClient(c.config)
 	c.SendAnnouncement = NewSendAnnouncementClient(c.config)
 	c.TxNotifState = NewTxNotifStateClient(c.config)
 	c.UserAnnouncement = NewUserAnnouncementClient(c.config)
-	c.UserNotif = NewUserNotifClient(c.config)
 }
 
 // Open opens a database/sql.DB specified by the driver name and
@@ -121,12 +121,12 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		FrontendTemplate: NewFrontendTemplateClient(cfg),
 		Notif:            NewNotifClient(cfg),
 		NotifChannel:     NewNotifChannelClient(cfg),
+		NotifUser:        NewNotifUserClient(cfg),
 		ReadAnnouncement: NewReadAnnouncementClient(cfg),
 		SMSTemplate:      NewSMSTemplateClient(cfg),
 		SendAnnouncement: NewSendAnnouncementClient(cfg),
 		TxNotifState:     NewTxNotifStateClient(cfg),
 		UserAnnouncement: NewUserAnnouncementClient(cfg),
-		UserNotif:        NewUserNotifClient(cfg),
 	}, nil
 }
 
@@ -152,12 +152,12 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		FrontendTemplate: NewFrontendTemplateClient(cfg),
 		Notif:            NewNotifClient(cfg),
 		NotifChannel:     NewNotifChannelClient(cfg),
+		NotifUser:        NewNotifUserClient(cfg),
 		ReadAnnouncement: NewReadAnnouncementClient(cfg),
 		SMSTemplate:      NewSMSTemplateClient(cfg),
 		SendAnnouncement: NewSendAnnouncementClient(cfg),
 		TxNotifState:     NewTxNotifStateClient(cfg),
 		UserAnnouncement: NewUserAnnouncementClient(cfg),
-		UserNotif:        NewUserNotifClient(cfg),
 	}, nil
 }
 
@@ -193,12 +193,12 @@ func (c *Client) Use(hooks ...Hook) {
 	c.FrontendTemplate.Use(hooks...)
 	c.Notif.Use(hooks...)
 	c.NotifChannel.Use(hooks...)
+	c.NotifUser.Use(hooks...)
 	c.ReadAnnouncement.Use(hooks...)
 	c.SMSTemplate.Use(hooks...)
 	c.SendAnnouncement.Use(hooks...)
 	c.TxNotifState.Use(hooks...)
 	c.UserAnnouncement.Use(hooks...)
-	c.UserNotif.Use(hooks...)
 }
 
 // AnnouncementClient is a client for the Announcement schema.
@@ -747,6 +747,97 @@ func (c *NotifChannelClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], notifchannel.Hooks[:]...)
 }
 
+// NotifUserClient is a client for the NotifUser schema.
+type NotifUserClient struct {
+	config
+}
+
+// NewNotifUserClient returns a client for the NotifUser from the given config.
+func NewNotifUserClient(c config) *NotifUserClient {
+	return &NotifUserClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `notifuser.Hooks(f(g(h())))`.
+func (c *NotifUserClient) Use(hooks ...Hook) {
+	c.hooks.NotifUser = append(c.hooks.NotifUser, hooks...)
+}
+
+// Create returns a builder for creating a NotifUser entity.
+func (c *NotifUserClient) Create() *NotifUserCreate {
+	mutation := newNotifUserMutation(c.config, OpCreate)
+	return &NotifUserCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of NotifUser entities.
+func (c *NotifUserClient) CreateBulk(builders ...*NotifUserCreate) *NotifUserCreateBulk {
+	return &NotifUserCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for NotifUser.
+func (c *NotifUserClient) Update() *NotifUserUpdate {
+	mutation := newNotifUserMutation(c.config, OpUpdate)
+	return &NotifUserUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *NotifUserClient) UpdateOne(nu *NotifUser) *NotifUserUpdateOne {
+	mutation := newNotifUserMutation(c.config, OpUpdateOne, withNotifUser(nu))
+	return &NotifUserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *NotifUserClient) UpdateOneID(id uuid.UUID) *NotifUserUpdateOne {
+	mutation := newNotifUserMutation(c.config, OpUpdateOne, withNotifUserID(id))
+	return &NotifUserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for NotifUser.
+func (c *NotifUserClient) Delete() *NotifUserDelete {
+	mutation := newNotifUserMutation(c.config, OpDelete)
+	return &NotifUserDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *NotifUserClient) DeleteOne(nu *NotifUser) *NotifUserDeleteOne {
+	return c.DeleteOneID(nu.ID)
+}
+
+// DeleteOne returns a builder for deleting the given entity by its id.
+func (c *NotifUserClient) DeleteOneID(id uuid.UUID) *NotifUserDeleteOne {
+	builder := c.Delete().Where(notifuser.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &NotifUserDeleteOne{builder}
+}
+
+// Query returns a query builder for NotifUser.
+func (c *NotifUserClient) Query() *NotifUserQuery {
+	return &NotifUserQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a NotifUser entity by its id.
+func (c *NotifUserClient) Get(ctx context.Context, id uuid.UUID) (*NotifUser, error) {
+	return c.Query().Where(notifuser.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *NotifUserClient) GetX(ctx context.Context, id uuid.UUID) *NotifUser {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *NotifUserClient) Hooks() []Hook {
+	hooks := c.hooks.NotifUser
+	return append(hooks[:len(hooks):len(hooks)], notifuser.Hooks[:]...)
+}
+
 // ReadAnnouncementClient is a client for the ReadAnnouncement schema.
 type ReadAnnouncementClient struct {
 	config
@@ -1200,95 +1291,4 @@ func (c *UserAnnouncementClient) GetX(ctx context.Context, id uuid.UUID) *UserAn
 func (c *UserAnnouncementClient) Hooks() []Hook {
 	hooks := c.hooks.UserAnnouncement
 	return append(hooks[:len(hooks):len(hooks)], userannouncement.Hooks[:]...)
-}
-
-// UserNotifClient is a client for the UserNotif schema.
-type UserNotifClient struct {
-	config
-}
-
-// NewUserNotifClient returns a client for the UserNotif from the given config.
-func NewUserNotifClient(c config) *UserNotifClient {
-	return &UserNotifClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `usernotif.Hooks(f(g(h())))`.
-func (c *UserNotifClient) Use(hooks ...Hook) {
-	c.hooks.UserNotif = append(c.hooks.UserNotif, hooks...)
-}
-
-// Create returns a builder for creating a UserNotif entity.
-func (c *UserNotifClient) Create() *UserNotifCreate {
-	mutation := newUserNotifMutation(c.config, OpCreate)
-	return &UserNotifCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of UserNotif entities.
-func (c *UserNotifClient) CreateBulk(builders ...*UserNotifCreate) *UserNotifCreateBulk {
-	return &UserNotifCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for UserNotif.
-func (c *UserNotifClient) Update() *UserNotifUpdate {
-	mutation := newUserNotifMutation(c.config, OpUpdate)
-	return &UserNotifUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *UserNotifClient) UpdateOne(un *UserNotif) *UserNotifUpdateOne {
-	mutation := newUserNotifMutation(c.config, OpUpdateOne, withUserNotif(un))
-	return &UserNotifUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *UserNotifClient) UpdateOneID(id uuid.UUID) *UserNotifUpdateOne {
-	mutation := newUserNotifMutation(c.config, OpUpdateOne, withUserNotifID(id))
-	return &UserNotifUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for UserNotif.
-func (c *UserNotifClient) Delete() *UserNotifDelete {
-	mutation := newUserNotifMutation(c.config, OpDelete)
-	return &UserNotifDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *UserNotifClient) DeleteOne(un *UserNotif) *UserNotifDeleteOne {
-	return c.DeleteOneID(un.ID)
-}
-
-// DeleteOne returns a builder for deleting the given entity by its id.
-func (c *UserNotifClient) DeleteOneID(id uuid.UUID) *UserNotifDeleteOne {
-	builder := c.Delete().Where(usernotif.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &UserNotifDeleteOne{builder}
-}
-
-// Query returns a query builder for UserNotif.
-func (c *UserNotifClient) Query() *UserNotifQuery {
-	return &UserNotifQuery{
-		config: c.config,
-	}
-}
-
-// Get returns a UserNotif entity by its id.
-func (c *UserNotifClient) Get(ctx context.Context, id uuid.UUID) (*UserNotif, error) {
-	return c.Query().Where(usernotif.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *UserNotifClient) GetX(ctx context.Context, id uuid.UUID) *UserNotif {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// Hooks returns the client hooks.
-func (c *UserNotifClient) Hooks() []Hook {
-	hooks := c.hooks.UserNotif
-	return append(hooks[:len(hooks):len(hooks)], usernotif.Hooks[:]...)
 }

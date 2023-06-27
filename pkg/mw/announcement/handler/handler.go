@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	constant "github.com/NpoolPlatform/notif-middleware/pkg/const"
 	announcement1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement"
 	"github.com/google/uuid"
@@ -98,10 +97,6 @@ func WithAnnouncementID(appID, amtID *string) func(context.Context, *Handler) er
 		if amt.AppID != *appID {
 			return fmt.Errorf("wrong app id or announcement id")
 		}
-		if amt.AnnouncementType != basetypes.NotifType_NotifMulticast {
-			return fmt.Errorf("wrong announcement type %v", amt.AnnouncementType.String())
-		}
-
 		h.AnnouncementID = &_amtID
 		return nil
 	}

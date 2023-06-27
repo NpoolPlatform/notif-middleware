@@ -246,6 +246,16 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 				Val: id,
 			}
 		}
+		if conds.LangID != nil {
+			id, err := uuid.Parse(conds.GetLangID().GetValue())
+			if err != nil {
+				return err
+			}
+			h.Conds.LangID = &cruder.Cond{
+				Op:  conds.GetLangID().GetOp(),
+				Val: id,
+			}
+		}
 		if conds.UsedFor != nil {
 			switch conds.GetUsedFor().GetValue() {
 			case int32(basetypes.UsedFor_Signup):

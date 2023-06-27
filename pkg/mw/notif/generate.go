@@ -72,7 +72,7 @@ func (h *generateHandler) createUserNotifs(ctx context.Context, appID, eventID, 
 	if err != nil {
 		return nil, err
 	}
-	for _, req := range reqs {
+	for _, req := range _reqs {
 		req.Extra = h.Extra
 		req.NotifType = h.NotifType
 		req.EventID = &eventID

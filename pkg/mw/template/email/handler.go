@@ -147,6 +147,9 @@ func WithReplyTos(replyTos *[]string) func(context.Context, *Handler) error {
 		if replyTos == nil {
 			return nil
 		}
+		if len(*replyTos) == 0 {
+			return nil
+		}
 		h.ReplyTos = replyTos
 		return nil
 	}
@@ -155,6 +158,9 @@ func WithReplyTos(replyTos *[]string) func(context.Context, *Handler) error {
 func WithCcTos(ccTos *[]string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if ccTos == nil {
+			return nil
+		}
+		if len(*ccTos) == 0 {
 			return nil
 		}
 		h.CcTos = ccTos
@@ -204,6 +210,9 @@ func WithUserID(userid *string) func(context.Context, *Handler) error {
 
 func WithVars(vars *templatemwpb.TemplateVars) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
+		if vars == nil {
+			return nil
+		}
 		h.Vars = vars
 		return nil
 	}

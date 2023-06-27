@@ -50,8 +50,10 @@ type Conds struct {
 	TxID       *cruder.Cond
 	NotifState *cruder.Cond
 	TxType     *cruder.Cond
+	TxTypes    *cruder.Cond
 }
 
+//nolint
 func SetQueryConds(q *ent.TxNotifStateQuery, conds *Conds) (*ent.TxNotifStateQuery, error) {
 	if conds == nil {
 		return q, nil
@@ -102,6 +104,23 @@ func SetQueryConds(q *ent.TxNotifStateQuery, conds *Conds) (*ent.TxNotifStateQue
 			q.Where(enttx.TxType(_type.String()))
 		default:
 			return nil, fmt.Errorf("invalid tx type op field")
+		}
+	}
+	if conds.TxTypes != nil {
+		_types, ok := conds.TxTypes.Val.([]basetypes.TxType)
+		if !ok {
+			return nil, fmt.Errorf("invalid tx type")
+		}
+
+		txTypes := []string{}
+		for _, _type := range _types {
+			txTypes = append(txTypes, _type.String())
+		}
+		switch conds.TxTypes.Op {
+		case cruder.IN:
+			q.Where(enttx.TxTypeIn(txTypes...))
+		default:
+			return nil, fmt.Errorf("invalid tx types op field")
 		}
 	}
 	return q, nil

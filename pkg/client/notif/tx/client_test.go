@@ -85,9 +85,8 @@ func getTxs(t *testing.T) {
 			Op:    cruder.EQ,
 			Value: uint32(ret.NotifState),
 		},
-		TxType: &basetypes.Uint32Val{
-			Op:    cruder.EQ,
-			Value: uint32(ret.TxType),
+		TxTypes: &basetypes.Uint32SliceVal{
+			Op: cruder.IN, Value: []uint32{uint32(ret.TxType)},
 		},
 	}, 0, 1)
 	if assert.Nil(t, err) {

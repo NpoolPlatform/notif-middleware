@@ -103,7 +103,7 @@ func SetQueryConds(q *ent.AnnouncementQuery, conds *Conds) (*ent.AnnouncementQue
 		case cruder.EQ:
 			q.Where(entamt.ID(id))
 		default:
-			return nil, fmt.Errorf("invalid announcement op field")
+			return nil, fmt.Errorf("invalid announcement op field %s", conds.ID.Op)
 		}
 	}
 	if conds.AppID != nil {
@@ -115,7 +115,7 @@ func SetQueryConds(q *ent.AnnouncementQuery, conds *Conds) (*ent.AnnouncementQue
 		case cruder.EQ:
 			q.Where(entamt.AppID(appID))
 		default:
-			return nil, fmt.Errorf("invalid app id op field")
+			return nil, fmt.Errorf("invalid app id op field %s", conds.AppID.Op)
 		}
 	}
 	if conds.LangID != nil {
@@ -127,7 +127,7 @@ func SetQueryConds(q *ent.AnnouncementQuery, conds *Conds) (*ent.AnnouncementQue
 		case cruder.EQ:
 			q.Where(entamt.LangID(langID))
 		default:
-			return nil, fmt.Errorf("invalid lang id op field")
+			return nil, fmt.Errorf("invalid lang id op field %s", conds.LangID.Op)
 		}
 	}
 	if conds.StartAt != nil {
@@ -141,7 +141,7 @@ func SetQueryConds(q *ent.AnnouncementQuery, conds *Conds) (*ent.AnnouncementQue
 		case cruder.LTE:
 			q.Where(entamt.StartAtLTE(startAt))
 		default:
-			return nil, fmt.Errorf("invalid start at op field")
+			return nil, fmt.Errorf("invalid start at op field %s", conds.StartAt.Op)
 		}
 	}
 	if conds.EndAt != nil {
@@ -155,7 +155,7 @@ func SetQueryConds(q *ent.AnnouncementQuery, conds *Conds) (*ent.AnnouncementQue
 		case cruder.GTE:
 			q.Where(entamt.EndAtGTE(endAt))
 		default:
-			return nil, fmt.Errorf("invalid end at op field")
+			return nil, fmt.Errorf("invalid end at op field %s", conds.EndAt.Op)
 		}
 	}
 
@@ -168,7 +168,7 @@ func SetQueryConds(q *ent.AnnouncementQuery, conds *Conds) (*ent.AnnouncementQue
 		case cruder.EQ:
 			q.Where(entamt.Channel(channel.String()))
 		default:
-			return nil, fmt.Errorf("invalid channel op field")
+			return nil, fmt.Errorf("invalid channel op field %s", conds.Channel.Op)
 		}
 	}
 

@@ -149,10 +149,10 @@ func TxID(v uuid.UUID) predicate.GoodBenefit {
 	})
 }
 
-// Notified applies equality check predicate on the "notified" field. It's identical to NotifiedEQ.
-func Notified(v bool) predicate.GoodBenefit {
+// Generated applies equality check predicate on the "generated" field. It's identical to GeneratedEQ.
+func Generated(v bool) predicate.GoodBenefit {
 	return predicate.GoodBenefit(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldNotified), v))
+		s.Where(sql.EQ(s.C(FieldGenerated), v))
 	})
 }
 
@@ -1034,31 +1034,31 @@ func TxIDNotNil() predicate.GoodBenefit {
 	})
 }
 
-// NotifiedEQ applies the EQ predicate on the "notified" field.
-func NotifiedEQ(v bool) predicate.GoodBenefit {
+// GeneratedEQ applies the EQ predicate on the "generated" field.
+func GeneratedEQ(v bool) predicate.GoodBenefit {
 	return predicate.GoodBenefit(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldNotified), v))
+		s.Where(sql.EQ(s.C(FieldGenerated), v))
 	})
 }
 
-// NotifiedNEQ applies the NEQ predicate on the "notified" field.
-func NotifiedNEQ(v bool) predicate.GoodBenefit {
+// GeneratedNEQ applies the NEQ predicate on the "generated" field.
+func GeneratedNEQ(v bool) predicate.GoodBenefit {
 	return predicate.GoodBenefit(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldNotified), v))
+		s.Where(sql.NEQ(s.C(FieldGenerated), v))
 	})
 }
 
-// NotifiedIsNil applies the IsNil predicate on the "notified" field.
-func NotifiedIsNil() predicate.GoodBenefit {
+// GeneratedIsNil applies the IsNil predicate on the "generated" field.
+func GeneratedIsNil() predicate.GoodBenefit {
 	return predicate.GoodBenefit(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldNotified)))
+		s.Where(sql.IsNull(s.C(FieldGenerated)))
 	})
 }
 
-// NotifiedNotNil applies the NotNil predicate on the "notified" field.
-func NotifiedNotNil() predicate.GoodBenefit {
+// GeneratedNotNil applies the NotNil predicate on the "generated" field.
+func GeneratedNotNil() predicate.GoodBenefit {
 	return predicate.GoodBenefit(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldNotified)))
+		s.Where(sql.NotNull(s.C(FieldGenerated)))
 	})
 }
 

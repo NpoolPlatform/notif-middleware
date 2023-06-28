@@ -138,7 +138,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			goodbenefit.FieldMessage:     {Type: field.TypeString, Column: goodbenefit.FieldMessage},
 			goodbenefit.FieldBenefitDate: {Type: field.TypeUint32, Column: goodbenefit.FieldBenefitDate},
 			goodbenefit.FieldTxID:        {Type: field.TypeUUID, Column: goodbenefit.FieldTxID},
-			goodbenefit.FieldNotified:    {Type: field.TypeBool, Column: goodbenefit.FieldNotified},
+			goodbenefit.FieldGenerated:   {Type: field.TypeBool, Column: goodbenefit.FieldGenerated},
 		},
 	}
 	graph.Nodes[5] = &sqlgraph.Node{
@@ -759,9 +759,9 @@ func (f *GoodBenefitFilter) WhereTxID(p entql.ValueP) {
 	f.Where(p.Field(goodbenefit.FieldTxID))
 }
 
-// WhereNotified applies the entql bool predicate on the notified field.
-func (f *GoodBenefitFilter) WhereNotified(p entql.BoolP) {
-	f.Where(p.Field(goodbenefit.FieldNotified))
+// WhereGenerated applies the entql bool predicate on the generated field.
+func (f *GoodBenefitFilter) WhereGenerated(p entql.BoolP) {
+	f.Where(p.Field(goodbenefit.FieldGenerated))
 }
 
 // addPredicate implements the predicateAdder interface.

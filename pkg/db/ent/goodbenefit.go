@@ -36,8 +36,8 @@ type GoodBenefit struct {
 	BenefitDate uint32 `json:"benefit_date,omitempty"`
 	// TxID holds the value of the "tx_id" field.
 	TxID uuid.UUID `json:"tx_id,omitempty"`
-	// Notified holds the value of the "notified" field.
-	Notified bool `json:"notified,omitempty"`
+	// Generated holds the value of the "generated" field.
+	Generated bool `json:"generated,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -45,7 +45,7 @@ func (*GoodBenefit) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case goodbenefit.FieldNotified:
+		case goodbenefit.FieldGenerated:
 			values[i] = new(sql.NullBool)
 		case goodbenefit.FieldCreatedAt, goodbenefit.FieldUpdatedAt, goodbenefit.FieldDeletedAt, goodbenefit.FieldBenefitDate:
 			values[i] = new(sql.NullInt64)
@@ -134,11 +134,11 @@ func (gb *GoodBenefit) assignValues(columns []string, values []interface{}) erro
 			} else if value != nil {
 				gb.TxID = *value
 			}
-		case goodbenefit.FieldNotified:
+		case goodbenefit.FieldGenerated:
 			if value, ok := values[i].(*sql.NullBool); !ok {
-				return fmt.Errorf("unexpected type %T for field notified", values[i])
+				return fmt.Errorf("unexpected type %T for field generated", values[i])
 			} else if value.Valid {
-				gb.Notified = value.Bool
+				gb.Generated = value.Bool
 			}
 		}
 	}
@@ -198,8 +198,8 @@ func (gb *GoodBenefit) String() string {
 	builder.WriteString("tx_id=")
 	builder.WriteString(fmt.Sprintf("%v", gb.TxID))
 	builder.WriteString(", ")
-	builder.WriteString("notified=")
-	builder.WriteString(fmt.Sprintf("%v", gb.Notified))
+	builder.WriteString("generated=")
+	builder.WriteString(fmt.Sprintf("%v", gb.Generated))
 	builder.WriteByte(')')
 	return builder.String()
 }

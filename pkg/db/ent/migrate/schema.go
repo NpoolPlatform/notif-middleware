@@ -100,7 +100,7 @@ var (
 		{Name: "message", Type: field.TypeString, Nullable: true, Default: ""},
 		{Name: "benefit_date", Type: field.TypeUint32, Nullable: true, Default: 0},
 		{Name: "tx_id", Type: field.TypeUUID, Nullable: true},
-		{Name: "notified", Type: field.TypeBool, Nullable: true, Default: false},
+		{Name: "generated", Type: field.TypeBool, Nullable: true, Default: false},
 	}
 	// GoodBenefitsTable holds the schema information for the "good_benefits" table.
 	GoodBenefitsTable = &schema.Table{

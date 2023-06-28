@@ -32,8 +32,8 @@ const (
 	FieldBenefitDate = "benefit_date"
 	// FieldTxID holds the string denoting the tx_id field in the database.
 	FieldTxID = "tx_id"
-	// FieldNotified holds the string denoting the notified field in the database.
-	FieldNotified = "notified"
+	// FieldGenerated holds the string denoting the generated field in the database.
+	FieldGenerated = "generated"
 	// Table holds the table name of the goodbenefit in the database.
 	Table = "good_benefits"
 )
@@ -51,7 +51,7 @@ var Columns = []string{
 	FieldMessage,
 	FieldBenefitDate,
 	FieldTxID,
-	FieldNotified,
+	FieldGenerated,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -95,8 +95,8 @@ var (
 	DefaultBenefitDate uint32
 	// DefaultTxID holds the default value on creation for the "tx_id" field.
 	DefaultTxID func() uuid.UUID
-	// DefaultNotified holds the default value on creation for the "notified" field.
-	DefaultNotified bool
+	// DefaultGenerated holds the default value on creation for the "generated" field.
+	DefaultGenerated bool
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )

@@ -4116,7 +4116,7 @@ type GoodBenefitMutation struct {
 	benefit_date    *uint32
 	addbenefit_date *int32
 	tx_id           *uuid.UUID
-	notified        *bool
+	generated       *bool
 	clearedFields   map[string]struct{}
 	done            bool
 	oldValue        func(context.Context) (*GoodBenefit, error)
@@ -4759,53 +4759,53 @@ func (m *GoodBenefitMutation) ResetTxID() {
 	delete(m.clearedFields, goodbenefit.FieldTxID)
 }
 
-// SetNotified sets the "notified" field.
-func (m *GoodBenefitMutation) SetNotified(b bool) {
-	m.notified = &b
+// SetGenerated sets the "generated" field.
+func (m *GoodBenefitMutation) SetGenerated(b bool) {
+	m.generated = &b
 }
 
-// Notified returns the value of the "notified" field in the mutation.
-func (m *GoodBenefitMutation) Notified() (r bool, exists bool) {
-	v := m.notified
+// Generated returns the value of the "generated" field in the mutation.
+func (m *GoodBenefitMutation) Generated() (r bool, exists bool) {
+	v := m.generated
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldNotified returns the old "notified" field's value of the GoodBenefit entity.
+// OldGenerated returns the old "generated" field's value of the GoodBenefit entity.
 // If the GoodBenefit object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *GoodBenefitMutation) OldNotified(ctx context.Context) (v bool, err error) {
+func (m *GoodBenefitMutation) OldGenerated(ctx context.Context) (v bool, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldNotified is only allowed on UpdateOne operations")
+		return v, errors.New("OldGenerated is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldNotified requires an ID field in the mutation")
+		return v, errors.New("OldGenerated requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldNotified: %w", err)
+		return v, fmt.Errorf("querying old value for OldGenerated: %w", err)
 	}
-	return oldValue.Notified, nil
+	return oldValue.Generated, nil
 }
 
-// ClearNotified clears the value of the "notified" field.
-func (m *GoodBenefitMutation) ClearNotified() {
-	m.notified = nil
-	m.clearedFields[goodbenefit.FieldNotified] = struct{}{}
+// ClearGenerated clears the value of the "generated" field.
+func (m *GoodBenefitMutation) ClearGenerated() {
+	m.generated = nil
+	m.clearedFields[goodbenefit.FieldGenerated] = struct{}{}
 }
 
-// NotifiedCleared returns if the "notified" field was cleared in this mutation.
-func (m *GoodBenefitMutation) NotifiedCleared() bool {
-	_, ok := m.clearedFields[goodbenefit.FieldNotified]
+// GeneratedCleared returns if the "generated" field was cleared in this mutation.
+func (m *GoodBenefitMutation) GeneratedCleared() bool {
+	_, ok := m.clearedFields[goodbenefit.FieldGenerated]
 	return ok
 }
 
-// ResetNotified resets all changes to the "notified" field.
-func (m *GoodBenefitMutation) ResetNotified() {
-	m.notified = nil
-	delete(m.clearedFields, goodbenefit.FieldNotified)
+// ResetGenerated resets all changes to the "generated" field.
+func (m *GoodBenefitMutation) ResetGenerated() {
+	m.generated = nil
+	delete(m.clearedFields, goodbenefit.FieldGenerated)
 }
 
 // Where appends a list predicates to the GoodBenefitMutation builder.
@@ -4858,8 +4858,8 @@ func (m *GoodBenefitMutation) Fields() []string {
 	if m.tx_id != nil {
 		fields = append(fields, goodbenefit.FieldTxID)
 	}
-	if m.notified != nil {
-		fields = append(fields, goodbenefit.FieldNotified)
+	if m.generated != nil {
+		fields = append(fields, goodbenefit.FieldGenerated)
 	}
 	return fields
 }
@@ -4889,8 +4889,8 @@ func (m *GoodBenefitMutation) Field(name string) (ent.Value, bool) {
 		return m.BenefitDate()
 	case goodbenefit.FieldTxID:
 		return m.TxID()
-	case goodbenefit.FieldNotified:
-		return m.Notified()
+	case goodbenefit.FieldGenerated:
+		return m.Generated()
 	}
 	return nil, false
 }
@@ -4920,8 +4920,8 @@ func (m *GoodBenefitMutation) OldField(ctx context.Context, name string) (ent.Va
 		return m.OldBenefitDate(ctx)
 	case goodbenefit.FieldTxID:
 		return m.OldTxID(ctx)
-	case goodbenefit.FieldNotified:
-		return m.OldNotified(ctx)
+	case goodbenefit.FieldGenerated:
+		return m.OldGenerated(ctx)
 	}
 	return nil, fmt.Errorf("unknown GoodBenefit field %s", name)
 }
@@ -5001,12 +5001,12 @@ func (m *GoodBenefitMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetTxID(v)
 		return nil
-	case goodbenefit.FieldNotified:
+	case goodbenefit.FieldGenerated:
 		v, ok := value.(bool)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetNotified(v)
+		m.SetGenerated(v)
 		return nil
 	}
 	return fmt.Errorf("unknown GoodBenefit field %s", name)
@@ -5110,8 +5110,8 @@ func (m *GoodBenefitMutation) ClearedFields() []string {
 	if m.FieldCleared(goodbenefit.FieldTxID) {
 		fields = append(fields, goodbenefit.FieldTxID)
 	}
-	if m.FieldCleared(goodbenefit.FieldNotified) {
-		fields = append(fields, goodbenefit.FieldNotified)
+	if m.FieldCleared(goodbenefit.FieldGenerated) {
+		fields = append(fields, goodbenefit.FieldGenerated)
 	}
 	return fields
 }
@@ -5148,8 +5148,8 @@ func (m *GoodBenefitMutation) ClearField(name string) error {
 	case goodbenefit.FieldTxID:
 		m.ClearTxID()
 		return nil
-	case goodbenefit.FieldNotified:
-		m.ClearNotified()
+	case goodbenefit.FieldGenerated:
+		m.ClearGenerated()
 		return nil
 	}
 	return fmt.Errorf("unknown GoodBenefit nullable field %s", name)
@@ -5189,8 +5189,8 @@ func (m *GoodBenefitMutation) ResetField(name string) error {
 	case goodbenefit.FieldTxID:
 		m.ResetTxID()
 		return nil
-	case goodbenefit.FieldNotified:
-		m.ResetNotified()
+	case goodbenefit.FieldGenerated:
+		m.ResetGenerated()
 		return nil
 	}
 	return fmt.Errorf("unknown GoodBenefit field %s", name)

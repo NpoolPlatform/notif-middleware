@@ -163,16 +163,16 @@ func (gbc *GoodBenefitCreate) SetNillableTxID(u *uuid.UUID) *GoodBenefitCreate {
 	return gbc
 }
 
-// SetNotified sets the "notified" field.
-func (gbc *GoodBenefitCreate) SetNotified(b bool) *GoodBenefitCreate {
-	gbc.mutation.SetNotified(b)
+// SetGenerated sets the "generated" field.
+func (gbc *GoodBenefitCreate) SetGenerated(b bool) *GoodBenefitCreate {
+	gbc.mutation.SetGenerated(b)
 	return gbc
 }
 
-// SetNillableNotified sets the "notified" field if the given value is not nil.
-func (gbc *GoodBenefitCreate) SetNillableNotified(b *bool) *GoodBenefitCreate {
+// SetNillableGenerated sets the "generated" field if the given value is not nil.
+func (gbc *GoodBenefitCreate) SetNillableGenerated(b *bool) *GoodBenefitCreate {
 	if b != nil {
-		gbc.SetNotified(*b)
+		gbc.SetGenerated(*b)
 	}
 	return gbc
 }
@@ -325,9 +325,9 @@ func (gbc *GoodBenefitCreate) defaults() error {
 		v := goodbenefit.DefaultTxID()
 		gbc.mutation.SetTxID(v)
 	}
-	if _, ok := gbc.mutation.Notified(); !ok {
-		v := goodbenefit.DefaultNotified
-		gbc.mutation.SetNotified(v)
+	if _, ok := gbc.mutation.Generated(); !ok {
+		v := goodbenefit.DefaultGenerated
+		gbc.mutation.SetGenerated(v)
 	}
 	if _, ok := gbc.mutation.ID(); !ok {
 		if goodbenefit.DefaultID == nil {
@@ -467,13 +467,13 @@ func (gbc *GoodBenefitCreate) createSpec() (*GoodBenefit, *sqlgraph.CreateSpec) 
 		})
 		_node.TxID = value
 	}
-	if value, ok := gbc.mutation.Notified(); ok {
+	if value, ok := gbc.mutation.Generated(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Value:  value,
-			Column: goodbenefit.FieldNotified,
+			Column: goodbenefit.FieldGenerated,
 		})
-		_node.Notified = value
+		_node.Generated = value
 	}
 	return _node, _spec
 }
@@ -715,21 +715,21 @@ func (u *GoodBenefitUpsert) ClearTxID() *GoodBenefitUpsert {
 	return u
 }
 
-// SetNotified sets the "notified" field.
-func (u *GoodBenefitUpsert) SetNotified(v bool) *GoodBenefitUpsert {
-	u.Set(goodbenefit.FieldNotified, v)
+// SetGenerated sets the "generated" field.
+func (u *GoodBenefitUpsert) SetGenerated(v bool) *GoodBenefitUpsert {
+	u.Set(goodbenefit.FieldGenerated, v)
 	return u
 }
 
-// UpdateNotified sets the "notified" field to the value that was provided on create.
-func (u *GoodBenefitUpsert) UpdateNotified() *GoodBenefitUpsert {
-	u.SetExcluded(goodbenefit.FieldNotified)
+// UpdateGenerated sets the "generated" field to the value that was provided on create.
+func (u *GoodBenefitUpsert) UpdateGenerated() *GoodBenefitUpsert {
+	u.SetExcluded(goodbenefit.FieldGenerated)
 	return u
 }
 
-// ClearNotified clears the value of the "notified" field.
-func (u *GoodBenefitUpsert) ClearNotified() *GoodBenefitUpsert {
-	u.SetNull(goodbenefit.FieldNotified)
+// ClearGenerated clears the value of the "generated" field.
+func (u *GoodBenefitUpsert) ClearGenerated() *GoodBenefitUpsert {
+	u.SetNull(goodbenefit.FieldGenerated)
 	return u
 }
 
@@ -1000,24 +1000,24 @@ func (u *GoodBenefitUpsertOne) ClearTxID() *GoodBenefitUpsertOne {
 	})
 }
 
-// SetNotified sets the "notified" field.
-func (u *GoodBenefitUpsertOne) SetNotified(v bool) *GoodBenefitUpsertOne {
+// SetGenerated sets the "generated" field.
+func (u *GoodBenefitUpsertOne) SetGenerated(v bool) *GoodBenefitUpsertOne {
 	return u.Update(func(s *GoodBenefitUpsert) {
-		s.SetNotified(v)
+		s.SetGenerated(v)
 	})
 }
 
-// UpdateNotified sets the "notified" field to the value that was provided on create.
-func (u *GoodBenefitUpsertOne) UpdateNotified() *GoodBenefitUpsertOne {
+// UpdateGenerated sets the "generated" field to the value that was provided on create.
+func (u *GoodBenefitUpsertOne) UpdateGenerated() *GoodBenefitUpsertOne {
 	return u.Update(func(s *GoodBenefitUpsert) {
-		s.UpdateNotified()
+		s.UpdateGenerated()
 	})
 }
 
-// ClearNotified clears the value of the "notified" field.
-func (u *GoodBenefitUpsertOne) ClearNotified() *GoodBenefitUpsertOne {
+// ClearGenerated clears the value of the "generated" field.
+func (u *GoodBenefitUpsertOne) ClearGenerated() *GoodBenefitUpsertOne {
 	return u.Update(func(s *GoodBenefitUpsert) {
-		s.ClearNotified()
+		s.ClearGenerated()
 	})
 }
 
@@ -1454,24 +1454,24 @@ func (u *GoodBenefitUpsertBulk) ClearTxID() *GoodBenefitUpsertBulk {
 	})
 }
 
-// SetNotified sets the "notified" field.
-func (u *GoodBenefitUpsertBulk) SetNotified(v bool) *GoodBenefitUpsertBulk {
+// SetGenerated sets the "generated" field.
+func (u *GoodBenefitUpsertBulk) SetGenerated(v bool) *GoodBenefitUpsertBulk {
 	return u.Update(func(s *GoodBenefitUpsert) {
-		s.SetNotified(v)
+		s.SetGenerated(v)
 	})
 }
 
-// UpdateNotified sets the "notified" field to the value that was provided on create.
-func (u *GoodBenefitUpsertBulk) UpdateNotified() *GoodBenefitUpsertBulk {
+// UpdateGenerated sets the "generated" field to the value that was provided on create.
+func (u *GoodBenefitUpsertBulk) UpdateGenerated() *GoodBenefitUpsertBulk {
 	return u.Update(func(s *GoodBenefitUpsert) {
-		s.UpdateNotified()
+		s.UpdateGenerated()
 	})
 }
 
-// ClearNotified clears the value of the "notified" field.
-func (u *GoodBenefitUpsertBulk) ClearNotified() *GoodBenefitUpsertBulk {
+// ClearGenerated clears the value of the "generated" field.
+func (u *GoodBenefitUpsertBulk) ClearGenerated() *GoodBenefitUpsertBulk {
 	return u.Update(func(s *GoodBenefitUpsert) {
-		s.ClearNotified()
+		s.ClearGenerated()
 	})
 }
 

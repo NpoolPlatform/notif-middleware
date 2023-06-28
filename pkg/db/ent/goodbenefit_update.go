@@ -231,23 +231,23 @@ func (gbu *GoodBenefitUpdate) ClearTxID() *GoodBenefitUpdate {
 	return gbu
 }
 
-// SetNotified sets the "notified" field.
-func (gbu *GoodBenefitUpdate) SetNotified(b bool) *GoodBenefitUpdate {
-	gbu.mutation.SetNotified(b)
+// SetGenerated sets the "generated" field.
+func (gbu *GoodBenefitUpdate) SetGenerated(b bool) *GoodBenefitUpdate {
+	gbu.mutation.SetGenerated(b)
 	return gbu
 }
 
-// SetNillableNotified sets the "notified" field if the given value is not nil.
-func (gbu *GoodBenefitUpdate) SetNillableNotified(b *bool) *GoodBenefitUpdate {
+// SetNillableGenerated sets the "generated" field if the given value is not nil.
+func (gbu *GoodBenefitUpdate) SetNillableGenerated(b *bool) *GoodBenefitUpdate {
 	if b != nil {
-		gbu.SetNotified(*b)
+		gbu.SetGenerated(*b)
 	}
 	return gbu
 }
 
-// ClearNotified clears the value of the "notified" field.
-func (gbu *GoodBenefitUpdate) ClearNotified() *GoodBenefitUpdate {
-	gbu.mutation.ClearNotified()
+// ClearGenerated clears the value of the "generated" field.
+func (gbu *GoodBenefitUpdate) ClearGenerated() *GoodBenefitUpdate {
+	gbu.mutation.ClearGenerated()
 	return gbu
 }
 
@@ -489,17 +489,17 @@ func (gbu *GoodBenefitUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: goodbenefit.FieldTxID,
 		})
 	}
-	if value, ok := gbu.mutation.Notified(); ok {
+	if value, ok := gbu.mutation.Generated(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Value:  value,
-			Column: goodbenefit.FieldNotified,
+			Column: goodbenefit.FieldGenerated,
 		})
 	}
-	if gbu.mutation.NotifiedCleared() {
+	if gbu.mutation.GeneratedCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
-			Column: goodbenefit.FieldNotified,
+			Column: goodbenefit.FieldGenerated,
 		})
 	}
 	_spec.Modifiers = gbu.modifiers
@@ -725,23 +725,23 @@ func (gbuo *GoodBenefitUpdateOne) ClearTxID() *GoodBenefitUpdateOne {
 	return gbuo
 }
 
-// SetNotified sets the "notified" field.
-func (gbuo *GoodBenefitUpdateOne) SetNotified(b bool) *GoodBenefitUpdateOne {
-	gbuo.mutation.SetNotified(b)
+// SetGenerated sets the "generated" field.
+func (gbuo *GoodBenefitUpdateOne) SetGenerated(b bool) *GoodBenefitUpdateOne {
+	gbuo.mutation.SetGenerated(b)
 	return gbuo
 }
 
-// SetNillableNotified sets the "notified" field if the given value is not nil.
-func (gbuo *GoodBenefitUpdateOne) SetNillableNotified(b *bool) *GoodBenefitUpdateOne {
+// SetNillableGenerated sets the "generated" field if the given value is not nil.
+func (gbuo *GoodBenefitUpdateOne) SetNillableGenerated(b *bool) *GoodBenefitUpdateOne {
 	if b != nil {
-		gbuo.SetNotified(*b)
+		gbuo.SetGenerated(*b)
 	}
 	return gbuo
 }
 
-// ClearNotified clears the value of the "notified" field.
-func (gbuo *GoodBenefitUpdateOne) ClearNotified() *GoodBenefitUpdateOne {
-	gbuo.mutation.ClearNotified()
+// ClearGenerated clears the value of the "generated" field.
+func (gbuo *GoodBenefitUpdateOne) ClearGenerated() *GoodBenefitUpdateOne {
+	gbuo.mutation.ClearGenerated()
 	return gbuo
 }
 
@@ -1013,17 +1013,17 @@ func (gbuo *GoodBenefitUpdateOne) sqlSave(ctx context.Context) (_node *GoodBenef
 			Column: goodbenefit.FieldTxID,
 		})
 	}
-	if value, ok := gbuo.mutation.Notified(); ok {
+	if value, ok := gbuo.mutation.Generated(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Value:  value,
-			Column: goodbenefit.FieldNotified,
+			Column: goodbenefit.FieldGenerated,
 		})
 	}
-	if gbuo.mutation.NotifiedCleared() {
+	if gbuo.mutation.GeneratedCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
-			Column: goodbenefit.FieldNotified,
+			Column: goodbenefit.FieldGenerated,
 		})
 	}
 	_spec.Modifiers = gbuo.modifiers

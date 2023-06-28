@@ -110,7 +110,9 @@ func WithMessage(message *string) func(context.Context, *Handler) error {
 
 func WithNotified(notified *bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		h.Notified = notified
+		if notified == nil {
+			return fmt.Errorf("notified is empty")
+		}
 		return nil
 	}
 }

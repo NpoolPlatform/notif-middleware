@@ -14,6 +14,7 @@ import (
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/contact"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/emailtemplate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/frontendtemplate"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/goodbenefit"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notif"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notifchannel"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notifuser"
@@ -46,6 +47,7 @@ func columnChecker(table string) func(string) error {
 		contact.Table:          contact.ValidColumn,
 		emailtemplate.Table:    emailtemplate.ValidColumn,
 		frontendtemplate.Table: frontendtemplate.ValidColumn,
+		goodbenefit.Table:      goodbenefit.ValidColumn,
 		notif.Table:            notif.ValidColumn,
 		notifchannel.Table:     notifchannel.ValidColumn,
 		notifuser.Table:        notifuser.ValidColumn,

@@ -246,6 +246,30 @@ func (f FrontendTemplateMutationRuleFunc) EvalMutation(ctx context.Context, m en
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.FrontendTemplateMutation", m)
 }
 
+// The GoodBenefitQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type GoodBenefitQueryRuleFunc func(context.Context, *ent.GoodBenefitQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f GoodBenefitQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.GoodBenefitQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.GoodBenefitQuery", q)
+}
+
+// The GoodBenefitMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type GoodBenefitMutationRuleFunc func(context.Context, *ent.GoodBenefitMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f GoodBenefitMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.GoodBenefitMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.GoodBenefitMutation", m)
+}
+
 // The NotifQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type NotifQueryRuleFunc func(context.Context, *ent.NotifQuery) error
@@ -481,6 +505,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.FrontendTemplateQuery:
 		return q.Filter(), nil
+	case *ent.GoodBenefitQuery:
+		return q.Filter(), nil
 	case *ent.NotifQuery:
 		return q.Filter(), nil
 	case *ent.NotifChannelQuery:
@@ -511,6 +537,8 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.EmailTemplateMutation:
 		return m.Filter(), nil
 	case *ent.FrontendTemplateMutation:
+		return m.Filter(), nil
+	case *ent.GoodBenefitMutation:
 		return m.Filter(), nil
 	case *ent.NotifMutation:
 		return m.Filter(), nil

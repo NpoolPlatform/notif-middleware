@@ -18,6 +18,9 @@ type EmailTemplate func(*sql.Selector)
 // FrontendTemplate is the predicate function for frontendtemplate builders.
 type FrontendTemplate func(*sql.Selector)
 
+// GoodBenefit is the predicate function for goodbenefit builders.
+type GoodBenefit func(*sql.Selector)
+
 // Notif is the predicate function for notif builders.
 type Notif func(*sql.Selector)
 

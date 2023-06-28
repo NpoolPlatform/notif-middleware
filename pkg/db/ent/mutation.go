@@ -12,6 +12,7 @@ import (
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/contact"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/emailtemplate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/frontendtemplate"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/goodbenefit"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notif"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notifchannel"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notifuser"
@@ -39,6 +40,7 @@ const (
 	TypeContact          = "Contact"
 	TypeEmailTemplate    = "EmailTemplate"
 	TypeFrontendTemplate = "FrontendTemplate"
+	TypeGoodBenefit      = "GoodBenefit"
 	TypeNotif            = "Notif"
 	TypeNotifChannel     = "NotifChannel"
 	TypeNotifUser        = "NotifUser"
@@ -4092,6 +4094,1154 @@ func (m *FrontendTemplateMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *FrontendTemplateMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown FrontendTemplate edge %s", name)
+}
+
+// GoodBenefitMutation represents an operation that mutates the GoodBenefit nodes in the graph.
+type GoodBenefitMutation struct {
+	config
+	op              Op
+	typ             string
+	id              *uuid.UUID
+	created_at      *uint32
+	addcreated_at   *int32
+	updated_at      *uint32
+	addupdated_at   *int32
+	deleted_at      *uint32
+	adddeleted_at   *int32
+	good_id         *uuid.UUID
+	good_name       *string
+	amount          *string
+	state           *string
+	message         *string
+	benefit_date    *uint32
+	addbenefit_date *int32
+	tx_id           *string
+	notified        *bool
+	clearedFields   map[string]struct{}
+	done            bool
+	oldValue        func(context.Context) (*GoodBenefit, error)
+	predicates      []predicate.GoodBenefit
+}
+
+var _ ent.Mutation = (*GoodBenefitMutation)(nil)
+
+// goodbenefitOption allows management of the mutation configuration using functional options.
+type goodbenefitOption func(*GoodBenefitMutation)
+
+// newGoodBenefitMutation creates new mutation for the GoodBenefit entity.
+func newGoodBenefitMutation(c config, op Op, opts ...goodbenefitOption) *GoodBenefitMutation {
+	m := &GoodBenefitMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeGoodBenefit,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withGoodBenefitID sets the ID field of the mutation.
+func withGoodBenefitID(id uuid.UUID) goodbenefitOption {
+	return func(m *GoodBenefitMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *GoodBenefit
+		)
+		m.oldValue = func(ctx context.Context) (*GoodBenefit, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().GoodBenefit.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withGoodBenefit sets the old GoodBenefit of the mutation.
+func withGoodBenefit(node *GoodBenefit) goodbenefitOption {
+	return func(m *GoodBenefitMutation) {
+		m.oldValue = func(context.Context) (*GoodBenefit, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m GoodBenefitMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m GoodBenefitMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of GoodBenefit entities.
+func (m *GoodBenefitMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *GoodBenefitMutation) ID() (id uuid.UUID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *GoodBenefitMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uuid.UUID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().GoodBenefit.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *GoodBenefitMutation) SetCreatedAt(u uint32) {
+	m.created_at = &u
+	m.addcreated_at = nil
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *GoodBenefitMutation) CreatedAt() (r uint32, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the GoodBenefit entity.
+// If the GoodBenefit object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GoodBenefitMutation) OldCreatedAt(ctx context.Context) (v uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// AddCreatedAt adds u to the "created_at" field.
+func (m *GoodBenefitMutation) AddCreatedAt(u int32) {
+	if m.addcreated_at != nil {
+		*m.addcreated_at += u
+	} else {
+		m.addcreated_at = &u
+	}
+}
+
+// AddedCreatedAt returns the value that was added to the "created_at" field in this mutation.
+func (m *GoodBenefitMutation) AddedCreatedAt() (r int32, exists bool) {
+	v := m.addcreated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *GoodBenefitMutation) ResetCreatedAt() {
+	m.created_at = nil
+	m.addcreated_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *GoodBenefitMutation) SetUpdatedAt(u uint32) {
+	m.updated_at = &u
+	m.addupdated_at = nil
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *GoodBenefitMutation) UpdatedAt() (r uint32, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the GoodBenefit entity.
+// If the GoodBenefit object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GoodBenefitMutation) OldUpdatedAt(ctx context.Context) (v uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// AddUpdatedAt adds u to the "updated_at" field.
+func (m *GoodBenefitMutation) AddUpdatedAt(u int32) {
+	if m.addupdated_at != nil {
+		*m.addupdated_at += u
+	} else {
+		m.addupdated_at = &u
+	}
+}
+
+// AddedUpdatedAt returns the value that was added to the "updated_at" field in this mutation.
+func (m *GoodBenefitMutation) AddedUpdatedAt() (r int32, exists bool) {
+	v := m.addupdated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *GoodBenefitMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+	m.addupdated_at = nil
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *GoodBenefitMutation) SetDeletedAt(u uint32) {
+	m.deleted_at = &u
+	m.adddeleted_at = nil
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *GoodBenefitMutation) DeletedAt() (r uint32, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the GoodBenefit entity.
+// If the GoodBenefit object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GoodBenefitMutation) OldDeletedAt(ctx context.Context) (v uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// AddDeletedAt adds u to the "deleted_at" field.
+func (m *GoodBenefitMutation) AddDeletedAt(u int32) {
+	if m.adddeleted_at != nil {
+		*m.adddeleted_at += u
+	} else {
+		m.adddeleted_at = &u
+	}
+}
+
+// AddedDeletedAt returns the value that was added to the "deleted_at" field in this mutation.
+func (m *GoodBenefitMutation) AddedDeletedAt() (r int32, exists bool) {
+	v := m.adddeleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *GoodBenefitMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	m.adddeleted_at = nil
+}
+
+// SetGoodID sets the "good_id" field.
+func (m *GoodBenefitMutation) SetGoodID(u uuid.UUID) {
+	m.good_id = &u
+}
+
+// GoodID returns the value of the "good_id" field in the mutation.
+func (m *GoodBenefitMutation) GoodID() (r uuid.UUID, exists bool) {
+	v := m.good_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldGoodID returns the old "good_id" field's value of the GoodBenefit entity.
+// If the GoodBenefit object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GoodBenefitMutation) OldGoodID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldGoodID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldGoodID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldGoodID: %w", err)
+	}
+	return oldValue.GoodID, nil
+}
+
+// ClearGoodID clears the value of the "good_id" field.
+func (m *GoodBenefitMutation) ClearGoodID() {
+	m.good_id = nil
+	m.clearedFields[goodbenefit.FieldGoodID] = struct{}{}
+}
+
+// GoodIDCleared returns if the "good_id" field was cleared in this mutation.
+func (m *GoodBenefitMutation) GoodIDCleared() bool {
+	_, ok := m.clearedFields[goodbenefit.FieldGoodID]
+	return ok
+}
+
+// ResetGoodID resets all changes to the "good_id" field.
+func (m *GoodBenefitMutation) ResetGoodID() {
+	m.good_id = nil
+	delete(m.clearedFields, goodbenefit.FieldGoodID)
+}
+
+// SetGoodName sets the "good_name" field.
+func (m *GoodBenefitMutation) SetGoodName(s string) {
+	m.good_name = &s
+}
+
+// GoodName returns the value of the "good_name" field in the mutation.
+func (m *GoodBenefitMutation) GoodName() (r string, exists bool) {
+	v := m.good_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldGoodName returns the old "good_name" field's value of the GoodBenefit entity.
+// If the GoodBenefit object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GoodBenefitMutation) OldGoodName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldGoodName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldGoodName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldGoodName: %w", err)
+	}
+	return oldValue.GoodName, nil
+}
+
+// ClearGoodName clears the value of the "good_name" field.
+func (m *GoodBenefitMutation) ClearGoodName() {
+	m.good_name = nil
+	m.clearedFields[goodbenefit.FieldGoodName] = struct{}{}
+}
+
+// GoodNameCleared returns if the "good_name" field was cleared in this mutation.
+func (m *GoodBenefitMutation) GoodNameCleared() bool {
+	_, ok := m.clearedFields[goodbenefit.FieldGoodName]
+	return ok
+}
+
+// ResetGoodName resets all changes to the "good_name" field.
+func (m *GoodBenefitMutation) ResetGoodName() {
+	m.good_name = nil
+	delete(m.clearedFields, goodbenefit.FieldGoodName)
+}
+
+// SetAmount sets the "amount" field.
+func (m *GoodBenefitMutation) SetAmount(s string) {
+	m.amount = &s
+}
+
+// Amount returns the value of the "amount" field in the mutation.
+func (m *GoodBenefitMutation) Amount() (r string, exists bool) {
+	v := m.amount
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAmount returns the old "amount" field's value of the GoodBenefit entity.
+// If the GoodBenefit object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GoodBenefitMutation) OldAmount(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAmount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAmount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAmount: %w", err)
+	}
+	return oldValue.Amount, nil
+}
+
+// ClearAmount clears the value of the "amount" field.
+func (m *GoodBenefitMutation) ClearAmount() {
+	m.amount = nil
+	m.clearedFields[goodbenefit.FieldAmount] = struct{}{}
+}
+
+// AmountCleared returns if the "amount" field was cleared in this mutation.
+func (m *GoodBenefitMutation) AmountCleared() bool {
+	_, ok := m.clearedFields[goodbenefit.FieldAmount]
+	return ok
+}
+
+// ResetAmount resets all changes to the "amount" field.
+func (m *GoodBenefitMutation) ResetAmount() {
+	m.amount = nil
+	delete(m.clearedFields, goodbenefit.FieldAmount)
+}
+
+// SetState sets the "state" field.
+func (m *GoodBenefitMutation) SetState(s string) {
+	m.state = &s
+}
+
+// State returns the value of the "state" field in the mutation.
+func (m *GoodBenefitMutation) State() (r string, exists bool) {
+	v := m.state
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldState returns the old "state" field's value of the GoodBenefit entity.
+// If the GoodBenefit object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GoodBenefitMutation) OldState(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldState is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldState requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldState: %w", err)
+	}
+	return oldValue.State, nil
+}
+
+// ClearState clears the value of the "state" field.
+func (m *GoodBenefitMutation) ClearState() {
+	m.state = nil
+	m.clearedFields[goodbenefit.FieldState] = struct{}{}
+}
+
+// StateCleared returns if the "state" field was cleared in this mutation.
+func (m *GoodBenefitMutation) StateCleared() bool {
+	_, ok := m.clearedFields[goodbenefit.FieldState]
+	return ok
+}
+
+// ResetState resets all changes to the "state" field.
+func (m *GoodBenefitMutation) ResetState() {
+	m.state = nil
+	delete(m.clearedFields, goodbenefit.FieldState)
+}
+
+// SetMessage sets the "message" field.
+func (m *GoodBenefitMutation) SetMessage(s string) {
+	m.message = &s
+}
+
+// Message returns the value of the "message" field in the mutation.
+func (m *GoodBenefitMutation) Message() (r string, exists bool) {
+	v := m.message
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMessage returns the old "message" field's value of the GoodBenefit entity.
+// If the GoodBenefit object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GoodBenefitMutation) OldMessage(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMessage is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMessage requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMessage: %w", err)
+	}
+	return oldValue.Message, nil
+}
+
+// ClearMessage clears the value of the "message" field.
+func (m *GoodBenefitMutation) ClearMessage() {
+	m.message = nil
+	m.clearedFields[goodbenefit.FieldMessage] = struct{}{}
+}
+
+// MessageCleared returns if the "message" field was cleared in this mutation.
+func (m *GoodBenefitMutation) MessageCleared() bool {
+	_, ok := m.clearedFields[goodbenefit.FieldMessage]
+	return ok
+}
+
+// ResetMessage resets all changes to the "message" field.
+func (m *GoodBenefitMutation) ResetMessage() {
+	m.message = nil
+	delete(m.clearedFields, goodbenefit.FieldMessage)
+}
+
+// SetBenefitDate sets the "benefit_date" field.
+func (m *GoodBenefitMutation) SetBenefitDate(u uint32) {
+	m.benefit_date = &u
+	m.addbenefit_date = nil
+}
+
+// BenefitDate returns the value of the "benefit_date" field in the mutation.
+func (m *GoodBenefitMutation) BenefitDate() (r uint32, exists bool) {
+	v := m.benefit_date
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBenefitDate returns the old "benefit_date" field's value of the GoodBenefit entity.
+// If the GoodBenefit object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GoodBenefitMutation) OldBenefitDate(ctx context.Context) (v uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBenefitDate is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBenefitDate requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBenefitDate: %w", err)
+	}
+	return oldValue.BenefitDate, nil
+}
+
+// AddBenefitDate adds u to the "benefit_date" field.
+func (m *GoodBenefitMutation) AddBenefitDate(u int32) {
+	if m.addbenefit_date != nil {
+		*m.addbenefit_date += u
+	} else {
+		m.addbenefit_date = &u
+	}
+}
+
+// AddedBenefitDate returns the value that was added to the "benefit_date" field in this mutation.
+func (m *GoodBenefitMutation) AddedBenefitDate() (r int32, exists bool) {
+	v := m.addbenefit_date
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearBenefitDate clears the value of the "benefit_date" field.
+func (m *GoodBenefitMutation) ClearBenefitDate() {
+	m.benefit_date = nil
+	m.addbenefit_date = nil
+	m.clearedFields[goodbenefit.FieldBenefitDate] = struct{}{}
+}
+
+// BenefitDateCleared returns if the "benefit_date" field was cleared in this mutation.
+func (m *GoodBenefitMutation) BenefitDateCleared() bool {
+	_, ok := m.clearedFields[goodbenefit.FieldBenefitDate]
+	return ok
+}
+
+// ResetBenefitDate resets all changes to the "benefit_date" field.
+func (m *GoodBenefitMutation) ResetBenefitDate() {
+	m.benefit_date = nil
+	m.addbenefit_date = nil
+	delete(m.clearedFields, goodbenefit.FieldBenefitDate)
+}
+
+// SetTxID sets the "tx_id" field.
+func (m *GoodBenefitMutation) SetTxID(s string) {
+	m.tx_id = &s
+}
+
+// TxID returns the value of the "tx_id" field in the mutation.
+func (m *GoodBenefitMutation) TxID() (r string, exists bool) {
+	v := m.tx_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTxID returns the old "tx_id" field's value of the GoodBenefit entity.
+// If the GoodBenefit object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GoodBenefitMutation) OldTxID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTxID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTxID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTxID: %w", err)
+	}
+	return oldValue.TxID, nil
+}
+
+// ClearTxID clears the value of the "tx_id" field.
+func (m *GoodBenefitMutation) ClearTxID() {
+	m.tx_id = nil
+	m.clearedFields[goodbenefit.FieldTxID] = struct{}{}
+}
+
+// TxIDCleared returns if the "tx_id" field was cleared in this mutation.
+func (m *GoodBenefitMutation) TxIDCleared() bool {
+	_, ok := m.clearedFields[goodbenefit.FieldTxID]
+	return ok
+}
+
+// ResetTxID resets all changes to the "tx_id" field.
+func (m *GoodBenefitMutation) ResetTxID() {
+	m.tx_id = nil
+	delete(m.clearedFields, goodbenefit.FieldTxID)
+}
+
+// SetNotified sets the "notified" field.
+func (m *GoodBenefitMutation) SetNotified(b bool) {
+	m.notified = &b
+}
+
+// Notified returns the value of the "notified" field in the mutation.
+func (m *GoodBenefitMutation) Notified() (r bool, exists bool) {
+	v := m.notified
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNotified returns the old "notified" field's value of the GoodBenefit entity.
+// If the GoodBenefit object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GoodBenefitMutation) OldNotified(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNotified is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNotified requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNotified: %w", err)
+	}
+	return oldValue.Notified, nil
+}
+
+// ClearNotified clears the value of the "notified" field.
+func (m *GoodBenefitMutation) ClearNotified() {
+	m.notified = nil
+	m.clearedFields[goodbenefit.FieldNotified] = struct{}{}
+}
+
+// NotifiedCleared returns if the "notified" field was cleared in this mutation.
+func (m *GoodBenefitMutation) NotifiedCleared() bool {
+	_, ok := m.clearedFields[goodbenefit.FieldNotified]
+	return ok
+}
+
+// ResetNotified resets all changes to the "notified" field.
+func (m *GoodBenefitMutation) ResetNotified() {
+	m.notified = nil
+	delete(m.clearedFields, goodbenefit.FieldNotified)
+}
+
+// Where appends a list predicates to the GoodBenefitMutation builder.
+func (m *GoodBenefitMutation) Where(ps ...predicate.GoodBenefit) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *GoodBenefitMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (GoodBenefit).
+func (m *GoodBenefitMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *GoodBenefitMutation) Fields() []string {
+	fields := make([]string, 0, 11)
+	if m.created_at != nil {
+		fields = append(fields, goodbenefit.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, goodbenefit.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, goodbenefit.FieldDeletedAt)
+	}
+	if m.good_id != nil {
+		fields = append(fields, goodbenefit.FieldGoodID)
+	}
+	if m.good_name != nil {
+		fields = append(fields, goodbenefit.FieldGoodName)
+	}
+	if m.amount != nil {
+		fields = append(fields, goodbenefit.FieldAmount)
+	}
+	if m.state != nil {
+		fields = append(fields, goodbenefit.FieldState)
+	}
+	if m.message != nil {
+		fields = append(fields, goodbenefit.FieldMessage)
+	}
+	if m.benefit_date != nil {
+		fields = append(fields, goodbenefit.FieldBenefitDate)
+	}
+	if m.tx_id != nil {
+		fields = append(fields, goodbenefit.FieldTxID)
+	}
+	if m.notified != nil {
+		fields = append(fields, goodbenefit.FieldNotified)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *GoodBenefitMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case goodbenefit.FieldCreatedAt:
+		return m.CreatedAt()
+	case goodbenefit.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case goodbenefit.FieldDeletedAt:
+		return m.DeletedAt()
+	case goodbenefit.FieldGoodID:
+		return m.GoodID()
+	case goodbenefit.FieldGoodName:
+		return m.GoodName()
+	case goodbenefit.FieldAmount:
+		return m.Amount()
+	case goodbenefit.FieldState:
+		return m.State()
+	case goodbenefit.FieldMessage:
+		return m.Message()
+	case goodbenefit.FieldBenefitDate:
+		return m.BenefitDate()
+	case goodbenefit.FieldTxID:
+		return m.TxID()
+	case goodbenefit.FieldNotified:
+		return m.Notified()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *GoodBenefitMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case goodbenefit.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case goodbenefit.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case goodbenefit.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case goodbenefit.FieldGoodID:
+		return m.OldGoodID(ctx)
+	case goodbenefit.FieldGoodName:
+		return m.OldGoodName(ctx)
+	case goodbenefit.FieldAmount:
+		return m.OldAmount(ctx)
+	case goodbenefit.FieldState:
+		return m.OldState(ctx)
+	case goodbenefit.FieldMessage:
+		return m.OldMessage(ctx)
+	case goodbenefit.FieldBenefitDate:
+		return m.OldBenefitDate(ctx)
+	case goodbenefit.FieldTxID:
+		return m.OldTxID(ctx)
+	case goodbenefit.FieldNotified:
+		return m.OldNotified(ctx)
+	}
+	return nil, fmt.Errorf("unknown GoodBenefit field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *GoodBenefitMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case goodbenefit.FieldCreatedAt:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case goodbenefit.FieldUpdatedAt:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case goodbenefit.FieldDeletedAt:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case goodbenefit.FieldGoodID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetGoodID(v)
+		return nil
+	case goodbenefit.FieldGoodName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetGoodName(v)
+		return nil
+	case goodbenefit.FieldAmount:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAmount(v)
+		return nil
+	case goodbenefit.FieldState:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetState(v)
+		return nil
+	case goodbenefit.FieldMessage:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMessage(v)
+		return nil
+	case goodbenefit.FieldBenefitDate:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBenefitDate(v)
+		return nil
+	case goodbenefit.FieldTxID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTxID(v)
+		return nil
+	case goodbenefit.FieldNotified:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNotified(v)
+		return nil
+	}
+	return fmt.Errorf("unknown GoodBenefit field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *GoodBenefitMutation) AddedFields() []string {
+	var fields []string
+	if m.addcreated_at != nil {
+		fields = append(fields, goodbenefit.FieldCreatedAt)
+	}
+	if m.addupdated_at != nil {
+		fields = append(fields, goodbenefit.FieldUpdatedAt)
+	}
+	if m.adddeleted_at != nil {
+		fields = append(fields, goodbenefit.FieldDeletedAt)
+	}
+	if m.addbenefit_date != nil {
+		fields = append(fields, goodbenefit.FieldBenefitDate)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *GoodBenefitMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case goodbenefit.FieldCreatedAt:
+		return m.AddedCreatedAt()
+	case goodbenefit.FieldUpdatedAt:
+		return m.AddedUpdatedAt()
+	case goodbenefit.FieldDeletedAt:
+		return m.AddedDeletedAt()
+	case goodbenefit.FieldBenefitDate:
+		return m.AddedBenefitDate()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *GoodBenefitMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case goodbenefit.FieldCreatedAt:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCreatedAt(v)
+		return nil
+	case goodbenefit.FieldUpdatedAt:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUpdatedAt(v)
+		return nil
+	case goodbenefit.FieldDeletedAt:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDeletedAt(v)
+		return nil
+	case goodbenefit.FieldBenefitDate:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddBenefitDate(v)
+		return nil
+	}
+	return fmt.Errorf("unknown GoodBenefit numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *GoodBenefitMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(goodbenefit.FieldGoodID) {
+		fields = append(fields, goodbenefit.FieldGoodID)
+	}
+	if m.FieldCleared(goodbenefit.FieldGoodName) {
+		fields = append(fields, goodbenefit.FieldGoodName)
+	}
+	if m.FieldCleared(goodbenefit.FieldAmount) {
+		fields = append(fields, goodbenefit.FieldAmount)
+	}
+	if m.FieldCleared(goodbenefit.FieldState) {
+		fields = append(fields, goodbenefit.FieldState)
+	}
+	if m.FieldCleared(goodbenefit.FieldMessage) {
+		fields = append(fields, goodbenefit.FieldMessage)
+	}
+	if m.FieldCleared(goodbenefit.FieldBenefitDate) {
+		fields = append(fields, goodbenefit.FieldBenefitDate)
+	}
+	if m.FieldCleared(goodbenefit.FieldTxID) {
+		fields = append(fields, goodbenefit.FieldTxID)
+	}
+	if m.FieldCleared(goodbenefit.FieldNotified) {
+		fields = append(fields, goodbenefit.FieldNotified)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *GoodBenefitMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *GoodBenefitMutation) ClearField(name string) error {
+	switch name {
+	case goodbenefit.FieldGoodID:
+		m.ClearGoodID()
+		return nil
+	case goodbenefit.FieldGoodName:
+		m.ClearGoodName()
+		return nil
+	case goodbenefit.FieldAmount:
+		m.ClearAmount()
+		return nil
+	case goodbenefit.FieldState:
+		m.ClearState()
+		return nil
+	case goodbenefit.FieldMessage:
+		m.ClearMessage()
+		return nil
+	case goodbenefit.FieldBenefitDate:
+		m.ClearBenefitDate()
+		return nil
+	case goodbenefit.FieldTxID:
+		m.ClearTxID()
+		return nil
+	case goodbenefit.FieldNotified:
+		m.ClearNotified()
+		return nil
+	}
+	return fmt.Errorf("unknown GoodBenefit nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *GoodBenefitMutation) ResetField(name string) error {
+	switch name {
+	case goodbenefit.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case goodbenefit.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case goodbenefit.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case goodbenefit.FieldGoodID:
+		m.ResetGoodID()
+		return nil
+	case goodbenefit.FieldGoodName:
+		m.ResetGoodName()
+		return nil
+	case goodbenefit.FieldAmount:
+		m.ResetAmount()
+		return nil
+	case goodbenefit.FieldState:
+		m.ResetState()
+		return nil
+	case goodbenefit.FieldMessage:
+		m.ResetMessage()
+		return nil
+	case goodbenefit.FieldBenefitDate:
+		m.ResetBenefitDate()
+		return nil
+	case goodbenefit.FieldTxID:
+		m.ResetTxID()
+		return nil
+	case goodbenefit.FieldNotified:
+		m.ResetNotified()
+		return nil
+	}
+	return fmt.Errorf("unknown GoodBenefit field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *GoodBenefitMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *GoodBenefitMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *GoodBenefitMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *GoodBenefitMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *GoodBenefitMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *GoodBenefitMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *GoodBenefitMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown GoodBenefit unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *GoodBenefitMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown GoodBenefit edge %s", name)
 }
 
 // NotifMutation represents an operation that mutates the Notif nodes in the graph.

@@ -9,6 +9,7 @@ import (
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/contact"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/emailtemplate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/frontendtemplate"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/goodbenefit"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notif"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notifchannel"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notifuser"
@@ -240,6 +241,70 @@ func init() {
 	frontendtemplateDescID := frontendtemplateFields[0].Descriptor()
 	// frontendtemplate.DefaultID holds the default value on creation for the id field.
 	frontendtemplate.DefaultID = frontendtemplateDescID.Default.(func() uuid.UUID)
+	goodbenefitMixin := schema.GoodBenefit{}.Mixin()
+	goodbenefit.Policy = privacy.NewPolicies(goodbenefitMixin[0], schema.GoodBenefit{})
+	goodbenefit.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+			if err := goodbenefit.Policy.EvalMutation(ctx, m); err != nil {
+				return nil, err
+			}
+			return next.Mutate(ctx, m)
+		})
+	}
+	goodbenefitMixinFields0 := goodbenefitMixin[0].Fields()
+	_ = goodbenefitMixinFields0
+	goodbenefitFields := schema.GoodBenefit{}.Fields()
+	_ = goodbenefitFields
+	// goodbenefitDescCreatedAt is the schema descriptor for created_at field.
+	goodbenefitDescCreatedAt := goodbenefitMixinFields0[0].Descriptor()
+	// goodbenefit.DefaultCreatedAt holds the default value on creation for the created_at field.
+	goodbenefit.DefaultCreatedAt = goodbenefitDescCreatedAt.Default.(func() uint32)
+	// goodbenefitDescUpdatedAt is the schema descriptor for updated_at field.
+	goodbenefitDescUpdatedAt := goodbenefitMixinFields0[1].Descriptor()
+	// goodbenefit.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	goodbenefit.DefaultUpdatedAt = goodbenefitDescUpdatedAt.Default.(func() uint32)
+	// goodbenefit.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	goodbenefit.UpdateDefaultUpdatedAt = goodbenefitDescUpdatedAt.UpdateDefault.(func() uint32)
+	// goodbenefitDescDeletedAt is the schema descriptor for deleted_at field.
+	goodbenefitDescDeletedAt := goodbenefitMixinFields0[2].Descriptor()
+	// goodbenefit.DefaultDeletedAt holds the default value on creation for the deleted_at field.
+	goodbenefit.DefaultDeletedAt = goodbenefitDescDeletedAt.Default.(func() uint32)
+	// goodbenefitDescGoodID is the schema descriptor for good_id field.
+	goodbenefitDescGoodID := goodbenefitFields[1].Descriptor()
+	// goodbenefit.DefaultGoodID holds the default value on creation for the good_id field.
+	goodbenefit.DefaultGoodID = goodbenefitDescGoodID.Default.(func() uuid.UUID)
+	// goodbenefitDescGoodName is the schema descriptor for good_name field.
+	goodbenefitDescGoodName := goodbenefitFields[2].Descriptor()
+	// goodbenefit.DefaultGoodName holds the default value on creation for the good_name field.
+	goodbenefit.DefaultGoodName = goodbenefitDescGoodName.Default.(string)
+	// goodbenefitDescAmount is the schema descriptor for amount field.
+	goodbenefitDescAmount := goodbenefitFields[3].Descriptor()
+	// goodbenefit.DefaultAmount holds the default value on creation for the amount field.
+	goodbenefit.DefaultAmount = goodbenefitDescAmount.Default.(string)
+	// goodbenefitDescState is the schema descriptor for state field.
+	goodbenefitDescState := goodbenefitFields[4].Descriptor()
+	// goodbenefit.DefaultState holds the default value on creation for the state field.
+	goodbenefit.DefaultState = goodbenefitDescState.Default.(string)
+	// goodbenefitDescMessage is the schema descriptor for message field.
+	goodbenefitDescMessage := goodbenefitFields[5].Descriptor()
+	// goodbenefit.DefaultMessage holds the default value on creation for the message field.
+	goodbenefit.DefaultMessage = goodbenefitDescMessage.Default.(string)
+	// goodbenefitDescBenefitDate is the schema descriptor for benefit_date field.
+	goodbenefitDescBenefitDate := goodbenefitFields[6].Descriptor()
+	// goodbenefit.DefaultBenefitDate holds the default value on creation for the benefit_date field.
+	goodbenefit.DefaultBenefitDate = goodbenefitDescBenefitDate.Default.(uint32)
+	// goodbenefitDescTxID is the schema descriptor for tx_id field.
+	goodbenefitDescTxID := goodbenefitFields[7].Descriptor()
+	// goodbenefit.DefaultTxID holds the default value on creation for the tx_id field.
+	goodbenefit.DefaultTxID = goodbenefitDescTxID.Default.(string)
+	// goodbenefitDescNotified is the schema descriptor for notified field.
+	goodbenefitDescNotified := goodbenefitFields[8].Descriptor()
+	// goodbenefit.DefaultNotified holds the default value on creation for the notified field.
+	goodbenefit.DefaultNotified = goodbenefitDescNotified.Default.(bool)
+	// goodbenefitDescID is the schema descriptor for id field.
+	goodbenefitDescID := goodbenefitFields[0].Descriptor()
+	// goodbenefit.DefaultID holds the default value on creation for the id field.
+	goodbenefit.DefaultID = goodbenefitDescID.Default.(func() uuid.UUID)
 	notifMixin := schema.Notif{}.Mixin()
 	notif.Policy = privacy.NewPolicies(notifMixin[0], schema.Notif{})
 	notif.Hooks[0] = func(next ent.Mutator) ent.Mutator {

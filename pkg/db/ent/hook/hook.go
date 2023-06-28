@@ -61,6 +61,19 @@ func (f FrontendTemplateFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.V
 	return f(ctx, mv)
 }
 
+// The GoodBenefitFunc type is an adapter to allow the use of ordinary
+// function as GoodBenefit mutator.
+type GoodBenefitFunc func(context.Context, *ent.GoodBenefitMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f GoodBenefitFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.GoodBenefitMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.GoodBenefitMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The NotifFunc type is an adapter to allow the use of ordinary
 // function as Notif mutator.
 type NotifFunc func(context.Context, *ent.NotifMutation) (ent.Value, error)

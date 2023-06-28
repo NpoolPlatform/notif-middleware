@@ -32,6 +32,7 @@ type hooks struct {
 	Contact          []ent.Hook
 	EmailTemplate    []ent.Hook
 	FrontendTemplate []ent.Hook
+	GoodBenefit      []ent.Hook
 	Notif            []ent.Hook
 	NotifChannel     []ent.Hook
 	NotifUser        []ent.Hook

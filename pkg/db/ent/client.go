@@ -15,6 +15,7 @@ import (
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/contact"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/emailtemplate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/frontendtemplate"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/goodbenefit"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notif"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notifchannel"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notifuser"
@@ -41,6 +42,8 @@ type Client struct {
 	EmailTemplate *EmailTemplateClient
 	// FrontendTemplate is the client for interacting with the FrontendTemplate builders.
 	FrontendTemplate *FrontendTemplateClient
+	// GoodBenefit is the client for interacting with the GoodBenefit builders.
+	GoodBenefit *GoodBenefitClient
 	// Notif is the client for interacting with the Notif builders.
 	Notif *NotifClient
 	// NotifChannel is the client for interacting with the NotifChannel builders.
@@ -74,6 +77,7 @@ func (c *Client) init() {
 	c.Contact = NewContactClient(c.config)
 	c.EmailTemplate = NewEmailTemplateClient(c.config)
 	c.FrontendTemplate = NewFrontendTemplateClient(c.config)
+	c.GoodBenefit = NewGoodBenefitClient(c.config)
 	c.Notif = NewNotifClient(c.config)
 	c.NotifChannel = NewNotifChannelClient(c.config)
 	c.NotifUser = NewNotifUserClient(c.config)
@@ -119,6 +123,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Contact:          NewContactClient(cfg),
 		EmailTemplate:    NewEmailTemplateClient(cfg),
 		FrontendTemplate: NewFrontendTemplateClient(cfg),
+		GoodBenefit:      NewGoodBenefitClient(cfg),
 		Notif:            NewNotifClient(cfg),
 		NotifChannel:     NewNotifChannelClient(cfg),
 		NotifUser:        NewNotifUserClient(cfg),
@@ -150,6 +155,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Contact:          NewContactClient(cfg),
 		EmailTemplate:    NewEmailTemplateClient(cfg),
 		FrontendTemplate: NewFrontendTemplateClient(cfg),
+		GoodBenefit:      NewGoodBenefitClient(cfg),
 		Notif:            NewNotifClient(cfg),
 		NotifChannel:     NewNotifChannelClient(cfg),
 		NotifUser:        NewNotifUserClient(cfg),
@@ -191,6 +197,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Contact.Use(hooks...)
 	c.EmailTemplate.Use(hooks...)
 	c.FrontendTemplate.Use(hooks...)
+	c.GoodBenefit.Use(hooks...)
 	c.Notif.Use(hooks...)
 	c.NotifChannel.Use(hooks...)
 	c.NotifUser.Use(hooks...)
@@ -563,6 +570,97 @@ func (c *FrontendTemplateClient) GetX(ctx context.Context, id uuid.UUID) *Fronte
 func (c *FrontendTemplateClient) Hooks() []Hook {
 	hooks := c.hooks.FrontendTemplate
 	return append(hooks[:len(hooks):len(hooks)], frontendtemplate.Hooks[:]...)
+}
+
+// GoodBenefitClient is a client for the GoodBenefit schema.
+type GoodBenefitClient struct {
+	config
+}
+
+// NewGoodBenefitClient returns a client for the GoodBenefit from the given config.
+func NewGoodBenefitClient(c config) *GoodBenefitClient {
+	return &GoodBenefitClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `goodbenefit.Hooks(f(g(h())))`.
+func (c *GoodBenefitClient) Use(hooks ...Hook) {
+	c.hooks.GoodBenefit = append(c.hooks.GoodBenefit, hooks...)
+}
+
+// Create returns a builder for creating a GoodBenefit entity.
+func (c *GoodBenefitClient) Create() *GoodBenefitCreate {
+	mutation := newGoodBenefitMutation(c.config, OpCreate)
+	return &GoodBenefitCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of GoodBenefit entities.
+func (c *GoodBenefitClient) CreateBulk(builders ...*GoodBenefitCreate) *GoodBenefitCreateBulk {
+	return &GoodBenefitCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for GoodBenefit.
+func (c *GoodBenefitClient) Update() *GoodBenefitUpdate {
+	mutation := newGoodBenefitMutation(c.config, OpUpdate)
+	return &GoodBenefitUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *GoodBenefitClient) UpdateOne(gb *GoodBenefit) *GoodBenefitUpdateOne {
+	mutation := newGoodBenefitMutation(c.config, OpUpdateOne, withGoodBenefit(gb))
+	return &GoodBenefitUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *GoodBenefitClient) UpdateOneID(id uuid.UUID) *GoodBenefitUpdateOne {
+	mutation := newGoodBenefitMutation(c.config, OpUpdateOne, withGoodBenefitID(id))
+	return &GoodBenefitUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for GoodBenefit.
+func (c *GoodBenefitClient) Delete() *GoodBenefitDelete {
+	mutation := newGoodBenefitMutation(c.config, OpDelete)
+	return &GoodBenefitDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *GoodBenefitClient) DeleteOne(gb *GoodBenefit) *GoodBenefitDeleteOne {
+	return c.DeleteOneID(gb.ID)
+}
+
+// DeleteOne returns a builder for deleting the given entity by its id.
+func (c *GoodBenefitClient) DeleteOneID(id uuid.UUID) *GoodBenefitDeleteOne {
+	builder := c.Delete().Where(goodbenefit.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &GoodBenefitDeleteOne{builder}
+}
+
+// Query returns a query builder for GoodBenefit.
+func (c *GoodBenefitClient) Query() *GoodBenefitQuery {
+	return &GoodBenefitQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a GoodBenefit entity by its id.
+func (c *GoodBenefitClient) Get(ctx context.Context, id uuid.UUID) (*GoodBenefit, error) {
+	return c.Query().Where(goodbenefit.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *GoodBenefitClient) GetX(ctx context.Context, id uuid.UUID) *GoodBenefit {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *GoodBenefitClient) Hooks() []Hook {
+	hooks := c.hooks.GoodBenefit
+	return append(hooks[:len(hooks):len(hooks)], goodbenefit.Hooks[:]...)
 }
 
 // NotifClient is a client for the Notif schema.

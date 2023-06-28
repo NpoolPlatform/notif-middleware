@@ -87,6 +87,27 @@ var (
 		Columns:    FrontendTemplatesColumns,
 		PrimaryKey: []*schema.Column{FrontendTemplatesColumns[0]},
 	}
+	// GoodBenefitsColumns holds the columns for the "good_benefits" table.
+	GoodBenefitsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "created_at", Type: field.TypeUint32},
+		{Name: "updated_at", Type: field.TypeUint32},
+		{Name: "deleted_at", Type: field.TypeUint32},
+		{Name: "good_id", Type: field.TypeUUID, Nullable: true},
+		{Name: "good_name", Type: field.TypeString, Nullable: true, Default: ""},
+		{Name: "amount", Type: field.TypeString, Nullable: true, Default: "0"},
+		{Name: "state", Type: field.TypeString, Nullable: true, Default: "DefaultResult"},
+		{Name: "message", Type: field.TypeString, Nullable: true, Default: ""},
+		{Name: "benefit_date", Type: field.TypeUint32, Nullable: true, Default: 0},
+		{Name: "tx_id", Type: field.TypeString, Nullable: true, Default: ""},
+		{Name: "notified", Type: field.TypeBool, Nullable: true, Default: false},
+	}
+	// GoodBenefitsTable holds the schema information for the "good_benefits" table.
+	GoodBenefitsTable = &schema.Table{
+		Name:       "good_benefits",
+		Columns:    GoodBenefitsColumns,
+		PrimaryKey: []*schema.Column{GoodBenefitsColumns[0]},
+	}
 	// NotifsColumns holds the columns for the "notifs" table.
 	NotifsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID, Unique: true},
@@ -233,6 +254,7 @@ var (
 		ContactsTable,
 		EmailTemplatesTable,
 		FrontendTemplatesTable,
+		GoodBenefitsTable,
 		NotifsTable,
 		NotifChannelsTable,
 		NotifUsersTable,

@@ -7,6 +7,7 @@ import (
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/contact"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/emailtemplate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/frontendtemplate"
+	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/goodbenefit"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notif"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notifchannel"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notifuser"
@@ -24,7 +25,7 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 12)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 13)}
 	graph.Nodes[0] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   announcement.Table,
@@ -118,6 +119,30 @@ var schemaGraph = func() *sqlgraph.Schema {
 	}
 	graph.Nodes[4] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
+			Table:   goodbenefit.Table,
+			Columns: goodbenefit.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUUID,
+				Column: goodbenefit.FieldID,
+			},
+		},
+		Type: "GoodBenefit",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			goodbenefit.FieldCreatedAt:   {Type: field.TypeUint32, Column: goodbenefit.FieldCreatedAt},
+			goodbenefit.FieldUpdatedAt:   {Type: field.TypeUint32, Column: goodbenefit.FieldUpdatedAt},
+			goodbenefit.FieldDeletedAt:   {Type: field.TypeUint32, Column: goodbenefit.FieldDeletedAt},
+			goodbenefit.FieldGoodID:      {Type: field.TypeUUID, Column: goodbenefit.FieldGoodID},
+			goodbenefit.FieldGoodName:    {Type: field.TypeString, Column: goodbenefit.FieldGoodName},
+			goodbenefit.FieldAmount:      {Type: field.TypeString, Column: goodbenefit.FieldAmount},
+			goodbenefit.FieldState:       {Type: field.TypeString, Column: goodbenefit.FieldState},
+			goodbenefit.FieldMessage:     {Type: field.TypeString, Column: goodbenefit.FieldMessage},
+			goodbenefit.FieldBenefitDate: {Type: field.TypeUint32, Column: goodbenefit.FieldBenefitDate},
+			goodbenefit.FieldTxID:        {Type: field.TypeString, Column: goodbenefit.FieldTxID},
+			goodbenefit.FieldNotified:    {Type: field.TypeBool, Column: goodbenefit.FieldNotified},
+		},
+	}
+	graph.Nodes[5] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
 			Table:   notif.Table,
 			Columns: notif.Columns,
 			ID: &sqlgraph.FieldSpec{
@@ -144,7 +169,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			notif.FieldType:        {Type: field.TypeString, Column: notif.FieldType},
 		},
 	}
-	graph.Nodes[5] = &sqlgraph.Node{
+	graph.Nodes[6] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   notifchannel.Table,
 			Columns: notifchannel.Columns,
@@ -163,7 +188,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			notifchannel.FieldChannel:   {Type: field.TypeString, Column: notifchannel.FieldChannel},
 		},
 	}
-	graph.Nodes[6] = &sqlgraph.Node{
+	graph.Nodes[7] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   notifuser.Table,
 			Columns: notifuser.Columns,
@@ -182,7 +207,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			notifuser.FieldEventType: {Type: field.TypeString, Column: notifuser.FieldEventType},
 		},
 	}
-	graph.Nodes[7] = &sqlgraph.Node{
+	graph.Nodes[8] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   readannouncement.Table,
 			Columns: readannouncement.Columns,
@@ -201,7 +226,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			readannouncement.FieldAnnouncementID: {Type: field.TypeUUID, Column: readannouncement.FieldAnnouncementID},
 		},
 	}
-	graph.Nodes[8] = &sqlgraph.Node{
+	graph.Nodes[9] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   smstemplate.Table,
 			Columns: smstemplate.Columns,
@@ -222,7 +247,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			smstemplate.FieldMessage:   {Type: field.TypeString, Column: smstemplate.FieldMessage},
 		},
 	}
-	graph.Nodes[9] = &sqlgraph.Node{
+	graph.Nodes[10] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   sendannouncement.Table,
 			Columns: sendannouncement.Columns,
@@ -242,7 +267,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			sendannouncement.FieldChannel:        {Type: field.TypeString, Column: sendannouncement.FieldChannel},
 		},
 	}
-	graph.Nodes[10] = &sqlgraph.Node{
+	graph.Nodes[11] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   txnotifstate.Table,
 			Columns: txnotifstate.Columns,
@@ -261,7 +286,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			txnotifstate.FieldTxType:     {Type: field.TypeString, Column: txnotifstate.FieldTxType},
 		},
 	}
-	graph.Nodes[11] = &sqlgraph.Node{
+	graph.Nodes[12] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   userannouncement.Table,
 			Columns: userannouncement.Columns,
@@ -645,6 +670,101 @@ func (f *FrontendTemplateFilter) WhereContent(p entql.StringP) {
 }
 
 // addPredicate implements the predicateAdder interface.
+func (gbq *GoodBenefitQuery) addPredicate(pred func(s *sql.Selector)) {
+	gbq.predicates = append(gbq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the GoodBenefitQuery builder.
+func (gbq *GoodBenefitQuery) Filter() *GoodBenefitFilter {
+	return &GoodBenefitFilter{config: gbq.config, predicateAdder: gbq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *GoodBenefitMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the GoodBenefitMutation builder.
+func (m *GoodBenefitMutation) Filter() *GoodBenefitFilter {
+	return &GoodBenefitFilter{config: m.config, predicateAdder: m}
+}
+
+// GoodBenefitFilter provides a generic filtering capability at runtime for GoodBenefitQuery.
+type GoodBenefitFilter struct {
+	predicateAdder
+	config
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *GoodBenefitFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[4].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql [16]byte predicate on the id field.
+func (f *GoodBenefitFilter) WhereID(p entql.ValueP) {
+	f.Where(p.Field(goodbenefit.FieldID))
+}
+
+// WhereCreatedAt applies the entql uint32 predicate on the created_at field.
+func (f *GoodBenefitFilter) WhereCreatedAt(p entql.Uint32P) {
+	f.Where(p.Field(goodbenefit.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql uint32 predicate on the updated_at field.
+func (f *GoodBenefitFilter) WhereUpdatedAt(p entql.Uint32P) {
+	f.Where(p.Field(goodbenefit.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql uint32 predicate on the deleted_at field.
+func (f *GoodBenefitFilter) WhereDeletedAt(p entql.Uint32P) {
+	f.Where(p.Field(goodbenefit.FieldDeletedAt))
+}
+
+// WhereGoodID applies the entql [16]byte predicate on the good_id field.
+func (f *GoodBenefitFilter) WhereGoodID(p entql.ValueP) {
+	f.Where(p.Field(goodbenefit.FieldGoodID))
+}
+
+// WhereGoodName applies the entql string predicate on the good_name field.
+func (f *GoodBenefitFilter) WhereGoodName(p entql.StringP) {
+	f.Where(p.Field(goodbenefit.FieldGoodName))
+}
+
+// WhereAmount applies the entql string predicate on the amount field.
+func (f *GoodBenefitFilter) WhereAmount(p entql.StringP) {
+	f.Where(p.Field(goodbenefit.FieldAmount))
+}
+
+// WhereState applies the entql string predicate on the state field.
+func (f *GoodBenefitFilter) WhereState(p entql.StringP) {
+	f.Where(p.Field(goodbenefit.FieldState))
+}
+
+// WhereMessage applies the entql string predicate on the message field.
+func (f *GoodBenefitFilter) WhereMessage(p entql.StringP) {
+	f.Where(p.Field(goodbenefit.FieldMessage))
+}
+
+// WhereBenefitDate applies the entql uint32 predicate on the benefit_date field.
+func (f *GoodBenefitFilter) WhereBenefitDate(p entql.Uint32P) {
+	f.Where(p.Field(goodbenefit.FieldBenefitDate))
+}
+
+// WhereTxID applies the entql string predicate on the tx_id field.
+func (f *GoodBenefitFilter) WhereTxID(p entql.StringP) {
+	f.Where(p.Field(goodbenefit.FieldTxID))
+}
+
+// WhereNotified applies the entql bool predicate on the notified field.
+func (f *GoodBenefitFilter) WhereNotified(p entql.BoolP) {
+	f.Where(p.Field(goodbenefit.FieldNotified))
+}
+
+// addPredicate implements the predicateAdder interface.
 func (nq *NotifQuery) addPredicate(pred func(s *sql.Selector)) {
 	nq.predicates = append(nq.predicates, pred)
 }
@@ -673,7 +793,7 @@ type NotifFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *NotifFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[4].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[5].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -788,7 +908,7 @@ type NotifChannelFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *NotifChannelFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[5].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[6].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -858,7 +978,7 @@ type NotifUserFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *NotifUserFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[6].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[7].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -928,7 +1048,7 @@ type ReadAnnouncementFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *ReadAnnouncementFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[7].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[8].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -998,7 +1118,7 @@ type SMSTemplateFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SMSTemplateFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[8].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[9].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -1078,7 +1198,7 @@ type SendAnnouncementFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SendAnnouncementFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[9].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[10].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -1153,7 +1273,7 @@ type TxNotifStateFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *TxNotifStateFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[10].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[11].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -1223,7 +1343,7 @@ type UserAnnouncementFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *UserAnnouncementFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[11].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[12].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})

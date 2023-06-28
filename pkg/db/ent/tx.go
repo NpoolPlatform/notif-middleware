@@ -22,6 +22,8 @@ type Tx struct {
 	EmailTemplate *EmailTemplateClient
 	// FrontendTemplate is the client for interacting with the FrontendTemplate builders.
 	FrontendTemplate *FrontendTemplateClient
+	// GoodBenefit is the client for interacting with the GoodBenefit builders.
+	GoodBenefit *GoodBenefitClient
 	// Notif is the client for interacting with the Notif builders.
 	Notif *NotifClient
 	// NotifChannel is the client for interacting with the NotifChannel builders.
@@ -177,6 +179,7 @@ func (tx *Tx) init() {
 	tx.Contact = NewContactClient(tx.config)
 	tx.EmailTemplate = NewEmailTemplateClient(tx.config)
 	tx.FrontendTemplate = NewFrontendTemplateClient(tx.config)
+	tx.GoodBenefit = NewGoodBenefitClient(tx.config)
 	tx.Notif = NewNotifClient(tx.config)
 	tx.NotifChannel = NewNotifChannelClient(tx.config)
 	tx.NotifUser = NewNotifUserClient(tx.config)

@@ -6,7 +6,7 @@ import (
 
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/goodbenefit"
-	tx1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/notif/goodbenefit"
+	goodbenefit1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/notif/goodbenefit"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -20,16 +20,16 @@ func (s *Server) CreateGoodBenefit(
 	error,
 ) {
 	req := in.GetInfo()
-	handler, err := tx1.NewHandler(
+	handler, err := goodbenefit1.NewHandler(
 		ctx,
-		tx1.WithID(req.ID),
-		tx1.WithGoodID(req.GoodID),
-		tx1.WithGoodName(req.GoodName),
-		tx1.WithAmount(req.Amount),
-		tx1.WithState(req.State),
-		tx1.WithMessage(req.Message),
-		tx1.WithTxID(req.TxID),
-		tx1.WithNotified(req.Notified),
+		goodbenefit1.WithID(req.ID),
+		goodbenefit1.WithGoodID(req.GoodID),
+		goodbenefit1.WithGoodName(req.GoodName),
+		goodbenefit1.WithAmount(req.Amount),
+		goodbenefit1.WithState(req.State),
+		goodbenefit1.WithMessage(req.Message),
+		goodbenefit1.WithTxID(req.TxID),
+		goodbenefit1.WithNotified(req.Notified),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

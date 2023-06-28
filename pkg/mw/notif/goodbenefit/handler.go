@@ -151,10 +151,12 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			h.Conds.Notified = &cruder.Cond{Op: conds.GetNotified().GetOp(), Val: conds.GetNotified().GetValue()}
 		}
 
-		if conds.BenefitDate != nil {
-			h.Conds.BenefitDate = &cruder.Cond{Op: conds.GetBenefitDate().GetOp(), Val: conds.GetNotified().GetValue()}
+		if conds.BenefitDateStart != nil {
+			h.Conds.BenefitDateStart = &cruder.Cond{Op: conds.GetBenefitDateStart().GetOp(), Val: conds.GetBenefitDateStart().GetValue()}
 		}
-
+		if conds.BenefitDateEnd != nil {
+			h.Conds.BenefitDateEnd = &cruder.Cond{Op: conds.GetBenefitDateEnd().GetOp(), Val: conds.GetBenefitDateEnd().GetValue()}
+		}
 		return nil
 	}
 }

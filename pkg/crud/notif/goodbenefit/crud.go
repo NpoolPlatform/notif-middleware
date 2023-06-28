@@ -66,10 +66,11 @@ func UpdateSet(u *ent.GoodBenefitUpdateOne, req *Req) *ent.GoodBenefitUpdateOne 
 }
 
 type Conds struct {
-	ID          *cruder.Cond
-	GoodID      *cruder.Cond
-	Notified    *cruder.Cond
-	BenefitDate *cruder.Cond
+	ID               *cruder.Cond
+	GoodID           *cruder.Cond
+	Notified         *cruder.Cond
+	BenefitDateStart *cruder.Cond
+	BenefitDateEnd   *cruder.Cond
 }
 
 //nolint
@@ -113,24 +114,34 @@ func SetQueryConds(q *ent.GoodBenefitQuery, conds *Conds) (*ent.GoodBenefitQuery
 			return nil, fmt.Errorf("invalid good benefit notified op field %s", conds.Notified.Op)
 		}
 	}
-	if conds.BenefitDate != nil {
-		_date, ok := conds.BenefitDate.Val.(uint32)
+	if conds.BenefitDateStart != nil {
+		_date, ok := conds.BenefitDateStart.Val.(uint32)
 		if !ok {
-			return nil, fmt.Errorf("invalid good benefit benefit date %s", conds.BenefitDate.Op)
+			return nil, fmt.Errorf("invalid good benefit benefit date %s", conds.BenefitDateStart.Op)
 		}
-		switch conds.BenefitDate.Op {
-		case cruder.EQ:
-			q.Where(entgoodbenefit.BenefitDate(_date))
+		switch conds.BenefitDateStart.Op {
 		case cruder.LTE:
 			q.Where(entgoodbenefit.BenefitDateLTE(_date))
 		case cruder.LT:
 			q.Where(entgoodbenefit.BenefitDateLT(_date))
 		case cruder.GTE:
 			q.Where(entgoodbenefit.BenefitDateGTE(_date))
+		default:
+			return nil, fmt.Errorf("invalid good benefit benefit date op field %s", conds.BenefitDateStart.Op)
+		}
+	}
+	if conds.BenefitDateEnd != nil {
+		_date, ok := conds.BenefitDateEnd.Val.(uint32)
+		if !ok {
+			return nil, fmt.Errorf("invalid good benefit benefit date %s", conds.BenefitDateEnd.Op)
+		}
+		switch conds.BenefitDateEnd.Op {
+		case cruder.GTE:
+			q.Where(entgoodbenefit.BenefitDateGTE(_date))
 		case cruder.GT:
 			q.Where(entgoodbenefit.BenefitDateGT(_date))
 		default:
-			return nil, fmt.Errorf("invalid good benefit benefit date op field %s", conds.BenefitDate.Op)
+			return nil, fmt.Errorf("invalid good benefit benefit date op field %s", conds.BenefitDateEnd.Op)
 		}
 	}
 	return q, nil

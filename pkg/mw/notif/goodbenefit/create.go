@@ -24,9 +24,6 @@ func (h *createHandler) validate() error {
 	if h.GoodName == nil {
 		return fmt.Errorf("good name id is empty")
 	}
-	if h.Amount == nil {
-		return fmt.Errorf("amount is empty")
-	}
 	if h.State == nil {
 		return fmt.Errorf("state is empty")
 	}

@@ -18,6 +18,7 @@ type Req struct {
 	State       *basetypes.Result
 	Message     *string
 	BenefitDate *uint32
+	TxID        *uuid.UUID
 	Notified    *bool
 	DeletedAt   *uint32
 }
@@ -44,8 +45,8 @@ func CreateSet(c *ent.GoodBenefitCreate, req *Req) *ent.GoodBenefitCreate {
 	if req.BenefitDate != nil {
 		c.SetBenefitDate(*req.BenefitDate)
 	}
-	if req.GoodID != nil {
-		c.SetGoodID(*req.GoodID)
+	if req.TxID != nil {
+		c.SetTxID(*req.TxID)
 	}
 	if req.Notified != nil {
 		c.SetNotified(*req.Notified)

@@ -129,7 +129,7 @@ func getChannels(t *testing.T) {
 }
 
 func deleteChannel(t *testing.T) {
-	info, err := DeleteChannel(context.Background(), ret.AppID, ret.ID)
+	info, err := DeleteChannel(context.Background(), ret.ID)
 	if assert.Nil(t, err) {
 		assert.Equal(t, info, &ret)
 	}

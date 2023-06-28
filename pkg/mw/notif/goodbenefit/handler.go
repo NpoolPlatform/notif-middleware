@@ -115,6 +115,16 @@ func WithNotified(notified *bool) func(context.Context, *Handler) error {
 	}
 }
 
+func WithBenefitDate(_date *uint32) func(context.Context, *Handler) error {
+	return func(ctx context.Context, h *Handler) error {
+		if _date == nil {
+			return fmt.Errorf("benefit date is empty")
+		}
+		h.BenefitDate = _date
+		return nil
+	}
+}
+
 func WithTxID(txID *string) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if txID == nil {

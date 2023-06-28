@@ -23,7 +23,7 @@ func (s *Server) UpdateGoodBenefit(
 	handler, err := goodbenefit1.NewHandler(
 		ctx,
 		goodbenefit1.WithID(req.ID),
-		goodbenefit1.WithNotified(req.Notified),
+		goodbenefit1.WithGenerated(req.Generated),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

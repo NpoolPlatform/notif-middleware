@@ -29,7 +29,7 @@ func (s *Server) CreateGoodBenefit(
 		goodbenefit1.WithMessage(req.Message),
 		goodbenefit1.WithBenefitDate(req.BenefitDate),
 		goodbenefit1.WithTxID(req.TxID),
-		goodbenefit1.WithNotified(req.Notified),
+		goodbenefit1.WithGenerated(req.Generated),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

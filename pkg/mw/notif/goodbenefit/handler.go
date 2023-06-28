@@ -22,7 +22,7 @@ type Handler struct {
 	Message     *string
 	BenefitDate *uint32
 	TxID        *uuid.UUID
-	Notified    *bool
+	Generated   *bool
 	DeletedAt   *uint32
 	Conds       *crud.Conds
 	Offset      int32
@@ -108,12 +108,12 @@ func WithMessage(message *string) func(context.Context, *Handler) error {
 	}
 }
 
-func WithNotified(notified *bool) func(context.Context, *Handler) error {
+func WithGenerated(generated *bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		if notified == nil {
-			return fmt.Errorf("notified is empty")
+		if generated == nil {
+			return fmt.Errorf("generated is empty")
 		}
-		h.Notified = notified
+		h.Generated = generated
 		return nil
 	}
 }
@@ -160,8 +160,8 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			h.Conds.GoodID = &cruder.Cond{Op: conds.GetGoodID().GetOp(), Val: goodID}
 		}
 
-		if conds.Notified != nil {
-			h.Conds.Notified = &cruder.Cond{Op: conds.GetNotified().GetOp(), Val: conds.GetNotified().GetValue()}
+		if conds.Generated != nil {
+			h.Conds.Generated = &cruder.Cond{Op: conds.GetGenerated().GetOp(), Val: conds.GetGenerated().GetValue()}
 		}
 
 		if conds.BenefitDateStart != nil {

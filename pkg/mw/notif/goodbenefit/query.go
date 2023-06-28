@@ -29,7 +29,7 @@ func (h *queryHandler) selectGoodBenefit(stm *ent.GoodBenefitQuery) {
 		entgoodbenefit.FieldMessage,
 		entgoodbenefit.FieldBenefitDate,
 		entgoodbenefit.FieldTxID,
-		entgoodbenefit.FieldNotified,
+		entgoodbenefit.FieldGenerated,
 		entgoodbenefit.FieldCreatedAt,
 		entgoodbenefit.FieldUpdatedAt,
 	)

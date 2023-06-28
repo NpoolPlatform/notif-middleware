@@ -33,8 +33,8 @@ func (h *createHandler) validate() error {
 	if h.BenefitDate == nil {
 		return fmt.Errorf("benefit date is empty")
 	}
-	if h.Notified == nil {
-		return fmt.Errorf("notified is empty")
+	if h.Generated == nil {
+		return fmt.Errorf("generated is empty")
 	}
 	if *h.State == basetypes.Result_Success {
 		if h.Amount == nil || h.TxID == nil {
@@ -71,7 +71,7 @@ func (h *Handler) CreateGoodBenefit(ctx context.Context) (*npool.GoodBenefit, er
 				Message:     h.Message,
 				BenefitDate: h.BenefitDate,
 				TxID:        h.TxID,
-				Notified:    h.Notified,
+				Generated:   h.Generated,
 			},
 		).Save(ctx); err != nil {
 			return err

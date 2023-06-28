@@ -19,7 +19,7 @@ type Req struct {
 	Message     *string
 	BenefitDate *uint32
 	TxID        *uuid.UUID
-	Notified    *bool
+	Generated   *bool
 	DeletedAt   *uint32
 }
 
@@ -48,16 +48,16 @@ func CreateSet(c *ent.GoodBenefitCreate, req *Req) *ent.GoodBenefitCreate {
 	if req.TxID != nil {
 		c.SetTxID(*req.TxID)
 	}
-	if req.Notified != nil {
-		c.SetNotified(*req.Notified)
+	if req.Generated != nil {
+		c.SetGenerated(*req.Generated)
 	}
 
 	return c
 }
 
 func UpdateSet(u *ent.GoodBenefitUpdateOne, req *Req) *ent.GoodBenefitUpdateOne {
-	if req.Notified != nil {
-		u.SetNotified(*req.Notified)
+	if req.Generated != nil {
+		u.SetGenerated(*req.Generated)
 	}
 	if req.DeletedAt != nil {
 		u.SetDeletedAt(*req.DeletedAt)
@@ -68,7 +68,7 @@ func UpdateSet(u *ent.GoodBenefitUpdateOne, req *Req) *ent.GoodBenefitUpdateOne 
 type Conds struct {
 	ID               *cruder.Cond
 	GoodID           *cruder.Cond
-	Notified         *cruder.Cond
+	Generated        *cruder.Cond
 	BenefitDateStart *cruder.Cond
 	BenefitDateEnd   *cruder.Cond
 }
@@ -102,16 +102,16 @@ func SetQueryConds(q *ent.GoodBenefitQuery, conds *Conds) (*ent.GoodBenefitQuery
 			return nil, fmt.Errorf("invalid good benefit good id op field %s", conds.GoodID.Op)
 		}
 	}
-	if conds.Notified != nil {
-		notified, ok := conds.Notified.Val.(bool)
+	if conds.Generated != nil {
+		notified, ok := conds.Generated.Val.(bool)
 		if !ok {
 			return nil, fmt.Errorf("invalid good benefit notified")
 		}
-		switch conds.Notified.Op {
+		switch conds.Generated.Op {
 		case cruder.EQ:
-			q.Where(entgoodbenefit.Notified(notified))
+			q.Where(entgoodbenefit.Generated(notified))
 		default:
-			return nil, fmt.Errorf("invalid good benefit notified op field %s", conds.Notified.Op)
+			return nil, fmt.Errorf("invalid good benefit notified op field %s", conds.Generated.Op)
 		}
 	}
 	if conds.BenefitDateStart != nil {

@@ -45,7 +45,7 @@ var (
 		Message:     uuid.NewString(),
 		BenefitDate: yesterday,
 		TxID:        uuid.NewString(),
-		Notified:    false,
+		Generated:   false,
 	}
 
 	ret2 = npool.GoodBenefit{
@@ -57,7 +57,7 @@ var (
 		Message:     uuid.NewString(),
 		BenefitDate: uint32(time.Now().Add(-3 * time.Minute).Unix()),
 		TxID:        uuid.NewString(),
-		Notified:    false,
+		Generated:   false,
 	}
 )
 
@@ -70,7 +70,7 @@ func createGoodBenefit(t *testing.T) {
 		Message:     &ret.Message,
 		BenefitDate: &ret.BenefitDate,
 		TxID:        &ret.TxID,
-		Notified:    &ret.Notified,
+		Generated:   &ret.Generated,
 	})
 	if assert.Nil(t, err) {
 		ret.CreatedAt = info.CreatedAt
@@ -87,7 +87,7 @@ func createGoodBenefit(t *testing.T) {
 		Message:     &ret2.Message,
 		BenefitDate: &ret2.BenefitDate,
 		TxID:        &ret2.TxID,
-		Notified:    &ret2.Notified,
+		Generated:   &ret2.Generated,
 	})
 	if assert.Nil(t, err) {
 		ret2.CreatedAt = _info.CreatedAt
@@ -98,10 +98,10 @@ func createGoodBenefit(t *testing.T) {
 }
 
 func updateGoodBenefit(t *testing.T) {
-	ret.Notified = true
+	ret.Generated = true
 	info, err := UpdateGoodBenefit(context.Background(), &npool.GoodBenefitReq{
-		ID:       &ret.ID,
-		Notified: &ret.Notified,
+		ID:        &ret.ID,
+		Generated: &ret.Generated,
 	})
 	if assert.Nil(t, err) {
 		ret.UpdatedAt = info.UpdatedAt
@@ -118,9 +118,9 @@ func getGoodBenefit(t *testing.T) {
 
 func getGoodBenefits(t *testing.T) {
 	infos, _, err := GetGoodBenefits(context.Background(), &npool.Conds{
-		Notified: &basetypes.BoolVal{
+		Generated: &basetypes.BoolVal{
 			Op:    cruder.EQ,
-			Value: ret.Notified,
+			Value: ret.Generated,
 		},
 		BenefitDateStart: &basetypes.Uint32Val{
 			Op:    cruder.LTE,

@@ -21,7 +21,7 @@ func (h *Handler) UpdateGoodBenefit(ctx context.Context) (info *npool.GoodBenefi
 	if info == nil {
 		return nil, fmt.Errorf("good benefit not found")
 	}
-	if info.Notified && !*h.Notified {
+	if info.Generated && !*h.Generated {
 		return nil, fmt.Errorf("can not be update")
 	}
 
@@ -29,8 +29,8 @@ func (h *Handler) UpdateGoodBenefit(ctx context.Context) (info *npool.GoodBenefi
 		if _, err := crud.UpdateSet(
 			cli.GoodBenefit.UpdateOneID(*h.ID),
 			&crud.Req{
-				ID:       h.ID,
-				Notified: h.Notified,
+				ID:        h.ID,
+				Generated: h.Generated,
 			},
 		).Save(_ctx); err != nil {
 			return err

@@ -113,6 +113,7 @@ func WithNotified(notified *bool) func(context.Context, *Handler) error {
 		if notified == nil {
 			return fmt.Errorf("notified is empty")
 		}
+		h.Notified = notified
 		return nil
 	}
 }

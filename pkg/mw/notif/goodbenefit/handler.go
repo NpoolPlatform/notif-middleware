@@ -131,11 +131,11 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			h.Conds.ID = &cruder.Cond{Op: conds.GetID().GetOp(), Val: id}
 		}
 		if conds.GoodID != nil {
-			id, err := uuid.Parse(conds.GetGoodID().GetValue())
+			goodID, err := uuid.Parse(conds.GetGoodID().GetValue())
 			if err != nil {
 				return err
 			}
-			h.Conds.GoodID = &cruder.Cond{Op: conds.GetGoodID().GetOp(), Val: id}
+			h.Conds.GoodID = &cruder.Cond{Op: conds.GetGoodID().GetOp(), Val: goodID}
 		}
 
 		if conds.Notified != nil {

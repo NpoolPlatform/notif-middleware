@@ -32,7 +32,7 @@ func (h *createHandler) createFrontendTemplate(ctx context.Context, tx *ent.Tx, 
 	}
 	lockKey := fmt.Sprintf(
 		"%v:%v:%v:%v",
-		basetypes.Prefix_PrefixCreateAppCoin,
+		basetypes.Prefix_PrefixCreateFrontendTemplate,
 		*req.AppID,
 		*req.LangID,
 		req.UsedFor,

@@ -41,7 +41,7 @@ func (h *Handler) UpdateEmailTemplate(ctx context.Context) (*npool.EmailTemplate
 
 	lockKey := fmt.Sprintf(
 		"%v:%v",
-		basetypes.Prefix_PrefixSetFiat,
+		basetypes.Prefix_PrefixCreateEmailTemplate,
 		*h.ID,
 	)
 	if err := redis2.TryLock(lockKey, 0); err != nil {

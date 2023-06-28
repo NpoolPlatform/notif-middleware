@@ -32,7 +32,7 @@ func (h *createHandler) createNotifUser(ctx context.Context, tx *ent.Tx, req *us
 	}
 	lockKey := fmt.Sprintf(
 		"%v:%v:%v:%v",
-		basetypes.Prefix_PrefixCreateAppCoin,
+		basetypes.Prefix_PrefixCreateNotifUser,
 		*req.AppID,
 		*req.UserID,
 		*req.EventType,

@@ -37,7 +37,7 @@ func (h *Handler) UpdateSMSTemplate(ctx context.Context) (*npool.SMSTemplate, er
 
 	lockKey := fmt.Sprintf(
 		"%v:%v",
-		basetypes.Prefix_PrefixSetFiat,
+		basetypes.Prefix_PrefixCreateSMSTemplate,
 		*h.ID,
 	)
 	if err := redis2.TryLock(lockKey, 0); err != nil {

@@ -32,7 +32,7 @@ func (h *createHandler) createEmailTemplate(ctx context.Context, tx *ent.Tx, req
 	}
 	lockKey := fmt.Sprintf(
 		"%v:%v:%v:%v",
-		basetypes.Prefix_PrefixCreateAppCoin,
+		basetypes.Prefix_PrefixCreateEmailTemplate,
 		*req.AppID,
 		*req.LangID,
 		req.UsedFor,

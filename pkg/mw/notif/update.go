@@ -26,7 +26,7 @@ func (h *Handler) UpdateNotif(ctx context.Context) (*npool.Notif, error) {
 
 	lockKey := fmt.Sprintf(
 		"%v:%v",
-		basetypes.Prefix_PrefixSetFiat,
+		basetypes.Prefix_PrefixCreateNotif,
 		*h.ID,
 	)
 	if err := redis2.TryLock(lockKey, 0); err != nil {

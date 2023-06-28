@@ -104,6 +104,7 @@ func WithUsedFor(_usedFor *basetypes.UsedFor) func(context.Context, *Handler) er
 		case basetypes.UsedFor_KYCApproved:
 		case basetypes.UsedFor_KYCRejected:
 		case basetypes.UsedFor_Announcement:
+		case basetypes.UsedFor_GoodBenefit:
 		default:
 			return fmt.Errorf("invalid usedfor")
 		}
@@ -204,6 +205,7 @@ func WithReqs(reqs []*npool.SMSTemplateReq) func(context.Context, *Handler) erro
 				case basetypes.UsedFor_KYCApproved:
 				case basetypes.UsedFor_KYCRejected:
 				case basetypes.UsedFor_Announcement:
+				case basetypes.UsedFor_GoodBenefit:
 				default:
 					return fmt.Errorf("invalid usedfor")
 				}
@@ -274,6 +276,7 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			case int32(basetypes.UsedFor_KYCApproved):
 			case int32(basetypes.UsedFor_KYCRejected):
 			case int32(basetypes.UsedFor_Announcement):
+			case int32(basetypes.UsedFor_GoodBenefit):
 			default:
 				return fmt.Errorf("invalid usedfor")
 			}

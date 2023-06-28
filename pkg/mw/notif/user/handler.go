@@ -97,6 +97,7 @@ func WithEventType(eventtype *basetypes.UsedFor) func(context.Context, *Handler)
 	}
 }
 
+//nolint
 func WithReqs(reqs []*npool.NotifUserReq) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		_reqs := []*usercrud.Req{}

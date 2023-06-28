@@ -98,6 +98,16 @@ func WithState(state *basetypes.Result) func(context.Context, *Handler) error {
 	}
 }
 
+func WithMessage(message *string) func(context.Context, *Handler) error {
+	return func(ctx context.Context, h *Handler) error {
+		if message == nil || *message == "" {
+			return fmt.Errorf("invalid message")
+		}
+		h.Message = message
+		return nil
+	}
+}
+
 func WithNotified(notified *bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		h.Notified = notified

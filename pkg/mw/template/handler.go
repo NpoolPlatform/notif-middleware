@@ -92,6 +92,7 @@ func WithUsedFor(_usedFor *basetypes.UsedFor) func(context.Context, *Handler) er
 		case basetypes.UsedFor_DepositReceived:
 		case basetypes.UsedFor_KYCApproved:
 		case basetypes.UsedFor_KYCRejected:
+		case basetypes.UsedFor_GoodBenefit:
 		default:
 			return fmt.Errorf("invalid %v usedfor", *_usedFor)
 		}

@@ -113,6 +113,7 @@ func updateFrontendTemplate(t *testing.T) {
 	var err error
 	info, err = UpdateFrontendTemplate(context.Background(), &appInfo)
 	if assert.Nil(t, err) {
+		ret.UpdatedAt = info.UpdatedAt
 		assert.Equal(t, info, &ret)
 	}
 }

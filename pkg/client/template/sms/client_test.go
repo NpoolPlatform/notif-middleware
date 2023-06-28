@@ -114,6 +114,7 @@ func updateSMSTemplate(t *testing.T) {
 	var err error
 	info, err = UpdateSMSTemplate(context.Background(), &appInfo)
 	if assert.Nil(t, err) {
+		ret.UpdatedAt = info.UpdatedAt
 		assert.Equal(t, info, &ret)
 	}
 }

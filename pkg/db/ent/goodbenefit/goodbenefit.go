@@ -94,7 +94,7 @@ var (
 	// DefaultBenefitDate holds the default value on creation for the "benefit_date" field.
 	DefaultBenefitDate uint32
 	// DefaultTxID holds the default value on creation for the "tx_id" field.
-	DefaultTxID string
+	DefaultTxID func() uuid.UUID
 	// DefaultNotified holds the default value on creation for the "notified" field.
 	DefaultNotified bool
 	// DefaultID holds the default value on creation for the "id" field.

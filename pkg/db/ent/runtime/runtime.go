@@ -296,7 +296,7 @@ func init() {
 	// goodbenefitDescTxID is the schema descriptor for tx_id field.
 	goodbenefitDescTxID := goodbenefitFields[7].Descriptor()
 	// goodbenefit.DefaultTxID holds the default value on creation for the tx_id field.
-	goodbenefit.DefaultTxID = goodbenefitDescTxID.Default.(string)
+	goodbenefit.DefaultTxID = goodbenefitDescTxID.Default.(func() uuid.UUID)
 	// goodbenefitDescNotified is the schema descriptor for notified field.
 	goodbenefitDescNotified := goodbenefitFields[8].Descriptor()
 	// goodbenefit.DefaultNotified holds the default value on creation for the notified field.

@@ -212,15 +212,15 @@ func (gbu *GoodBenefitUpdate) ClearBenefitDate() *GoodBenefitUpdate {
 }
 
 // SetTxID sets the "tx_id" field.
-func (gbu *GoodBenefitUpdate) SetTxID(s string) *GoodBenefitUpdate {
-	gbu.mutation.SetTxID(s)
+func (gbu *GoodBenefitUpdate) SetTxID(u uuid.UUID) *GoodBenefitUpdate {
+	gbu.mutation.SetTxID(u)
 	return gbu
 }
 
 // SetNillableTxID sets the "tx_id" field if the given value is not nil.
-func (gbu *GoodBenefitUpdate) SetNillableTxID(s *string) *GoodBenefitUpdate {
-	if s != nil {
-		gbu.SetTxID(*s)
+func (gbu *GoodBenefitUpdate) SetNillableTxID(u *uuid.UUID) *GoodBenefitUpdate {
+	if u != nil {
+		gbu.SetTxID(*u)
 	}
 	return gbu
 }
@@ -478,14 +478,14 @@ func (gbu *GoodBenefitUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := gbu.mutation.TxID(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeUUID,
 			Value:  value,
 			Column: goodbenefit.FieldTxID,
 		})
 	}
 	if gbu.mutation.TxIDCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeUUID,
 			Column: goodbenefit.FieldTxID,
 		})
 	}
@@ -706,15 +706,15 @@ func (gbuo *GoodBenefitUpdateOne) ClearBenefitDate() *GoodBenefitUpdateOne {
 }
 
 // SetTxID sets the "tx_id" field.
-func (gbuo *GoodBenefitUpdateOne) SetTxID(s string) *GoodBenefitUpdateOne {
-	gbuo.mutation.SetTxID(s)
+func (gbuo *GoodBenefitUpdateOne) SetTxID(u uuid.UUID) *GoodBenefitUpdateOne {
+	gbuo.mutation.SetTxID(u)
 	return gbuo
 }
 
 // SetNillableTxID sets the "tx_id" field if the given value is not nil.
-func (gbuo *GoodBenefitUpdateOne) SetNillableTxID(s *string) *GoodBenefitUpdateOne {
-	if s != nil {
-		gbuo.SetTxID(*s)
+func (gbuo *GoodBenefitUpdateOne) SetNillableTxID(u *uuid.UUID) *GoodBenefitUpdateOne {
+	if u != nil {
+		gbuo.SetTxID(*u)
 	}
 	return gbuo
 }
@@ -1002,14 +1002,14 @@ func (gbuo *GoodBenefitUpdateOne) sqlSave(ctx context.Context) (_node *GoodBenef
 	}
 	if value, ok := gbuo.mutation.TxID(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeUUID,
 			Value:  value,
 			Column: goodbenefit.FieldTxID,
 		})
 	}
 	if gbuo.mutation.TxIDCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeUUID,
 			Column: goodbenefit.FieldTxID,
 		})
 	}

@@ -4115,7 +4115,7 @@ type GoodBenefitMutation struct {
 	message         *string
 	benefit_date    *uint32
 	addbenefit_date *int32
-	tx_id           *string
+	tx_id           *uuid.UUID
 	notified        *bool
 	clearedFields   map[string]struct{}
 	done            bool
@@ -4711,12 +4711,12 @@ func (m *GoodBenefitMutation) ResetBenefitDate() {
 }
 
 // SetTxID sets the "tx_id" field.
-func (m *GoodBenefitMutation) SetTxID(s string) {
-	m.tx_id = &s
+func (m *GoodBenefitMutation) SetTxID(u uuid.UUID) {
+	m.tx_id = &u
 }
 
 // TxID returns the value of the "tx_id" field in the mutation.
-func (m *GoodBenefitMutation) TxID() (r string, exists bool) {
+func (m *GoodBenefitMutation) TxID() (r uuid.UUID, exists bool) {
 	v := m.tx_id
 	if v == nil {
 		return
@@ -4727,7 +4727,7 @@ func (m *GoodBenefitMutation) TxID() (r string, exists bool) {
 // OldTxID returns the old "tx_id" field's value of the GoodBenefit entity.
 // If the GoodBenefit object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *GoodBenefitMutation) OldTxID(ctx context.Context) (v string, err error) {
+func (m *GoodBenefitMutation) OldTxID(ctx context.Context) (v uuid.UUID, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldTxID is only allowed on UpdateOne operations")
 	}
@@ -4995,7 +4995,7 @@ func (m *GoodBenefitMutation) SetField(name string, value ent.Value) error {
 		m.SetBenefitDate(v)
 		return nil
 	case goodbenefit.FieldTxID:
-		v, ok := value.(string)
+		v, ok := value.(uuid.UUID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

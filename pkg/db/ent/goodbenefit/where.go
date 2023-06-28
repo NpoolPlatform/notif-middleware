@@ -143,7 +143,7 @@ func BenefitDate(v uint32) predicate.GoodBenefit {
 }
 
 // TxID applies equality check predicate on the "tx_id" field. It's identical to TxIDEQ.
-func TxID(v string) predicate.GoodBenefit {
+func TxID(v uuid.UUID) predicate.GoodBenefit {
 	return predicate.GoodBenefit(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldTxID), v))
 	})
@@ -957,21 +957,21 @@ func BenefitDateNotNil() predicate.GoodBenefit {
 }
 
 // TxIDEQ applies the EQ predicate on the "tx_id" field.
-func TxIDEQ(v string) predicate.GoodBenefit {
+func TxIDEQ(v uuid.UUID) predicate.GoodBenefit {
 	return predicate.GoodBenefit(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldTxID), v))
 	})
 }
 
 // TxIDNEQ applies the NEQ predicate on the "tx_id" field.
-func TxIDNEQ(v string) predicate.GoodBenefit {
+func TxIDNEQ(v uuid.UUID) predicate.GoodBenefit {
 	return predicate.GoodBenefit(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldTxID), v))
 	})
 }
 
 // TxIDIn applies the In predicate on the "tx_id" field.
-func TxIDIn(vs ...string) predicate.GoodBenefit {
+func TxIDIn(vs ...uuid.UUID) predicate.GoodBenefit {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -982,7 +982,7 @@ func TxIDIn(vs ...string) predicate.GoodBenefit {
 }
 
 // TxIDNotIn applies the NotIn predicate on the "tx_id" field.
-func TxIDNotIn(vs ...string) predicate.GoodBenefit {
+func TxIDNotIn(vs ...uuid.UUID) predicate.GoodBenefit {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -993,51 +993,30 @@ func TxIDNotIn(vs ...string) predicate.GoodBenefit {
 }
 
 // TxIDGT applies the GT predicate on the "tx_id" field.
-func TxIDGT(v string) predicate.GoodBenefit {
+func TxIDGT(v uuid.UUID) predicate.GoodBenefit {
 	return predicate.GoodBenefit(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldTxID), v))
 	})
 }
 
 // TxIDGTE applies the GTE predicate on the "tx_id" field.
-func TxIDGTE(v string) predicate.GoodBenefit {
+func TxIDGTE(v uuid.UUID) predicate.GoodBenefit {
 	return predicate.GoodBenefit(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldTxID), v))
 	})
 }
 
 // TxIDLT applies the LT predicate on the "tx_id" field.
-func TxIDLT(v string) predicate.GoodBenefit {
+func TxIDLT(v uuid.UUID) predicate.GoodBenefit {
 	return predicate.GoodBenefit(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldTxID), v))
 	})
 }
 
 // TxIDLTE applies the LTE predicate on the "tx_id" field.
-func TxIDLTE(v string) predicate.GoodBenefit {
+func TxIDLTE(v uuid.UUID) predicate.GoodBenefit {
 	return predicate.GoodBenefit(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldTxID), v))
-	})
-}
-
-// TxIDContains applies the Contains predicate on the "tx_id" field.
-func TxIDContains(v string) predicate.GoodBenefit {
-	return predicate.GoodBenefit(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldTxID), v))
-	})
-}
-
-// TxIDHasPrefix applies the HasPrefix predicate on the "tx_id" field.
-func TxIDHasPrefix(v string) predicate.GoodBenefit {
-	return predicate.GoodBenefit(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldTxID), v))
-	})
-}
-
-// TxIDHasSuffix applies the HasSuffix predicate on the "tx_id" field.
-func TxIDHasSuffix(v string) predicate.GoodBenefit {
-	return predicate.GoodBenefit(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldTxID), v))
 	})
 }
 
@@ -1052,20 +1031,6 @@ func TxIDIsNil() predicate.GoodBenefit {
 func TxIDNotNil() predicate.GoodBenefit {
 	return predicate.GoodBenefit(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldTxID)))
-	})
-}
-
-// TxIDEqualFold applies the EqualFold predicate on the "tx_id" field.
-func TxIDEqualFold(v string) predicate.GoodBenefit {
-	return predicate.GoodBenefit(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldTxID), v))
-	})
-}
-
-// TxIDContainsFold applies the ContainsFold predicate on the "tx_id" field.
-func TxIDContainsFold(v string) predicate.GoodBenefit {
-	return predicate.GoodBenefit(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldTxID), v))
 	})
 }
 

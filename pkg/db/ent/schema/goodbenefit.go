@@ -53,9 +53,9 @@ func (GoodBenefit) Fields() []ent.Field {
 			Optional().
 			Default(0),
 		field.
-			String("tx_id").
+			UUID("tx_id", uuid.UUID{}).
 			Optional().
-			Default(""),
+			Default(uuid.New),
 		field.
 			Bool("notified").
 			Optional().

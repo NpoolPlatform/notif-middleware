@@ -137,7 +137,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			goodbenefit.FieldState:       {Type: field.TypeString, Column: goodbenefit.FieldState},
 			goodbenefit.FieldMessage:     {Type: field.TypeString, Column: goodbenefit.FieldMessage},
 			goodbenefit.FieldBenefitDate: {Type: field.TypeUint32, Column: goodbenefit.FieldBenefitDate},
-			goodbenefit.FieldTxID:        {Type: field.TypeString, Column: goodbenefit.FieldTxID},
+			goodbenefit.FieldTxID:        {Type: field.TypeUUID, Column: goodbenefit.FieldTxID},
 			goodbenefit.FieldNotified:    {Type: field.TypeBool, Column: goodbenefit.FieldNotified},
 		},
 	}
@@ -754,8 +754,8 @@ func (f *GoodBenefitFilter) WhereBenefitDate(p entql.Uint32P) {
 	f.Where(p.Field(goodbenefit.FieldBenefitDate))
 }
 
-// WhereTxID applies the entql string predicate on the tx_id field.
-func (f *GoodBenefitFilter) WhereTxID(p entql.StringP) {
+// WhereTxID applies the entql [16]byte predicate on the tx_id field.
+func (f *GoodBenefitFilter) WhereTxID(p entql.ValueP) {
 	f.Where(p.Field(goodbenefit.FieldTxID))
 }
 

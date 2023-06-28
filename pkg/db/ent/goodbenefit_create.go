@@ -150,15 +150,15 @@ func (gbc *GoodBenefitCreate) SetNillableBenefitDate(u *uint32) *GoodBenefitCrea
 }
 
 // SetTxID sets the "tx_id" field.
-func (gbc *GoodBenefitCreate) SetTxID(s string) *GoodBenefitCreate {
-	gbc.mutation.SetTxID(s)
+func (gbc *GoodBenefitCreate) SetTxID(u uuid.UUID) *GoodBenefitCreate {
+	gbc.mutation.SetTxID(u)
 	return gbc
 }
 
 // SetNillableTxID sets the "tx_id" field if the given value is not nil.
-func (gbc *GoodBenefitCreate) SetNillableTxID(s *string) *GoodBenefitCreate {
-	if s != nil {
-		gbc.SetTxID(*s)
+func (gbc *GoodBenefitCreate) SetNillableTxID(u *uuid.UUID) *GoodBenefitCreate {
+	if u != nil {
+		gbc.SetTxID(*u)
 	}
 	return gbc
 }
@@ -319,7 +319,10 @@ func (gbc *GoodBenefitCreate) defaults() error {
 		gbc.mutation.SetBenefitDate(v)
 	}
 	if _, ok := gbc.mutation.TxID(); !ok {
-		v := goodbenefit.DefaultTxID
+		if goodbenefit.DefaultTxID == nil {
+			return fmt.Errorf("ent: uninitialized goodbenefit.DefaultTxID (forgotten import ent/runtime?)")
+		}
+		v := goodbenefit.DefaultTxID()
 		gbc.mutation.SetTxID(v)
 	}
 	if _, ok := gbc.mutation.Notified(); !ok {
@@ -458,7 +461,7 @@ func (gbc *GoodBenefitCreate) createSpec() (*GoodBenefit, *sqlgraph.CreateSpec) 
 	}
 	if value, ok := gbc.mutation.TxID(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeUUID,
 			Value:  value,
 			Column: goodbenefit.FieldTxID,
 		})
@@ -695,7 +698,7 @@ func (u *GoodBenefitUpsert) ClearBenefitDate() *GoodBenefitUpsert {
 }
 
 // SetTxID sets the "tx_id" field.
-func (u *GoodBenefitUpsert) SetTxID(v string) *GoodBenefitUpsert {
+func (u *GoodBenefitUpsert) SetTxID(v uuid.UUID) *GoodBenefitUpsert {
 	u.Set(goodbenefit.FieldTxID, v)
 	return u
 }
@@ -977,7 +980,7 @@ func (u *GoodBenefitUpsertOne) ClearBenefitDate() *GoodBenefitUpsertOne {
 }
 
 // SetTxID sets the "tx_id" field.
-func (u *GoodBenefitUpsertOne) SetTxID(v string) *GoodBenefitUpsertOne {
+func (u *GoodBenefitUpsertOne) SetTxID(v uuid.UUID) *GoodBenefitUpsertOne {
 	return u.Update(func(s *GoodBenefitUpsert) {
 		s.SetTxID(v)
 	})
@@ -1431,7 +1434,7 @@ func (u *GoodBenefitUpsertBulk) ClearBenefitDate() *GoodBenefitUpsertBulk {
 }
 
 // SetTxID sets the "tx_id" field.
-func (u *GoodBenefitUpsertBulk) SetTxID(v string) *GoodBenefitUpsertBulk {
+func (u *GoodBenefitUpsertBulk) SetTxID(v uuid.UUID) *GoodBenefitUpsertBulk {
 	return u.Update(func(s *GoodBenefitUpsert) {
 		s.SetTxID(v)
 	})

@@ -35,7 +35,7 @@ type GoodBenefit struct {
 	// BenefitDate holds the value of the "benefit_date" field.
 	BenefitDate uint32 `json:"benefit_date,omitempty"`
 	// TxID holds the value of the "tx_id" field.
-	TxID string `json:"tx_id,omitempty"`
+	TxID uuid.UUID `json:"tx_id,omitempty"`
 	// Notified holds the value of the "notified" field.
 	Notified bool `json:"notified,omitempty"`
 }
@@ -49,9 +49,9 @@ func (*GoodBenefit) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullBool)
 		case goodbenefit.FieldCreatedAt, goodbenefit.FieldUpdatedAt, goodbenefit.FieldDeletedAt, goodbenefit.FieldBenefitDate:
 			values[i] = new(sql.NullInt64)
-		case goodbenefit.FieldGoodName, goodbenefit.FieldAmount, goodbenefit.FieldState, goodbenefit.FieldMessage, goodbenefit.FieldTxID:
+		case goodbenefit.FieldGoodName, goodbenefit.FieldAmount, goodbenefit.FieldState, goodbenefit.FieldMessage:
 			values[i] = new(sql.NullString)
-		case goodbenefit.FieldID, goodbenefit.FieldGoodID:
+		case goodbenefit.FieldID, goodbenefit.FieldGoodID, goodbenefit.FieldTxID:
 			values[i] = new(uuid.UUID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type GoodBenefit", columns[i])
@@ -129,10 +129,10 @@ func (gb *GoodBenefit) assignValues(columns []string, values []interface{}) erro
 				gb.BenefitDate = uint32(value.Int64)
 			}
 		case goodbenefit.FieldTxID:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*uuid.UUID); !ok {
 				return fmt.Errorf("unexpected type %T for field tx_id", values[i])
-			} else if value.Valid {
-				gb.TxID = value.String
+			} else if value != nil {
+				gb.TxID = *value
 			}
 		case goodbenefit.FieldNotified:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -196,7 +196,7 @@ func (gb *GoodBenefit) String() string {
 	builder.WriteString(fmt.Sprintf("%v", gb.BenefitDate))
 	builder.WriteString(", ")
 	builder.WriteString("tx_id=")
-	builder.WriteString(gb.TxID)
+	builder.WriteString(fmt.Sprintf("%v", gb.TxID))
 	builder.WriteString(", ")
 	builder.WriteString("notified=")
 	builder.WriteString(fmt.Sprintf("%v", gb.Notified))

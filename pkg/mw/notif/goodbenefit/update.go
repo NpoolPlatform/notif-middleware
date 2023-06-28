@@ -14,6 +14,10 @@ func (h *Handler) UpdateGoodBenefit(ctx context.Context) (info *npool.GoodBenefi
 	if h.ID == nil {
 		return nil, fmt.Errorf("id is empty")
 	}
+	if h.Generated == nil {
+		return nil, fmt.Errorf("generated is empty")
+	}
+
 	info, err = h.GetGoodBenefit(ctx)
 	if err != nil {
 		return nil, err

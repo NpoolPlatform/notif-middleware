@@ -111,7 +111,7 @@ func WithMessage(message *string) func(context.Context, *Handler) error {
 func WithGenerated(generated *bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if generated == nil {
-			return fmt.Errorf("generated is empty")
+			return nil
 		}
 		h.Generated = generated
 		return nil

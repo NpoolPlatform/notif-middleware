@@ -48,10 +48,7 @@ func CreateSet(c *ent.GoodBenefitCreate, req *Req) *ent.GoodBenefitCreate {
 	if req.TxID != nil {
 		c.SetTxID(*req.TxID)
 	}
-	if req.Generated != nil {
-		c.SetGenerated(*req.Generated)
-	}
-
+	c.SetGenerated(false)
 	return c
 }
 

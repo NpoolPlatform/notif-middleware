@@ -78,6 +78,23 @@ func createGoodBenefit(t *testing.T) {
 		ret.ID = info.ID
 		assert.Equal(t, info, &ret)
 	}
+
+	_info, err := CreateGoodBenefit(context.Background(), &npool.GoodBenefitReq{
+		GoodID:      &ret2.GoodID,
+		GoodName:    &ret2.GoodName,
+		Amount:      &ret2.Amount,
+		State:       &ret2.State,
+		Message:     &ret2.Message,
+		BenefitDate: &ret2.BenefitDate,
+		TxID:        &ret2.TxID,
+		Notified:    &ret2.Notified,
+	})
+	if assert.Nil(t, err) {
+		ret2.CreatedAt = _info.CreatedAt
+		ret2.UpdatedAt = _info.UpdatedAt
+		ret2.ID = _info.ID
+		assert.Equal(t, _info, &ret2)
+	}
 }
 
 func updateGoodBenefit(t *testing.T) {
@@ -88,6 +105,13 @@ func updateGoodBenefit(t *testing.T) {
 	})
 	if assert.Nil(t, err) {
 		ret.UpdatedAt = info.UpdatedAt
+		assert.Equal(t, info, &ret)
+	}
+}
+
+func getGoodBenefit(t *testing.T) {
+	info, err := GetGoodBenefit(context.Background(), ret.ID)
+	if assert.Nil(t, err) {
 		assert.Equal(t, info, &ret)
 	}
 }
@@ -126,6 +150,18 @@ func deleteGoodBenefit(t *testing.T) {
 	info, err = handler.GetGoodBenefit(context.Background())
 	assert.Nil(t, err)
 	assert.Nil(t, info)
+
+	_id, err := uuid.Parse(ret2.ID)
+	assert.Nil(t, err)
+	handler.ID = &_id
+
+	_info, err := handler.DeleteGoodBenefit(context.Background())
+	assert.Nil(t, err)
+	assert.NotNil(t, _info)
+
+	_info, err = handler.GetGoodBenefit(context.Background())
+	assert.Nil(t, err)
+	assert.Nil(t, _info)
 }
 
 func TestClient(t *testing.T) {
@@ -141,7 +177,7 @@ func TestClient(t *testing.T) {
 
 	t.Run("createGoodBenefit", createGoodBenefit)
 	t.Run("updateGoodBenefit", updateGoodBenefit)
-	t.Run("getGoodBenefits", getGoodBenefits)
+	t.Run("getGoodBenefits", getGoodBenefit)
 	t.Run("getGoodBenefits", getGoodBenefits)
 	t.Run("deleteGoodBenefit", deleteGoodBenefit)
 }

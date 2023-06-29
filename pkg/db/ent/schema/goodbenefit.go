@@ -55,7 +55,9 @@ func (GoodBenefit) Fields() []ent.Field {
 		field.
 			UUID("tx_id", uuid.UUID{}).
 			Optional().
-			Default(uuid.New),
+			Default(func() uuid.UUID {
+				return uuid.UUID{}
+			}),
 		field.
 			Bool("generated").
 			Optional().

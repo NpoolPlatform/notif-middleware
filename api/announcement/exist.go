@@ -28,7 +28,7 @@ func (s *Server) ExistAnnouncement(
 			"In", in,
 			"Error", err,
 		)
-		return &npool.ExistAnnouncementResponse{}, status.Error(codes.InvalidArgument, err.Error())
+		return &npool.ExistAnnouncementResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
 	exist, err := handler.ExistAnnouncement(ctx)
@@ -38,7 +38,7 @@ func (s *Server) ExistAnnouncement(
 			"In", in,
 			"Error", err,
 		)
-		return &npool.ExistAnnouncementResponse{}, status.Error(codes.Internal, err.Error())
+		return &npool.ExistAnnouncementResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
 	return &npool.ExistAnnouncementResponse{

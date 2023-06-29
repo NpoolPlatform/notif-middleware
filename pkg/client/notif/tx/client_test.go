@@ -9,7 +9,6 @@ import (
 
 	"github.com/NpoolPlatform/go-service-framework/pkg/config"
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
-	valuedef "github.com/NpoolPlatform/message/npool"
 
 	"bou.ke/monkey"
 	grpc2 "github.com/NpoolPlatform/go-service-framework/pkg/grpc"
@@ -19,7 +18,7 @@ import (
 	"github.com/NpoolPlatform/notif-middleware/pkg/testinit"
 
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
-	mgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/notif/tx"
+	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/tx"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/google/uuid"
@@ -35,65 +34,82 @@ func init() {
 }
 
 var (
-	txState = mgrpb.TxState_WaitNotified
-	txType  = basetypes.TxType_TxWithdraw
-	data    = &mgrpb.Tx{
-		ID:         uuid.NewString(),
-		TxID:       uuid.NewString(),
-		NotifState: txState,
-		TxType:     txType,
+	ret = npool.Tx{
+		ID:            uuid.NewString(),
+		TxID:          uuid.NewString(),
+		NotifState:    npool.TxState_WaitNotified,
+		NotifStateStr: npool.TxState_WaitNotified.String(),
+		TxType:        basetypes.TxType_TxWithdraw,
+		TxTypeStr:     basetypes.TxType_TxWithdraw.String(),
 	}
 )
 
-var dataReq = &mgrpb.TxReq{
-	ID:         &data.ID,
-	TxID:       &data.TxID,
-	NotifState: &data.NotifState,
-	TxType:     &data.TxType,
-}
-
 func createTx(t *testing.T) {
-	info, err := CreateTx(context.Background(), dataReq)
+	info, err := CreateTx(context.Background(), &npool.TxReq{
+		TxID:       &ret.TxID,
+		NotifState: &ret.NotifState,
+		TxType:     &ret.TxType,
+	})
 	if assert.Nil(t, err) {
-		data.CreatedAt = info.CreatedAt
-		data.UpdatedAt = info.UpdatedAt
-		assert.Equal(t, data, info)
+		ret.CreatedAt = info.CreatedAt
+		ret.UpdatedAt = info.UpdatedAt
+		ret.ID = info.ID
+		assert.Equal(t, info, &ret)
 	}
 }
 
 func updateTx(t *testing.T) {
-	info, err := UpdateTx(context.Background(), dataReq)
+	ret.NotifState = npool.TxState_Notified
+	ret.NotifStateStr = npool.TxState_Notified.String()
+	info, err := UpdateTx(context.Background(), &npool.TxReq{
+		ID:         &ret.ID,
+		NotifState: &ret.NotifState,
+	})
 	if assert.Nil(t, err) {
-		data.CreatedAt = info.CreatedAt
-		data.UpdatedAt = info.UpdatedAt
-		assert.Equal(t, data, info)
+		ret.UpdatedAt = info.UpdatedAt
+		assert.Equal(t, info, &ret)
 	}
 }
 
 func getTxs(t *testing.T) {
-	infos, total, err := GetTxs(context.Background(), &mgrpb.Conds{
-		ID: &valuedef.StringVal{
+	infos, _, err := GetTxs(context.Background(), &npool.Conds{
+		ID: &basetypes.StringVal{
 			Op:    cruder.EQ,
-			Value: data.ID,
+			Value: ret.ID,
+		},
+		TxID: &basetypes.StringVal{
+			Op:    cruder.EQ,
+			Value: ret.TxID,
+		},
+		NotifState: &basetypes.Uint32Val{
+			Op:    cruder.EQ,
+			Value: uint32(ret.NotifState),
+		},
+		TxTypes: &basetypes.Uint32SliceVal{
+			Op: cruder.IN, Value: []uint32{uint32(ret.TxType)},
 		},
 	}, 0, 1)
 	if assert.Nil(t, err) {
-		assert.Equal(t, total, uint32(1))
-		assert.Equal(t, infos[0].String(), data.String())
+		assert.NotEqual(t, len(infos), 0)
 	}
 }
 
 func getTxOnly(t *testing.T) {
-	info, err := GetTxOnly(context.Background(), &mgrpb.Conds{
-		ID: &valuedef.StringVal{
+	info, err := GetTxOnly(context.Background(), &npool.Conds{
+		ID: &basetypes.StringVal{
 			Op:    cruder.EQ,
-			Value: data.ID,
+			Value: ret.ID,
+		},
+		NotifState: &basetypes.Uint32Val{
+			Op:    cruder.EQ,
+			Value: uint32(ret.NotifState),
 		},
 	})
 	if assert.Nil(t, err) {
-		assert.Equal(t, info.String(), data.String())
+		assert.Equal(t, info, &ret)
 	}
 }
+
 func TestClient(t *testing.T) {
 	if runByGithubAction, err := strconv.ParseBool(os.Getenv("RUN_BY_GITHUB_ACTION")); err == nil && runByGithubAction {
 		return

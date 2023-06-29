@@ -8,24 +8,22 @@ import (
 	"testing"
 
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
-	"github.com/NpoolPlatform/message/npool/notif/mgr/v1/channel"
-
-	crud "github.com/NpoolPlatform/notif-manager/pkg/crud/notif/channel"
 
 	"github.com/NpoolPlatform/go-service-framework/pkg/config"
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
-	valuedef "github.com/NpoolPlatform/message/npool"
 
 	"bou.ke/monkey"
-	grpc2 "github.com/NpoolPlatform/go-service-framework/pkg/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
 	"github.com/NpoolPlatform/notif-middleware/pkg/testinit"
 
-	mgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/notif/channel"
+	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/channel"
 	"github.com/stretchr/testify/assert"
 
+	appmwcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/app"
+	grpc2 "github.com/NpoolPlatform/go-service-framework/pkg/grpc"
+	appmwpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/app"
 	"github.com/google/uuid"
 )
 
@@ -39,54 +37,107 @@ func init() {
 }
 
 var (
-	eventType = basetypes.UsedFor_KYCApproved
-	channel1  = channel.NotifChannel_ChannelFrontend
-	data      = &mgrpb.Channel{
-		ID:        uuid.NewString(),
-		AppID:     uuid.NewString(),
-		EventType: eventType,
-		Channel:   channel1,
+	appID = uuid.NewString()
+	ret   = npool.Channel{
+		AppID:        appID,
+		EventType:    basetypes.UsedFor_KYCApproved,
+		EventTypeStr: basetypes.UsedFor_KYCApproved.String(),
+		Channel:      basetypes.NotifChannel_ChannelEmail,
+		ChannelStr:   basetypes.NotifChannel_ChannelEmail.String(),
 	}
 )
 
-var dataReq = &mgrpb.ChannelReq{
-	ID:        &data.ID,
-	AppID:     &data.AppID,
-	EventType: &data.EventType,
-	Channel:   &data.Channel,
-}
-
-func getChannels(t *testing.T) {
-	_, err := crud.Create(context.Background(), dataReq)
-	assert.Nil(t, err)
-
-	infos, total, err := GetChannels(context.Background(), &mgrpb.Conds{
-		ID: &valuedef.StringVal{
-			Op:    cruder.EQ,
-			Value: data.ID,
+func setupChannel(t *testing.T) func(*testing.T) {
+	app1, err := appmwcli.CreateApp(
+		context.Background(),
+		&appmwpb.AppReq{
+			ID:        &appID,
+			CreatedBy: &appID,
+			Name:      &appID,
 		},
-	}, 0, 1)
-	if assert.Nil(t, err) {
-		data.CreatedAt = infos[0].CreatedAt
-		data.UpdatedAt = infos[0].UpdatedAt
-		assert.Equal(t, total, uint32(1))
-		assert.Equal(t, infos[0].String(), data.String())
+	)
+	assert.Nil(t, err)
+	assert.NotNil(t, app1)
+
+	ret.AppID = app1.ID
+
+	return func(*testing.T) {
+		_, _ = appmwcli.DeleteApp(context.Background(), ret.AppID)
 	}
 }
 
-func getChannelOnly(t *testing.T) {
-	info, err := GetChannelOnly(context.Background(), &mgrpb.Conds{
-		ID: &valuedef.StringVal{
-			Op:    cruder.EQ,
-			Value: data.ID,
+func createChannel(t *testing.T) {
+	info, err := CreateChannel(context.Background(), &npool.ChannelReq{
+		AppID:     &ret.AppID,
+		EventType: &ret.EventType,
+		Channel:   &ret.Channel,
+	})
+	if assert.Nil(t, err) {
+		ret.CreatedAt = info.CreatedAt
+		ret.UpdatedAt = info.UpdatedAt
+		ret.ID = info.ID
+		assert.Equal(t, info, &ret)
+	}
+}
+
+func existChannelConds(t *testing.T) {
+	exist, err := ExistChannelConds(context.Background(), &npool.ExistChannelCondsRequest{
+		Conds: &npool.Conds{
+			AppID: &basetypes.StringVal{
+				Op:    cruder.EQ,
+				Value: ret.AppID,
+			},
+			EventType: &basetypes.Uint32Val{
+				Op:    cruder.EQ,
+				Value: uint32(ret.EventType),
+			},
+			Channel: &basetypes.Uint32Val{
+				Op:    cruder.EQ,
+				Value: uint32(ret.Channel),
+			},
 		},
 	})
 	if assert.Nil(t, err) {
-		data.CreatedAt = info.CreatedAt
-		data.UpdatedAt = info.UpdatedAt
-		assert.Equal(t, info.String(), data.String())
+		assert.True(t, exist)
 	}
 }
+
+func getChannel(t *testing.T) {
+	info, err := GetChannel(context.Background(), ret.AppID, ret.ID)
+	assert.Nil(t, err)
+	assert.NotNil(t, info)
+}
+
+func getChannels(t *testing.T) {
+	infos, _, err := GetChannels(context.Background(), &npool.Conds{
+		AppID: &basetypes.StringVal{
+			Op:    cruder.EQ,
+			Value: ret.AppID,
+		},
+		EventType: &basetypes.Uint32Val{
+			Op:    cruder.EQ,
+			Value: uint32(ret.EventType),
+		},
+		Channel: &basetypes.Uint32Val{
+			Op:    cruder.EQ,
+			Value: uint32(ret.Channel),
+		},
+	}, 0, 1)
+	if assert.Nil(t, err) {
+		assert.NotEqual(t, len(infos), 0)
+	}
+}
+
+func deleteChannel(t *testing.T) {
+	info, err := DeleteChannel(context.Background(), ret.ID)
+	if assert.Nil(t, err) {
+		assert.Equal(t, info, &ret)
+	}
+	info, err = GetChannel(context.Background(), info.AppID, info.ID)
+	assert.Nil(t, err)
+	assert.Nil(t, info)
+}
+
 func TestClient(t *testing.T) {
 	if runByGithubAction, err := strconv.ParseBool(os.Getenv("RUN_BY_GITHUB_ACTION")); err == nil && runByGithubAction {
 		return
@@ -94,10 +145,18 @@ func TestClient(t *testing.T) {
 
 	gport := config.GetIntValueWithNameSpace("", config.KeyGRPCPort)
 
-	monkey.Patch(grpc2.GetGRPCConn, func(service string, tags ...string) (*grpc.ClientConn, error) {
+	teardown := setupChannel(t)
+	defer teardown(t)
+
+	patch := monkey.Patch(grpc2.GetGRPCConn, func(service string, tags ...string) (*grpc.ClientConn, error) {
 		return grpc.Dial(fmt.Sprintf("localhost:%v", gport), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	})
 
+	t.Run("createChannels", createChannel)
+	t.Run("getChannel", getChannel)
+	t.Run("existChannelConds", existChannelConds)
 	t.Run("getChannels", getChannels)
-	t.Run("getChannelOnly", getChannelOnly)
+	t.Run("deleteChannel", deleteChannel)
+
+	patch.Unpatch()
 }

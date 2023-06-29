@@ -4,45 +4,43 @@ package tx
 import (
 	"context"
 
-	mgrcli "github.com/NpoolPlatform/notif-manager/pkg/client/notif/tx"
-
-	constant "github.com/NpoolPlatform/notif-middleware/pkg/message/const"
-
-	"go.opentelemetry.io/otel"
-	scodes "go.opentelemetry.io/otel/codes"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
-
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/tx"
+	tx1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/notif/tx"
+
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
-func (s *Server) CreateTx(
-	ctx context.Context,
-	in *npool.CreateTxRequest,
-) (
-	*npool.CreateTxResponse,
-	error,
-) {
-	var err error
-
-	_, span := otel.Tracer(constant.ServiceName).Start(ctx, "CreateTx")
-	defer span.End()
-
-	defer func() {
-		if err != nil {
-			span.SetStatus(scodes.Error, err.Error())
-			span.RecordError(err)
-		}
-	}()
-
-	row, err := mgrcli.CreateTx(ctx, in.GetInfo())
+func (s *Server) CreateTx(ctx context.Context, in *npool.CreateTxRequest) (*npool.CreateTxResponse, error) {
+	req := in.GetInfo()
+	handler, err := tx1.NewHandler(
+		ctx,
+		tx1.WithID(req.ID),
+		tx1.WithTxID(req.TxID),
+		tx1.WithTxType(req.TxType),
+		tx1.WithNotifState(req.NotifState),
+	)
 	if err != nil {
-		logger.Sugar().Errorw("CreateTx", "error", err)
-		return &npool.CreateTxResponse{}, status.Error(codes.Internal, err.Error())
+		logger.Sugar().Errorw(
+			"CreateTx",
+			"Req", in,
+			"Error", err,
+		)
+		return &npool.CreateTxResponse{}, status.Error(codes.Aborted, err.Error())
+	}
+
+	info, err := handler.CreateTx(ctx)
+	if err != nil {
+		logger.Sugar().Errorw(
+			"CreateTx",
+			"Req", in,
+			"Error", err,
+		)
+		return &npool.CreateTxResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
 	return &npool.CreateTxResponse{
-		Info: row,
+		Info: info,
 	}, nil
 }

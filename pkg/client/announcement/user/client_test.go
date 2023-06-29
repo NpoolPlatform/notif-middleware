@@ -3,18 +3,16 @@ package user
 import (
 	"context"
 	"fmt"
+	"math/rand"
 
 	"os"
 	"strconv"
 	"testing"
 	"time"
 
-	announcementcrud "github.com/NpoolPlatform/notif-manager/pkg/crud/announcement"
-	userstatecrud "github.com/NpoolPlatform/notif-manager/pkg/crud/announcement/user"
 	"github.com/google/uuid"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
-	valuedef "github.com/NpoolPlatform/message/npool"
 
 	"github.com/NpoolPlatform/go-service-framework/pkg/config"
 
@@ -25,10 +23,14 @@ import (
 
 	"github.com/NpoolPlatform/notif-middleware/pkg/testinit"
 
-	announcementmgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/announcement"
-	usermgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/announcement/user"
-	channelpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/channel"
+	appmwcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/app"
+	appusercli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
+	appmwpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/app"
+	appuserpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/user"
+	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
+	amtpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/user"
+	announcement1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -42,62 +44,134 @@ func init() {
 }
 
 var (
-	aType = announcementmgrpb.AnnouncementType_Multicast
-	data  = npool.User{
-		ID:                  uuid.NewString(),
-		AnnouncementID:      uuid.NewString(),
-		AppID:               uuid.NewString(),
-		UserID:              uuid.NewString(),
+	appID = uuid.NewString()
+	amt   = amtpb.Announcement{
+		AppID:               appID,
+		LangID:              uuid.NewString(),
 		Title:               uuid.NewString(),
 		Content:             uuid.NewString(),
-		ChannelStr:          "ChannelEmail",
-		Channel:             channelpb.NotifChannel_ChannelEmail,
-		AnnouncementTypeStr: aType.String(),
-		AnnouncementType:    aType,
+		Channel:             basetypes.NotifChannel_ChannelEmail,
+		ChannelStr:          basetypes.NotifChannel_ChannelEmail.String(),
+		AnnouncementType:    basetypes.NotifType_NotifMulticast,
+		AnnouncementTypeStr: basetypes.NotifType_NotifMulticast.String(),
+		StartAt:             uint32(time.Now().Add(10 * time.Minute).Unix()),
+		EndAt:               uint32(time.Now().Add(1 * time.Hour).Unix()),
+	}
+
+	ret = npool.AnnouncementUser{
+		AppID:            appID,
+		AnnouncementID:   "",
+		UserID:           "",
+		LangID:           amt.LangID,
+		Title:            amt.Title,
+		Content:          amt.Content,
+		Channel:          amt.ChannelStr,
+		AnnouncementType: amt.AnnouncementTypeStr,
+		EndAt:            amt.EndAt,
 	}
 )
 
-func getUsers(t *testing.T) {
-	endAt := uint32(time.Now().Add(1 * time.Hour).Unix())
-	_, err := announcementcrud.Create(context.Background(), &announcementmgrpb.AnnouncementReq{
-		ID:               &data.AnnouncementID,
-		AppID:            &data.AppID,
-		Title:            &data.Title,
-		Content:          &data.Content,
-		Channel:          &data.Channel,
-		EndAt:            &endAt,
-		AnnouncementType: &aType,
-	})
+func setupAnnouncementUser(t *testing.T) func(*testing.T) {
+	app1, err := appmwcli.CreateApp(
+		context.Background(),
+		&appmwpb.AppReq{
+			ID:        &appID,
+			CreatedBy: &appID,
+			Name:      &appID,
+		},
+	)
+	assert.Nil(t, err)
+	assert.NotNil(t, app1)
+
+	var (
+		id           = uuid.NewString()
+		appID        = app1.ID
+		emailAddress = fmt.Sprintf("%v@hhh.ccc", rand.Intn(100000000)+1000000) //nolint
+		passwordHash = uuid.NewString()
+		req          = &appuserpb.UserReq{
+			ID:           &id,
+			AppID:        &appID,
+			EmailAddress: &emailAddress,
+			PasswordHash: &passwordHash,
+		}
+	)
+
+	user, err := appusercli.CreateUser(context.Background(), req)
+	assert.Nil(t, err)
+	assert.NotNil(t, user)
+
+	ret.UserID = user.ID
+
+	handler, err := announcement1.NewHandler(
+		context.Background(),
+		announcement1.WithTitle(&amt.Title),
+		announcement1.WithContent(&amt.Content),
+		announcement1.WithAppID(&amt.AppID),
+		announcement1.WithLangID(&amt.LangID),
+		announcement1.WithChannel(&amt.Channel),
+		announcement1.WithAnnouncementType(&amt.AnnouncementType),
+		announcement1.WithStartAt(&amt.StartAt),
+		announcement1.WithEndAt(&amt.EndAt),
+	)
 	assert.Nil(t, err)
 
-	_, err = userstatecrud.Create(context.Background(), &usermgrpb.UserReq{
-		ID:             &data.ID,
-		AppID:          &data.AppID,
-		UserID:         &data.UserID,
-		AnnouncementID: &data.AnnouncementID,
-	})
+	_amt, err := handler.CreateAnnouncement(context.Background())
 	assert.Nil(t, err)
+	assert.NotNil(t, _amt)
 
-	infos, total, err := GetUsers(context.Background(), &usermgrpb.Conds{
-		AppID: &valuedef.StringVal{
+	ret.AnnouncementID = _amt.ID
+
+	_id, err := uuid.Parse(_amt.ID)
+	assert.Nil(t, err)
+	handler.ID = &_id
+
+	return func(*testing.T) {
+		_, _ = appmwcli.DeleteApp(context.Background(), ret.AppID)
+		_, _ = appusercli.DeleteUser(context.Background(), ret.AppID, ret.UserID)
+		_, _ = handler.DeleteAnnouncement(context.Background())
+	}
+}
+
+func createAnnouncementUser(t *testing.T) {
+	info, err := CreateAnnouncementUser(context.Background(), &npool.AnnouncementUserReq{
+		AppID:          &ret.AppID,
+		UserID:         &ret.UserID,
+		AnnouncementID: &ret.AnnouncementID,
+	})
+	if assert.Nil(t, err) {
+		ret.CreatedAt = info.CreatedAt
+		ret.UpdatedAt = info.UpdatedAt
+		ret.ID = info.ID
+		assert.Equal(t, info, &ret)
+	}
+}
+
+func getAnnouncementUser(t *testing.T) {
+	info, err := GetAnnouncementUser(context.Background(), ret.AppID, ret.ID)
+	assert.Nil(t, err)
+	assert.NotNil(t, info)
+}
+
+func getAnnouncementUsers(t *testing.T) {
+	infos, _, err := GetAnnouncementUsers(context.Background(), &npool.Conds{
+		ID: &basetypes.StringVal{
 			Op:    cruder.EQ,
-			Value: data.AppID,
-		},
-		UserID: &valuedef.StringVal{
-			Op:    cruder.EQ,
-			Value: data.UserID,
-		},
-		AnnouncementID: &valuedef.StringVal{
-			Op:    cruder.EQ,
-			Value: data.AnnouncementID,
+			Value: ret.ID,
 		},
 	}, 0, 1)
 	if assert.Nil(t, err) {
-		assert.Equal(t, total, uint32(1))
-		data.CreatedAt = infos[0].CreatedAt
-		data.UpdatedAt = infos[0].UpdatedAt
-		assert.Equal(t, infos[0], &data)
+		assert.NotEqual(t, len(infos), 0)
 	}
+}
+
+func deleteAnnouncementUser(t *testing.T) {
+	info, err := DeleteAnnouncementUser(context.Background(), ret.ID)
+	if assert.Nil(t, err) {
+		assert.Equal(t, info, &ret)
+	}
+	info, err = GetAnnouncementUser(context.Background(), info.AppID, info.ID)
+	assert.Nil(t, err)
+	assert.Nil(t, info)
 }
 
 func TestClient(t *testing.T) {
@@ -107,8 +181,16 @@ func TestClient(t *testing.T) {
 
 	gport := config.GetIntValueWithNameSpace("", config.KeyGRPCPort)
 
-	monkey.Patch(grpc2.GetGRPCConn, func(service string, tags ...string) (*grpc.ClientConn, error) {
+	teardown := setupAnnouncementUser(t)
+	defer teardown(t)
+
+	patch := monkey.Patch(grpc2.GetGRPCConn, func(service string, tags ...string) (*grpc.ClientConn, error) {
 		return grpc.Dial(fmt.Sprintf("localhost:%v", gport), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	})
-	t.Run("getUsers", getUsers)
+	t.Run("createAnnouncementUser", createAnnouncementUser)
+	t.Run("getAnnouncementUser", getAnnouncementUser)
+	t.Run("getAnnouncementUsers", getAnnouncementUsers)
+	t.Run("deleteAnnouncementUser", deleteAnnouncementUser)
+
+	patch.Unpatch()
 }

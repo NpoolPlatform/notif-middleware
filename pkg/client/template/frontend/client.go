@@ -7,68 +7,94 @@ import (
 	"time"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
-	mgrpb "github.com/NpoolPlatform/message/npool/notif/mgr/v1/template/frontend"
 
 	grpc2 "github.com/NpoolPlatform/go-service-framework/pkg/grpc"
 
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/template/frontend"
 
-	constant "github.com/NpoolPlatform/notif-middleware/pkg/message/const"
+	servicename "github.com/NpoolPlatform/notif-middleware/pkg/servicename"
 )
 
-var timeout = 10 * time.Second
-
-type handler func(context.Context, npool.MiddlewareClient) (cruder.Any, error)
-
-func do(ctx context.Context, handler handler) (cruder.Any, error) {
-	_ctx, cancel := context.WithTimeout(ctx, timeout)
+func do(ctx context.Context, fn func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error)) (cruder.Any, error) {
+	_ctx, cancel := context.WithTimeout(ctx, 10*time.Second) //nolint
 	defer cancel()
 
-	conn, err := grpc2.GetGRPCConn(constant.ServiceName, grpc2.GRPCTAG)
+	conn, err := grpc2.GetGRPCConn(servicename.ServiceDomain, grpc2.GRPCTAG)
 	if err != nil {
 		return nil, err
 	}
-
 	defer conn.Close()
 
 	cli := npool.NewMiddlewareClient(conn)
 
-	return handler(_ctx, cli)
+	return fn(_ctx, cli)
 }
 
-func GetFrontendTemplate(ctx context.Context, id string) (*mgrpb.FrontendTemplate, error) {
+func CreateFrontendTemplate(ctx context.Context, req *npool.FrontendTemplateReq) (*npool.FrontendTemplate, error) {
+	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		resp, err := cli.CreateFrontendTemplate(ctx, &npool.CreateFrontendTemplateRequest{
+			Info: req,
+		})
+		if err != nil {
+			return nil, err
+		}
+		return resp.Info, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return info.(*npool.FrontendTemplate), nil
+}
+
+func CreateFrontendTemplates(ctx context.Context, reqs []*npool.FrontendTemplateReq) ([]*npool.FrontendTemplate, error) {
+	infos, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		resp, err := cli.CreateFrontendTemplates(ctx, &npool.CreateFrontendTemplatesRequest{
+			Infos: reqs,
+		})
+		if err != nil {
+			return nil, err
+		}
+		return resp.Infos, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return infos.([]*npool.FrontendTemplate), nil
+}
+
+func UpdateFrontendTemplate(ctx context.Context, req *npool.FrontendTemplateReq) (*npool.FrontendTemplate, error) {
+	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		resp, err := cli.UpdateFrontendTemplate(ctx, &npool.UpdateFrontendTemplateRequest{
+			Info: req,
+		})
+		if err != nil {
+			return nil, err
+		}
+		return resp.Info, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return info.(*npool.FrontendTemplate), nil
+}
+
+func GetFrontendTemplate(ctx context.Context, id string) (*npool.FrontendTemplate, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.GetFrontendTemplate(ctx, &npool.GetFrontendTemplateRequest{
 			ID: id,
 		})
 		if err != nil {
-			return nil, fmt.Errorf("fail get frontend: %v", err)
+			return nil, err
 		}
 		return resp.Info, nil
 	})
 	if err != nil {
-		return nil, fmt.Errorf("fail get frontend: %v", err)
+		return nil, err
 	}
-	return info.(*mgrpb.FrontendTemplate), nil
+	return info.(*npool.FrontendTemplate), nil
 }
 
-func GetFrontendTemplateOnly(ctx context.Context, conds *mgrpb.Conds) (*mgrpb.FrontendTemplate, error) {
-	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		resp, err := cli.GetFrontendTemplateOnly(ctx, &npool.GetFrontendTemplateOnlyRequest{
-			Conds: conds,
-		})
-		if err != nil {
-			return nil, fmt.Errorf("fail get frontend: %v", err)
-		}
-		return resp.Info, nil
-	})
-	if err != nil {
-		return nil, fmt.Errorf("fail get frontend: %v", err)
-	}
-	return info.(*mgrpb.FrontendTemplate), nil
-}
-
-func GetFrontendTemplates(ctx context.Context, conds *mgrpb.Conds, offset, limit uint32) ([]*mgrpb.FrontendTemplate, uint32, error) {
+func GetFrontendTemplates(ctx context.Context, conds *npool.Conds, offset, limit int32) ([]*npool.FrontendTemplate, uint32, error) {
 	var total uint32
 	infos, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.GetFrontendTemplates(ctx, &npool.GetFrontendTemplatesRequest{
@@ -77,13 +103,86 @@ func GetFrontendTemplates(ctx context.Context, conds *mgrpb.Conds, offset, limit
 			Limit:  limit,
 		})
 		if err != nil {
-			return nil, fmt.Errorf("fail get frontend: %v", err)
+			return nil, err
 		}
 		total = resp.GetTotal()
 		return resp.Infos, nil
 	})
 	if err != nil {
-		return nil, 0, fmt.Errorf("fail get frontend: %v", err)
+		return nil, 0, err
 	}
-	return infos.([]*mgrpb.FrontendTemplate), total, nil
+	return infos.([]*npool.FrontendTemplate), total, nil
+}
+
+func GetFrontendTemplateOnly(ctx context.Context, conds *npool.Conds) (*npool.FrontendTemplate, error) {
+	infos, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		const singleRowLimit = 2
+		resp, err := cli.GetFrontendTemplates(ctx, &npool.GetFrontendTemplatesRequest{
+			Conds:  conds,
+			Offset: 0,
+			Limit:  singleRowLimit,
+		})
+		if err != nil {
+			return nil, err
+		}
+		return resp.Infos, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	if len(infos.([]*npool.FrontendTemplate)) == 0 {
+		return nil, nil
+	}
+	if len(infos.([]*npool.FrontendTemplate)) > 1 {
+		return nil, fmt.Errorf("too many record")
+	}
+	return infos.([]*npool.FrontendTemplate)[0], nil
+}
+
+func DeleteFrontendTemplate(ctx context.Context, req *npool.FrontendTemplateReq) (*npool.FrontendTemplate, error) {
+	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		resp, err := cli.DeleteFrontendTemplate(ctx, &npool.DeleteFrontendTemplateRequest{
+			Info: req,
+		})
+		if err != nil {
+			return nil, err
+		}
+		return resp.Info, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return info.(*npool.FrontendTemplate), nil
+}
+
+func ExistFrontendTemplate(ctx context.Context, id string) (bool, error) {
+	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		resp, err := cli.ExistFrontendTemplate(ctx, &npool.ExistFrontendTemplateRequest{
+			ID: id,
+		})
+		if err != nil {
+			return nil, err
+		}
+		return resp.Info, nil
+	})
+	if err != nil {
+		return false, err
+	}
+	return info.(bool), nil
+}
+
+func ExistFrontendTemplateConds(ctx context.Context, conds *npool.Conds) (bool, error) {
+	infos, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		resp, err := cli.ExistFrontendTemplateConds(ctx, &npool.ExistFrontendTemplateCondsRequest{
+			Conds: conds,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("fail get frontendtemplate: %v", err)
+		}
+		return resp.GetInfo(), nil
+	})
+	if err != nil {
+		return false, fmt.Errorf("fail get frontendtemplate: %v", err)
+	}
+	return infos.(bool), nil
 }

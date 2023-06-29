@@ -4,76 +4,102 @@ package tx
 import (
 	"context"
 
-	mgrcli "github.com/NpoolPlatform/notif-manager/pkg/client/notif/tx"
-
-	constant "github.com/NpoolPlatform/notif-middleware/pkg/message/const"
-
-	"go.opentelemetry.io/otel"
-	scodes "go.opentelemetry.io/otel/codes"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
+
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/tx"
+
+	tx1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/notif/tx"
 )
 
-func (s *Server) GetTxs(
-	ctx context.Context,
-	in *npool.GetTxsRequest,
-) (
-	*npool.GetTxsResponse,
-	error,
-) {
-	var err error
-
-	_, span := otel.Tracer(constant.ServiceName).Start(ctx, "GetTxs")
-	defer span.End()
-
-	defer func() {
-		if err != nil {
-			span.SetStatus(scodes.Error, err.Error())
-			span.RecordError(err)
-		}
-	}()
-
-	rows, total, err := mgrcli.GetTxs(ctx, in.GetConds(), in.GetOffset(), in.GetLimit())
+func (s *Server) GetTxs(ctx context.Context, in *npool.GetTxsRequest) (*npool.GetTxsResponse, error) {
+	handler, err := tx1.NewHandler(
+		ctx,
+		tx1.WithConds(in.GetConds()),
+		tx1.WithOffset(in.Offset),
+		tx1.WithLimit(in.Limit),
+	)
 	if err != nil {
-		logger.Sugar().Errorw("GetTxs", "error", err)
+		logger.Sugar().Errorw(
+			"GetTxs",
+			"In", in,
+			"Error", err,
+		)
+		return &npool.GetTxsResponse{}, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	infos, total, err := handler.GetTxs(ctx)
+	if err != nil {
+		logger.Sugar().Errorw(
+			"GetTxs",
+			"In", in,
+			"Error", err,
+		)
 		return &npool.GetTxsResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
 	return &npool.GetTxsResponse{
-		Infos: rows,
+		Infos: infos,
 		Total: total,
 	}, nil
 }
 
-func (s *Server) GetTxOnly(
-	ctx context.Context,
-	in *npool.GetTxOnlyRequest,
-) (
-	*npool.GetTxOnlyResponse,
-	error,
-) {
-	var err error
-
-	_, span := otel.Tracer(constant.ServiceName).Start(ctx, "GetTxOnly")
-	defer span.End()
-
-	defer func() {
-		if err != nil {
-			span.SetStatus(scodes.Error, err.Error())
-			span.RecordError(err)
-		}
-	}()
-
-	row, err := mgrcli.GetTxOnly(ctx, in.GetConds())
+func (s *Server) GetTx(ctx context.Context, in *npool.GetTxRequest) (*npool.GetTxResponse, error) {
+	handler, err := tx1.NewHandler(
+		ctx,
+		tx1.WithID(&in.ID),
+	)
 	if err != nil {
-		logger.Sugar().Errorw("GetTxOnly", "error", err)
+		logger.Sugar().Errorw(
+			"GetTx",
+			"In", in,
+			"error", err,
+		)
+		return &npool.GetTxResponse{}, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	info, err := handler.GetTx(ctx)
+	if err != nil {
+		logger.Sugar().Errorw(
+			"GetTxs",
+			"In", in,
+			"Error", err,
+		)
+		return &npool.GetTxResponse{}, status.Error(codes.Internal, err.Error())
+	}
+
+	return &npool.GetTxResponse{
+		Info: info,
+	}, nil
+}
+
+func (s *Server) GetTxOnly(ctx context.Context, in *npool.GetTxOnlyRequest) (*npool.GetTxOnlyResponse, error) {
+	handler, err := tx1.NewHandler(
+		ctx,
+		tx1.WithConds(in.GetConds()),
+	)
+	if err != nil {
+		logger.Sugar().Errorw(
+			"GetTxOnly",
+			"In", in,
+			"error", err,
+		)
+		return &npool.GetTxOnlyResponse{}, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	info, err := handler.GetTxOnly(ctx)
+	if err != nil {
+		logger.Sugar().Errorw(
+			"GetTxOnly",
+			"In", in,
+			"Error", err,
+		)
 		return &npool.GetTxOnlyResponse{}, status.Error(codes.Internal, err.Error())
 	}
 
 	return &npool.GetTxOnlyResponse{
-		Info: row,
+		Info: info,
 	}, nil
 }

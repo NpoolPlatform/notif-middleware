@@ -27,7 +27,7 @@ func (s *Server) ExistSendStateConds(
 			"Req", in,
 			"Error", err,
 		)
-		return &npool.ExistSendStateCondsResponse{}, status.Error(codes.InvalidArgument, err.Error())
+		return &npool.ExistSendStateCondsResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
 	info, err := handler.ExistSendStateConds(ctx)
@@ -37,7 +37,7 @@ func (s *Server) ExistSendStateConds(
 			"Req", in,
 			"Error", err,
 		)
-		return &npool.ExistSendStateCondsResponse{}, status.Error(codes.Internal, err.Error())
+		return &npool.ExistSendStateCondsResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
 	return &npool.ExistSendStateCondsResponse{

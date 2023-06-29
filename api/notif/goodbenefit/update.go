@@ -31,7 +31,7 @@ func (s *Server) UpdateGoodBenefit(
 			"Req", req,
 			"Error", err,
 		)
-		return &npool.UpdateGoodBenefitResponse{}, status.Error(codes.InvalidArgument, err.Error())
+		return &npool.UpdateGoodBenefitResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
 	info, err := handler.UpdateGoodBenefit(ctx)
@@ -41,7 +41,7 @@ func (s *Server) UpdateGoodBenefit(
 			"Req", req,
 			"Error", err,
 		)
-		return &npool.UpdateGoodBenefitResponse{}, status.Error(codes.Internal, err.Error())
+		return &npool.UpdateGoodBenefitResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
 	return &npool.UpdateGoodBenefitResponse{

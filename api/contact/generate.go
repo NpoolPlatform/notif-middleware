@@ -32,7 +32,7 @@ func (s *Server) GenerateContact(ctx context.Context, in *npool.GenerateContactR
 			"Req", in,
 			"Error", err,
 		)
-		return &npool.GenerateContactResponse{}, status.Error(codes.InvalidArgument, err.Error())
+		return &npool.GenerateContactResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
 	info, err := handler.GenerateContact(ctx)
@@ -42,7 +42,7 @@ func (s *Server) GenerateContact(ctx context.Context, in *npool.GenerateContactR
 			"Req", in,
 			"Error", err,
 		)
-		return &npool.GenerateContactResponse{}, status.Error(codes.Internal, err.Error())
+		return &npool.GenerateContactResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
 	return &npool.GenerateContactResponse{

@@ -29,7 +29,7 @@ func (s *Server) CreateChannel(ctx context.Context, in *npool.CreateChannelReque
 			"Req", in,
 			"Error", err,
 		)
-		return &npool.CreateChannelResponse{}, status.Error(codes.InvalidArgument, err.Error())
+		return &npool.CreateChannelResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
 	info, err := handler.CreateChannel(ctx)
@@ -39,7 +39,7 @@ func (s *Server) CreateChannel(ctx context.Context, in *npool.CreateChannelReque
 			"Req", in,
 			"Error", err,
 		)
-		return &npool.CreateChannelResponse{}, status.Error(codes.Internal, err.Error())
+		return &npool.CreateChannelResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
 	return &npool.CreateChannelResponse{

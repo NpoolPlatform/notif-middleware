@@ -28,7 +28,7 @@ func (s *Server) ExistChannelConds(
 			"Req", in,
 			"Error", err,
 		)
-		return &npool.ExistChannelCondsResponse{}, status.Error(codes.InvalidArgument, err.Error())
+		return &npool.ExistChannelCondsResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
 	info, err := handler.ExistChannelConds(ctx)
@@ -38,7 +38,7 @@ func (s *Server) ExistChannelConds(
 			"Req", in,
 			"Error", err,
 		)
-		return &npool.ExistChannelCondsResponse{}, status.Error(codes.Internal, err.Error())
+		return &npool.ExistChannelCondsResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
 	return &npool.ExistChannelCondsResponse{

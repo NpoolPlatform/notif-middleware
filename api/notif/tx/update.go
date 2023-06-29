@@ -25,7 +25,7 @@ func (s *Server) UpdateTx(ctx context.Context, in *npool.UpdateTxRequest) (*npoo
 			"Req", req,
 			"Error", err,
 		)
-		return &npool.UpdateTxResponse{}, status.Error(codes.InvalidArgument, err.Error())
+		return &npool.UpdateTxResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
 	info, err := handler.UpdateTx(ctx)
@@ -35,7 +35,7 @@ func (s *Server) UpdateTx(ctx context.Context, in *npool.UpdateTxRequest) (*npoo
 			"Req", req,
 			"Error", err,
 		)
-		return &npool.UpdateTxResponse{}, status.Error(codes.Internal, err.Error())
+		return &npool.UpdateTxResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
 	return &npool.UpdateTxResponse{

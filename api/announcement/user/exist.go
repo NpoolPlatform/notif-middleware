@@ -26,7 +26,7 @@ func (s *Server) ExistAnnouncementUserConds(
 			"Req", in,
 			"Error", err,
 		)
-		return &npool.ExistAnnouncementUserCondsResponse{}, status.Error(codes.InvalidArgument, err.Error())
+		return &npool.ExistAnnouncementUserCondsResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
 	info, err := handler.ExistAnnouncementUserConds(ctx)
@@ -36,7 +36,7 @@ func (s *Server) ExistAnnouncementUserConds(
 			"Req", in,
 			"Error", err,
 		)
-		return &npool.ExistAnnouncementUserCondsResponse{}, status.Error(codes.Internal, err.Error())
+		return &npool.ExistAnnouncementUserCondsResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
 	return &npool.ExistAnnouncementUserCondsResponse{

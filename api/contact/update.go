@@ -26,7 +26,7 @@ func (s *Server) UpdateContact(ctx context.Context, in *npool.UpdateContactReque
 			"Req", req,
 			"Error", err,
 		)
-		return &npool.UpdateContactResponse{}, status.Error(codes.InvalidArgument, err.Error())
+		return &npool.UpdateContactResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
 	info, err := handler.UpdateContact(ctx)
@@ -36,7 +36,7 @@ func (s *Server) UpdateContact(ctx context.Context, in *npool.UpdateContactReque
 			"Req", req,
 			"Error", err,
 		)
-		return &npool.UpdateContactResponse{}, status.Error(codes.Internal, err.Error())
+		return &npool.UpdateContactResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
 	return &npool.UpdateContactResponse{

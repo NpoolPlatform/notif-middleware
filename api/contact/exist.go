@@ -21,7 +21,7 @@ func (s *Server) ExistContactConds(ctx context.Context, in *npool.ExistContactCo
 			"Req", in,
 			"Error", err,
 		)
-		return &npool.ExistContactCondsResponse{}, status.Error(codes.InvalidArgument, err.Error())
+		return &npool.ExistContactCondsResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
 	info, err := handler.ExistContactConds(ctx)
@@ -31,7 +31,7 @@ func (s *Server) ExistContactConds(ctx context.Context, in *npool.ExistContactCo
 			"Req", in,
 			"Error", err,
 		)
-		return &npool.ExistContactCondsResponse{}, status.Error(codes.Internal, err.Error())
+		return &npool.ExistContactCondsResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
 	return &npool.ExistContactCondsResponse{

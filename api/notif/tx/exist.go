@@ -28,7 +28,7 @@ func (s *Server) ExistTx(
 			"In", in,
 			"Error", err,
 		)
-		return &npool.ExistTxResponse{}, status.Error(codes.InvalidArgument, err.Error())
+		return &npool.ExistTxResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
 	exist, err := handler.ExistTx(ctx)
@@ -38,7 +38,7 @@ func (s *Server) ExistTx(
 			"In", in,
 			"Error", err,
 		)
-		return &npool.ExistTxResponse{}, status.Error(codes.Internal, err.Error())
+		return &npool.ExistTxResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
 	return &npool.ExistTxResponse{

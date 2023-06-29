@@ -26,7 +26,7 @@ func (s *Server) ExistReadStateConds(
 			"Req", in,
 			"Error", err,
 		)
-		return &npool.ExistReadStateCondsResponse{}, status.Error(codes.InvalidArgument, err.Error())
+		return &npool.ExistReadStateCondsResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
 	info, err := handler.ExistReadStateConds(ctx)
@@ -36,7 +36,7 @@ func (s *Server) ExistReadStateConds(
 			"Req", in,
 			"Error", err,
 		)
-		return &npool.ExistReadStateCondsResponse{}, status.Error(codes.Internal, err.Error())
+		return &npool.ExistReadStateCondsResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 
 	return &npool.ExistReadStateCondsResponse{

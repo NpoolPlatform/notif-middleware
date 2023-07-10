@@ -198,7 +198,7 @@ func WithEventType(eventtype *basetypes.UsedFor) func(context.Context, *Handler)
 		case basetypes.UsedFor_KYCApproved:
 		case basetypes.UsedFor_KYCRejected:
 		case basetypes.UsedFor_Announcement:
-		case basetypes.UsedFor_GoodBenefit:
+		case basetypes.UsedFor_GoodBenefit1:
 		default:
 			return fmt.Errorf("invalid eventtype")
 		}
@@ -313,7 +313,7 @@ func WithReqs(reqs []*npool.NotifReq) func(context.Context, *Handler) error {
 				case basetypes.UsedFor_KYCApproved:
 				case basetypes.UsedFor_KYCRejected:
 				case basetypes.UsedFor_Announcement:
-				case basetypes.UsedFor_GoodBenefit:
+				case basetypes.UsedFor_GoodBenefit1:
 				default:
 					return fmt.Errorf("invalid EventType")
 				}
@@ -407,7 +407,7 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			case uint32(basetypes.UsedFor_KYCApproved):
 			case uint32(basetypes.UsedFor_KYCRejected):
 			case uint32(basetypes.UsedFor_Announcement):
-			case uint32(basetypes.UsedFor_GoodBenefit):
+			case uint32(basetypes.UsedFor_GoodBenefit1):
 			default:
 				return fmt.Errorf("invalid EventType")
 			}

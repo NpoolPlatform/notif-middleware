@@ -93,7 +93,7 @@ func WithUsedFor(_usedFor *basetypes.UsedFor) func(context.Context, *Handler) er
 		case basetypes.UsedFor_KYCApproved:
 		case basetypes.UsedFor_KYCRejected:
 		case basetypes.UsedFor_Announcement:
-		case basetypes.UsedFor_GoodBenefit:
+		case basetypes.UsedFor_GoodBenefit1:
 		default:
 			return fmt.Errorf("invalid usedfor")
 		}
@@ -184,7 +184,7 @@ func WithReqs(reqs []*npool.FrontendTemplateReq) func(context.Context, *Handler)
 				case basetypes.UsedFor_KYCApproved:
 				case basetypes.UsedFor_KYCRejected:
 				case basetypes.UsedFor_Announcement:
-				case basetypes.UsedFor_GoodBenefit:
+				case basetypes.UsedFor_GoodBenefit1:
 				default:
 					return fmt.Errorf("invalid usedfor")
 				}
@@ -244,7 +244,7 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			case uint32(basetypes.UsedFor_KYCApproved):
 			case uint32(basetypes.UsedFor_KYCRejected):
 			case uint32(basetypes.UsedFor_Announcement):
-			case uint32(basetypes.UsedFor_GoodBenefit):
+			case uint32(basetypes.UsedFor_GoodBenefit1):
 			default:
 				return fmt.Errorf("invalid usedfor")
 			}

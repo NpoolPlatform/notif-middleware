@@ -21,10 +21,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	appmwcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/app"
-	appusercli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
-	appmwpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/app"
-	appuserpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/user"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	"github.com/NpoolPlatform/notif-middleware/pkg/testinit"
 )
@@ -39,17 +35,8 @@ func init() {
 }
 
 var (
-	appID = uuid.NewString()
-	ret   = appuserpb.User{
-		ID:                uuid.NewString(),
-		AppID:             appID,
-		EmailAddress:      "aaa@aaa.aaa",
-		PhoneNO:           "+8613612203133",
-		ImportedFromAppID: uuid.NewString(),
-		Username:          uuid.NewString(),
-	}
-	amt = npool.Announcement{
-		AppID:               "",
+	ret = npool.Announcement{
+		AppID:               uuid.NewString(),
 		LangID:              uuid.NewString(),
 		Title:               uuid.NewString(),
 		Content:             uuid.NewString(),
@@ -63,107 +50,61 @@ var (
 )
 
 func setupAnnouncement(t *testing.T) func(*testing.T) {
-	app1, err := appmwcli.CreateApp(
-		context.Background(),
-		&appmwpb.AppReq{
-			ID:        &ret.AppID,
-			CreatedBy: &ret.ID,
-			Name:      &ret.AppID,
-		},
-	)
-	assert.Nil(t, err)
-	assert.NotNil(t, app1)
-
-	amt.AppID = app1.ID
-
-	var (
-		id           = ret.ID
-		appID        = ret.AppID
-		passwordHash = uuid.NewString()
-		req          = appuserpb.UserReq{
-			ID:           &id,
-			AppID:        &appID,
-			EmailAddress: &ret.EmailAddress,
-			PasswordHash: &passwordHash,
-		}
-	)
-
-	info, err := appusercli.CreateUser(context.Background(), &req)
-	assert.Nil(t, err)
-	assert.NotNil(t, info)
-
-	ret.ID = info.ID
-
-	return func(*testing.T) {
-		_, _ = appmwcli.DeleteApp(context.Background(), ret.AppID)
-		_, _ = appusercli.DeleteUser(context.Background(), info.AppID, info.ID)
-	}
+	return func(*testing.T) {}
 }
 
 func createAnnouncement(t *testing.T) {
 	info, err := CreateAnnouncement(context.Background(), &npool.AnnouncementReq{
-		AppID:            &amt.AppID,
-		LangID:           &amt.LangID,
-		Title:            &amt.Title,
-		Content:          &amt.Content,
-		Channel:          &amt.Channel,
-		AnnouncementType: &amt.AnnouncementType,
-		StartAt:          &amt.StartAt,
-		EndAt:            &amt.EndAt,
+		AppID:            &ret.AppID,
+		LangID:           &ret.LangID,
+		Title:            &ret.Title,
+		Content:          &ret.Content,
+		Channel:          &ret.Channel,
+		AnnouncementType: &ret.AnnouncementType,
+		StartAt:          &ret.StartAt,
+		EndAt:            &ret.EndAt,
 	})
 	if assert.Nil(t, err) {
-		amt.CreatedAt = info.CreatedAt
-		amt.UpdatedAt = info.UpdatedAt
-		amt.ID = info.ID
-		assert.Equal(t, info, &amt)
+		ret.CreatedAt = info.CreatedAt
+		ret.UpdatedAt = info.UpdatedAt
+		ret.ID = info.ID
+		assert.Equal(t, info, &ret)
 	}
 }
 
 func updateAnnouncement(t *testing.T) {
-	amt.Title = uuid.NewString()
-	amt.Content = "-----" + uuid.NewString()
-	amt.AnnouncementType = basetypes.NotifType_NotifBroadcast
-	amt.AnnouncementTypeStr = basetypes.NotifType_NotifBroadcast.String()
-	amt.StartAt = uint32(time.Now().Add(3 * time.Hour).Unix())
-	amt.EndAt = uint32(time.Now().Add(10 * time.Hour).Unix())
+	ret.Title = uuid.NewString()
+	ret.Content = "-----" + uuid.NewString()
+	ret.AnnouncementType = basetypes.NotifType_NotifBroadcast
+	ret.AnnouncementTypeStr = basetypes.NotifType_NotifBroadcast.String()
+	ret.StartAt = uint32(time.Now().Add(3 * time.Hour).Unix())
+	ret.EndAt = uint32(time.Now().Add(10 * time.Hour).Unix())
 	info, err := UpdateAnnouncement(context.Background(), &npool.AnnouncementReq{
-		ID:               &amt.ID,
-		Title:            &amt.Title,
-		Content:          &amt.Content,
-		AnnouncementType: &amt.AnnouncementType,
-		StartAt:          &amt.StartAt,
-		EndAt:            &amt.EndAt,
+		ID:               &ret.ID,
+		Title:            &ret.Title,
+		Content:          &ret.Content,
+		AnnouncementType: &ret.AnnouncementType,
+		StartAt:          &ret.StartAt,
+		EndAt:            &ret.EndAt,
 	})
 	if assert.Nil(t, err) {
-		amt.UpdatedAt = info.UpdatedAt
-		assert.Equal(t, info, &amt)
+		ret.UpdatedAt = info.UpdatedAt
+		assert.Equal(t, info, &ret)
 	}
 }
 
 func getAnnouncement(t *testing.T) {
-	info, err := GetAnnouncement(context.Background(), amt.ID)
+	info, err := GetAnnouncement(context.Background(), ret.ID)
 	assert.Nil(t, err)
 	assert.NotNil(t, info)
 }
 
 func getAnnouncements(t *testing.T) {
 	infos, _, err := GetAnnouncements(context.Background(), &npool.Conds{
-		ID: &basetypes.StringVal{
-			Op:    cruder.EQ,
-			Value: amt.ID,
-		},
-		Channel: &basetypes.Uint32Val{
-			Op:    cruder.EQ,
-			Value: uint32(basetypes.NotifChannel_value[amt.Channel.String()]),
-		},
-		StartAt: &basetypes.Uint32Val{
-			Op:    cruder.LTE,
-			Value: amt.StartAt,
-		},
-		EndAt: &basetypes.Uint32Val{
-			Op:    cruder.GTE,
-			Value: amt.StartAt,
-		},
+		ID:      &basetypes.StringVal{Op: cruder.EQ, Value: ret.ID},
+		Channel: &basetypes.Uint32Val{Op: cruder.EQ, Value: uint32(basetypes.NotifChannel_value[ret.Channel.String()])},
+		StartAt: &basetypes.Uint32Val{Op: cruder.LTE, Value: ret.StartAt},
+		EndAt:   &basetypes.Uint32Val{Op: cruder.GTE, Value: ret.StartAt},
 	}, 0, 1)
 	if assert.Nil(t, err) {
 		assert.NotEqual(t, len(infos), 0)
@@ -171,15 +112,15 @@ func getAnnouncements(t *testing.T) {
 }
 
 func existAnnouncement(t *testing.T) {
-	exist, err := ExistAnnouncement(context.Background(), amt.ID)
+	exist, err := ExistAnnouncement(context.Background(), ret.ID)
 	assert.Nil(t, err)
 	assert.True(t, exist)
 }
 
 func deleteAnnouncement(t *testing.T) {
-	info, err := DeleteAnnouncement(context.Background(), amt.ID)
+	info, err := DeleteAnnouncement(context.Background(), ret.ID)
 	if assert.Nil(t, err) {
-		assert.Equal(t, info, &amt)
+		assert.Equal(t, info, &ret)
 	}
 	info, err = GetAnnouncement(context.Background(), info.ID)
 	assert.Nil(t, err)

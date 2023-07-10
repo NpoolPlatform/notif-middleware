@@ -3,7 +3,6 @@ package read
 import (
 	"context"
 	"fmt"
-	"math/rand"
 
 	"os"
 	"strconv"
@@ -23,12 +22,8 @@ import (
 
 	"github.com/NpoolPlatform/notif-middleware/pkg/testinit"
 
-	appmwcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/app"
-	appusercli "github.com/NpoolPlatform/appuser-middleware/pkg/client/user"
-	appmwpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/app"
-	appuserpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/user"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
-	amtpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement"
+	announcementpb "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/readstate"
 	announcement1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement"
 	"github.com/stretchr/testify/assert"
@@ -44,10 +39,9 @@ func init() {
 }
 
 var (
-	appID = uuid.NewString()
-	amt   = amtpb.Announcement{
+	announcement = announcementpb.Announcement{
 		ID:                  uuid.NewString(),
-		AppID:               appID,
+		AppID:               uuid.NewString(),
 		LangID:              uuid.NewString(),
 		Title:               uuid.NewString(),
 		Content:             uuid.NewString(),
@@ -60,77 +54,44 @@ var (
 	}
 
 	ret = npool.ReadState{
-		AppID:            appID,
+		AppID:            announcement.AppID,
+		UserID:           uuid.NewString(),
 		AnnouncementID:   "",
-		UserID:           "",
-		LangID:           amt.LangID,
-		Title:            amt.Title,
-		Content:          amt.Content,
-		Channel:          amt.ChannelStr,
-		AnnouncementType: amt.AnnouncementTypeStr,
-		EndAt:            amt.EndAt,
+		LangID:           announcement.LangID,
+		Title:            announcement.Title,
+		Content:          announcement.Content,
+		Channel:          announcement.ChannelStr,
+		AnnouncementType: announcement.AnnouncementTypeStr,
+		EndAt:            announcement.EndAt,
 	}
 )
 
 func setupReadState(t *testing.T) func(*testing.T) {
-	app1, err := appmwcli.CreateApp(
-		context.Background(),
-		&appmwpb.AppReq{
-			ID:        &appID,
-			CreatedBy: &appID,
-			Name:      &appID,
-		},
-	)
-	assert.Nil(t, err)
-	assert.NotNil(t, app1)
-	amt.AppID = app1.ID
-
-	var (
-		id           = uuid.NewString()
-		appID        = app1.ID
-		emailAddress = fmt.Sprintf("%v@hhh.ccc", rand.Intn(100000000)+1000000) //nolint
-		passwordHash = uuid.NewString()
-		req          = &appuserpb.UserReq{
-			ID:           &id,
-			AppID:        &appID,
-			EmailAddress: &emailAddress,
-			PasswordHash: &passwordHash,
-		}
-	)
-
-	user, err := appusercli.CreateUser(context.Background(), req)
-	assert.Nil(t, err)
-	assert.NotNil(t, user)
-
-	ret.UserID = user.ID
-
 	// Create Announcement First
-	amtHandler, err := announcement1.NewHandler(
+	announcementHandler, err := announcement1.NewHandler(
 		context.Background(),
-		announcement1.WithTitle(&amt.Title),
-		announcement1.WithContent(&amt.Content),
-		announcement1.WithAppID(&amt.AppID),
-		announcement1.WithLangID(&amt.LangID),
-		announcement1.WithChannel(&amt.Channel),
-		announcement1.WithAnnouncementType(&amt.AnnouncementType),
-		announcement1.WithStartAt(&amt.StartAt),
-		announcement1.WithEndAt(&amt.EndAt),
+		announcement1.WithTitle(&announcement.Title),
+		announcement1.WithContent(&announcement.Content),
+		announcement1.WithAppID(&announcement.AppID),
+		announcement1.WithLangID(&announcement.LangID),
+		announcement1.WithChannel(&announcement.Channel),
+		announcement1.WithAnnouncementType(&announcement.AnnouncementType),
+		announcement1.WithStartAt(&announcement.StartAt),
+		announcement1.WithEndAt(&announcement.EndAt),
 	)
 	assert.Nil(t, err)
 
-	announcement, err := amtHandler.CreateAnnouncement(context.Background())
+	announcement, err := announcementHandler.CreateAnnouncement(context.Background())
 	assert.Nil(t, err)
-	amt.ID = announcement.ID
+	announcement.ID = announcement.ID
 	ret.AnnouncementID = announcement.ID
 
 	_id, err := uuid.Parse(announcement.ID)
 	assert.Nil(t, err)
-	amtHandler.ID = &_id
+	announcementHandler.ID = &_id
 
 	return func(*testing.T) {
-		_, _ = appmwcli.DeleteApp(context.Background(), ret.AppID)
-		_, _ = appusercli.DeleteUser(context.Background(), ret.AppID, ret.UserID)
-		_, _ = amtHandler.DeleteAnnouncement(context.Background())
+		_, _ = announcementHandler.DeleteAnnouncement(context.Background())
 	}
 }
 

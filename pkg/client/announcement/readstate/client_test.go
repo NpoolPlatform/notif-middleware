@@ -83,7 +83,6 @@ func setupReadState(t *testing.T) func(*testing.T) {
 
 	announcement, err := announcementHandler.CreateAnnouncement(context.Background())
 	assert.Nil(t, err)
-	announcement.ID = announcement.ID
 	ret.AnnouncementID = announcement.ID
 
 	_id, err := uuid.Parse(announcement.ID)

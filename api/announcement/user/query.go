@@ -13,7 +13,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s *Server) GetAnnouncementUsers(ctx context.Context, in *npool.GetAnnouncementUsersRequest) (*npool.GetAnnouncementUsersResponse, error) { //nolint
+func (s *Server) GetAnnouncementUsers(ctx context.Context, in *npool.GetAnnouncementUsersRequest) (*npool.GetAnnouncementUsersResponse, error) {
 	handler, err := amtuser1.NewHandler(
 		ctx,
 		amtuser1.WithConds(in.GetConds()),
@@ -45,7 +45,7 @@ func (s *Server) GetAnnouncementUsers(ctx context.Context, in *npool.GetAnnounce
 	}, nil
 }
 
-func (s *Server) GetAnnouncementUser(ctx context.Context, in *npool.GetAnnouncementUserRequest) (*npool.GetAnnouncementUserResponse, error) { // nolint
+func (s *Server) GetAnnouncementUser(ctx context.Context, in *npool.GetAnnouncementUserRequest) (*npool.GetAnnouncementUserResponse, error) {
 	handler, err := amtuser1.NewHandler(
 		ctx,
 		handler1.WithID(&in.ID),

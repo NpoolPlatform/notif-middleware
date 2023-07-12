@@ -21,9 +21,7 @@ import (
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/channel"
 	"github.com/stretchr/testify/assert"
 
-	appmwcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/app"
 	grpc2 "github.com/NpoolPlatform/go-service-framework/pkg/grpc"
-	appmwpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/app"
 	"github.com/google/uuid"
 )
 
@@ -37,9 +35,8 @@ func init() {
 }
 
 var (
-	appID = uuid.NewString()
-	ret   = npool.Channel{
-		AppID:        appID,
+	ret = npool.Channel{
+		AppID:        uuid.NewString(),
 		EventType:    basetypes.UsedFor_KYCApproved,
 		EventTypeStr: basetypes.UsedFor_KYCApproved.String(),
 		Channel:      basetypes.NotifChannel_ChannelEmail,
@@ -48,22 +45,7 @@ var (
 )
 
 func setupChannel(t *testing.T) func(*testing.T) {
-	app1, err := appmwcli.CreateApp(
-		context.Background(),
-		&appmwpb.AppReq{
-			ID:        &appID,
-			CreatedBy: &appID,
-			Name:      &appID,
-		},
-	)
-	assert.Nil(t, err)
-	assert.NotNil(t, app1)
-
-	ret.AppID = app1.ID
-
-	return func(*testing.T) {
-		_, _ = appmwcli.DeleteApp(context.Background(), ret.AppID)
-	}
+	return func(*testing.T) {}
 }
 
 func createChannel(t *testing.T) {

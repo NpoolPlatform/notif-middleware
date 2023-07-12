@@ -8,11 +8,9 @@ import (
 	"testing"
 
 	"bou.ke/monkey"
-	appmwcli "github.com/NpoolPlatform/appuser-middleware/pkg/client/app"
 	"github.com/NpoolPlatform/go-service-framework/pkg/config"
 	grpc2 "github.com/NpoolPlatform/go-service-framework/pkg/grpc"
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
-	appmwpb "github.com/NpoolPlatform/message/npool/appuser/mw/v1/app"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/contact"
 	"github.com/NpoolPlatform/notif-middleware/pkg/testinit"
@@ -32,9 +30,8 @@ func init() {
 }
 
 var (
-	appID = uuid.NewString()
-	ret   = npool.Contact{
-		AppID:          appID,
+	ret = npool.Contact{
+		AppID:          uuid.NewString(),
 		Account:        "vagrant@163.com",
 		AccountType:    basetypes.SignMethod_Email,
 		AccountTypeStr: basetypes.SignMethod_Email.String(),
@@ -45,22 +42,7 @@ var (
 )
 
 func setupContact(t *testing.T) func(*testing.T) {
-	app1, err := appmwcli.CreateApp(
-		context.Background(),
-		&appmwpb.AppReq{
-			ID:        &appID,
-			CreatedBy: &appID,
-			Name:      &appID,
-		},
-	)
-	assert.Nil(t, err)
-	assert.NotNil(t, app1)
-
-	ret.AppID = app1.ID
-
-	return func(*testing.T) {
-		_, _ = appmwcli.DeleteApp(context.Background(), ret.AppID)
-	}
+	return func(*testing.T) {}
 }
 
 func createContact(t *testing.T) {

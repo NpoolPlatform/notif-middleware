@@ -19,6 +19,8 @@ const (
 	NotifTemplateVarTime     = "{{ TIME }}"
 	NotifTemplateVarAddress  = "{{ ADDRESS }}"
 	NotifTemplateVarCode     = "{{ CODE }}"
+	NotifTemplateVarIP       = "{{ IP }}"
+	NotifTemplateVarLocation = "{{ Location }}"
 )
 
 func formatAmount(amount string) string {
@@ -70,6 +72,12 @@ func ReplaceAll(pattern string, vars *npool.TemplateVars) string {
 	}
 	if vars.Code != nil {
 		pattern = strings.ReplaceAll(pattern, NotifTemplateVarCode, *vars.Code)
+	}
+	if vars.IP != nil {
+		pattern = strings.ReplaceAll(pattern, NotifTemplateVarIP, *vars.IP)
+	}
+	if vars.Location != nil {
+		pattern = strings.ReplaceAll(pattern, NotifTemplateVarLocation, *vars.Location)
 	}
 
 	return pattern

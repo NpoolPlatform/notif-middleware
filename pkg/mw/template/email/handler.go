@@ -271,6 +271,12 @@ func WithReqs(reqs []*npool.EmailTemplateReq) func(context.Context, *Handler) er
 				case basetypes.UsedFor_KYCRejected:
 				case basetypes.UsedFor_Announcement:
 				case basetypes.UsedFor_GoodBenefit1:
+				case basetypes.UsedFor_UpdateEmail:
+				case basetypes.UsedFor_UpdateMobile:
+				case basetypes.UsedFor_UpdatePassword:
+				case basetypes.UsedFor_UpdateGoogleAuth:
+				case basetypes.UsedFor_NewDeviceDetected:
+				case basetypes.UsedFor_OrderCompleted:
 				default:
 					return fmt.Errorf("invalid usedfor")
 				}
@@ -354,6 +360,12 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			case int32(basetypes.UsedFor_KYCRejected):
 			case int32(basetypes.UsedFor_Announcement):
 			case int32(basetypes.UsedFor_GoodBenefit1):
+			case int32(basetypes.UsedFor_UpdateEmail):
+			case int32(basetypes.UsedFor_UpdateMobile):
+			case int32(basetypes.UsedFor_UpdatePassword):
+			case int32(basetypes.UsedFor_UpdateGoogleAuth):
+			case int32(basetypes.UsedFor_NewDeviceDetected):
+			case int32(basetypes.UsedFor_OrderCompleted):
 			default:
 				return fmt.Errorf("invalid usedfor")
 			}

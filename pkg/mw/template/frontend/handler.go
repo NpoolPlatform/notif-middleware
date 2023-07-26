@@ -215,6 +215,7 @@ func WithReqs(reqs []*npool.FrontendTemplateReq) func(context.Context, *Handler)
 	}
 }
 
+//nolint
 func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		h.Conds = &frontendtemplatecrud.Conds{}

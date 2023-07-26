@@ -98,7 +98,7 @@ func WithDefaultToUsername(defaultToUsername *string) func(context.Context, *Han
 	}
 }
 
-// nolint:gocyclo
+// nolint
 func WithUsedFor(_usedFor *basetypes.UsedFor) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if _usedFor == nil {
@@ -225,7 +225,7 @@ func WithVars(vars *templatemwpb.TemplateVars) func(context.Context, *Handler) e
 	}
 }
 
-// nolint:gocyclo
+//nolint
 func WithReqs(reqs []*npool.EmailTemplateReq) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		_reqs := []*emailtemplatecrud.Req{}

@@ -94,6 +94,12 @@ func WithUsedFor(_usedFor *basetypes.UsedFor) func(context.Context, *Handler) er
 		case basetypes.UsedFor_KYCRejected:
 		case basetypes.UsedFor_Announcement:
 		case basetypes.UsedFor_GoodBenefit1:
+		case basetypes.UsedFor_UpdateEmail:
+		case basetypes.UsedFor_UpdateMobile:
+		case basetypes.UsedFor_UpdatePassword:
+		case basetypes.UsedFor_UpdateGoogleAuth:
+		case basetypes.UsedFor_NewLogin:
+		case basetypes.UsedFor_OrderCompleted:
 		default:
 			return fmt.Errorf("invalid usedfor")
 		}
@@ -185,6 +191,12 @@ func WithReqs(reqs []*npool.FrontendTemplateReq) func(context.Context, *Handler)
 				case basetypes.UsedFor_KYCRejected:
 				case basetypes.UsedFor_Announcement:
 				case basetypes.UsedFor_GoodBenefit1:
+				case basetypes.UsedFor_UpdateEmail:
+				case basetypes.UsedFor_UpdateMobile:
+				case basetypes.UsedFor_UpdatePassword:
+				case basetypes.UsedFor_UpdateGoogleAuth:
+				case basetypes.UsedFor_NewLogin:
+				case basetypes.UsedFor_OrderCompleted:
 				default:
 					return fmt.Errorf("invalid usedfor")
 				}
@@ -203,6 +215,7 @@ func WithReqs(reqs []*npool.FrontendTemplateReq) func(context.Context, *Handler)
 	}
 }
 
+//nolint
 func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		h.Conds = &frontendtemplatecrud.Conds{}
@@ -245,6 +258,12 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			case uint32(basetypes.UsedFor_KYCRejected):
 			case uint32(basetypes.UsedFor_Announcement):
 			case uint32(basetypes.UsedFor_GoodBenefit1):
+			case uint32(basetypes.UsedFor_UpdateEmail):
+			case uint32(basetypes.UsedFor_UpdateMobile):
+			case uint32(basetypes.UsedFor_UpdatePassword):
+			case uint32(basetypes.UsedFor_UpdateGoogleAuth):
+			case uint32(basetypes.UsedFor_NewLogin):
+			case uint32(basetypes.UsedFor_OrderCompleted):
 			default:
 				return fmt.Errorf("invalid usedfor")
 			}

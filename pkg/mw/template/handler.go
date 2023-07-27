@@ -93,6 +93,12 @@ func WithUsedFor(_usedFor *basetypes.UsedFor) func(context.Context, *Handler) er
 		case basetypes.UsedFor_KYCApproved:
 		case basetypes.UsedFor_KYCRejected:
 		case basetypes.UsedFor_GoodBenefit1:
+		case basetypes.UsedFor_UpdateEmail:
+		case basetypes.UsedFor_UpdateMobile:
+		case basetypes.UsedFor_UpdatePassword:
+		case basetypes.UsedFor_UpdateGoogleAuth:
+		case basetypes.UsedFor_NewLogin:
+		case basetypes.UsedFor_OrderCompleted:
 		default:
 			return fmt.Errorf("invalid %v usedfor", *_usedFor)
 		}

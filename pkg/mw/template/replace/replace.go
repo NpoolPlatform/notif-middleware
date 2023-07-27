@@ -11,14 +11,17 @@ import (
 )
 
 const (
-	NotifTemplateVarName     = "{{ NAME }}"
-	NotifTemplateVarMessage  = "{{ MESSAGE }}"
-	NotifTemplateVarAmount   = "{{ AMOUNT }}"
-	NotifTemplateVarCoinUnit = "{{ COIN_UNIT }}"
-	NotifTemplateVarDate     = "{{ DATE }}"
-	NotifTemplateVarTime     = "{{ TIME }}"
-	NotifTemplateVarAddress  = "{{ ADDRESS }}"
-	NotifTemplateVarCode     = "{{ CODE }}"
+	NotifTemplateVarName      = "{{ NAME }}"
+	NotifTemplateVarMessage   = "{{ MESSAGE }}"
+	NotifTemplateVarAmount    = "{{ AMOUNT }}"
+	NotifTemplateVarCoinUnit  = "{{ COIN_UNIT }}"
+	NotifTemplateVarDate      = "{{ DATE }}"
+	NotifTemplateVarTime      = "{{ TIME }}"
+	NotifTemplateVarAddress   = "{{ ADDRESS }}"
+	NotifTemplateVarCode      = "{{ CODE }}"
+	NotifTemplateVarIP        = "{{ IP }}"
+	NotifTemplateVarLocation  = "{{ LOCATION }}"
+	NotifTemplateVarUserAgent = "{{ USERAGENT }}"
 )
 
 func formatAmount(amount string) string {
@@ -70,6 +73,15 @@ func ReplaceAll(pattern string, vars *npool.TemplateVars) string {
 	}
 	if vars.Code != nil {
 		pattern = strings.ReplaceAll(pattern, NotifTemplateVarCode, *vars.Code)
+	}
+	if vars.IP != nil {
+		pattern = strings.ReplaceAll(pattern, NotifTemplateVarIP, *vars.IP)
+	}
+	if vars.Location != nil {
+		pattern = strings.ReplaceAll(pattern, NotifTemplateVarLocation, *vars.Location)
+	}
+	if vars.UserAgent != nil {
+		pattern = strings.ReplaceAll(pattern, NotifTemplateVarUserAgent, *vars.UserAgent)
 	}
 
 	return pattern

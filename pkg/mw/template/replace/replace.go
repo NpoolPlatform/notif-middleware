@@ -20,7 +20,7 @@ const (
 	NotifTemplateVarAddress   = "{{ ADDRESS }}"
 	NotifTemplateVarCode      = "{{ CODE }}"
 	NotifTemplateVarIP        = "{{ IP }}"
-	NotifTemplateVarLocation  = "{{ Location }}"
+	NotifTemplateVarLocation  = "{{ LOCATION }}"
 	NotifTemplateVarUserAgent = "{{ UserAgent }}"
 )
 

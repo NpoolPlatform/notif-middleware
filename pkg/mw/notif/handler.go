@@ -203,7 +203,7 @@ func WithEventType(eventtype *basetypes.UsedFor) func(context.Context, *Handler)
 		case basetypes.UsedFor_UpdateMobile:
 		case basetypes.UsedFor_UpdatePassword:
 		case basetypes.UsedFor_UpdateGoogleAuth:
-		case basetypes.UsedFor_NewDeviceDetected:
+		case basetypes.UsedFor_NewLogin:
 		case basetypes.UsedFor_OrderCompleted:
 		default:
 			return fmt.Errorf("invalid eventtype")
@@ -324,7 +324,7 @@ func WithReqs(reqs []*npool.NotifReq) func(context.Context, *Handler) error {
 				case basetypes.UsedFor_UpdateMobile:
 				case basetypes.UsedFor_UpdatePassword:
 				case basetypes.UsedFor_UpdateGoogleAuth:
-				case basetypes.UsedFor_NewDeviceDetected:
+				case basetypes.UsedFor_NewLogin:
 				case basetypes.UsedFor_OrderCompleted:
 				default:
 					return fmt.Errorf("invalid EventType")
@@ -424,7 +424,7 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			case uint32(basetypes.UsedFor_UpdateMobile):
 			case uint32(basetypes.UsedFor_UpdatePassword):
 			case uint32(basetypes.UsedFor_UpdateGoogleAuth):
-			case uint32(basetypes.UsedFor_NewDeviceDetected):
+			case uint32(basetypes.UsedFor_NewLogin):
 			case uint32(basetypes.UsedFor_OrderCompleted):
 			default:
 				return fmt.Errorf("invalid EventType")

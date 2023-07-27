@@ -109,7 +109,7 @@ func WithUsedFor(_usedFor *basetypes.UsedFor) func(context.Context, *Handler) er
 		case basetypes.UsedFor_UpdateMobile:
 		case basetypes.UsedFor_UpdatePassword:
 		case basetypes.UsedFor_UpdateGoogleAuth:
-		case basetypes.UsedFor_NewDeviceDetected:
+		case basetypes.UsedFor_NewLogin:
 		case basetypes.UsedFor_OrderCompleted:
 		default:
 			return fmt.Errorf("invalid usedfor")
@@ -216,7 +216,7 @@ func WithReqs(reqs []*npool.SMSTemplateReq) func(context.Context, *Handler) erro
 				case basetypes.UsedFor_UpdateMobile:
 				case basetypes.UsedFor_UpdatePassword:
 				case basetypes.UsedFor_UpdateGoogleAuth:
-				case basetypes.UsedFor_NewDeviceDetected:
+				case basetypes.UsedFor_NewLogin:
 				case basetypes.UsedFor_OrderCompleted:
 				default:
 					return fmt.Errorf("invalid usedfor")
@@ -293,7 +293,7 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			case int32(basetypes.UsedFor_UpdateMobile):
 			case int32(basetypes.UsedFor_UpdatePassword):
 			case int32(basetypes.UsedFor_UpdateGoogleAuth):
-			case int32(basetypes.UsedFor_NewDeviceDetected):
+			case int32(basetypes.UsedFor_NewLogin):
 			case int32(basetypes.UsedFor_OrderCompleted):
 			default:
 				return fmt.Errorf("invalid usedfor")

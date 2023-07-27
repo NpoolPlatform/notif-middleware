@@ -21,7 +21,7 @@ const (
 	NotifTemplateVarCode      = "{{ CODE }}"
 	NotifTemplateVarIP        = "{{ IP }}"
 	NotifTemplateVarLocation  = "{{ LOCATION }}"
-	NotifTemplateVarUserAgent = "{{ UserAgent }}"
+	NotifTemplateVarUserAgent = "{{ USERAGENT }}"
 )
 
 func formatAmount(amount string) string {

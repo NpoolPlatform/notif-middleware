@@ -61,9 +61,9 @@ func ReplaceAll(pattern string, vars *npool.TemplateVars) string {
 		pattern = strings.ReplaceAll(pattern, NotifTemplateVarCoinUnit, *vars.CoinUnit)
 	}
 	if vars.Timestamp != nil {
-		datetime := time.Unix(int64(*vars.Timestamp), 0)
+		datetime := time.Unix(int64(*vars.Timestamp), 0).UTC()
 		date := datetime.Format("2006-01-02")
-		time1 := datetime.Format("15:04:05")
+		time1 := datetime.Format("15:04:05 UTC")
 
 		pattern = strings.ReplaceAll(pattern, NotifTemplateVarDate, date)
 		pattern = strings.ReplaceAll(pattern, NotifTemplateVarTime, time1)

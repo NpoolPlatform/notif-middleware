@@ -6,14 +6,14 @@ import (
 	"fmt"
 
 	redis2 "github.com/NpoolPlatform/go-service-framework/pkg/redis"
+	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
 	notifcrud "github.com/NpoolPlatform/notif-middleware/pkg/crud/notif"
-	"github.com/google/uuid"
-
-	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
+	entnotif "github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notif"
+	"github.com/google/uuid"
 )
 
 func (h *Handler) UpdateNotif(ctx context.Context) (*npool.Notif, error) {
@@ -100,12 +100,18 @@ func (h *Handler) UpdateNotifs(ctx context.Context) ([]*npool.Notif, error) {
 				}
 			}
 
-			if _, err := notifcrud.UpdateSet(
-				tx.Notif.UpdateOneID(*req.ID),
-				&notifcrud.Req{
-					Notified: req.Notified,
-				},
-			).Save(ctx); err != nil {
+			eventID, err := uuid.Parse(info.EventID)
+			if err != nil {
+				return fmt.Errorf("invalid event id")
+			}
+
+			if _, err = tx.Notif.
+				Update().
+				Where(
+					entnotif.EventID(eventID),
+				).
+				SetNotified(true).
+				Save(_ctx); err != nil {
 				return err
 			}
 

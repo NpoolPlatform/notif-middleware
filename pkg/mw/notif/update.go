@@ -111,6 +111,7 @@ func (h *Handler) UpdateNotifs(ctx context.Context) ([]*npool.Notif, error) {
 					Update().
 					Where(
 						entnotif.EventID(eventID),
+						entnotif.Channel(basetypes.NotifChannel_ChannelFrontend.String()),
 					).
 					SetNotified(true).
 					Save(_ctx); err != nil {

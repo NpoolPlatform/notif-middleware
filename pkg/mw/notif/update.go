@@ -105,16 +105,27 @@ func (h *Handler) UpdateNotifs(ctx context.Context) ([]*npool.Notif, error) {
 				return fmt.Errorf("invalid event id")
 			}
 
-			if _, err = tx.Notif.
-				Update().
-				Where(
-					entnotif.EventID(eventID),
-				).
-				SetNotified(true).
-				Save(_ctx); err != nil {
-				return err
+			switch info.Channel {
+			case basetypes.NotifChannel_ChannelFrontend:
+				if _, err = tx.Notif.
+					Update().
+					Where(
+						entnotif.EventID(eventID),
+					).
+					SetNotified(true).
+					Save(_ctx); err != nil {
+					return err
+				}
+			default:
+				if _, err := notifcrud.UpdateSet(
+					tx.Notif.UpdateOneID(*req.ID),
+					&notifcrud.Req{
+						Notified: req.Notified,
+					},
+				).Save(ctx); err != nil {
+					return err
+				}
 			}
-
 			ids = append(ids, *req.ID)
 		}
 		return nil

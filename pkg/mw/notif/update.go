@@ -75,58 +75,76 @@ func (h *Handler) UpdateNotif(ctx context.Context) (*npool.Notif, error) {
 
 // nolint:gocyclo
 func (h *Handler) UpdateNotifs(ctx context.Context) ([]*npool.Notif, error) {
-	ids := []uuid.UUID{}
+	reqs := []*notifcrud.Req{}
+	for _, req := range h.Reqs {
+		if req.ID == nil {
+			return nil, fmt.Errorf("invalid id")
+		}
+		if req.Notified == nil {
+			return nil, fmt.Errorf("invalid notified")
+		}
 
-	err := db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
-		for _, req := range h.Reqs {
-			if req.ID == nil {
-				return fmt.Errorf("invalid id")
+		h.ID = req.ID
+		info, err := h.GetNotif(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if info == nil {
+			return nil, fmt.Errorf("notif not exist")
+		}
+		if info.Notified {
+			if *req.Notified != info.Notified {
+				return nil, fmt.Errorf("invalid notified")
 			}
-			if req.Notified == nil {
-				return fmt.Errorf("invalid notified")
-			}
+		}
 
-			h.ID = req.ID
-			info, err := h.GetNotif(ctx)
-			if err != nil {
-				return err
-			}
-			if info == nil {
-				return fmt.Errorf("notif not exist")
-			}
-			if info.Notified {
-				if *req.Notified != info.Notified {
-					return fmt.Errorf("invalid notified")
-				}
-			}
+		eventID, err := uuid.Parse(info.EventID)
+		if err != nil {
+			return nil, fmt.Errorf("invalid event id")
+		}
 
-			eventID, err := uuid.Parse(info.EventID)
-			if err != nil {
-				return fmt.Errorf("invalid event id")
-			}
-
-			switch info.Channel {
-			case basetypes.NotifChannel_ChannelFrontend:
-				if _, err = tx.Notif.
-					Update().
+		// notif state of frontend channel need to keep consistent in multi language
+		if info.Channel == basetypes.NotifChannel_ChannelFrontend {
+			err := db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
+				notifs, err := cli.Notif.
+					Query().
 					Where(
 						entnotif.EventID(eventID),
 						entnotif.Channel(basetypes.NotifChannel_ChannelFrontend.String()),
-					).
-					SetNotified(true).
-					Save(_ctx); err != nil {
+						entnotif.DeletedAt(0),
+					).All(_ctx)
+				if err != nil {
 					return err
 				}
-			default:
-				if _, err := notifcrud.UpdateSet(
-					tx.Notif.UpdateOneID(*req.ID),
-					&notifcrud.Req{
-						Notified: req.Notified,
-					},
-				).Save(ctx); err != nil {
-					return err
+				for _, notif := range notifs {
+					if notif.ID != *req.ID {
+						reqs = append(reqs, &notifcrud.Req{
+							ID:       &notif.ID,
+							Notified: req.Notified,
+						})
+					}
 				}
+				return nil
+			})
+			if err != nil {
+				return nil, err
 			}
+		}
+		reqs = append(reqs, req)
+	}
+
+	ids := []uuid.UUID{}
+	err := db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
+		for _, req := range reqs {
+			if _, err := notifcrud.UpdateSet(
+				tx.Notif.UpdateOneID(*req.ID),
+				&notifcrud.Req{
+					Notified: req.Notified,
+				},
+			).Save(ctx); err != nil {
+				return err
+			}
+
 			ids = append(ids, *req.ID)
 		}
 		return nil

@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	redis2 "github.com/NpoolPlatform/go-service-framework/pkg/redis"
-	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/template/email"
 	emailtemplatecrud "github.com/NpoolPlatform/notif-middleware/pkg/crud/template/email"
 
@@ -38,18 +36,6 @@ func (h *Handler) UpdateEmailTemplate(ctx context.Context) (*npool.EmailTemplate
 	if h.ID == nil {
 		return nil, fmt.Errorf("invalid id")
 	}
-
-	lockKey := fmt.Sprintf(
-		"%v:%v",
-		basetypes.Prefix_PrefixCreateEmailTemplate,
-		*h.ID,
-	)
-	if err := redis2.TryLock(lockKey, 0); err != nil {
-		return nil, err
-	}
-	defer func() {
-		_ = redis2.Unlock(lockKey)
-	}()
 
 	handler := &updateHandler{
 		Handler: h,

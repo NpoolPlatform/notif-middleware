@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	redis2 "github.com/NpoolPlatform/go-service-framework/pkg/redis"
-	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/template/frontend"
 	frontendtemplatecrud "github.com/NpoolPlatform/notif-middleware/pkg/crud/template/frontend"
 
@@ -34,18 +32,6 @@ func (h *Handler) UpdateFrontendTemplate(ctx context.Context) (*npool.FrontendTe
 	if h.ID == nil {
 		return nil, fmt.Errorf("invalid id")
 	}
-
-	lockKey := fmt.Sprintf(
-		"%v:%v",
-		basetypes.Prefix_PrefixCreateFrontendTemplate,
-		*h.ID,
-	)
-	if err := redis2.TryLock(lockKey, 0); err != nil {
-		return nil, err
-	}
-	defer func() {
-		_ = redis2.Unlock(lockKey)
-	}()
 
 	handler := &updateHandler{
 		Handler: h,

@@ -5,8 +5,6 @@ import (
 	"context"
 	"fmt"
 
-	redis2 "github.com/NpoolPlatform/go-service-framework/pkg/redis"
-	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
 	notifcrud "github.com/NpoolPlatform/notif-middleware/pkg/crud/notif"
 	"github.com/google/uuid"
@@ -24,18 +22,6 @@ func (h *Handler) UpdateNotif(ctx context.Context) (*npool.Notif, error) {
 		return nil, fmt.Errorf("invalid notified")
 	}
 
-	lockKey := fmt.Sprintf(
-		"%v:%v",
-		basetypes.Prefix_PrefixCreateNotif,
-		*h.ID,
-	)
-	if err := redis2.TryLock(lockKey, 0); err != nil {
-		return nil, err
-	}
-	defer func() {
-		_ = redis2.Unlock(lockKey)
-	}()
-
 	info, err := h.GetNotif(ctx)
 	if err != nil {
 		return nil, err
@@ -43,10 +29,8 @@ func (h *Handler) UpdateNotif(ctx context.Context) (*npool.Notif, error) {
 	if info == nil {
 		return nil, fmt.Errorf("notif not exist")
 	}
-	if info.Notified {
-		if *h.Notified != info.Notified {
-			return nil, fmt.Errorf("invalid notified")
-		}
+	if info.Notified && *h.Notified != info.Notified {
+		return nil, fmt.Errorf("invalid notified")
 	}
 
 	err = db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {

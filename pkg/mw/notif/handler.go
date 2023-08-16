@@ -363,7 +363,7 @@ func WithReqs(reqs []*npool.NotifReq) func(context.Context, *Handler) error {
 	}
 }
 
-// nolint:gocyclo
+// nolint:funlen,gocyclo
 func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		h.Conds = &notifcrud.Conds{}
@@ -453,6 +453,17 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 				ids = append(ids, _id)
 			}
 			h.Conds.IDs = &cruder.Cond{Op: conds.GetIDs().GetOp(), Val: ids}
+		}
+		if conds.EventIDs != nil {
+			ids := []uuid.UUID{}
+			for _, id := range conds.GetEventIDs().GetValue() {
+				_id, err := uuid.Parse(id)
+				if err != nil {
+					return err
+				}
+				ids = append(ids, _id)
+			}
+			h.Conds.EventIDs = &cruder.Cond{Op: conds.GetEventIDs().GetOp(), Val: ids}
 		}
 		if conds.Notified != nil {
 			h.Conds.Notified = &cruder.Cond{Op: conds.GetNotified().GetOp(), Val: conds.GetNotified().GetValue()}

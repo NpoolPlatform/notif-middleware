@@ -114,6 +114,7 @@ type Conds struct {
 	IDs         *cruder.Cond
 	EventTypes  *cruder.Cond
 	Channels    *cruder.Cond
+	EventIDs    *cruder.Cond
 }
 
 // nolint:funlen,gocyclo
@@ -260,6 +261,18 @@ func SetQueryConds(q *ent.NotifQuery, conds *Conds) (*ent.NotifQuery, error) {
 		switch conds.IDs.Op {
 		case cruder.IN:
 			q.Where(entnotif.IDIn(ids...))
+		default:
+			return nil, fmt.Errorf("invalid notif field")
+		}
+	}
+	if conds.EventIDs != nil {
+		ids, ok := conds.EventIDs.Val.([]uuid.UUID)
+		if !ok {
+			return nil, fmt.Errorf("invalid eventids")
+		}
+		switch conds.EventIDs.Op {
+		case cruder.IN:
+			q.Where(entnotif.EventIDIn(ids...))
 		default:
 			return nil, fmt.Errorf("invalid notif field")
 		}

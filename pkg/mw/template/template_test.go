@@ -72,7 +72,7 @@ var (
 	}
 )
 
-func generateTemplate(t *testing.T) {
+func setupTemplate(t *testing.T) func(*testing.T) {
 	chanHandler, err := notifchanmw.NewHandler(
 		context.Background(),
 		notifchanmw.WithAppID(&chanret.AppID),
@@ -102,6 +102,13 @@ func generateTemplate(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, emailtempinfo)
 
+	return func(*testing.T) {
+		_, _ = chanHandler.DeleteChannel(context.Background())
+		_, _ = emailtempHandler.DeleteEmailTemplate(context.Background())
+	}
+}
+
+func generateTemplate(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
 		WithAppID(&ret.AppID),
@@ -122,6 +129,9 @@ func TestTemplate(t *testing.T) {
 	if runByGithubAction, err := strconv.ParseBool(os.Getenv("RUN_BY_GITHUB_ACTION")); err == nil && runByGithubAction {
 		return
 	}
+
+	teardown := setupTemplate(t)
+	defer teardown(t)
 
 	t.Run("generateTemplate", generateTemplate)
 }

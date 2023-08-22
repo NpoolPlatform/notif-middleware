@@ -45,9 +45,6 @@ var (
 		Subject:    "Subject " + uuid.NewString(),
 		Message:    "Message " + uuid.NewString(),
 	}
-)
-
-var (
 	appInfo = npool.SMSTemplateReq{
 		ID:      &ret.ID,
 		AppID:   &ret.AppID,
@@ -56,22 +53,7 @@ var (
 		Subject: &ret.Subject,
 		Message: &ret.Message,
 	}
-)
-
-var info *npool.SMSTemplate
-
-func createSMSTemplate(t *testing.T) {
-	var err error
-	info, err = CreateSMSTemplate(context.Background(), &appInfo)
-	if assert.Nil(t, err) {
-		ret.UpdatedAt = info.UpdatedAt
-		ret.CreatedAt = info.CreatedAt
-		assert.Equal(t, info, &ret)
-	}
-}
-
-func createSMSTemplates(t *testing.T) {
-	rets := []npool.SMSTemplate{
+	rets = []npool.SMSTemplate{
 		{
 			ID:         uuid.NewString(),
 			AppID:      ret.AppID,
@@ -91,7 +73,21 @@ func createSMSTemplates(t *testing.T) {
 			Message:    "Message2 " + uuid.NewString(),
 		},
 	}
+)
 
+var info *npool.SMSTemplate
+
+func createSMSTemplate(t *testing.T) {
+	var err error
+	info, err = CreateSMSTemplate(context.Background(), &appInfo)
+	if assert.Nil(t, err) {
+		ret.UpdatedAt = info.UpdatedAt
+		ret.CreatedAt = info.CreatedAt
+		assert.Equal(t, info, &ret)
+	}
+}
+
+func createSMSTemplates(t *testing.T) {
 	apps := []*npool.SMSTemplateReq{}
 	for key := range rets {
 		apps = append(apps, &npool.SMSTemplateReq{
@@ -184,6 +180,16 @@ func deleteSMSTemplate(t *testing.T) {
 	})
 	if assert.Nil(t, err) {
 		assert.Equal(t, info, &ret)
+	}
+	for key := range rets {
+		info, err := DeleteSMSTemplate(context.Background(), &npool.SMSTemplateReq{
+			ID: &rets[key].ID,
+		})
+		if assert.Nil(t, err) {
+			rets[key].CreatedAt = info.CreatedAt
+			rets[key].UpdatedAt = info.UpdatedAt
+			assert.Equal(t, info, &rets[key])
+		}
 	}
 }
 

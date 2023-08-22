@@ -242,6 +242,14 @@ func deleteNotif(t *testing.T) {
 	info, err = GetNotif(context.Background(), info.ID)
 	assert.Nil(t, err)
 	assert.Nil(t, info)
+	for key := range rets {
+		info, err := DeleteNotif(context.Background(), &npool.NotifReq{
+			ID: &rets[key].ID,
+		})
+		if assert.Nil(t, err) {
+			assert.NotEqual(t, info, nil)
+		}
+	}
 }
 
 func TestClient(t *testing.T) {

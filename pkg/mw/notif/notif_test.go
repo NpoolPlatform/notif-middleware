@@ -1,4 +1,4 @@
-package frontend
+package notif
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 
-	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/template/frontend"
+	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 
@@ -27,30 +27,44 @@ func init() {
 }
 
 var (
-	ret = npool.FrontendTemplate{
-		ID:         uuid.NewString(),
-		AppID:      uuid.NewString(),
-		LangID:     uuid.NewString(),
-		UsedFor:    basetypes.UsedFor_KYCApproved,
-		UsedForStr: basetypes.UsedFor_KYCApproved.String(),
-		Title:      "title " + uuid.NewString(),
-		Content:    "content " + uuid.NewString(),
+	ret = npool.Notif{
+		ID:           uuid.NewString(),
+		AppID:        uuid.NewString(),
+		UserID:       uuid.NewString(),
+		Notified:     false,
+		LangID:       uuid.NewString(),
+		EventID:      uuid.NewString(),
+		EventType:    basetypes.UsedFor_KYCApproved,
+		EventTypeStr: basetypes.UsedFor_KYCApproved.String(),
+		UseTemplate:  true,
+		Title:        "title " + uuid.NewString(),
+		Content:      "content " + uuid.NewString(),
+		Channel:      basetypes.NotifChannel_ChannelSMS,
+		ChannelStr:   basetypes.NotifChannel_ChannelSMS.String(),
+		NotifType:    basetypes.NotifType_NotifMulticast,
+		NotifTypeStr: basetypes.NotifType_NotifMulticast.String(),
 	}
 )
 
-func createFrontendTemplate(t *testing.T) {
+func createNotif(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
 		WithID(&ret.ID),
 		WithAppID(&ret.AppID),
 		WithLangID(&ret.LangID),
-		WithUsedFor(&ret.UsedFor),
+		WithUserID(&ret.UserID),
+		WithEventID(&ret.EventID),
+		WithNotified(&ret.Notified),
+		WithEventType(&ret.EventType),
+		WithUseTemplate(&ret.UseTemplate),
 		WithTitle(&ret.Title),
 		WithContent(&ret.Content),
+		WithChannel(&ret.Channel),
+		WithNotifType(&ret.NotifType),
 	)
 	assert.Nil(t, err)
 
-	info, err := handler.CreateFrontendTemplate(context.Background())
+	info, err := handler.CreateNotif(context.Background())
 	if assert.Nil(t, err) {
 		ret.CreatedAt = info.CreatedAt
 		ret.UpdatedAt = info.UpdatedAt
@@ -58,41 +72,37 @@ func createFrontendTemplate(t *testing.T) {
 	}
 }
 
-func updateFrontendTemplate(t *testing.T) {
-	ret.Title = "change Title " + uuid.NewString()
-	ret.Content = "change Content " + uuid.NewString()
+func updateNotif(t *testing.T) {
+	ret.Notified = true
 	handler, err := NewHandler(
 		context.Background(),
 		WithID(&ret.ID),
 		WithAppID(&ret.AppID),
-		WithLangID(&ret.LangID),
-		WithUsedFor(&ret.UsedFor),
-		WithTitle(&ret.Title),
-		WithContent(&ret.Content),
+		WithNotified(&ret.Notified),
 	)
 	assert.Nil(t, err)
 
-	info, err := handler.UpdateFrontendTemplate(context.Background())
+	info, err := handler.UpdateNotif(context.Background())
 	if assert.Nil(t, err) {
 		ret.UpdatedAt = info.UpdatedAt
 		assert.Equal(t, info, &ret)
 	}
 }
 
-func getFrontendTemplate(t *testing.T) {
+func getNotif(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
 		WithID(&ret.ID),
 	)
 	assert.Nil(t, err)
 
-	info, err := handler.GetFrontendTemplate(context.Background())
+	info, err := handler.GetNotif(context.Background())
 	if assert.Nil(t, err) {
 		assert.Equal(t, info, &ret)
 	}
 }
 
-func getFrontendTemplates(t *testing.T) {
+func getNotifs(t *testing.T) {
 	conds := &npool.Conds{
 		ID: &basetypes.StringVal{Op: cruder.EQ, Value: ret.ID},
 	}
@@ -105,38 +115,38 @@ func getFrontendTemplates(t *testing.T) {
 	)
 	assert.Nil(t, err)
 
-	infos, _, err := handler.GetFrontendTemplates(context.Background())
+	infos, _, err := handler.GetNotifs(context.Background())
 	if !assert.Nil(t, err) {
 		assert.NotEqual(t, len(infos), 0)
 	}
 }
 
-func deleteFrontendTemplate(t *testing.T) {
+func deleteNotif(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
 		WithID(&ret.ID),
 	)
 	assert.Nil(t, err)
 
-	info, err := handler.DeleteFrontendTemplate(context.Background())
+	info, err := handler.DeleteNotif(context.Background())
 	if assert.Nil(t, err) {
 		ret.UpdatedAt = info.UpdatedAt
 		assert.Equal(t, info, &ret)
 	}
 
-	info, err = handler.GetFrontendTemplate(context.Background())
+	info, err = handler.GetNotif(context.Background())
 	assert.Nil(t, err)
 	assert.Nil(t, info)
 }
 
-func TestFrontendTemplate(t *testing.T) {
+func TestNotif(t *testing.T) {
 	if runByGithubAction, err := strconv.ParseBool(os.Getenv("RUN_BY_GITHUB_ACTION")); err == nil && runByGithubAction {
 		return
 	}
 
-	t.Run("createFrontendTemplate", createFrontendTemplate)
-	t.Run("updateFrontendTemplate", updateFrontendTemplate)
-	t.Run("getFrontendTemplate", getFrontendTemplate)
-	t.Run("getFrontendTemplates", getFrontendTemplates)
-	t.Run("deleteFrontendTemplate", deleteFrontendTemplate)
+	t.Run("createNotif", createNotif)
+	t.Run("updateNotif", updateNotif)
+	t.Run("getNotif", getNotif)
+	t.Run("getNotifs", getNotifs)
+	t.Run("deleteNotif", deleteNotif)
 }

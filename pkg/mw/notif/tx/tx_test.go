@@ -1,4 +1,4 @@
-package sms
+package tx
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 
-	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/template/sms"
+	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/tx"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 
@@ -27,74 +27,70 @@ func init() {
 }
 
 var (
-	ret = npool.SMSTemplate{
-		ID:         uuid.NewString(),
-		AppID:      uuid.NewString(),
-		LangID:     uuid.NewString(),
-		UsedFor:    basetypes.UsedFor_KYCRejected,
-		UsedForStr: basetypes.UsedFor_KYCRejected.String(),
-		Subject:    "subject " + uuid.NewString(),
-		Message:    "message " + uuid.NewString(),
+	ret = npool.Tx{
+		ID:            uuid.NewString(),
+		TxID:          uuid.NewString(),
+		NotifState:    npool.TxState_WaitNotified,
+		NotifStateStr: npool.TxState_WaitNotified.String(),
+		TxType:        basetypes.TxType_TxWithdraw,
+		TxTypeStr:     basetypes.TxType_TxWithdraw.String(),
 	}
 )
 
-func createSMSTemplate(t *testing.T) {
+func createTx(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
-		WithID(&ret.ID),
-		WithAppID(&ret.AppID),
-		WithLangID(&ret.LangID),
-		WithUsedFor(&ret.UsedFor),
-		WithSubject(&ret.Subject),
-		WithMessage(&ret.Message),
+		WithTxID(&ret.TxID),
+		WithNotifState(&ret.NotifState),
+		WithTxType(&ret.TxType),
 	)
 	assert.Nil(t, err)
 
-	info, err := handler.CreateSMSTemplate(context.Background())
+	info, err := handler.CreateTx(context.Background())
 	if assert.Nil(t, err) {
 		ret.CreatedAt = info.CreatedAt
 		ret.UpdatedAt = info.UpdatedAt
+		ret.ID = info.ID
 		assert.Equal(t, info, &ret)
 	}
 }
 
-func updateSMSTemplate(t *testing.T) {
-	ret.Subject = "change Subject " + uuid.NewString()
-	ret.Message = "change Message " + uuid.NewString()
+func updateTx(t *testing.T) {
+	ret.NotifState = npool.TxState_Notified
+	ret.NotifStateStr = npool.TxState_Notified.String()
 	handler, err := NewHandler(
 		context.Background(),
 		WithID(&ret.ID),
-		WithAppID(&ret.AppID),
-		WithLangID(&ret.LangID),
-		WithUsedFor(&ret.UsedFor),
-		WithSubject(&ret.Subject),
-		WithMessage(&ret.Message),
+		WithNotifState(&ret.NotifState),
 	)
 	assert.Nil(t, err)
 
-	info, err := handler.UpdateSMSTemplate(context.Background())
+	info, err := handler.UpdateTx(context.Background())
 	if assert.Nil(t, err) {
 		ret.UpdatedAt = info.UpdatedAt
 		assert.Equal(t, info, &ret)
 	}
 }
 
-func getSMSTemplate(t *testing.T) {
+func getTx(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
 		WithID(&ret.ID),
 	)
 	assert.Nil(t, err)
 
-	info, err := handler.GetSMSTemplate(context.Background())
+	info, err := handler.GetTx(context.Background())
 	if assert.Nil(t, err) {
 		assert.Equal(t, info, &ret)
 	}
 }
 
-func getSMSTemplates(t *testing.T) {
+func getTxs(t *testing.T) {
 	conds := &npool.Conds{
-		ID: &basetypes.StringVal{Op: cruder.EQ, Value: ret.ID},
+		ID:         &basetypes.StringVal{Op: cruder.EQ, Value: ret.ID},
+		TxID:       &basetypes.StringVal{Op: cruder.EQ, Value: ret.TxID},
+		NotifState: &basetypes.Uint32Val{Op: cruder.EQ, Value: uint32(ret.NotifState)},
+		TxTypes:    &basetypes.Uint32SliceVal{Op: cruder.IN, Value: []uint32{uint32(ret.TxType)}},
 	}
 
 	handler, err := NewHandler(
@@ -105,38 +101,38 @@ func getSMSTemplates(t *testing.T) {
 	)
 	assert.Nil(t, err)
 
-	infos, _, err := handler.GetSMSTemplates(context.Background())
+	infos, _, err := handler.GetTxs(context.Background())
 	if !assert.Nil(t, err) {
 		assert.NotEqual(t, len(infos), 0)
 	}
 }
 
-func deleteSMSTemplate(t *testing.T) {
+func deleteTx(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
 		WithID(&ret.ID),
 	)
 	assert.Nil(t, err)
 
-	info, err := handler.DeleteSMSTemplate(context.Background())
+	info, err := handler.DeleteTx(context.Background())
 	if assert.Nil(t, err) {
 		ret.UpdatedAt = info.UpdatedAt
 		assert.Equal(t, info, &ret)
 	}
 
-	info, err = handler.GetSMSTemplate(context.Background())
+	info, err = handler.GetTx(context.Background())
 	assert.Nil(t, err)
 	assert.Nil(t, info)
 }
 
-func TestSMSTemplate(t *testing.T) {
+func TestTx(t *testing.T) {
 	if runByGithubAction, err := strconv.ParseBool(os.Getenv("RUN_BY_GITHUB_ACTION")); err == nil && runByGithubAction {
 		return
 	}
 
-	t.Run("createSMSTemplate", createSMSTemplate)
-	t.Run("updateSMSTemplate", updateSMSTemplate)
-	t.Run("getSMSTemplate", getSMSTemplate)
-	t.Run("getSMSTemplates", getSMSTemplates)
-	t.Run("deleteSMSTemplate", deleteSMSTemplate)
+	t.Run("createTx", createTx)
+	t.Run("updateTx", updateTx)
+	t.Run("getTx", getTx)
+	t.Run("getTxs", getTxs)
+	t.Run("deleteTx", deleteTx)
 }

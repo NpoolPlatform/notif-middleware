@@ -55,22 +55,8 @@ var (
 		Title:   &ret.Title,
 		Content: &ret.Content,
 	}
-)
 
-var info *npool.FrontendTemplate
-
-func createFrontendTemplate(t *testing.T) {
-	var err error
-	info, err = CreateFrontendTemplate(context.Background(), &appInfo)
-	if assert.Nil(t, err) {
-		ret.UpdatedAt = info.UpdatedAt
-		ret.CreatedAt = info.CreatedAt
-		assert.Equal(t, info, &ret)
-	}
-}
-
-func createFrontendTemplates(t *testing.T) {
-	rets := []npool.FrontendTemplate{
+	rets = []npool.FrontendTemplate{
 		{
 			ID:         uuid.NewString(),
 			AppID:      ret.AppID,
@@ -90,7 +76,21 @@ func createFrontendTemplates(t *testing.T) {
 			Content:    "Content1 " + uuid.NewString(),
 		},
 	}
+)
 
+var info *npool.FrontendTemplate
+
+func createFrontendTemplate(t *testing.T) {
+	var err error
+	info, err = CreateFrontendTemplate(context.Background(), &appInfo)
+	if assert.Nil(t, err) {
+		ret.UpdatedAt = info.UpdatedAt
+		ret.CreatedAt = info.CreatedAt
+		assert.Equal(t, info, &ret)
+	}
+}
+
+func createFrontendTemplates(t *testing.T) {
 	apps := []*npool.FrontendTemplateReq{}
 	for key := range rets {
 		apps = append(apps, &npool.FrontendTemplateReq{
@@ -183,6 +183,14 @@ func deleteFrontendTemplate(t *testing.T) {
 	})
 	if assert.Nil(t, err) {
 		assert.Equal(t, info, &ret)
+	}
+	for key := range rets {
+		info, err := DeleteFrontendTemplate(context.Background(), &npool.FrontendTemplateReq{
+			ID: &rets[key].ID,
+		})
+		if assert.Nil(t, err) {
+			assert.NotEqual(t, info, nil)
+		}
 	}
 }
 

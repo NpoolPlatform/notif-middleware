@@ -110,6 +110,15 @@ func getTxOnly(t *testing.T) {
 	}
 }
 
+func deleteTx(t *testing.T) {
+	info, err := DeleteTx(context.Background(), &npool.TxReq{
+		ID: &ret.ID,
+	})
+	if assert.Nil(t, err) {
+		assert.Equal(t, info, &ret)
+	}
+}
+
 func TestClient(t *testing.T) {
 	if runByGithubAction, err := strconv.ParseBool(os.Getenv("RUN_BY_GITHUB_ACTION")); err == nil && runByGithubAction {
 		return
@@ -128,4 +137,5 @@ func TestClient(t *testing.T) {
 	t.Run("updateTx", updateTx)
 	t.Run("getTxs", getTxs)
 	t.Run("getTxOnly", getTxOnly)
+	t.Run("deleteTx", deleteTx)
 }

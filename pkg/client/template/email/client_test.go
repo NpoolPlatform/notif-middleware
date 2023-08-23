@@ -69,22 +69,8 @@ var (
 	}
 
 	info *npool.EmailTemplate
-)
 
-func createEmailTemplate(t *testing.T) {
-	var err error
-	info, err = CreateEmailTemplate(context.Background(), &appInfo)
-	if assert.Nil(t, err) {
-		info.ReplyTosStr = ret.ReplyTosStr
-		info.CCTosStr = ret.CCTosStr
-		ret.CreatedAt = info.CreatedAt
-		ret.UpdatedAt = info.UpdatedAt
-		assert.Equal(t, info, &ret)
-	}
-}
-
-func createEmailTemplates(t *testing.T) {
-	rets := []npool.EmailTemplate{
+	rets = []npool.EmailTemplate{
 		{
 			ID:                uuid.NewString(),
 			AppID:             ret.AppID,
@@ -114,7 +100,21 @@ func createEmailTemplates(t *testing.T) {
 			DefaultToUsername: "DefaultToUsername2 " + uuid.NewString(),
 		},
 	}
+)
 
+func createEmailTemplate(t *testing.T) {
+	var err error
+	info, err = CreateEmailTemplate(context.Background(), &appInfo)
+	if assert.Nil(t, err) {
+		info.ReplyTosStr = ret.ReplyTosStr
+		info.CCTosStr = ret.CCTosStr
+		ret.CreatedAt = info.CreatedAt
+		ret.UpdatedAt = info.UpdatedAt
+		assert.Equal(t, info, &ret)
+	}
+}
+
+func createEmailTemplates(t *testing.T) {
 	apps := []*npool.EmailTemplateReq{}
 	for key := range rets {
 		apps = append(apps, &npool.EmailTemplateReq{
@@ -220,6 +220,14 @@ func deleteEmailTemplate(t *testing.T) {
 		info.CCTosStr = ret.CCTosStr
 		info.UpdatedAt = ret.UpdatedAt
 		assert.Equal(t, info, &ret)
+	}
+	for key := range rets {
+		info, err := DeleteEmailTemplate(context.Background(), &npool.EmailTemplateReq{
+			ID: &rets[key].ID,
+		})
+		if assert.Nil(t, err) {
+			assert.NotEqual(t, info, nil)
+		}
 	}
 }
 

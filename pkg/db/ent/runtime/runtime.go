@@ -17,7 +17,6 @@ import (
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/schema"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/sendannouncement"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/smstemplate"
-	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/txnotifstate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/userannouncement"
 	"github.com/google/uuid"
 
@@ -609,50 +608,6 @@ func init() {
 	sendannouncementDescID := sendannouncementFields[0].Descriptor()
 	// sendannouncement.DefaultID holds the default value on creation for the id field.
 	sendannouncement.DefaultID = sendannouncementDescID.Default.(func() uuid.UUID)
-	txnotifstateMixin := schema.TxNotifState{}.Mixin()
-	txnotifstate.Policy = privacy.NewPolicies(txnotifstateMixin[0], schema.TxNotifState{})
-	txnotifstate.Hooks[0] = func(next ent.Mutator) ent.Mutator {
-		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-			if err := txnotifstate.Policy.EvalMutation(ctx, m); err != nil {
-				return nil, err
-			}
-			return next.Mutate(ctx, m)
-		})
-	}
-	txnotifstateMixinFields0 := txnotifstateMixin[0].Fields()
-	_ = txnotifstateMixinFields0
-	txnotifstateFields := schema.TxNotifState{}.Fields()
-	_ = txnotifstateFields
-	// txnotifstateDescCreatedAt is the schema descriptor for created_at field.
-	txnotifstateDescCreatedAt := txnotifstateMixinFields0[0].Descriptor()
-	// txnotifstate.DefaultCreatedAt holds the default value on creation for the created_at field.
-	txnotifstate.DefaultCreatedAt = txnotifstateDescCreatedAt.Default.(func() uint32)
-	// txnotifstateDescUpdatedAt is the schema descriptor for updated_at field.
-	txnotifstateDescUpdatedAt := txnotifstateMixinFields0[1].Descriptor()
-	// txnotifstate.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	txnotifstate.DefaultUpdatedAt = txnotifstateDescUpdatedAt.Default.(func() uint32)
-	// txnotifstate.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	txnotifstate.UpdateDefaultUpdatedAt = txnotifstateDescUpdatedAt.UpdateDefault.(func() uint32)
-	// txnotifstateDescDeletedAt is the schema descriptor for deleted_at field.
-	txnotifstateDescDeletedAt := txnotifstateMixinFields0[2].Descriptor()
-	// txnotifstate.DefaultDeletedAt holds the default value on creation for the deleted_at field.
-	txnotifstate.DefaultDeletedAt = txnotifstateDescDeletedAt.Default.(func() uint32)
-	// txnotifstateDescTxID is the schema descriptor for tx_id field.
-	txnotifstateDescTxID := txnotifstateFields[1].Descriptor()
-	// txnotifstate.DefaultTxID holds the default value on creation for the tx_id field.
-	txnotifstate.DefaultTxID = txnotifstateDescTxID.Default.(func() uuid.UUID)
-	// txnotifstateDescNotifState is the schema descriptor for notif_state field.
-	txnotifstateDescNotifState := txnotifstateFields[2].Descriptor()
-	// txnotifstate.DefaultNotifState holds the default value on creation for the notif_state field.
-	txnotifstate.DefaultNotifState = txnotifstateDescNotifState.Default.(string)
-	// txnotifstateDescTxType is the schema descriptor for tx_type field.
-	txnotifstateDescTxType := txnotifstateFields[3].Descriptor()
-	// txnotifstate.DefaultTxType holds the default value on creation for the tx_type field.
-	txnotifstate.DefaultTxType = txnotifstateDescTxType.Default.(string)
-	// txnotifstateDescID is the schema descriptor for id field.
-	txnotifstateDescID := txnotifstateFields[0].Descriptor()
-	// txnotifstate.DefaultID holds the default value on creation for the id field.
-	txnotifstate.DefaultID = txnotifstateDescID.Default.(func() uuid.UUID)
 	userannouncementMixin := schema.UserAnnouncement{}.Mixin()
 	userannouncement.Policy = privacy.NewPolicies(userannouncementMixin[0], schema.UserAnnouncement{})
 	userannouncement.Hooks[0] = func(next ent.Mutator) ent.Mutator {

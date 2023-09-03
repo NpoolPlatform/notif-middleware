@@ -14,7 +14,6 @@ import (
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/readannouncement"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/sendannouncement"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/smstemplate"
-	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/txnotifstate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/userannouncement"
 
 	"entgo.io/ent/dialect/sql"
@@ -25,7 +24,7 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 13)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 12)}
 	graph.Nodes[0] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   announcement.Table,
@@ -268,25 +267,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 	}
 	graph.Nodes[11] = &sqlgraph.Node{
-		NodeSpec: sqlgraph.NodeSpec{
-			Table:   txnotifstate.Table,
-			Columns: txnotifstate.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
-				Column: txnotifstate.FieldID,
-			},
-		},
-		Type: "TxNotifState",
-		Fields: map[string]*sqlgraph.FieldSpec{
-			txnotifstate.FieldCreatedAt:  {Type: field.TypeUint32, Column: txnotifstate.FieldCreatedAt},
-			txnotifstate.FieldUpdatedAt:  {Type: field.TypeUint32, Column: txnotifstate.FieldUpdatedAt},
-			txnotifstate.FieldDeletedAt:  {Type: field.TypeUint32, Column: txnotifstate.FieldDeletedAt},
-			txnotifstate.FieldTxID:       {Type: field.TypeUUID, Column: txnotifstate.FieldTxID},
-			txnotifstate.FieldNotifState: {Type: field.TypeString, Column: txnotifstate.FieldNotifState},
-			txnotifstate.FieldTxType:     {Type: field.TypeString, Column: txnotifstate.FieldTxType},
-		},
-	}
-	graph.Nodes[12] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   userannouncement.Table,
 			Columns: userannouncement.Columns,
@@ -1245,76 +1225,6 @@ func (f *SendAnnouncementFilter) WhereChannel(p entql.StringP) {
 }
 
 // addPredicate implements the predicateAdder interface.
-func (tnsq *TxNotifStateQuery) addPredicate(pred func(s *sql.Selector)) {
-	tnsq.predicates = append(tnsq.predicates, pred)
-}
-
-// Filter returns a Filter implementation to apply filters on the TxNotifStateQuery builder.
-func (tnsq *TxNotifStateQuery) Filter() *TxNotifStateFilter {
-	return &TxNotifStateFilter{config: tnsq.config, predicateAdder: tnsq}
-}
-
-// addPredicate implements the predicateAdder interface.
-func (m *TxNotifStateMutation) addPredicate(pred func(s *sql.Selector)) {
-	m.predicates = append(m.predicates, pred)
-}
-
-// Filter returns an entql.Where implementation to apply filters on the TxNotifStateMutation builder.
-func (m *TxNotifStateMutation) Filter() *TxNotifStateFilter {
-	return &TxNotifStateFilter{config: m.config, predicateAdder: m}
-}
-
-// TxNotifStateFilter provides a generic filtering capability at runtime for TxNotifStateQuery.
-type TxNotifStateFilter struct {
-	predicateAdder
-	config
-}
-
-// Where applies the entql predicate on the query filter.
-func (f *TxNotifStateFilter) Where(p entql.P) {
-	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[11].Type, p, s); err != nil {
-			s.AddError(err)
-		}
-	})
-}
-
-// WhereID applies the entql [16]byte predicate on the id field.
-func (f *TxNotifStateFilter) WhereID(p entql.ValueP) {
-	f.Where(p.Field(txnotifstate.FieldID))
-}
-
-// WhereCreatedAt applies the entql uint32 predicate on the created_at field.
-func (f *TxNotifStateFilter) WhereCreatedAt(p entql.Uint32P) {
-	f.Where(p.Field(txnotifstate.FieldCreatedAt))
-}
-
-// WhereUpdatedAt applies the entql uint32 predicate on the updated_at field.
-func (f *TxNotifStateFilter) WhereUpdatedAt(p entql.Uint32P) {
-	f.Where(p.Field(txnotifstate.FieldUpdatedAt))
-}
-
-// WhereDeletedAt applies the entql uint32 predicate on the deleted_at field.
-func (f *TxNotifStateFilter) WhereDeletedAt(p entql.Uint32P) {
-	f.Where(p.Field(txnotifstate.FieldDeletedAt))
-}
-
-// WhereTxID applies the entql [16]byte predicate on the tx_id field.
-func (f *TxNotifStateFilter) WhereTxID(p entql.ValueP) {
-	f.Where(p.Field(txnotifstate.FieldTxID))
-}
-
-// WhereNotifState applies the entql string predicate on the notif_state field.
-func (f *TxNotifStateFilter) WhereNotifState(p entql.StringP) {
-	f.Where(p.Field(txnotifstate.FieldNotifState))
-}
-
-// WhereTxType applies the entql string predicate on the tx_type field.
-func (f *TxNotifStateFilter) WhereTxType(p entql.StringP) {
-	f.Where(p.Field(txnotifstate.FieldTxType))
-}
-
-// addPredicate implements the predicateAdder interface.
 func (uaq *UserAnnouncementQuery) addPredicate(pred func(s *sql.Selector)) {
 	uaq.predicates = append(uaq.predicates, pred)
 }
@@ -1343,7 +1253,7 @@ type UserAnnouncementFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *UserAnnouncementFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[12].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[11].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})

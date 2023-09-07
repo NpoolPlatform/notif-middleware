@@ -11,6 +11,7 @@ import (
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
 
 	"github.com/google/uuid"
+	"github.com/shopspring/decimal"
 )
 
 type createHandler struct {
@@ -31,7 +32,7 @@ func (h *createHandler) validate() error {
 		return fmt.Errorf("benefit date is empty")
 	}
 	if *h.State == basetypes.Result_Success {
-		if h.Amount == nil || h.TxID == nil {
+		if h.Amount != nil && h.Amount.Cmp(decimal.NewFromInt(0)) > 0 && h.TxID == nil {
 			return fmt.Errorf("amount or tx id can not be empty")
 		}
 	}
@@ -54,13 +55,18 @@ func (h *Handler) CreateGoodBenefit(ctx context.Context) (*npool.GoodBenefit, er
 	}
 
 	err := db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
+		var amount *string
+		if h.Amount != nil {
+			_amount := h.Amount.String()
+			amount = &_amount
+		}
 		if _, err := crud.CreateSet(
 			cli.GoodBenefit.Create(),
 			&crud.Req{
 				ID:          h.ID,
 				GoodID:      h.GoodID,
 				GoodName:    h.GoodName,
-				Amount:      h.Amount,
+				Amount:      amount,
 				State:       h.State,
 				Message:     h.Message,
 				BenefitDate: h.BenefitDate,

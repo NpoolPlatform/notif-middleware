@@ -11,6 +11,7 @@ require (
 	github.com/NpoolPlatform/message v0.0.0-20230903051155-cb15df66f1e1
 	github.com/google/uuid v1.3.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.11.3
+	github.com/shopspring/decimal v1.3.1
 	github.com/stretchr/testify v1.8.3
 	github.com/urfave/cli/v2 v2.16.3
 	golang.org/x/text v0.8.0

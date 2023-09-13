@@ -11,13 +11,14 @@ import (
 	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/notif/goodbenefit"
 
 	"github.com/google/uuid"
+	"github.com/shopspring/decimal"
 )
 
 type Handler struct {
 	ID          *uuid.UUID
 	GoodID      *uuid.UUID
 	GoodName    *string
-	Amount      *string
+	Amount      *decimal.Decimal
 	State       *basetypes.Result
 	Message     *string
 	BenefitDate *uint32
@@ -76,7 +77,11 @@ func WithAmount(amount *string) func(context.Context, *Handler) error {
 		if amount == nil {
 			return nil
 		}
-		h.Amount = amount
+		_amount, err := decimal.NewFromString(*amount)
+		if err != nil {
+			return err
+		}
+		h.Amount = &_amount
 		return nil
 	}
 }

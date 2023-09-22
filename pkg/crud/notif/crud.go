@@ -232,7 +232,7 @@ func SetQueryConds(q *ent.NotifQuery, conds *Conds) (*ent.NotifQuery, error) {
 	if conds.Channel != nil {
 		channel, ok := conds.Channel.Val.(basetypes.NotifChannel)
 		if !ok {
-			return nil, fmt.Errorf("invalid channelsss")
+			return nil, fmt.Errorf("invalid channel")
 		}
 		switch conds.Channel.Op {
 		case cruder.EQ:
@@ -278,25 +278,33 @@ func SetQueryConds(q *ent.NotifQuery, conds *Conds) (*ent.NotifQuery, error) {
 		}
 	}
 	if conds.EventTypes != nil {
-		eventTypes, ok := conds.EventTypes.Val.([]string)
+		eventTypes, ok := conds.EventTypes.Val.([]basetypes.UsedFor)
 		if !ok {
 			return nil, fmt.Errorf("invalid eventTypes")
 		}
+		_types := []string{}
+		for _, _type := range eventTypes {
+			_types = append(_types, _type.String())
+		}
 		switch conds.EventTypes.Op {
 		case cruder.IN:
-			q.Where(entnotif.EventTypeIn(eventTypes...))
+			q.Where(entnotif.EventTypeIn(_types...))
 		default:
 			return nil, fmt.Errorf("invalid notif field")
 		}
 	}
 	if conds.Channels != nil {
-		channels, ok := conds.Channels.Val.([]string)
+		channels, ok := conds.Channels.Val.([]basetypes.NotifChannel)
 		if !ok {
 			return nil, fmt.Errorf("invalid channels")
 		}
+		_channels := []string{}
+		for _, ch := range channels {
+			_channels = append(_channels, ch.String())
+		}
 		switch conds.Channels.Op {
 		case cruder.IN:
-			q.Where(entnotif.ChannelIn(channels...))
+			q.Where(entnotif.ChannelIn(_channels...))
 		default:
 			return nil, fmt.Errorf("invalid notif field")
 		}

@@ -8,4 +8,5 @@ config:
   appid: "89089012783789789719823798127398"
   serviceid: "f51e6c0d-a6e2-11ed-a37e-b6370fe199d5"
   logdir: "./"
+  log_level: "warning"
   apolloAccessKey: "0147fb70b815403790e8634b899fac07"

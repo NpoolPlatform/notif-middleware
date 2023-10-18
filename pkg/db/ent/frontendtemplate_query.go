@@ -14,7 +14,6 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/frontendtemplate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/predicate"
-	"github.com/google/uuid"
 )
 
 // FrontendTemplateQuery is the builder for querying FrontendTemplate entities.
@@ -87,8 +86,8 @@ func (ftq *FrontendTemplateQuery) FirstX(ctx context.Context) *FrontendTemplate 
 
 // FirstID returns the first FrontendTemplate ID from the query.
 // Returns a *NotFoundError when no FrontendTemplate ID was found.
-func (ftq *FrontendTemplateQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
-	var ids []uuid.UUID
+func (ftq *FrontendTemplateQuery) FirstID(ctx context.Context) (id uint32, err error) {
+	var ids []uint32
 	if ids, err = ftq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -100,7 +99,7 @@ func (ftq *FrontendTemplateQuery) FirstID(ctx context.Context) (id uuid.UUID, er
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (ftq *FrontendTemplateQuery) FirstIDX(ctx context.Context) uuid.UUID {
+func (ftq *FrontendTemplateQuery) FirstIDX(ctx context.Context) uint32 {
 	id, err := ftq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -138,8 +137,8 @@ func (ftq *FrontendTemplateQuery) OnlyX(ctx context.Context) *FrontendTemplate {
 // OnlyID is like Only, but returns the only FrontendTemplate ID in the query.
 // Returns a *NotSingularError when more than one FrontendTemplate ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (ftq *FrontendTemplateQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
-	var ids []uuid.UUID
+func (ftq *FrontendTemplateQuery) OnlyID(ctx context.Context) (id uint32, err error) {
+	var ids []uint32
 	if ids, err = ftq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -155,7 +154,7 @@ func (ftq *FrontendTemplateQuery) OnlyID(ctx context.Context) (id uuid.UUID, err
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (ftq *FrontendTemplateQuery) OnlyIDX(ctx context.Context) uuid.UUID {
+func (ftq *FrontendTemplateQuery) OnlyIDX(ctx context.Context) uint32 {
 	id, err := ftq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -181,8 +180,8 @@ func (ftq *FrontendTemplateQuery) AllX(ctx context.Context) []*FrontendTemplate 
 }
 
 // IDs executes the query and returns a list of FrontendTemplate IDs.
-func (ftq *FrontendTemplateQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
-	var ids []uuid.UUID
+func (ftq *FrontendTemplateQuery) IDs(ctx context.Context) ([]uint32, error) {
+	var ids []uint32
 	if err := ftq.Select(frontendtemplate.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -190,7 +189,7 @@ func (ftq *FrontendTemplateQuery) IDs(ctx context.Context) ([]uuid.UUID, error) 
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (ftq *FrontendTemplateQuery) IDsX(ctx context.Context) []uuid.UUID {
+func (ftq *FrontendTemplateQuery) IDsX(ctx context.Context) []uint32 {
 	ids, err := ftq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -377,7 +376,7 @@ func (ftq *FrontendTemplateQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   frontendtemplate.Table,
 			Columns: frontendtemplate.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: frontendtemplate.FieldID,
 			},
 		},

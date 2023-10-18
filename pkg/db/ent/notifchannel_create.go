@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 
-	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -65,6 +64,20 @@ func (ncc *NotifChannelCreate) SetNillableDeletedAt(u *uint32) *NotifChannelCrea
 	return ncc
 }
 
+// SetEntID sets the "ent_id" field.
+func (ncc *NotifChannelCreate) SetEntID(u uuid.UUID) *NotifChannelCreate {
+	ncc.mutation.SetEntID(u)
+	return ncc
+}
+
+// SetNillableEntID sets the "ent_id" field if the given value is not nil.
+func (ncc *NotifChannelCreate) SetNillableEntID(u *uuid.UUID) *NotifChannelCreate {
+	if u != nil {
+		ncc.SetEntID(*u)
+	}
+	return ncc
+}
+
 // SetAppID sets the "app_id" field.
 func (ncc *NotifChannelCreate) SetAppID(u uuid.UUID) *NotifChannelCreate {
 	ncc.mutation.SetAppID(u)
@@ -108,16 +121,8 @@ func (ncc *NotifChannelCreate) SetNillableChannel(s *string) *NotifChannelCreate
 }
 
 // SetID sets the "id" field.
-func (ncc *NotifChannelCreate) SetID(u uuid.UUID) *NotifChannelCreate {
+func (ncc *NotifChannelCreate) SetID(u uint32) *NotifChannelCreate {
 	ncc.mutation.SetID(u)
-	return ncc
-}
-
-// SetNillableID sets the "id" field if the given value is not nil.
-func (ncc *NotifChannelCreate) SetNillableID(u *uuid.UUID) *NotifChannelCreate {
-	if u != nil {
-		ncc.SetID(*u)
-	}
 	return ncc
 }
 
@@ -221,6 +226,13 @@ func (ncc *NotifChannelCreate) defaults() error {
 		v := notifchannel.DefaultDeletedAt()
 		ncc.mutation.SetDeletedAt(v)
 	}
+	if _, ok := ncc.mutation.EntID(); !ok {
+		if notifchannel.DefaultEntID == nil {
+			return fmt.Errorf("ent: uninitialized notifchannel.DefaultEntID (forgotten import ent/runtime?)")
+		}
+		v := notifchannel.DefaultEntID()
+		ncc.mutation.SetEntID(v)
+	}
 	if _, ok := ncc.mutation.AppID(); !ok {
 		if notifchannel.DefaultAppID == nil {
 			return fmt.Errorf("ent: uninitialized notifchannel.DefaultAppID (forgotten import ent/runtime?)")
@@ -236,13 +248,6 @@ func (ncc *NotifChannelCreate) defaults() error {
 		v := notifchannel.DefaultChannel
 		ncc.mutation.SetChannel(v)
 	}
-	if _, ok := ncc.mutation.ID(); !ok {
-		if notifchannel.DefaultID == nil {
-			return fmt.Errorf("ent: uninitialized notifchannel.DefaultID (forgotten import ent/runtime?)")
-		}
-		v := notifchannel.DefaultID()
-		ncc.mutation.SetID(v)
-	}
 	return nil
 }
 
@@ -257,6 +262,9 @@ func (ncc *NotifChannelCreate) check() error {
 	if _, ok := ncc.mutation.DeletedAt(); !ok {
 		return &ValidationError{Name: "deleted_at", err: errors.New(`ent: missing required field "NotifChannel.deleted_at"`)}
 	}
+	if _, ok := ncc.mutation.EntID(); !ok {
+		return &ValidationError{Name: "ent_id", err: errors.New(`ent: missing required field "NotifChannel.ent_id"`)}
+	}
 	return nil
 }
 
@@ -268,12 +276,9 @@ func (ncc *NotifChannelCreate) sqlSave(ctx context.Context) (*NotifChannel, erro
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
-			_node.ID = *id
-		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
-			return nil, err
-		}
+	if _spec.ID.Value != _node.ID {
+		id := _spec.ID.Value.(int64)
+		_node.ID = uint32(id)
 	}
 	return _node, nil
 }
@@ -284,7 +289,7 @@ func (ncc *NotifChannelCreate) createSpec() (*NotifChannel, *sqlgraph.CreateSpec
 		_spec = &sqlgraph.CreateSpec{
 			Table: notifchannel.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: notifchannel.FieldID,
 			},
 		}
@@ -292,7 +297,7 @@ func (ncc *NotifChannelCreate) createSpec() (*NotifChannel, *sqlgraph.CreateSpec
 	_spec.OnConflict = ncc.conflict
 	if id, ok := ncc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = &id
+		_spec.ID.Value = id
 	}
 	if value, ok := ncc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -317,6 +322,14 @@ func (ncc *NotifChannelCreate) createSpec() (*NotifChannel, *sqlgraph.CreateSpec
 			Column: notifchannel.FieldDeletedAt,
 		})
 		_node.DeletedAt = value
+	}
+	if value, ok := ncc.mutation.EntID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: notifchannel.FieldEntID,
+		})
+		_node.EntID = value
 	}
 	if value, ok := ncc.mutation.AppID(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -447,6 +460,18 @@ func (u *NotifChannelUpsert) UpdateDeletedAt() *NotifChannelUpsert {
 // AddDeletedAt adds v to the "deleted_at" field.
 func (u *NotifChannelUpsert) AddDeletedAt(v uint32) *NotifChannelUpsert {
 	u.Add(notifchannel.FieldDeletedAt, v)
+	return u
+}
+
+// SetEntID sets the "ent_id" field.
+func (u *NotifChannelUpsert) SetEntID(v uuid.UUID) *NotifChannelUpsert {
+	u.Set(notifchannel.FieldEntID, v)
+	return u
+}
+
+// UpdateEntID sets the "ent_id" field to the value that was provided on create.
+func (u *NotifChannelUpsert) UpdateEntID() *NotifChannelUpsert {
+	u.SetExcluded(notifchannel.FieldEntID)
 	return u
 }
 
@@ -617,6 +642,20 @@ func (u *NotifChannelUpsertOne) UpdateDeletedAt() *NotifChannelUpsertOne {
 	})
 }
 
+// SetEntID sets the "ent_id" field.
+func (u *NotifChannelUpsertOne) SetEntID(v uuid.UUID) *NotifChannelUpsertOne {
+	return u.Update(func(s *NotifChannelUpsert) {
+		s.SetEntID(v)
+	})
+}
+
+// UpdateEntID sets the "ent_id" field to the value that was provided on create.
+func (u *NotifChannelUpsertOne) UpdateEntID() *NotifChannelUpsertOne {
+	return u.Update(func(s *NotifChannelUpsert) {
+		s.UpdateEntID()
+	})
+}
+
 // SetAppID sets the "app_id" field.
 func (u *NotifChannelUpsertOne) SetAppID(v uuid.UUID) *NotifChannelUpsertOne {
 	return u.Update(func(s *NotifChannelUpsert) {
@@ -696,12 +735,7 @@ func (u *NotifChannelUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *NotifChannelUpsertOne) ID(ctx context.Context) (id uuid.UUID, err error) {
-	if u.create.driver.Dialect() == dialect.MySQL {
-		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
-		// fields from the database since MySQL does not support the RETURNING clause.
-		return id, errors.New("ent: NotifChannelUpsertOne.ID is not supported by MySQL driver. Use NotifChannelUpsertOne.Exec instead")
-	}
+func (u *NotifChannelUpsertOne) ID(ctx context.Context) (id uint32, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -710,7 +744,7 @@ func (u *NotifChannelUpsertOne) ID(ctx context.Context) (id uuid.UUID, err error
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *NotifChannelUpsertOne) IDX(ctx context.Context) uuid.UUID {
+func (u *NotifChannelUpsertOne) IDX(ctx context.Context) uint32 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -761,6 +795,10 @@ func (nccb *NotifChannelCreateBulk) Save(ctx context.Context) ([]*NotifChannel, 
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
+				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
+					id := specs[i].ID.Value.(int64)
+					nodes[i].ID = uint32(id)
+				}
 				mutation.done = true
 				return nodes[i], nil
 			})
@@ -956,6 +994,20 @@ func (u *NotifChannelUpsertBulk) AddDeletedAt(v uint32) *NotifChannelUpsertBulk 
 func (u *NotifChannelUpsertBulk) UpdateDeletedAt() *NotifChannelUpsertBulk {
 	return u.Update(func(s *NotifChannelUpsert) {
 		s.UpdateDeletedAt()
+	})
+}
+
+// SetEntID sets the "ent_id" field.
+func (u *NotifChannelUpsertBulk) SetEntID(v uuid.UUID) *NotifChannelUpsertBulk {
+	return u.Update(func(s *NotifChannelUpsert) {
+		s.SetEntID(v)
+	})
+}
+
+// UpdateEntID sets the "ent_id" field to the value that was provided on create.
+func (u *NotifChannelUpsertBulk) UpdateEntID() *NotifChannelUpsertBulk {
+	return u.Update(func(s *NotifChannelUpsert) {
+		s.UpdateEntID()
 	})
 }
 

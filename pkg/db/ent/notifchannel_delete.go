@@ -72,7 +72,7 @@ func (ncd *NotifChannelDelete) sqlExec(ctx context.Context) (int, error) {
 		Node: &sqlgraph.NodeSpec{
 			Table: notifchannel.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: notifchannel.FieldID,
 			},
 		},

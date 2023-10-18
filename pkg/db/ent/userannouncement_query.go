@@ -14,7 +14,6 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/predicate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/userannouncement"
-	"github.com/google/uuid"
 )
 
 // UserAnnouncementQuery is the builder for querying UserAnnouncement entities.
@@ -87,8 +86,8 @@ func (uaq *UserAnnouncementQuery) FirstX(ctx context.Context) *UserAnnouncement 
 
 // FirstID returns the first UserAnnouncement ID from the query.
 // Returns a *NotFoundError when no UserAnnouncement ID was found.
-func (uaq *UserAnnouncementQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
-	var ids []uuid.UUID
+func (uaq *UserAnnouncementQuery) FirstID(ctx context.Context) (id uint32, err error) {
+	var ids []uint32
 	if ids, err = uaq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -100,7 +99,7 @@ func (uaq *UserAnnouncementQuery) FirstID(ctx context.Context) (id uuid.UUID, er
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (uaq *UserAnnouncementQuery) FirstIDX(ctx context.Context) uuid.UUID {
+func (uaq *UserAnnouncementQuery) FirstIDX(ctx context.Context) uint32 {
 	id, err := uaq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -138,8 +137,8 @@ func (uaq *UserAnnouncementQuery) OnlyX(ctx context.Context) *UserAnnouncement {
 // OnlyID is like Only, but returns the only UserAnnouncement ID in the query.
 // Returns a *NotSingularError when more than one UserAnnouncement ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (uaq *UserAnnouncementQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
-	var ids []uuid.UUID
+func (uaq *UserAnnouncementQuery) OnlyID(ctx context.Context) (id uint32, err error) {
+	var ids []uint32
 	if ids, err = uaq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -155,7 +154,7 @@ func (uaq *UserAnnouncementQuery) OnlyID(ctx context.Context) (id uuid.UUID, err
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (uaq *UserAnnouncementQuery) OnlyIDX(ctx context.Context) uuid.UUID {
+func (uaq *UserAnnouncementQuery) OnlyIDX(ctx context.Context) uint32 {
 	id, err := uaq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -181,8 +180,8 @@ func (uaq *UserAnnouncementQuery) AllX(ctx context.Context) []*UserAnnouncement 
 }
 
 // IDs executes the query and returns a list of UserAnnouncement IDs.
-func (uaq *UserAnnouncementQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
-	var ids []uuid.UUID
+func (uaq *UserAnnouncementQuery) IDs(ctx context.Context) ([]uint32, error) {
+	var ids []uint32
 	if err := uaq.Select(userannouncement.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -190,7 +189,7 @@ func (uaq *UserAnnouncementQuery) IDs(ctx context.Context) ([]uuid.UUID, error) 
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (uaq *UserAnnouncementQuery) IDsX(ctx context.Context) []uuid.UUID {
+func (uaq *UserAnnouncementQuery) IDsX(ctx context.Context) []uint32 {
 	ids, err := uaq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -377,7 +376,7 @@ func (uaq *UserAnnouncementQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   userannouncement.Table,
 			Columns: userannouncement.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: userannouncement.FieldID,
 			},
 		},

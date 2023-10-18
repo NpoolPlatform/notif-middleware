@@ -14,7 +14,6 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notifuser"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/predicate"
-	"github.com/google/uuid"
 )
 
 // NotifUserQuery is the builder for querying NotifUser entities.
@@ -87,8 +86,8 @@ func (nuq *NotifUserQuery) FirstX(ctx context.Context) *NotifUser {
 
 // FirstID returns the first NotifUser ID from the query.
 // Returns a *NotFoundError when no NotifUser ID was found.
-func (nuq *NotifUserQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
-	var ids []uuid.UUID
+func (nuq *NotifUserQuery) FirstID(ctx context.Context) (id uint32, err error) {
+	var ids []uint32
 	if ids, err = nuq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -100,7 +99,7 @@ func (nuq *NotifUserQuery) FirstID(ctx context.Context) (id uuid.UUID, err error
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (nuq *NotifUserQuery) FirstIDX(ctx context.Context) uuid.UUID {
+func (nuq *NotifUserQuery) FirstIDX(ctx context.Context) uint32 {
 	id, err := nuq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -138,8 +137,8 @@ func (nuq *NotifUserQuery) OnlyX(ctx context.Context) *NotifUser {
 // OnlyID is like Only, but returns the only NotifUser ID in the query.
 // Returns a *NotSingularError when more than one NotifUser ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (nuq *NotifUserQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
-	var ids []uuid.UUID
+func (nuq *NotifUserQuery) OnlyID(ctx context.Context) (id uint32, err error) {
+	var ids []uint32
 	if ids, err = nuq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -155,7 +154,7 @@ func (nuq *NotifUserQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error)
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (nuq *NotifUserQuery) OnlyIDX(ctx context.Context) uuid.UUID {
+func (nuq *NotifUserQuery) OnlyIDX(ctx context.Context) uint32 {
 	id, err := nuq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -181,8 +180,8 @@ func (nuq *NotifUserQuery) AllX(ctx context.Context) []*NotifUser {
 }
 
 // IDs executes the query and returns a list of NotifUser IDs.
-func (nuq *NotifUserQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
-	var ids []uuid.UUID
+func (nuq *NotifUserQuery) IDs(ctx context.Context) ([]uint32, error) {
+	var ids []uint32
 	if err := nuq.Select(notifuser.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -190,7 +189,7 @@ func (nuq *NotifUserQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (nuq *NotifUserQuery) IDsX(ctx context.Context) []uuid.UUID {
+func (nuq *NotifUserQuery) IDsX(ctx context.Context) []uint32 {
 	ids, err := nuq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -377,7 +376,7 @@ func (nuq *NotifUserQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   notifuser.Table,
 			Columns: notifuser.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: notifuser.FieldID,
 			},
 		},

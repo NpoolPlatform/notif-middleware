@@ -10,10 +10,11 @@ import (
 var (
 	// AnnouncementsColumns holds the columns for the "announcements" table.
 	AnnouncementsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeUint32, Increment: true},
 		{Name: "created_at", Type: field.TypeUint32},
 		{Name: "updated_at", Type: field.TypeUint32},
 		{Name: "deleted_at", Type: field.TypeUint32},
+		{Name: "ent_id", Type: field.TypeUUID, Unique: true},
 		{Name: "app_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "lang_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "title", Type: field.TypeString, Nullable: true, Default: ""},
@@ -28,13 +29,21 @@ var (
 		Name:       "announcements",
 		Columns:    AnnouncementsColumns,
 		PrimaryKey: []*schema.Column{AnnouncementsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "announcement_ent_id",
+				Unique:  true,
+				Columns: []*schema.Column{AnnouncementsColumns[4]},
+			},
+		},
 	}
 	// ContactsColumns holds the columns for the "contacts" table.
 	ContactsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeUint32, Increment: true},
 		{Name: "created_at", Type: field.TypeUint32},
 		{Name: "updated_at", Type: field.TypeUint32},
 		{Name: "deleted_at", Type: field.TypeUint32},
+		{Name: "ent_id", Type: field.TypeUUID, Unique: true},
 		{Name: "app_id", Type: field.TypeUUID},
 		{Name: "used_for", Type: field.TypeString, Nullable: true, Default: "DefaultUsedFor"},
 		{Name: "sender", Type: field.TypeString, Nullable: true, Default: ""},
@@ -46,13 +55,21 @@ var (
 		Name:       "contacts",
 		Columns:    ContactsColumns,
 		PrimaryKey: []*schema.Column{ContactsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "contact_ent_id",
+				Unique:  true,
+				Columns: []*schema.Column{ContactsColumns[4]},
+			},
+		},
 	}
 	// EmailTemplatesColumns holds the columns for the "email_templates" table.
 	EmailTemplatesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeUint32, Increment: true},
 		{Name: "created_at", Type: field.TypeUint32},
 		{Name: "updated_at", Type: field.TypeUint32},
 		{Name: "deleted_at", Type: field.TypeUint32},
+		{Name: "ent_id", Type: field.TypeUUID, Unique: true},
 		{Name: "app_id", Type: field.TypeUUID},
 		{Name: "lang_id", Type: field.TypeUUID},
 		{Name: "default_to_username", Type: field.TypeString},
@@ -68,13 +85,21 @@ var (
 		Name:       "email_templates",
 		Columns:    EmailTemplatesColumns,
 		PrimaryKey: []*schema.Column{EmailTemplatesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "emailtemplate_ent_id",
+				Unique:  true,
+				Columns: []*schema.Column{EmailTemplatesColumns[4]},
+			},
+		},
 	}
 	// FrontendTemplatesColumns holds the columns for the "frontend_templates" table.
 	FrontendTemplatesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeUint32, Increment: true},
 		{Name: "created_at", Type: field.TypeUint32},
 		{Name: "updated_at", Type: field.TypeUint32},
 		{Name: "deleted_at", Type: field.TypeUint32},
+		{Name: "ent_id", Type: field.TypeUUID, Unique: true},
 		{Name: "app_id", Type: field.TypeUUID},
 		{Name: "lang_id", Type: field.TypeUUID},
 		{Name: "used_for", Type: field.TypeString, Nullable: true, Default: "DefaultUsedFor"},
@@ -86,13 +111,21 @@ var (
 		Name:       "frontend_templates",
 		Columns:    FrontendTemplatesColumns,
 		PrimaryKey: []*schema.Column{FrontendTemplatesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "frontendtemplate_ent_id",
+				Unique:  true,
+				Columns: []*schema.Column{FrontendTemplatesColumns[4]},
+			},
+		},
 	}
 	// GoodBenefitsColumns holds the columns for the "good_benefits" table.
 	GoodBenefitsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeUint32, Increment: true},
 		{Name: "created_at", Type: field.TypeUint32},
 		{Name: "updated_at", Type: field.TypeUint32},
 		{Name: "deleted_at", Type: field.TypeUint32},
+		{Name: "ent_id", Type: field.TypeUUID, Unique: true},
 		{Name: "good_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "good_name", Type: field.TypeString, Nullable: true, Default: ""},
 		{Name: "amount", Type: field.TypeString, Nullable: true, Default: "0"},
@@ -107,13 +140,21 @@ var (
 		Name:       "good_benefits",
 		Columns:    GoodBenefitsColumns,
 		PrimaryKey: []*schema.Column{GoodBenefitsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "goodbenefit_ent_id",
+				Unique:  true,
+				Columns: []*schema.Column{GoodBenefitsColumns[4]},
+			},
+		},
 	}
 	// NotifsColumns holds the columns for the "notifs" table.
 	NotifsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeUint32, Increment: true},
 		{Name: "created_at", Type: field.TypeUint32},
 		{Name: "updated_at", Type: field.TypeUint32},
 		{Name: "deleted_at", Type: field.TypeUint32},
+		{Name: "ent_id", Type: field.TypeUUID, Unique: true},
 		{Name: "app_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "notified", Type: field.TypeBool, Nullable: true, Default: false},
@@ -132,13 +173,21 @@ var (
 		Name:       "notifs",
 		Columns:    NotifsColumns,
 		PrimaryKey: []*schema.Column{NotifsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "notif_ent_id",
+				Unique:  true,
+				Columns: []*schema.Column{NotifsColumns[4]},
+			},
+		},
 	}
 	// NotifChannelsColumns holds the columns for the "notif_channels" table.
 	NotifChannelsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeUint32, Increment: true},
 		{Name: "created_at", Type: field.TypeUint32},
 		{Name: "updated_at", Type: field.TypeUint32},
 		{Name: "deleted_at", Type: field.TypeUint32},
+		{Name: "ent_id", Type: field.TypeUUID, Unique: true},
 		{Name: "app_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "event_type", Type: field.TypeString, Nullable: true, Default: "DefaultUsedFor"},
 		{Name: "channel", Type: field.TypeString, Nullable: true, Default: "DefaultChannel"},
@@ -148,13 +197,21 @@ var (
 		Name:       "notif_channels",
 		Columns:    NotifChannelsColumns,
 		PrimaryKey: []*schema.Column{NotifChannelsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "notifchannel_ent_id",
+				Unique:  true,
+				Columns: []*schema.Column{NotifChannelsColumns[4]},
+			},
+		},
 	}
 	// NotifUsersColumns holds the columns for the "notif_users" table.
 	NotifUsersColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeUint32, Increment: true},
 		{Name: "created_at", Type: field.TypeUint32},
 		{Name: "updated_at", Type: field.TypeUint32},
 		{Name: "deleted_at", Type: field.TypeUint32},
+		{Name: "ent_id", Type: field.TypeUUID, Unique: true},
 		{Name: "app_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "event_type", Type: field.TypeString, Nullable: true, Default: "DefaultUsedFor"},
@@ -164,13 +221,21 @@ var (
 		Name:       "notif_users",
 		Columns:    NotifUsersColumns,
 		PrimaryKey: []*schema.Column{NotifUsersColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "notifuser_ent_id",
+				Unique:  true,
+				Columns: []*schema.Column{NotifUsersColumns[4]},
+			},
+		},
 	}
 	// ReadAnnouncementsColumns holds the columns for the "read_announcements" table.
 	ReadAnnouncementsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeUint32, Increment: true},
 		{Name: "created_at", Type: field.TypeUint32},
 		{Name: "updated_at", Type: field.TypeUint32},
 		{Name: "deleted_at", Type: field.TypeUint32},
+		{Name: "ent_id", Type: field.TypeUUID, Unique: true},
 		{Name: "app_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "announcement_id", Type: field.TypeUUID, Nullable: true},
@@ -180,13 +245,21 @@ var (
 		Name:       "read_announcements",
 		Columns:    ReadAnnouncementsColumns,
 		PrimaryKey: []*schema.Column{ReadAnnouncementsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "readannouncement_ent_id",
+				Unique:  true,
+				Columns: []*schema.Column{ReadAnnouncementsColumns[4]},
+			},
+		},
 	}
 	// SmsTemplatesColumns holds the columns for the "sms_templates" table.
 	SmsTemplatesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeUint32, Increment: true},
 		{Name: "created_at", Type: field.TypeUint32},
 		{Name: "updated_at", Type: field.TypeUint32},
 		{Name: "deleted_at", Type: field.TypeUint32},
+		{Name: "ent_id", Type: field.TypeUUID, Unique: true},
 		{Name: "app_id", Type: field.TypeUUID},
 		{Name: "lang_id", Type: field.TypeUUID},
 		{Name: "used_for", Type: field.TypeString, Nullable: true, Default: "DefaultUsedFor"},
@@ -198,13 +271,21 @@ var (
 		Name:       "sms_templates",
 		Columns:    SmsTemplatesColumns,
 		PrimaryKey: []*schema.Column{SmsTemplatesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "smstemplate_ent_id",
+				Unique:  true,
+				Columns: []*schema.Column{SmsTemplatesColumns[4]},
+			},
+		},
 	}
 	// SendAnnouncementsColumns holds the columns for the "send_announcements" table.
 	SendAnnouncementsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeUint32, Increment: true},
 		{Name: "created_at", Type: field.TypeUint32},
 		{Name: "updated_at", Type: field.TypeUint32},
 		{Name: "deleted_at", Type: field.TypeUint32},
+		{Name: "ent_id", Type: field.TypeUUID, Unique: true},
 		{Name: "app_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "announcement_id", Type: field.TypeUUID, Nullable: true},
@@ -215,13 +296,21 @@ var (
 		Name:       "send_announcements",
 		Columns:    SendAnnouncementsColumns,
 		PrimaryKey: []*schema.Column{SendAnnouncementsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "sendannouncement_ent_id",
+				Unique:  true,
+				Columns: []*schema.Column{SendAnnouncementsColumns[4]},
+			},
+		},
 	}
 	// UserAnnouncementsColumns holds the columns for the "user_announcements" table.
 	UserAnnouncementsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeUint32, Increment: true},
 		{Name: "created_at", Type: field.TypeUint32},
 		{Name: "updated_at", Type: field.TypeUint32},
 		{Name: "deleted_at", Type: field.TypeUint32},
+		{Name: "ent_id", Type: field.TypeUUID, Unique: true},
 		{Name: "app_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "user_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "announcement_id", Type: field.TypeUUID, Nullable: true},
@@ -231,6 +320,13 @@ var (
 		Name:       "user_announcements",
 		Columns:    UserAnnouncementsColumns,
 		PrimaryKey: []*schema.Column{UserAnnouncementsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "userannouncement_ent_id",
+				Unique:  true,
+				Columns: []*schema.Column{UserAnnouncementsColumns[4]},
+			},
+		},
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{

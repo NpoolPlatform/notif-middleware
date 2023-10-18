@@ -84,6 +84,20 @@ func (ftu *FrontendTemplateUpdate) AddDeletedAt(u int32) *FrontendTemplateUpdate
 	return ftu
 }
 
+// SetEntID sets the "ent_id" field.
+func (ftu *FrontendTemplateUpdate) SetEntID(u uuid.UUID) *FrontendTemplateUpdate {
+	ftu.mutation.SetEntID(u)
+	return ftu
+}
+
+// SetNillableEntID sets the "ent_id" field if the given value is not nil.
+func (ftu *FrontendTemplateUpdate) SetNillableEntID(u *uuid.UUID) *FrontendTemplateUpdate {
+	if u != nil {
+		ftu.SetEntID(*u)
+	}
+	return ftu
+}
+
 // SetAppID sets the "app_id" field.
 func (ftu *FrontendTemplateUpdate) SetAppID(u uuid.UUID) *FrontendTemplateUpdate {
 	ftu.mutation.SetAppID(u)
@@ -242,7 +256,7 @@ func (ftu *FrontendTemplateUpdate) sqlSave(ctx context.Context) (n int, err erro
 			Table:   frontendtemplate.Table,
 			Columns: frontendtemplate.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: frontendtemplate.FieldID,
 			},
 		},
@@ -294,6 +308,13 @@ func (ftu *FrontendTemplateUpdate) sqlSave(ctx context.Context) (n int, err erro
 			Type:   field.TypeUint32,
 			Value:  value,
 			Column: frontendtemplate.FieldDeletedAt,
+		})
+	}
+	if value, ok := ftu.mutation.EntID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: frontendtemplate.FieldEntID,
 		})
 	}
 	if value, ok := ftu.mutation.AppID(); ok {
@@ -422,6 +443,20 @@ func (ftuo *FrontendTemplateUpdateOne) SetNillableDeletedAt(u *uint32) *Frontend
 // AddDeletedAt adds u to the "deleted_at" field.
 func (ftuo *FrontendTemplateUpdateOne) AddDeletedAt(u int32) *FrontendTemplateUpdateOne {
 	ftuo.mutation.AddDeletedAt(u)
+	return ftuo
+}
+
+// SetEntID sets the "ent_id" field.
+func (ftuo *FrontendTemplateUpdateOne) SetEntID(u uuid.UUID) *FrontendTemplateUpdateOne {
+	ftuo.mutation.SetEntID(u)
+	return ftuo
+}
+
+// SetNillableEntID sets the "ent_id" field if the given value is not nil.
+func (ftuo *FrontendTemplateUpdateOne) SetNillableEntID(u *uuid.UUID) *FrontendTemplateUpdateOne {
+	if u != nil {
+		ftuo.SetEntID(*u)
+	}
 	return ftuo
 }
 
@@ -596,7 +631,7 @@ func (ftuo *FrontendTemplateUpdateOne) sqlSave(ctx context.Context) (_node *Fron
 			Table:   frontendtemplate.Table,
 			Columns: frontendtemplate.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: frontendtemplate.FieldID,
 			},
 		},
@@ -665,6 +700,13 @@ func (ftuo *FrontendTemplateUpdateOne) sqlSave(ctx context.Context) (_node *Fron
 			Type:   field.TypeUint32,
 			Value:  value,
 			Column: frontendtemplate.FieldDeletedAt,
+		})
+	}
+	if value, ok := ftuo.mutation.EntID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: frontendtemplate.FieldEntID,
 		})
 	}
 	if value, ok := ftuo.mutation.AppID(); ok {

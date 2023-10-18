@@ -14,7 +14,6 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/predicate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/readannouncement"
-	"github.com/google/uuid"
 )
 
 // ReadAnnouncementQuery is the builder for querying ReadAnnouncement entities.
@@ -87,8 +86,8 @@ func (raq *ReadAnnouncementQuery) FirstX(ctx context.Context) *ReadAnnouncement 
 
 // FirstID returns the first ReadAnnouncement ID from the query.
 // Returns a *NotFoundError when no ReadAnnouncement ID was found.
-func (raq *ReadAnnouncementQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
-	var ids []uuid.UUID
+func (raq *ReadAnnouncementQuery) FirstID(ctx context.Context) (id uint32, err error) {
+	var ids []uint32
 	if ids, err = raq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -100,7 +99,7 @@ func (raq *ReadAnnouncementQuery) FirstID(ctx context.Context) (id uuid.UUID, er
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (raq *ReadAnnouncementQuery) FirstIDX(ctx context.Context) uuid.UUID {
+func (raq *ReadAnnouncementQuery) FirstIDX(ctx context.Context) uint32 {
 	id, err := raq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -138,8 +137,8 @@ func (raq *ReadAnnouncementQuery) OnlyX(ctx context.Context) *ReadAnnouncement {
 // OnlyID is like Only, but returns the only ReadAnnouncement ID in the query.
 // Returns a *NotSingularError when more than one ReadAnnouncement ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (raq *ReadAnnouncementQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
-	var ids []uuid.UUID
+func (raq *ReadAnnouncementQuery) OnlyID(ctx context.Context) (id uint32, err error) {
+	var ids []uint32
 	if ids, err = raq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -155,7 +154,7 @@ func (raq *ReadAnnouncementQuery) OnlyID(ctx context.Context) (id uuid.UUID, err
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (raq *ReadAnnouncementQuery) OnlyIDX(ctx context.Context) uuid.UUID {
+func (raq *ReadAnnouncementQuery) OnlyIDX(ctx context.Context) uint32 {
 	id, err := raq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -181,8 +180,8 @@ func (raq *ReadAnnouncementQuery) AllX(ctx context.Context) []*ReadAnnouncement 
 }
 
 // IDs executes the query and returns a list of ReadAnnouncement IDs.
-func (raq *ReadAnnouncementQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
-	var ids []uuid.UUID
+func (raq *ReadAnnouncementQuery) IDs(ctx context.Context) ([]uint32, error) {
+	var ids []uint32
 	if err := raq.Select(readannouncement.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -190,7 +189,7 @@ func (raq *ReadAnnouncementQuery) IDs(ctx context.Context) ([]uuid.UUID, error) 
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (raq *ReadAnnouncementQuery) IDsX(ctx context.Context) []uuid.UUID {
+func (raq *ReadAnnouncementQuery) IDsX(ctx context.Context) []uint32 {
 	ids, err := raq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -377,7 +376,7 @@ func (raq *ReadAnnouncementQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   readannouncement.Table,
 			Columns: readannouncement.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: readannouncement.FieldID,
 			},
 		},

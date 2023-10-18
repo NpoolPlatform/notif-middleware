@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 
-	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -61,6 +60,20 @@ func (cc *ContactCreate) SetDeletedAt(u uint32) *ContactCreate {
 func (cc *ContactCreate) SetNillableDeletedAt(u *uint32) *ContactCreate {
 	if u != nil {
 		cc.SetDeletedAt(*u)
+	}
+	return cc
+}
+
+// SetEntID sets the "ent_id" field.
+func (cc *ContactCreate) SetEntID(u uuid.UUID) *ContactCreate {
+	cc.mutation.SetEntID(u)
+	return cc
+}
+
+// SetNillableEntID sets the "ent_id" field if the given value is not nil.
+func (cc *ContactCreate) SetNillableEntID(u *uuid.UUID) *ContactCreate {
+	if u != nil {
+		cc.SetEntID(*u)
 	}
 	return cc
 }
@@ -128,16 +141,8 @@ func (cc *ContactCreate) SetNillableAccountType(s *string) *ContactCreate {
 }
 
 // SetID sets the "id" field.
-func (cc *ContactCreate) SetID(u uuid.UUID) *ContactCreate {
+func (cc *ContactCreate) SetID(u uint32) *ContactCreate {
 	cc.mutation.SetID(u)
-	return cc
-}
-
-// SetNillableID sets the "id" field if the given value is not nil.
-func (cc *ContactCreate) SetNillableID(u *uuid.UUID) *ContactCreate {
-	if u != nil {
-		cc.SetID(*u)
-	}
 	return cc
 }
 
@@ -241,6 +246,13 @@ func (cc *ContactCreate) defaults() error {
 		v := contact.DefaultDeletedAt()
 		cc.mutation.SetDeletedAt(v)
 	}
+	if _, ok := cc.mutation.EntID(); !ok {
+		if contact.DefaultEntID == nil {
+			return fmt.Errorf("ent: uninitialized contact.DefaultEntID (forgotten import ent/runtime?)")
+		}
+		v := contact.DefaultEntID()
+		cc.mutation.SetEntID(v)
+	}
 	if _, ok := cc.mutation.UsedFor(); !ok {
 		v := contact.DefaultUsedFor
 		cc.mutation.SetUsedFor(v)
@@ -257,13 +269,6 @@ func (cc *ContactCreate) defaults() error {
 		v := contact.DefaultAccountType
 		cc.mutation.SetAccountType(v)
 	}
-	if _, ok := cc.mutation.ID(); !ok {
-		if contact.DefaultID == nil {
-			return fmt.Errorf("ent: uninitialized contact.DefaultID (forgotten import ent/runtime?)")
-		}
-		v := contact.DefaultID()
-		cc.mutation.SetID(v)
-	}
 	return nil
 }
 
@@ -277,6 +282,9 @@ func (cc *ContactCreate) check() error {
 	}
 	if _, ok := cc.mutation.DeletedAt(); !ok {
 		return &ValidationError{Name: "deleted_at", err: errors.New(`ent: missing required field "Contact.deleted_at"`)}
+	}
+	if _, ok := cc.mutation.EntID(); !ok {
+		return &ValidationError{Name: "ent_id", err: errors.New(`ent: missing required field "Contact.ent_id"`)}
 	}
 	if _, ok := cc.mutation.AppID(); !ok {
 		return &ValidationError{Name: "app_id", err: errors.New(`ent: missing required field "Contact.app_id"`)}
@@ -292,12 +300,9 @@ func (cc *ContactCreate) sqlSave(ctx context.Context) (*Contact, error) {
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
-			_node.ID = *id
-		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
-			return nil, err
-		}
+	if _spec.ID.Value != _node.ID {
+		id := _spec.ID.Value.(int64)
+		_node.ID = uint32(id)
 	}
 	return _node, nil
 }
@@ -308,7 +313,7 @@ func (cc *ContactCreate) createSpec() (*Contact, *sqlgraph.CreateSpec) {
 		_spec = &sqlgraph.CreateSpec{
 			Table: contact.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: contact.FieldID,
 			},
 		}
@@ -316,7 +321,7 @@ func (cc *ContactCreate) createSpec() (*Contact, *sqlgraph.CreateSpec) {
 	_spec.OnConflict = cc.conflict
 	if id, ok := cc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = &id
+		_spec.ID.Value = id
 	}
 	if value, ok := cc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -341,6 +346,14 @@ func (cc *ContactCreate) createSpec() (*Contact, *sqlgraph.CreateSpec) {
 			Column: contact.FieldDeletedAt,
 		})
 		_node.DeletedAt = value
+	}
+	if value, ok := cc.mutation.EntID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: contact.FieldEntID,
+		})
+		_node.EntID = value
 	}
 	if value, ok := cc.mutation.AppID(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -487,6 +500,18 @@ func (u *ContactUpsert) UpdateDeletedAt() *ContactUpsert {
 // AddDeletedAt adds v to the "deleted_at" field.
 func (u *ContactUpsert) AddDeletedAt(v uint32) *ContactUpsert {
 	u.Add(contact.FieldDeletedAt, v)
+	return u
+}
+
+// SetEntID sets the "ent_id" field.
+func (u *ContactUpsert) SetEntID(v uuid.UUID) *ContactUpsert {
+	u.Set(contact.FieldEntID, v)
+	return u
+}
+
+// UpdateEntID sets the "ent_id" field to the value that was provided on create.
+func (u *ContactUpsert) UpdateEntID() *ContactUpsert {
+	u.SetExcluded(contact.FieldEntID)
 	return u
 }
 
@@ -687,6 +712,20 @@ func (u *ContactUpsertOne) UpdateDeletedAt() *ContactUpsertOne {
 	})
 }
 
+// SetEntID sets the "ent_id" field.
+func (u *ContactUpsertOne) SetEntID(v uuid.UUID) *ContactUpsertOne {
+	return u.Update(func(s *ContactUpsert) {
+		s.SetEntID(v)
+	})
+}
+
+// UpdateEntID sets the "ent_id" field to the value that was provided on create.
+func (u *ContactUpsertOne) UpdateEntID() *ContactUpsertOne {
+	return u.Update(func(s *ContactUpsert) {
+		s.UpdateEntID()
+	})
+}
+
 // SetAppID sets the "app_id" field.
 func (u *ContactUpsertOne) SetAppID(v uuid.UUID) *ContactUpsertOne {
 	return u.Update(func(s *ContactUpsert) {
@@ -801,12 +840,7 @@ func (u *ContactUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *ContactUpsertOne) ID(ctx context.Context) (id uuid.UUID, err error) {
-	if u.create.driver.Dialect() == dialect.MySQL {
-		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
-		// fields from the database since MySQL does not support the RETURNING clause.
-		return id, errors.New("ent: ContactUpsertOne.ID is not supported by MySQL driver. Use ContactUpsertOne.Exec instead")
-	}
+func (u *ContactUpsertOne) ID(ctx context.Context) (id uint32, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -815,7 +849,7 @@ func (u *ContactUpsertOne) ID(ctx context.Context) (id uuid.UUID, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *ContactUpsertOne) IDX(ctx context.Context) uuid.UUID {
+func (u *ContactUpsertOne) IDX(ctx context.Context) uint32 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -866,6 +900,10 @@ func (ccb *ContactCreateBulk) Save(ctx context.Context) ([]*Contact, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
+				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
+					id := specs[i].ID.Value.(int64)
+					nodes[i].ID = uint32(id)
+				}
 				mutation.done = true
 				return nodes[i], nil
 			})
@@ -1061,6 +1099,20 @@ func (u *ContactUpsertBulk) AddDeletedAt(v uint32) *ContactUpsertBulk {
 func (u *ContactUpsertBulk) UpdateDeletedAt() *ContactUpsertBulk {
 	return u.Update(func(s *ContactUpsert) {
 		s.UpdateDeletedAt()
+	})
+}
+
+// SetEntID sets the "ent_id" field.
+func (u *ContactUpsertBulk) SetEntID(v uuid.UUID) *ContactUpsertBulk {
+	return u.Update(func(s *ContactUpsert) {
+		s.SetEntID(v)
+	})
+}
+
+// UpdateEntID sets the "ent_id" field to the value that was provided on create.
+func (u *ContactUpsertBulk) UpdateEntID() *ContactUpsertBulk {
+	return u.Update(func(s *ContactUpsert) {
+		s.UpdateEntID()
 	})
 }
 

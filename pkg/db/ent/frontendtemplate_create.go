@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 
-	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -61,6 +60,20 @@ func (ftc *FrontendTemplateCreate) SetDeletedAt(u uint32) *FrontendTemplateCreat
 func (ftc *FrontendTemplateCreate) SetNillableDeletedAt(u *uint32) *FrontendTemplateCreate {
 	if u != nil {
 		ftc.SetDeletedAt(*u)
+	}
+	return ftc
+}
+
+// SetEntID sets the "ent_id" field.
+func (ftc *FrontendTemplateCreate) SetEntID(u uuid.UUID) *FrontendTemplateCreate {
+	ftc.mutation.SetEntID(u)
+	return ftc
+}
+
+// SetNillableEntID sets the "ent_id" field if the given value is not nil.
+func (ftc *FrontendTemplateCreate) SetNillableEntID(u *uuid.UUID) *FrontendTemplateCreate {
+	if u != nil {
+		ftc.SetEntID(*u)
 	}
 	return ftc
 }
@@ -120,16 +133,8 @@ func (ftc *FrontendTemplateCreate) SetNillableContent(s *string) *FrontendTempla
 }
 
 // SetID sets the "id" field.
-func (ftc *FrontendTemplateCreate) SetID(u uuid.UUID) *FrontendTemplateCreate {
+func (ftc *FrontendTemplateCreate) SetID(u uint32) *FrontendTemplateCreate {
 	ftc.mutation.SetID(u)
-	return ftc
-}
-
-// SetNillableID sets the "id" field if the given value is not nil.
-func (ftc *FrontendTemplateCreate) SetNillableID(u *uuid.UUID) *FrontendTemplateCreate {
-	if u != nil {
-		ftc.SetID(*u)
-	}
 	return ftc
 }
 
@@ -233,6 +238,13 @@ func (ftc *FrontendTemplateCreate) defaults() error {
 		v := frontendtemplate.DefaultDeletedAt()
 		ftc.mutation.SetDeletedAt(v)
 	}
+	if _, ok := ftc.mutation.EntID(); !ok {
+		if frontendtemplate.DefaultEntID == nil {
+			return fmt.Errorf("ent: uninitialized frontendtemplate.DefaultEntID (forgotten import ent/runtime?)")
+		}
+		v := frontendtemplate.DefaultEntID()
+		ftc.mutation.SetEntID(v)
+	}
 	if _, ok := ftc.mutation.UsedFor(); !ok {
 		v := frontendtemplate.DefaultUsedFor
 		ftc.mutation.SetUsedFor(v)
@@ -244,13 +256,6 @@ func (ftc *FrontendTemplateCreate) defaults() error {
 	if _, ok := ftc.mutation.Content(); !ok {
 		v := frontendtemplate.DefaultContent
 		ftc.mutation.SetContent(v)
-	}
-	if _, ok := ftc.mutation.ID(); !ok {
-		if frontendtemplate.DefaultID == nil {
-			return fmt.Errorf("ent: uninitialized frontendtemplate.DefaultID (forgotten import ent/runtime?)")
-		}
-		v := frontendtemplate.DefaultID()
-		ftc.mutation.SetID(v)
 	}
 	return nil
 }
@@ -265,6 +270,9 @@ func (ftc *FrontendTemplateCreate) check() error {
 	}
 	if _, ok := ftc.mutation.DeletedAt(); !ok {
 		return &ValidationError{Name: "deleted_at", err: errors.New(`ent: missing required field "FrontendTemplate.deleted_at"`)}
+	}
+	if _, ok := ftc.mutation.EntID(); !ok {
+		return &ValidationError{Name: "ent_id", err: errors.New(`ent: missing required field "FrontendTemplate.ent_id"`)}
 	}
 	if _, ok := ftc.mutation.AppID(); !ok {
 		return &ValidationError{Name: "app_id", err: errors.New(`ent: missing required field "FrontendTemplate.app_id"`)}
@@ -283,12 +291,9 @@ func (ftc *FrontendTemplateCreate) sqlSave(ctx context.Context) (*FrontendTempla
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
-			_node.ID = *id
-		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
-			return nil, err
-		}
+	if _spec.ID.Value != _node.ID {
+		id := _spec.ID.Value.(int64)
+		_node.ID = uint32(id)
 	}
 	return _node, nil
 }
@@ -299,7 +304,7 @@ func (ftc *FrontendTemplateCreate) createSpec() (*FrontendTemplate, *sqlgraph.Cr
 		_spec = &sqlgraph.CreateSpec{
 			Table: frontendtemplate.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: frontendtemplate.FieldID,
 			},
 		}
@@ -307,7 +312,7 @@ func (ftc *FrontendTemplateCreate) createSpec() (*FrontendTemplate, *sqlgraph.Cr
 	_spec.OnConflict = ftc.conflict
 	if id, ok := ftc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = &id
+		_spec.ID.Value = id
 	}
 	if value, ok := ftc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -332,6 +337,14 @@ func (ftc *FrontendTemplateCreate) createSpec() (*FrontendTemplate, *sqlgraph.Cr
 			Column: frontendtemplate.FieldDeletedAt,
 		})
 		_node.DeletedAt = value
+	}
+	if value, ok := ftc.mutation.EntID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: frontendtemplate.FieldEntID,
+		})
+		_node.EntID = value
 	}
 	if value, ok := ftc.mutation.AppID(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -478,6 +491,18 @@ func (u *FrontendTemplateUpsert) UpdateDeletedAt() *FrontendTemplateUpsert {
 // AddDeletedAt adds v to the "deleted_at" field.
 func (u *FrontendTemplateUpsert) AddDeletedAt(v uint32) *FrontendTemplateUpsert {
 	u.Add(frontendtemplate.FieldDeletedAt, v)
+	return u
+}
+
+// SetEntID sets the "ent_id" field.
+func (u *FrontendTemplateUpsert) SetEntID(v uuid.UUID) *FrontendTemplateUpsert {
+	u.Set(frontendtemplate.FieldEntID, v)
+	return u
+}
+
+// UpdateEntID sets the "ent_id" field to the value that was provided on create.
+func (u *FrontendTemplateUpsert) UpdateEntID() *FrontendTemplateUpsert {
+	u.SetExcluded(frontendtemplate.FieldEntID)
 	return u
 }
 
@@ -672,6 +697,20 @@ func (u *FrontendTemplateUpsertOne) UpdateDeletedAt() *FrontendTemplateUpsertOne
 	})
 }
 
+// SetEntID sets the "ent_id" field.
+func (u *FrontendTemplateUpsertOne) SetEntID(v uuid.UUID) *FrontendTemplateUpsertOne {
+	return u.Update(func(s *FrontendTemplateUpsert) {
+		s.SetEntID(v)
+	})
+}
+
+// UpdateEntID sets the "ent_id" field to the value that was provided on create.
+func (u *FrontendTemplateUpsertOne) UpdateEntID() *FrontendTemplateUpsertOne {
+	return u.Update(func(s *FrontendTemplateUpsert) {
+		s.UpdateEntID()
+	})
+}
+
 // SetAppID sets the "app_id" field.
 func (u *FrontendTemplateUpsertOne) SetAppID(v uuid.UUID) *FrontendTemplateUpsertOne {
 	return u.Update(func(s *FrontendTemplateUpsert) {
@@ -779,12 +818,7 @@ func (u *FrontendTemplateUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *FrontendTemplateUpsertOne) ID(ctx context.Context) (id uuid.UUID, err error) {
-	if u.create.driver.Dialect() == dialect.MySQL {
-		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
-		// fields from the database since MySQL does not support the RETURNING clause.
-		return id, errors.New("ent: FrontendTemplateUpsertOne.ID is not supported by MySQL driver. Use FrontendTemplateUpsertOne.Exec instead")
-	}
+func (u *FrontendTemplateUpsertOne) ID(ctx context.Context) (id uint32, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -793,7 +827,7 @@ func (u *FrontendTemplateUpsertOne) ID(ctx context.Context) (id uuid.UUID, err e
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *FrontendTemplateUpsertOne) IDX(ctx context.Context) uuid.UUID {
+func (u *FrontendTemplateUpsertOne) IDX(ctx context.Context) uint32 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -844,6 +878,10 @@ func (ftcb *FrontendTemplateCreateBulk) Save(ctx context.Context) ([]*FrontendTe
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
+				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
+					id := specs[i].ID.Value.(int64)
+					nodes[i].ID = uint32(id)
+				}
 				mutation.done = true
 				return nodes[i], nil
 			})
@@ -1039,6 +1077,20 @@ func (u *FrontendTemplateUpsertBulk) AddDeletedAt(v uint32) *FrontendTemplateUps
 func (u *FrontendTemplateUpsertBulk) UpdateDeletedAt() *FrontendTemplateUpsertBulk {
 	return u.Update(func(s *FrontendTemplateUpsert) {
 		s.UpdateDeletedAt()
+	})
+}
+
+// SetEntID sets the "ent_id" field.
+func (u *FrontendTemplateUpsertBulk) SetEntID(v uuid.UUID) *FrontendTemplateUpsertBulk {
+	return u.Update(func(s *FrontendTemplateUpsert) {
+		s.SetEntID(v)
+	})
+}
+
+// UpdateEntID sets the "ent_id" field to the value that was provided on create.
+func (u *FrontendTemplateUpsertBulk) UpdateEntID() *FrontendTemplateUpsertBulk {
+	return u.Update(func(s *FrontendTemplateUpsert) {
+		s.UpdateEntID()
 	})
 }
 

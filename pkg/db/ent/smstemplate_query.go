@@ -14,7 +14,6 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/predicate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/smstemplate"
-	"github.com/google/uuid"
 )
 
 // SMSTemplateQuery is the builder for querying SMSTemplate entities.
@@ -87,8 +86,8 @@ func (stq *SMSTemplateQuery) FirstX(ctx context.Context) *SMSTemplate {
 
 // FirstID returns the first SMSTemplate ID from the query.
 // Returns a *NotFoundError when no SMSTemplate ID was found.
-func (stq *SMSTemplateQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
-	var ids []uuid.UUID
+func (stq *SMSTemplateQuery) FirstID(ctx context.Context) (id uint32, err error) {
+	var ids []uint32
 	if ids, err = stq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -100,7 +99,7 @@ func (stq *SMSTemplateQuery) FirstID(ctx context.Context) (id uuid.UUID, err err
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (stq *SMSTemplateQuery) FirstIDX(ctx context.Context) uuid.UUID {
+func (stq *SMSTemplateQuery) FirstIDX(ctx context.Context) uint32 {
 	id, err := stq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -138,8 +137,8 @@ func (stq *SMSTemplateQuery) OnlyX(ctx context.Context) *SMSTemplate {
 // OnlyID is like Only, but returns the only SMSTemplate ID in the query.
 // Returns a *NotSingularError when more than one SMSTemplate ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (stq *SMSTemplateQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
-	var ids []uuid.UUID
+func (stq *SMSTemplateQuery) OnlyID(ctx context.Context) (id uint32, err error) {
+	var ids []uint32
 	if ids, err = stq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -155,7 +154,7 @@ func (stq *SMSTemplateQuery) OnlyID(ctx context.Context) (id uuid.UUID, err erro
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (stq *SMSTemplateQuery) OnlyIDX(ctx context.Context) uuid.UUID {
+func (stq *SMSTemplateQuery) OnlyIDX(ctx context.Context) uint32 {
 	id, err := stq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -181,8 +180,8 @@ func (stq *SMSTemplateQuery) AllX(ctx context.Context) []*SMSTemplate {
 }
 
 // IDs executes the query and returns a list of SMSTemplate IDs.
-func (stq *SMSTemplateQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
-	var ids []uuid.UUID
+func (stq *SMSTemplateQuery) IDs(ctx context.Context) ([]uint32, error) {
+	var ids []uint32
 	if err := stq.Select(smstemplate.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -190,7 +189,7 @@ func (stq *SMSTemplateQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (stq *SMSTemplateQuery) IDsX(ctx context.Context) []uuid.UUID {
+func (stq *SMSTemplateQuery) IDsX(ctx context.Context) []uint32 {
 	ids, err := stq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -377,7 +376,7 @@ func (stq *SMSTemplateQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   smstemplate.Table,
 			Columns: smstemplate.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: smstemplate.FieldID,
 			},
 		},

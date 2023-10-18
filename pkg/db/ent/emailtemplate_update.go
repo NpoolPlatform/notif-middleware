@@ -84,6 +84,20 @@ func (etu *EmailTemplateUpdate) AddDeletedAt(u int32) *EmailTemplateUpdate {
 	return etu
 }
 
+// SetEntID sets the "ent_id" field.
+func (etu *EmailTemplateUpdate) SetEntID(u uuid.UUID) *EmailTemplateUpdate {
+	etu.mutation.SetEntID(u)
+	return etu
+}
+
+// SetNillableEntID sets the "ent_id" field if the given value is not nil.
+func (etu *EmailTemplateUpdate) SetNillableEntID(u *uuid.UUID) *EmailTemplateUpdate {
+	if u != nil {
+		etu.SetEntID(*u)
+	}
+	return etu
+}
+
 // SetAppID sets the "app_id" field.
 func (etu *EmailTemplateUpdate) SetAppID(u uuid.UUID) *EmailTemplateUpdate {
 	etu.mutation.SetAppID(u)
@@ -292,7 +306,7 @@ func (etu *EmailTemplateUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Table:   emailtemplate.Table,
 			Columns: emailtemplate.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: emailtemplate.FieldID,
 			},
 		},
@@ -344,6 +358,13 @@ func (etu *EmailTemplateUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Type:   field.TypeUint32,
 			Value:  value,
 			Column: emailtemplate.FieldDeletedAt,
+		})
+	}
+	if value, ok := etu.mutation.EntID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: emailtemplate.FieldEntID,
 		})
 	}
 	if value, ok := etu.mutation.AppID(); ok {
@@ -518,6 +539,20 @@ func (etuo *EmailTemplateUpdateOne) SetNillableDeletedAt(u *uint32) *EmailTempla
 // AddDeletedAt adds u to the "deleted_at" field.
 func (etuo *EmailTemplateUpdateOne) AddDeletedAt(u int32) *EmailTemplateUpdateOne {
 	etuo.mutation.AddDeletedAt(u)
+	return etuo
+}
+
+// SetEntID sets the "ent_id" field.
+func (etuo *EmailTemplateUpdateOne) SetEntID(u uuid.UUID) *EmailTemplateUpdateOne {
+	etuo.mutation.SetEntID(u)
+	return etuo
+}
+
+// SetNillableEntID sets the "ent_id" field if the given value is not nil.
+func (etuo *EmailTemplateUpdateOne) SetNillableEntID(u *uuid.UUID) *EmailTemplateUpdateOne {
+	if u != nil {
+		etuo.SetEntID(*u)
+	}
 	return etuo
 }
 
@@ -742,7 +777,7 @@ func (etuo *EmailTemplateUpdateOne) sqlSave(ctx context.Context) (_node *EmailTe
 			Table:   emailtemplate.Table,
 			Columns: emailtemplate.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: emailtemplate.FieldID,
 			},
 		},
@@ -811,6 +846,13 @@ func (etuo *EmailTemplateUpdateOne) sqlSave(ctx context.Context) (_node *EmailTe
 			Type:   field.TypeUint32,
 			Value:  value,
 			Column: emailtemplate.FieldDeletedAt,
+		})
+	}
+	if value, ok := etuo.mutation.EntID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: emailtemplate.FieldEntID,
 		})
 	}
 	if value, ok := etuo.mutation.AppID(); ok {

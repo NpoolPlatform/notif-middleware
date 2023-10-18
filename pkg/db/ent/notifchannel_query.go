@@ -14,7 +14,6 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/notifchannel"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/predicate"
-	"github.com/google/uuid"
 )
 
 // NotifChannelQuery is the builder for querying NotifChannel entities.
@@ -87,8 +86,8 @@ func (ncq *NotifChannelQuery) FirstX(ctx context.Context) *NotifChannel {
 
 // FirstID returns the first NotifChannel ID from the query.
 // Returns a *NotFoundError when no NotifChannel ID was found.
-func (ncq *NotifChannelQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
-	var ids []uuid.UUID
+func (ncq *NotifChannelQuery) FirstID(ctx context.Context) (id uint32, err error) {
+	var ids []uint32
 	if ids, err = ncq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -100,7 +99,7 @@ func (ncq *NotifChannelQuery) FirstID(ctx context.Context) (id uuid.UUID, err er
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (ncq *NotifChannelQuery) FirstIDX(ctx context.Context) uuid.UUID {
+func (ncq *NotifChannelQuery) FirstIDX(ctx context.Context) uint32 {
 	id, err := ncq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -138,8 +137,8 @@ func (ncq *NotifChannelQuery) OnlyX(ctx context.Context) *NotifChannel {
 // OnlyID is like Only, but returns the only NotifChannel ID in the query.
 // Returns a *NotSingularError when more than one NotifChannel ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (ncq *NotifChannelQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
-	var ids []uuid.UUID
+func (ncq *NotifChannelQuery) OnlyID(ctx context.Context) (id uint32, err error) {
+	var ids []uint32
 	if ids, err = ncq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -155,7 +154,7 @@ func (ncq *NotifChannelQuery) OnlyID(ctx context.Context) (id uuid.UUID, err err
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (ncq *NotifChannelQuery) OnlyIDX(ctx context.Context) uuid.UUID {
+func (ncq *NotifChannelQuery) OnlyIDX(ctx context.Context) uint32 {
 	id, err := ncq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -181,8 +180,8 @@ func (ncq *NotifChannelQuery) AllX(ctx context.Context) []*NotifChannel {
 }
 
 // IDs executes the query and returns a list of NotifChannel IDs.
-func (ncq *NotifChannelQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
-	var ids []uuid.UUID
+func (ncq *NotifChannelQuery) IDs(ctx context.Context) ([]uint32, error) {
+	var ids []uint32
 	if err := ncq.Select(notifchannel.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -190,7 +189,7 @@ func (ncq *NotifChannelQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (ncq *NotifChannelQuery) IDsX(ctx context.Context) []uuid.UUID {
+func (ncq *NotifChannelQuery) IDsX(ctx context.Context) []uint32 {
 	ids, err := ncq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -377,7 +376,7 @@ func (ncq *NotifChannelQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   notifchannel.Table,
 			Columns: notifchannel.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: notifchannel.FieldID,
 			},
 		},

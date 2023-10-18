@@ -30,7 +30,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   announcement.Table,
 			Columns: announcement.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: announcement.FieldID,
 			},
 		},
@@ -39,6 +39,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			announcement.FieldCreatedAt: {Type: field.TypeUint32, Column: announcement.FieldCreatedAt},
 			announcement.FieldUpdatedAt: {Type: field.TypeUint32, Column: announcement.FieldUpdatedAt},
 			announcement.FieldDeletedAt: {Type: field.TypeUint32, Column: announcement.FieldDeletedAt},
+			announcement.FieldEntID:     {Type: field.TypeUUID, Column: announcement.FieldEntID},
 			announcement.FieldAppID:     {Type: field.TypeUUID, Column: announcement.FieldAppID},
 			announcement.FieldLangID:    {Type: field.TypeUUID, Column: announcement.FieldLangID},
 			announcement.FieldTitle:     {Type: field.TypeString, Column: announcement.FieldTitle},
@@ -54,7 +55,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   contact.Table,
 			Columns: contact.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: contact.FieldID,
 			},
 		},
@@ -63,6 +64,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			contact.FieldCreatedAt:   {Type: field.TypeUint32, Column: contact.FieldCreatedAt},
 			contact.FieldUpdatedAt:   {Type: field.TypeUint32, Column: contact.FieldUpdatedAt},
 			contact.FieldDeletedAt:   {Type: field.TypeUint32, Column: contact.FieldDeletedAt},
+			contact.FieldEntID:       {Type: field.TypeUUID, Column: contact.FieldEntID},
 			contact.FieldAppID:       {Type: field.TypeUUID, Column: contact.FieldAppID},
 			contact.FieldUsedFor:     {Type: field.TypeString, Column: contact.FieldUsedFor},
 			contact.FieldSender:      {Type: field.TypeString, Column: contact.FieldSender},
@@ -75,7 +77,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   emailtemplate.Table,
 			Columns: emailtemplate.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: emailtemplate.FieldID,
 			},
 		},
@@ -84,6 +86,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			emailtemplate.FieldCreatedAt:         {Type: field.TypeUint32, Column: emailtemplate.FieldCreatedAt},
 			emailtemplate.FieldUpdatedAt:         {Type: field.TypeUint32, Column: emailtemplate.FieldUpdatedAt},
 			emailtemplate.FieldDeletedAt:         {Type: field.TypeUint32, Column: emailtemplate.FieldDeletedAt},
+			emailtemplate.FieldEntID:             {Type: field.TypeUUID, Column: emailtemplate.FieldEntID},
 			emailtemplate.FieldAppID:             {Type: field.TypeUUID, Column: emailtemplate.FieldAppID},
 			emailtemplate.FieldLangID:            {Type: field.TypeUUID, Column: emailtemplate.FieldLangID},
 			emailtemplate.FieldDefaultToUsername: {Type: field.TypeString, Column: emailtemplate.FieldDefaultToUsername},
@@ -100,7 +103,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   frontendtemplate.Table,
 			Columns: frontendtemplate.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: frontendtemplate.FieldID,
 			},
 		},
@@ -109,6 +112,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			frontendtemplate.FieldCreatedAt: {Type: field.TypeUint32, Column: frontendtemplate.FieldCreatedAt},
 			frontendtemplate.FieldUpdatedAt: {Type: field.TypeUint32, Column: frontendtemplate.FieldUpdatedAt},
 			frontendtemplate.FieldDeletedAt: {Type: field.TypeUint32, Column: frontendtemplate.FieldDeletedAt},
+			frontendtemplate.FieldEntID:     {Type: field.TypeUUID, Column: frontendtemplate.FieldEntID},
 			frontendtemplate.FieldAppID:     {Type: field.TypeUUID, Column: frontendtemplate.FieldAppID},
 			frontendtemplate.FieldLangID:    {Type: field.TypeUUID, Column: frontendtemplate.FieldLangID},
 			frontendtemplate.FieldUsedFor:   {Type: field.TypeString, Column: frontendtemplate.FieldUsedFor},
@@ -121,7 +125,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   goodbenefit.Table,
 			Columns: goodbenefit.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: goodbenefit.FieldID,
 			},
 		},
@@ -130,6 +134,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			goodbenefit.FieldCreatedAt:   {Type: field.TypeUint32, Column: goodbenefit.FieldCreatedAt},
 			goodbenefit.FieldUpdatedAt:   {Type: field.TypeUint32, Column: goodbenefit.FieldUpdatedAt},
 			goodbenefit.FieldDeletedAt:   {Type: field.TypeUint32, Column: goodbenefit.FieldDeletedAt},
+			goodbenefit.FieldEntID:       {Type: field.TypeUUID, Column: goodbenefit.FieldEntID},
 			goodbenefit.FieldGoodID:      {Type: field.TypeUUID, Column: goodbenefit.FieldGoodID},
 			goodbenefit.FieldGoodName:    {Type: field.TypeString, Column: goodbenefit.FieldGoodName},
 			goodbenefit.FieldAmount:      {Type: field.TypeString, Column: goodbenefit.FieldAmount},
@@ -145,7 +150,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   notif.Table,
 			Columns: notif.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: notif.FieldID,
 			},
 		},
@@ -154,6 +159,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			notif.FieldCreatedAt:   {Type: field.TypeUint32, Column: notif.FieldCreatedAt},
 			notif.FieldUpdatedAt:   {Type: field.TypeUint32, Column: notif.FieldUpdatedAt},
 			notif.FieldDeletedAt:   {Type: field.TypeUint32, Column: notif.FieldDeletedAt},
+			notif.FieldEntID:       {Type: field.TypeUUID, Column: notif.FieldEntID},
 			notif.FieldAppID:       {Type: field.TypeUUID, Column: notif.FieldAppID},
 			notif.FieldUserID:      {Type: field.TypeUUID, Column: notif.FieldUserID},
 			notif.FieldNotified:    {Type: field.TypeBool, Column: notif.FieldNotified},
@@ -173,7 +179,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   notifchannel.Table,
 			Columns: notifchannel.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: notifchannel.FieldID,
 			},
 		},
@@ -182,6 +188,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			notifchannel.FieldCreatedAt: {Type: field.TypeUint32, Column: notifchannel.FieldCreatedAt},
 			notifchannel.FieldUpdatedAt: {Type: field.TypeUint32, Column: notifchannel.FieldUpdatedAt},
 			notifchannel.FieldDeletedAt: {Type: field.TypeUint32, Column: notifchannel.FieldDeletedAt},
+			notifchannel.FieldEntID:     {Type: field.TypeUUID, Column: notifchannel.FieldEntID},
 			notifchannel.FieldAppID:     {Type: field.TypeUUID, Column: notifchannel.FieldAppID},
 			notifchannel.FieldEventType: {Type: field.TypeString, Column: notifchannel.FieldEventType},
 			notifchannel.FieldChannel:   {Type: field.TypeString, Column: notifchannel.FieldChannel},
@@ -192,7 +199,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   notifuser.Table,
 			Columns: notifuser.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: notifuser.FieldID,
 			},
 		},
@@ -201,6 +208,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			notifuser.FieldCreatedAt: {Type: field.TypeUint32, Column: notifuser.FieldCreatedAt},
 			notifuser.FieldUpdatedAt: {Type: field.TypeUint32, Column: notifuser.FieldUpdatedAt},
 			notifuser.FieldDeletedAt: {Type: field.TypeUint32, Column: notifuser.FieldDeletedAt},
+			notifuser.FieldEntID:     {Type: field.TypeUUID, Column: notifuser.FieldEntID},
 			notifuser.FieldAppID:     {Type: field.TypeUUID, Column: notifuser.FieldAppID},
 			notifuser.FieldUserID:    {Type: field.TypeUUID, Column: notifuser.FieldUserID},
 			notifuser.FieldEventType: {Type: field.TypeString, Column: notifuser.FieldEventType},
@@ -211,7 +219,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   readannouncement.Table,
 			Columns: readannouncement.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: readannouncement.FieldID,
 			},
 		},
@@ -220,6 +228,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			readannouncement.FieldCreatedAt:      {Type: field.TypeUint32, Column: readannouncement.FieldCreatedAt},
 			readannouncement.FieldUpdatedAt:      {Type: field.TypeUint32, Column: readannouncement.FieldUpdatedAt},
 			readannouncement.FieldDeletedAt:      {Type: field.TypeUint32, Column: readannouncement.FieldDeletedAt},
+			readannouncement.FieldEntID:          {Type: field.TypeUUID, Column: readannouncement.FieldEntID},
 			readannouncement.FieldAppID:          {Type: field.TypeUUID, Column: readannouncement.FieldAppID},
 			readannouncement.FieldUserID:         {Type: field.TypeUUID, Column: readannouncement.FieldUserID},
 			readannouncement.FieldAnnouncementID: {Type: field.TypeUUID, Column: readannouncement.FieldAnnouncementID},
@@ -230,7 +239,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   smstemplate.Table,
 			Columns: smstemplate.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: smstemplate.FieldID,
 			},
 		},
@@ -239,6 +248,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			smstemplate.FieldCreatedAt: {Type: field.TypeUint32, Column: smstemplate.FieldCreatedAt},
 			smstemplate.FieldUpdatedAt: {Type: field.TypeUint32, Column: smstemplate.FieldUpdatedAt},
 			smstemplate.FieldDeletedAt: {Type: field.TypeUint32, Column: smstemplate.FieldDeletedAt},
+			smstemplate.FieldEntID:     {Type: field.TypeUUID, Column: smstemplate.FieldEntID},
 			smstemplate.FieldAppID:     {Type: field.TypeUUID, Column: smstemplate.FieldAppID},
 			smstemplate.FieldLangID:    {Type: field.TypeUUID, Column: smstemplate.FieldLangID},
 			smstemplate.FieldUsedFor:   {Type: field.TypeString, Column: smstemplate.FieldUsedFor},
@@ -251,7 +261,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   sendannouncement.Table,
 			Columns: sendannouncement.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: sendannouncement.FieldID,
 			},
 		},
@@ -260,6 +270,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			sendannouncement.FieldCreatedAt:      {Type: field.TypeUint32, Column: sendannouncement.FieldCreatedAt},
 			sendannouncement.FieldUpdatedAt:      {Type: field.TypeUint32, Column: sendannouncement.FieldUpdatedAt},
 			sendannouncement.FieldDeletedAt:      {Type: field.TypeUint32, Column: sendannouncement.FieldDeletedAt},
+			sendannouncement.FieldEntID:          {Type: field.TypeUUID, Column: sendannouncement.FieldEntID},
 			sendannouncement.FieldAppID:          {Type: field.TypeUUID, Column: sendannouncement.FieldAppID},
 			sendannouncement.FieldUserID:         {Type: field.TypeUUID, Column: sendannouncement.FieldUserID},
 			sendannouncement.FieldAnnouncementID: {Type: field.TypeUUID, Column: sendannouncement.FieldAnnouncementID},
@@ -271,7 +282,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   userannouncement.Table,
 			Columns: userannouncement.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: userannouncement.FieldID,
 			},
 		},
@@ -280,6 +291,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			userannouncement.FieldCreatedAt:      {Type: field.TypeUint32, Column: userannouncement.FieldCreatedAt},
 			userannouncement.FieldUpdatedAt:      {Type: field.TypeUint32, Column: userannouncement.FieldUpdatedAt},
 			userannouncement.FieldDeletedAt:      {Type: field.TypeUint32, Column: userannouncement.FieldDeletedAt},
+			userannouncement.FieldEntID:          {Type: field.TypeUUID, Column: userannouncement.FieldEntID},
 			userannouncement.FieldAppID:          {Type: field.TypeUUID, Column: userannouncement.FieldAppID},
 			userannouncement.FieldUserID:         {Type: field.TypeUUID, Column: userannouncement.FieldUserID},
 			userannouncement.FieldAnnouncementID: {Type: field.TypeUUID, Column: userannouncement.FieldAnnouncementID},
@@ -329,8 +341,8 @@ func (f *AnnouncementFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql [16]byte predicate on the id field.
-func (f *AnnouncementFilter) WhereID(p entql.ValueP) {
+// WhereID applies the entql uint32 predicate on the id field.
+func (f *AnnouncementFilter) WhereID(p entql.Uint32P) {
 	f.Where(p.Field(announcement.FieldID))
 }
 
@@ -347,6 +359,11 @@ func (f *AnnouncementFilter) WhereUpdatedAt(p entql.Uint32P) {
 // WhereDeletedAt applies the entql uint32 predicate on the deleted_at field.
 func (f *AnnouncementFilter) WhereDeletedAt(p entql.Uint32P) {
 	f.Where(p.Field(announcement.FieldDeletedAt))
+}
+
+// WhereEntID applies the entql [16]byte predicate on the ent_id field.
+func (f *AnnouncementFilter) WhereEntID(p entql.ValueP) {
+	f.Where(p.Field(announcement.FieldEntID))
 }
 
 // WhereAppID applies the entql [16]byte predicate on the app_id field.
@@ -424,8 +441,8 @@ func (f *ContactFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql [16]byte predicate on the id field.
-func (f *ContactFilter) WhereID(p entql.ValueP) {
+// WhereID applies the entql uint32 predicate on the id field.
+func (f *ContactFilter) WhereID(p entql.Uint32P) {
 	f.Where(p.Field(contact.FieldID))
 }
 
@@ -442,6 +459,11 @@ func (f *ContactFilter) WhereUpdatedAt(p entql.Uint32P) {
 // WhereDeletedAt applies the entql uint32 predicate on the deleted_at field.
 func (f *ContactFilter) WhereDeletedAt(p entql.Uint32P) {
 	f.Where(p.Field(contact.FieldDeletedAt))
+}
+
+// WhereEntID applies the entql [16]byte predicate on the ent_id field.
+func (f *ContactFilter) WhereEntID(p entql.ValueP) {
+	f.Where(p.Field(contact.FieldEntID))
 }
 
 // WhereAppID applies the entql [16]byte predicate on the app_id field.
@@ -504,8 +526,8 @@ func (f *EmailTemplateFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql [16]byte predicate on the id field.
-func (f *EmailTemplateFilter) WhereID(p entql.ValueP) {
+// WhereID applies the entql uint32 predicate on the id field.
+func (f *EmailTemplateFilter) WhereID(p entql.Uint32P) {
 	f.Where(p.Field(emailtemplate.FieldID))
 }
 
@@ -522,6 +544,11 @@ func (f *EmailTemplateFilter) WhereUpdatedAt(p entql.Uint32P) {
 // WhereDeletedAt applies the entql uint32 predicate on the deleted_at field.
 func (f *EmailTemplateFilter) WhereDeletedAt(p entql.Uint32P) {
 	f.Where(p.Field(emailtemplate.FieldDeletedAt))
+}
+
+// WhereEntID applies the entql [16]byte predicate on the ent_id field.
+func (f *EmailTemplateFilter) WhereEntID(p entql.ValueP) {
+	f.Where(p.Field(emailtemplate.FieldEntID))
 }
 
 // WhereAppID applies the entql [16]byte predicate on the app_id field.
@@ -604,8 +631,8 @@ func (f *FrontendTemplateFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql [16]byte predicate on the id field.
-func (f *FrontendTemplateFilter) WhereID(p entql.ValueP) {
+// WhereID applies the entql uint32 predicate on the id field.
+func (f *FrontendTemplateFilter) WhereID(p entql.Uint32P) {
 	f.Where(p.Field(frontendtemplate.FieldID))
 }
 
@@ -622,6 +649,11 @@ func (f *FrontendTemplateFilter) WhereUpdatedAt(p entql.Uint32P) {
 // WhereDeletedAt applies the entql uint32 predicate on the deleted_at field.
 func (f *FrontendTemplateFilter) WhereDeletedAt(p entql.Uint32P) {
 	f.Where(p.Field(frontendtemplate.FieldDeletedAt))
+}
+
+// WhereEntID applies the entql [16]byte predicate on the ent_id field.
+func (f *FrontendTemplateFilter) WhereEntID(p entql.ValueP) {
+	f.Where(p.Field(frontendtemplate.FieldEntID))
 }
 
 // WhereAppID applies the entql [16]byte predicate on the app_id field.
@@ -684,8 +716,8 @@ func (f *GoodBenefitFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql [16]byte predicate on the id field.
-func (f *GoodBenefitFilter) WhereID(p entql.ValueP) {
+// WhereID applies the entql uint32 predicate on the id field.
+func (f *GoodBenefitFilter) WhereID(p entql.Uint32P) {
 	f.Where(p.Field(goodbenefit.FieldID))
 }
 
@@ -702,6 +734,11 @@ func (f *GoodBenefitFilter) WhereUpdatedAt(p entql.Uint32P) {
 // WhereDeletedAt applies the entql uint32 predicate on the deleted_at field.
 func (f *GoodBenefitFilter) WhereDeletedAt(p entql.Uint32P) {
 	f.Where(p.Field(goodbenefit.FieldDeletedAt))
+}
+
+// WhereEntID applies the entql [16]byte predicate on the ent_id field.
+func (f *GoodBenefitFilter) WhereEntID(p entql.ValueP) {
+	f.Where(p.Field(goodbenefit.FieldEntID))
 }
 
 // WhereGoodID applies the entql [16]byte predicate on the good_id field.
@@ -779,8 +816,8 @@ func (f *NotifFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql [16]byte predicate on the id field.
-func (f *NotifFilter) WhereID(p entql.ValueP) {
+// WhereID applies the entql uint32 predicate on the id field.
+func (f *NotifFilter) WhereID(p entql.Uint32P) {
 	f.Where(p.Field(notif.FieldID))
 }
 
@@ -797,6 +834,11 @@ func (f *NotifFilter) WhereUpdatedAt(p entql.Uint32P) {
 // WhereDeletedAt applies the entql uint32 predicate on the deleted_at field.
 func (f *NotifFilter) WhereDeletedAt(p entql.Uint32P) {
 	f.Where(p.Field(notif.FieldDeletedAt))
+}
+
+// WhereEntID applies the entql [16]byte predicate on the ent_id field.
+func (f *NotifFilter) WhereEntID(p entql.ValueP) {
+	f.Where(p.Field(notif.FieldEntID))
 }
 
 // WhereAppID applies the entql [16]byte predicate on the app_id field.
@@ -894,8 +936,8 @@ func (f *NotifChannelFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql [16]byte predicate on the id field.
-func (f *NotifChannelFilter) WhereID(p entql.ValueP) {
+// WhereID applies the entql uint32 predicate on the id field.
+func (f *NotifChannelFilter) WhereID(p entql.Uint32P) {
 	f.Where(p.Field(notifchannel.FieldID))
 }
 
@@ -912,6 +954,11 @@ func (f *NotifChannelFilter) WhereUpdatedAt(p entql.Uint32P) {
 // WhereDeletedAt applies the entql uint32 predicate on the deleted_at field.
 func (f *NotifChannelFilter) WhereDeletedAt(p entql.Uint32P) {
 	f.Where(p.Field(notifchannel.FieldDeletedAt))
+}
+
+// WhereEntID applies the entql [16]byte predicate on the ent_id field.
+func (f *NotifChannelFilter) WhereEntID(p entql.ValueP) {
+	f.Where(p.Field(notifchannel.FieldEntID))
 }
 
 // WhereAppID applies the entql [16]byte predicate on the app_id field.
@@ -964,8 +1011,8 @@ func (f *NotifUserFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql [16]byte predicate on the id field.
-func (f *NotifUserFilter) WhereID(p entql.ValueP) {
+// WhereID applies the entql uint32 predicate on the id field.
+func (f *NotifUserFilter) WhereID(p entql.Uint32P) {
 	f.Where(p.Field(notifuser.FieldID))
 }
 
@@ -982,6 +1029,11 @@ func (f *NotifUserFilter) WhereUpdatedAt(p entql.Uint32P) {
 // WhereDeletedAt applies the entql uint32 predicate on the deleted_at field.
 func (f *NotifUserFilter) WhereDeletedAt(p entql.Uint32P) {
 	f.Where(p.Field(notifuser.FieldDeletedAt))
+}
+
+// WhereEntID applies the entql [16]byte predicate on the ent_id field.
+func (f *NotifUserFilter) WhereEntID(p entql.ValueP) {
+	f.Where(p.Field(notifuser.FieldEntID))
 }
 
 // WhereAppID applies the entql [16]byte predicate on the app_id field.
@@ -1034,8 +1086,8 @@ func (f *ReadAnnouncementFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql [16]byte predicate on the id field.
-func (f *ReadAnnouncementFilter) WhereID(p entql.ValueP) {
+// WhereID applies the entql uint32 predicate on the id field.
+func (f *ReadAnnouncementFilter) WhereID(p entql.Uint32P) {
 	f.Where(p.Field(readannouncement.FieldID))
 }
 
@@ -1052,6 +1104,11 @@ func (f *ReadAnnouncementFilter) WhereUpdatedAt(p entql.Uint32P) {
 // WhereDeletedAt applies the entql uint32 predicate on the deleted_at field.
 func (f *ReadAnnouncementFilter) WhereDeletedAt(p entql.Uint32P) {
 	f.Where(p.Field(readannouncement.FieldDeletedAt))
+}
+
+// WhereEntID applies the entql [16]byte predicate on the ent_id field.
+func (f *ReadAnnouncementFilter) WhereEntID(p entql.ValueP) {
+	f.Where(p.Field(readannouncement.FieldEntID))
 }
 
 // WhereAppID applies the entql [16]byte predicate on the app_id field.
@@ -1104,8 +1161,8 @@ func (f *SMSTemplateFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql [16]byte predicate on the id field.
-func (f *SMSTemplateFilter) WhereID(p entql.ValueP) {
+// WhereID applies the entql uint32 predicate on the id field.
+func (f *SMSTemplateFilter) WhereID(p entql.Uint32P) {
 	f.Where(p.Field(smstemplate.FieldID))
 }
 
@@ -1122,6 +1179,11 @@ func (f *SMSTemplateFilter) WhereUpdatedAt(p entql.Uint32P) {
 // WhereDeletedAt applies the entql uint32 predicate on the deleted_at field.
 func (f *SMSTemplateFilter) WhereDeletedAt(p entql.Uint32P) {
 	f.Where(p.Field(smstemplate.FieldDeletedAt))
+}
+
+// WhereEntID applies the entql [16]byte predicate on the ent_id field.
+func (f *SMSTemplateFilter) WhereEntID(p entql.ValueP) {
+	f.Where(p.Field(smstemplate.FieldEntID))
 }
 
 // WhereAppID applies the entql [16]byte predicate on the app_id field.
@@ -1184,8 +1246,8 @@ func (f *SendAnnouncementFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql [16]byte predicate on the id field.
-func (f *SendAnnouncementFilter) WhereID(p entql.ValueP) {
+// WhereID applies the entql uint32 predicate on the id field.
+func (f *SendAnnouncementFilter) WhereID(p entql.Uint32P) {
 	f.Where(p.Field(sendannouncement.FieldID))
 }
 
@@ -1202,6 +1264,11 @@ func (f *SendAnnouncementFilter) WhereUpdatedAt(p entql.Uint32P) {
 // WhereDeletedAt applies the entql uint32 predicate on the deleted_at field.
 func (f *SendAnnouncementFilter) WhereDeletedAt(p entql.Uint32P) {
 	f.Where(p.Field(sendannouncement.FieldDeletedAt))
+}
+
+// WhereEntID applies the entql [16]byte predicate on the ent_id field.
+func (f *SendAnnouncementFilter) WhereEntID(p entql.ValueP) {
+	f.Where(p.Field(sendannouncement.FieldEntID))
 }
 
 // WhereAppID applies the entql [16]byte predicate on the app_id field.
@@ -1259,8 +1326,8 @@ func (f *UserAnnouncementFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql [16]byte predicate on the id field.
-func (f *UserAnnouncementFilter) WhereID(p entql.ValueP) {
+// WhereID applies the entql uint32 predicate on the id field.
+func (f *UserAnnouncementFilter) WhereID(p entql.Uint32P) {
 	f.Where(p.Field(userannouncement.FieldID))
 }
 
@@ -1277,6 +1344,11 @@ func (f *UserAnnouncementFilter) WhereUpdatedAt(p entql.Uint32P) {
 // WhereDeletedAt applies the entql uint32 predicate on the deleted_at field.
 func (f *UserAnnouncementFilter) WhereDeletedAt(p entql.Uint32P) {
 	f.Where(p.Field(userannouncement.FieldDeletedAt))
+}
+
+// WhereEntID applies the entql [16]byte predicate on the ent_id field.
+func (f *UserAnnouncementFilter) WhereEntID(p entql.ValueP) {
+	f.Where(p.Field(userannouncement.FieldEntID))
 }
 
 // WhereAppID applies the entql [16]byte predicate on the app_id field.

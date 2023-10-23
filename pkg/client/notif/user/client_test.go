@@ -41,7 +41,7 @@ var (
 	userID1            = uuid.NewString()
 	appID              = uuid.NewString()
 	notifInfoMulticast = notifpb.Notif{
-		ID:           uuid.NewString(),
+		EntID:        uuid.NewString(),
 		AppID:        appID,
 		UserID:       "",
 		Notified:     false,
@@ -58,7 +58,7 @@ var (
 		NotifTypeStr: basetypes.NotifType_NotifMulticast.String(),
 	}
 	notifInfoUnicast = notifpb.Notif{
-		ID:           uuid.NewString(),
+		EntID:        uuid.NewString(),
 		AppID:        appID,
 		UserID:       userID1,
 		Notified:     true,
@@ -106,7 +106,7 @@ var (
 	}
 
 	ret = npool.NotifUser{
-		ID:           "",
+		EntID:        "",
 		AppID:        appID,
 		EventType:    notifInfoMulticast.EventType,
 		EventTypeStr: notifInfoMulticast.EventTypeStr,
@@ -117,7 +117,7 @@ var (
 func setupNotifUser(t *testing.T) func(*testing.T) {
 	n1, err := notifmw.NewHandler(
 		context.Background(),
-		notifmw.WithReqs(notifReqs),
+		notifmw.WithReqs(notifReqs, true),
 	)
 	assert.Nil(t, err)
 
@@ -127,8 +127,7 @@ func setupNotifUser(t *testing.T) func(*testing.T) {
 
 	return func(*testing.T) {
 		for _, row := range _notif {
-			id, _ := uuid.Parse(row.ID)
-			n1.ID = &id
+			n1.ID = &row.ID
 			_appID, _ := uuid.Parse(row.AppID)
 			n1.AppID = &_appID
 			_, _ = n1.DeleteNotif(context.Background())
@@ -147,22 +146,23 @@ func createNotifUser(t *testing.T) {
 		ret.CreatedAt = info.CreatedAt
 		ret.UpdatedAt = info.UpdatedAt
 		ret.ID = info.ID
+		ret.EntID = info.EntID
 		assert.Equal(t, info, &ret)
 	}
 }
 
 //nolint:vet
 func getNotifUser(t *testing.T) {
-	info, err := GetNotifUser(context.Background(), ret.ID)
+	info, err := GetNotifUser(context.Background(), ret.EntID)
 	assert.Nil(t, err)
 	assert.NotNil(t, info)
 }
 
 func getNotifUsers(t *testing.T) {
 	infos, _, err := GetNotifUsers(context.Background(), &npool.Conds{
-		ID: &basetypes.StringVal{
+		EntID: &basetypes.StringVal{
 			Op:    cruder.EQ,
-			Value: ret.ID,
+			Value: ret.EntID,
 		},
 	}, 0, 100)
 	if assert.Nil(t, err) {
@@ -181,7 +181,7 @@ func deleteNotifUser(t *testing.T) {
 		ret.UpdatedAt = info.UpdatedAt
 		assert.Equal(t, info, &ret)
 	}
-	info, err = GetNotifUser(context.Background(), ret.ID)
+	info, err = GetNotifUser(context.Background(), ret.EntID)
 	assert.Nil(t, err)
 	assert.Nil(t, info)
 }

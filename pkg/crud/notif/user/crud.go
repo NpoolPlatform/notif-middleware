@@ -12,7 +12,7 @@ import (
 )
 
 type Req struct {
-	ID        *uuid.UUID
+	EntID     *uuid.UUID
 	AppID     *uuid.UUID
 	UserID    *uuid.UUID
 	EventType *basetypes.UsedFor
@@ -20,8 +20,8 @@ type Req struct {
 }
 
 func CreateSet(c *ent.NotifUserCreate, req *Req) *ent.NotifUserCreate {
-	if req.ID != nil {
-		c.SetID(*req.ID)
+	if req.EntID != nil {
+		c.SetEntID(*req.EntID)
 	}
 	if req.AppID != nil {
 		c.SetAppID(*req.AppID)
@@ -44,16 +44,17 @@ func UpdateSet(u *ent.NotifUserUpdateOne, req *Req) *ent.NotifUserUpdateOne {
 
 type Conds struct {
 	ID        *cruder.Cond
+	EntID     *cruder.Cond
 	AppID     *cruder.Cond
 	UserID    *cruder.Cond
 	EventType *cruder.Cond
-	IDs       *cruder.Cond
+	EntIDs    *cruder.Cond
 }
 
-// nolint:gocyclo
+//nolint:funlen,gocyclo
 func SetQueryConds(q *ent.NotifUserQuery, conds *Conds) (*ent.NotifUserQuery, error) {
 	if conds.ID != nil {
-		id, ok := conds.ID.Val.(uuid.UUID)
+		id, ok := conds.ID.Val.(uint32)
 		if !ok {
 			return nil, fmt.Errorf("invalid id")
 		}
@@ -62,6 +63,18 @@ func SetQueryConds(q *ent.NotifUserQuery, conds *Conds) (*ent.NotifUserQuery, er
 			q.Where(entnotifuser.ID(id))
 		default:
 			return nil, fmt.Errorf("invalid user field")
+		}
+	}
+	if conds.EntID != nil {
+		id, ok := conds.EntID.Val.(uuid.UUID)
+		if !ok {
+			return nil, fmt.Errorf("invalid user entid")
+		}
+		switch conds.EntID.Op {
+		case cruder.EQ:
+			q.Where(entnotifuser.EntID(id))
+		default:
+			return nil, fmt.Errorf("invalid user entid op field")
 		}
 	}
 	if conds.AppID != nil {
@@ -100,14 +113,14 @@ func SetQueryConds(q *ent.NotifUserQuery, conds *Conds) (*ent.NotifUserQuery, er
 			return nil, fmt.Errorf("invalid user field")
 		}
 	}
-	if conds.IDs != nil {
-		ids, ok := conds.IDs.Val.([]uuid.UUID)
+	if conds.EntIDs != nil {
+		ids, ok := conds.EntIDs.Val.([]uuid.UUID)
 		if !ok {
-			return nil, fmt.Errorf("invalid ids")
+			return nil, fmt.Errorf("invalid entids")
 		}
-		switch conds.IDs.Op {
+		switch conds.EntIDs.Op {
 		case cruder.IN:
-			q.Where(entnotifuser.IDIn(ids...))
+			q.Where(entnotifuser.EntIDIn(ids...))
 		default:
 			return nil, fmt.Errorf("invalid user field")
 		}

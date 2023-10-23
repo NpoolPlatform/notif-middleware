@@ -16,9 +16,9 @@ func (s *Server) UpdateNotifUser(ctx context.Context, in *npool.UpdateNotifUserR
 	req := in.GetInfo()
 	handler, err := user1.NewHandler(
 		ctx,
-		user1.WithID(req.ID),
-		user1.WithUserID(req.UserID),
-		user1.WithEventType(req.EventType),
+		user1.WithID(req.ID, true),
+		user1.WithUserID(req.UserID, false),
+		user1.WithEventType(req.EventType, false),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

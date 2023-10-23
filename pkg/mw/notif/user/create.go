@@ -58,14 +58,14 @@ func (h *createHandler) createNotifUser(ctx context.Context, tx *ent.Tx, req *us
 	}
 
 	id := uuid.New()
-	if req.ID == nil {
-		req.ID = &id
+	if req.EntID == nil {
+		req.EntID = &id
 	}
 
 	info, err := usercrud.CreateSet(
 		tx.NotifUser.Create(),
 		&usercrud.Req{
-			ID:        req.ID,
+			EntID:     req.EntID,
 			AppID:     req.AppID,
 			UserID:    req.UserID,
 			EventType: req.EventType,
@@ -85,7 +85,7 @@ func (h *Handler) CreateNotifUser(ctx context.Context) (*npool.NotifUser, error)
 		Handler: h,
 	}
 	req := &usercrud.Req{
-		ID:        handler.ID,
+		EntID:     handler.EntID,
 		AppID:     handler.AppID,
 		UserID:    handler.UserID,
 		EventType: handler.EventType,

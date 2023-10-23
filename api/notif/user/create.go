@@ -16,10 +16,10 @@ func (s *Server) CreateNotifUser(ctx context.Context, in *npool.CreateNotifUserR
 	req := in.GetInfo()
 	handler, err := user1.NewHandler(
 		ctx,
-		user1.WithID(req.ID),
-		user1.WithAppID(req.AppID),
-		user1.WithUserID(req.UserID),
-		user1.WithEventType(req.EventType),
+		user1.WithEntID(req.EntID, false),
+		user1.WithAppID(req.AppID, true),
+		user1.WithUserID(req.UserID, true),
+		user1.WithEventType(req.EventType, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

@@ -28,7 +28,7 @@ func init() {
 
 var (
 	ret = npool.Notif{
-		ID:           uuid.NewString(),
+		EntID:        uuid.NewString(),
 		AppID:        uuid.NewString(),
 		UserID:       uuid.NewString(),
 		Notified:     false,
@@ -49,18 +49,18 @@ var (
 func createNotif(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
-		WithID(&ret.ID),
-		WithAppID(&ret.AppID),
-		WithLangID(&ret.LangID),
-		WithUserID(&ret.UserID),
-		WithEventID(&ret.EventID),
-		WithNotified(&ret.Notified),
-		WithEventType(&ret.EventType),
-		WithUseTemplate(&ret.UseTemplate),
-		WithTitle(&ret.Title),
-		WithContent(&ret.Content),
-		WithChannel(&ret.Channel),
-		WithNotifType(&ret.NotifType),
+		WithID(&ret.ID, true),
+		WithAppID(&ret.AppID, true),
+		WithLangID(&ret.LangID, true),
+		WithUserID(&ret.UserID, false),
+		WithEventID(&ret.EventID, true),
+		WithNotified(&ret.Notified, false),
+		WithEventType(&ret.EventType, true),
+		WithUseTemplate(&ret.UseTemplate, false),
+		WithTitle(&ret.Title, true),
+		WithContent(&ret.Content, true),
+		WithChannel(&ret.Channel, true),
+		WithNotifType(&ret.NotifType, true),
 	)
 	assert.Nil(t, err)
 
@@ -68,6 +68,8 @@ func createNotif(t *testing.T) {
 	if assert.Nil(t, err) {
 		ret.CreatedAt = info.CreatedAt
 		ret.UpdatedAt = info.UpdatedAt
+		ret.ID = info.ID
+		ret.EntID = info.EntID
 		assert.Equal(t, info, &ret)
 	}
 }
@@ -76,9 +78,9 @@ func updateNotif(t *testing.T) {
 	ret.Notified = true
 	handler, err := NewHandler(
 		context.Background(),
-		WithID(&ret.ID),
-		WithAppID(&ret.AppID),
-		WithNotified(&ret.Notified),
+		WithID(&ret.ID, true),
+		WithAppID(&ret.AppID, true),
+		WithNotified(&ret.Notified, true),
 	)
 	assert.Nil(t, err)
 
@@ -92,7 +94,7 @@ func updateNotif(t *testing.T) {
 func getNotif(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
-		WithID(&ret.ID),
+		WithEntID(&ret.EntID, true),
 	)
 	assert.Nil(t, err)
 
@@ -104,7 +106,7 @@ func getNotif(t *testing.T) {
 
 func getNotifs(t *testing.T) {
 	conds := &npool.Conds{
-		ID: &basetypes.StringVal{Op: cruder.EQ, Value: ret.ID},
+		EntID: &basetypes.StringVal{Op: cruder.EQ, Value: ret.EntID},
 	}
 
 	handler, err := NewHandler(
@@ -124,7 +126,7 @@ func getNotifs(t *testing.T) {
 func deleteNotif(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
-		WithID(&ret.ID),
+		WithID(&ret.ID, true),
 	)
 	assert.Nil(t, err)
 

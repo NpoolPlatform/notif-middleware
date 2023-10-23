@@ -18,12 +18,12 @@ import (
 func (s *Server) GenerateNotifs(ctx context.Context, in *npool.GenerateNotifsRequest) (*npool.GenerateNotifsResponse, error) {
 	handler, err := notif1.NewHandler(
 		ctx,
-		notif1.WithAppID(&in.AppID),
-		notif1.WithUserID(&in.UserID),
-		notif1.WithEventType(&in.EventType),
-		notif1.WithExtra(in.Extra),
-		notif1.WithVars(in.Vars),
-		notif1.WithNotifType(&in.NotifType),
+		notif1.WithAppID(&in.AppID, true),
+		notif1.WithUserID(&in.UserID, true),
+		notif1.WithEventType(&in.EventType, true),
+		notif1.WithExtra(in.Extra, false),
+		notif1.WithVars(in.Vars, true),
+		notif1.WithNotifType(&in.NotifType, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

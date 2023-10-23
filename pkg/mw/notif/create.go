@@ -22,15 +22,6 @@ type createHandler struct {
 }
 
 func (h *createHandler) createNotif(ctx context.Context, tx *ent.Tx, req *notifcrud.Req) error {
-	if req.AppID == nil {
-		return fmt.Errorf("invalid appid")
-	}
-	if req.LangID == nil {
-		return fmt.Errorf("invalid langid")
-	}
-	if req.EventID == nil {
-		return fmt.Errorf("invalid eventid")
-	}
 	lockKey := fmt.Sprintf(
 		"%v:%v:%v:%v",
 		basetypes.Prefix_PrefixCreateNotif,
@@ -46,14 +37,14 @@ func (h *createHandler) createNotif(ctx context.Context, tx *ent.Tx, req *notifc
 	}()
 
 	id := uuid.New()
-	if req.ID == nil {
-		req.ID = &id
+	if req.EntID == nil {
+		req.EntID = &id
 	}
 
 	info, err := notifcrud.CreateSet(
 		tx.Notif.Create(),
 		&notifcrud.Req{
-			ID:          req.ID,
+			EntID:       req.EntID,
 			AppID:       req.AppID,
 			LangID:      req.LangID,
 			UserID:      req.UserID,
@@ -73,6 +64,7 @@ func (h *createHandler) createNotif(ctx context.Context, tx *ent.Tx, req *notifc
 	}
 
 	h.ID = &info.ID
+	h.EntID = &info.EntID
 	return nil
 }
 
@@ -81,7 +73,7 @@ func (h *Handler) CreateNotif(ctx context.Context) (*npool.Notif, error) {
 		Handler: h,
 	}
 	req := &notifcrud.Req{
-		ID:          handler.ID,
+		EntID:       handler.EntID,
 		AppID:       handler.AppID,
 		LangID:      handler.LangID,
 		UserID:      handler.UserID,
@@ -117,8 +109,8 @@ func (h *Handler) CreateNotifs(ctx context.Context) ([]*npool.Notif, error) {
 
 	err := db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
 		for _, req := range h.Reqs {
-			if req.ID != nil {
-				handler.ID = req.ID
+			if req.EntID != nil {
+				handler.EntID = req.EntID
 				exist, err := handler.ExistNotif(ctx)
 				if err != nil {
 					return err
@@ -130,7 +122,7 @@ func (h *Handler) CreateNotifs(ctx context.Context) ([]*npool.Notif, error) {
 			if err := handler.createNotif(ctx, tx, req); err != nil {
 				return err
 			}
-			ids = append(ids, *h.ID)
+			ids = append(ids, *h.EntID)
 		}
 		return nil
 	})
@@ -139,7 +131,7 @@ func (h *Handler) CreateNotifs(ctx context.Context) ([]*npool.Notif, error) {
 	}
 
 	h.Conds = &notifcrud.Conds{
-		IDs: &cruder.Cond{Op: cruder.IN, Val: ids},
+		EntIDs: &cruder.Cond{Op: cruder.IN, Val: ids},
 	}
 	h.Offset = 0
 	h.Limit = int32(len(ids))

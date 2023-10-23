@@ -16,19 +16,19 @@ func (s *Server) UpdateNotif(ctx context.Context, in *npool.UpdateNotifRequest) 
 	req := in.GetInfo()
 	handler, err := notif1.NewHandler(
 		ctx,
-		notif1.WithID(req.ID),
-		notif1.WithAppID(req.AppID),
-		notif1.WithLangID(req.LangID),
-		notif1.WithUserID(req.UserID),
-		notif1.WithEventID(req.EventID),
-		notif1.WithNotified(req.Notified),
-		notif1.WithEventType(req.EventType),
-		notif1.WithUseTemplate(req.UseTemplate),
-		notif1.WithTitle(req.Title),
-		notif1.WithContent(req.Content),
-		notif1.WithChannel(req.Channel),
-		notif1.WithExtra(req.Extra),
-		notif1.WithNotifType(req.NotifType),
+		notif1.WithID(req.ID, true),
+		notif1.WithAppID(req.AppID, false),
+		notif1.WithLangID(req.LangID, false),
+		notif1.WithUserID(req.UserID, false),
+		notif1.WithEventID(req.EventID, false),
+		notif1.WithNotified(req.Notified, true),
+		notif1.WithEventType(req.EventType, false),
+		notif1.WithUseTemplate(req.UseTemplate, false),
+		notif1.WithTitle(req.Title, false),
+		notif1.WithContent(req.Content, false),
+		notif1.WithChannel(req.Channel, false),
+		notif1.WithExtra(req.Extra, false),
+		notif1.WithNotifType(req.NotifType, false),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
@@ -56,7 +56,7 @@ func (s *Server) UpdateNotif(ctx context.Context, in *npool.UpdateNotifRequest) 
 func (s *Server) UpdateNotifs(ctx context.Context, in *npool.UpdateNotifsRequest) (*npool.UpdateNotifsResponse, error) {
 	handler, err := notif1.NewHandler(
 		ctx,
-		notif1.WithReqs(in.GetInfos()),
+		notif1.WithReqs(in.GetInfos(), false),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

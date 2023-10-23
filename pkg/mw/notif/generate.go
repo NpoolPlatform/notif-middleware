@@ -60,10 +60,10 @@ func (h *generateHandler) createUserNotifs(ctx context.Context, appID, eventID, 
 	reqs := []*npool.NotifReq{}
 	templateHandler, err := tmplmw.NewHandler(
 		ctx,
-		tmplmw.WithAppID(&appID),
-		tmplmw.WithUserID(&userID),
-		tmplmw.WithUsedFor(h.EventType),
-		tmplmw.WithVars(h.Vars),
+		tmplmw.WithAppID(&appID, true),
+		tmplmw.WithUserID(&userID, true),
+		tmplmw.WithUsedFor(h.EventType, true),
+		tmplmw.WithVars(h.Vars, true),
 	)
 	if err != nil {
 		return nil, err
@@ -117,7 +117,7 @@ func (h *Handler) GenerateNotifs(
 
 	notifGenerateHandler, err := NewHandler(
 		ctx,
-		WithReqs(reqs),
+		WithReqs(reqs, true),
 	)
 	if err != nil {
 		return nil, err

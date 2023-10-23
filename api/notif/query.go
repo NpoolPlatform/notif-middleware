@@ -15,7 +15,7 @@ import (
 func (s *Server) GetNotif(ctx context.Context, in *npool.GetNotifRequest) (*npool.GetNotifResponse, error) {
 	handler, err := notif1.NewHandler(
 		ctx,
-		notif1.WithID(&in.ID),
+		notif1.WithEntID(&in.EntID, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

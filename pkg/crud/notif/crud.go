@@ -12,7 +12,8 @@ import (
 )
 
 type Req struct {
-	ID          *uuid.UUID
+	ID          *uint32
+	EntID       *uuid.UUID
 	AppID       *uuid.UUID
 	LangID      *uuid.UUID
 	UserID      *uuid.UUID
@@ -29,8 +30,8 @@ type Req struct {
 }
 
 func CreateSet(c *ent.NotifCreate, req *Req) *ent.NotifCreate {
-	if req.ID != nil {
-		c.SetID(*req.ID)
+	if req.EntID != nil {
+		c.SetEntID(*req.EntID)
 	}
 	if req.AppID != nil {
 		c.SetAppID(*req.AppID)
@@ -101,6 +102,7 @@ func UpdateSet(u *ent.NotifUpdateOne, req *Req) *ent.NotifUpdateOne {
 
 type Conds struct {
 	ID          *cruder.Cond
+	EntID       *cruder.Cond
 	AppID       *cruder.Cond
 	UserID      *cruder.Cond
 	LangID      *cruder.Cond
@@ -111,6 +113,7 @@ type Conds struct {
 	Extra       *cruder.Cond
 	Type        *cruder.Cond
 	EventID     *cruder.Cond
+	EntIDs      *cruder.Cond
 	IDs         *cruder.Cond
 	EventTypes  *cruder.Cond
 	Channels    *cruder.Cond
@@ -120,7 +123,7 @@ type Conds struct {
 // nolint:funlen,gocyclo
 func SetQueryConds(q *ent.NotifQuery, conds *Conds) (*ent.NotifQuery, error) {
 	if conds.ID != nil {
-		id, ok := conds.ID.Val.(uuid.UUID)
+		id, ok := conds.ID.Val.(uint32)
 		if !ok {
 			return nil, fmt.Errorf("invalid id")
 		}
@@ -129,6 +132,20 @@ func SetQueryConds(q *ent.NotifQuery, conds *Conds) (*ent.NotifQuery, error) {
 			q.Where(entnotif.ID(id))
 		case cruder.NEQ:
 			q.Where(entnotif.IDNEQ(id))
+		default:
+			return nil, fmt.Errorf("invalid notif field")
+		}
+	}
+	if conds.EntID != nil {
+		id, ok := conds.EntID.Val.(uuid.UUID)
+		if !ok {
+			return nil, fmt.Errorf("invalid entid")
+		}
+		switch conds.EntID.Op {
+		case cruder.EQ:
+			q.Where(entnotif.EntID(id))
+		case cruder.NEQ:
+			q.Where(entnotif.EntIDNEQ(id))
 		default:
 			return nil, fmt.Errorf("invalid notif field")
 		}
@@ -253,10 +270,22 @@ func SetQueryConds(q *ent.NotifQuery, conds *Conds) (*ent.NotifQuery, error) {
 			return nil, fmt.Errorf("invalid notif field")
 		}
 	}
-	if conds.IDs != nil {
-		ids, ok := conds.IDs.Val.([]uuid.UUID)
+	if conds.EntIDs != nil {
+		ids, ok := conds.EntIDs.Val.([]uuid.UUID)
 		if !ok {
-			return nil, fmt.Errorf("invalid ids")
+			return nil, fmt.Errorf("invalid entids")
+		}
+		switch conds.EntIDs.Op {
+		case cruder.IN:
+			q.Where(entnotif.EntIDIn(ids...))
+		default:
+			return nil, fmt.Errorf("invalid notif field")
+		}
+	}
+	if conds.IDs != nil {
+		ids, ok := conds.IDs.Val.([]uint32)
+		if !ok {
+			return nil, fmt.Errorf("invalid entids")
 		}
 		switch conds.IDs.Op {
 		case cruder.IN:

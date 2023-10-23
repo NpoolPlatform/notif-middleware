@@ -22,16 +22,16 @@ func (s *Server) CreateEmailTemplate(
 	req := in.GetInfo()
 	handler, err := emailtemplate1.NewHandler(
 		ctx,
-		emailtemplate1.WithID(req.ID),
-		emailtemplate1.WithAppID(req.AppID),
-		emailtemplate1.WithLangID(req.LangID),
-		emailtemplate1.WithDefaultToUsername(req.DefaultToUsername),
-		emailtemplate1.WithUsedFor(req.UsedFor),
-		emailtemplate1.WithSender(req.Sender),
-		emailtemplate1.WithReplyTos(&req.ReplyTos),
-		emailtemplate1.WithCcTos(&req.CCTos),
-		emailtemplate1.WithSubject(req.Subject),
-		emailtemplate1.WithBody(req.Body),
+		emailtemplate1.WithEntID(req.EntID, false),
+		emailtemplate1.WithAppID(req.AppID, true),
+		emailtemplate1.WithLangID(req.LangID, true),
+		emailtemplate1.WithDefaultToUsername(req.DefaultToUsername, false),
+		emailtemplate1.WithUsedFor(req.UsedFor, true),
+		emailtemplate1.WithSender(req.Sender, false),
+		emailtemplate1.WithReplyTos(&req.ReplyTos, false),
+		emailtemplate1.WithCcTos(&req.CCTos, false),
+		emailtemplate1.WithSubject(req.Subject, false),
+		emailtemplate1.WithBody(req.Body, false),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
@@ -64,7 +64,7 @@ func (s *Server) CreateEmailTemplates(
 ) {
 	handler, err := emailtemplate1.NewHandler(
 		ctx,
-		emailtemplate1.WithReqs(in.GetInfos()),
+		emailtemplate1.WithReqs(in.GetInfos(), true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

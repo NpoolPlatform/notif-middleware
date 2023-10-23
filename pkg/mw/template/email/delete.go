@@ -30,7 +30,6 @@ func (h *Handler) DeleteEmailTemplate(ctx context.Context) (*npool.EmailTemplate
 		if _, err := emailtemplatecrud.UpdateSet(
 			cli.EmailTemplate.UpdateOneID(*h.ID),
 			&emailtemplatecrud.Req{
-				ID:        h.ID,
 				DeletedAt: &now,
 			},
 		).Save(ctx); err != nil {

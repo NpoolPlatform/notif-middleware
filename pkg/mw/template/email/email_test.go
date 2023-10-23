@@ -28,7 +28,7 @@ func init() {
 
 var (
 	ret = npool.EmailTemplate{
-		ID:                uuid.NewString(),
+		EntID:             uuid.NewString(),
 		AppID:             uuid.NewString(),
 		LangID:            uuid.NewString(),
 		UsedFor:           basetypes.UsedFor_KYCApproved,
@@ -45,16 +45,16 @@ var (
 func createEmailTemplate(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
-		WithID(&ret.ID),
-		WithAppID(&ret.AppID),
-		WithLangID(&ret.LangID),
-		WithUsedFor(&ret.UsedFor),
-		WithSender(&ret.Sender),
-		WithCcTos(&ret.CCTos),
-		WithReplyTos(&ret.ReplyTos),
-		WithSubject(&ret.Subject),
-		WithBody(&ret.Body),
-		WithDefaultToUsername(&ret.DefaultToUsername),
+		WithEntID(&ret.EntID, true),
+		WithAppID(&ret.AppID, true),
+		WithLangID(&ret.LangID, true),
+		WithUsedFor(&ret.UsedFor, true),
+		WithSender(&ret.Sender, false),
+		WithCcTos(&ret.CCTos, false),
+		WithReplyTos(&ret.ReplyTos, false),
+		WithSubject(&ret.Subject, false),
+		WithBody(&ret.Body, false),
+		WithDefaultToUsername(&ret.DefaultToUsername, false),
 	)
 	assert.Nil(t, err)
 
@@ -64,6 +64,7 @@ func createEmailTemplate(t *testing.T) {
 		info.CCTosStr = ret.CCTosStr
 		ret.CreatedAt = info.CreatedAt
 		ret.UpdatedAt = info.UpdatedAt
+		ret.ID = info.ID
 		assert.Equal(t, info, &ret)
 	}
 }
@@ -77,16 +78,16 @@ func updateEmailTemplate(t *testing.T) {
 	ret.DefaultToUsername = "change DefaultToUsername " + uuid.NewString()
 	handler, err := NewHandler(
 		context.Background(),
-		WithID(&ret.ID),
-		WithAppID(&ret.AppID),
-		WithLangID(&ret.LangID),
-		WithUsedFor(&ret.UsedFor),
-		WithSender(&ret.Sender),
-		WithCcTos(&ret.CCTos),
-		WithReplyTos(&ret.ReplyTos),
-		WithSubject(&ret.Subject),
-		WithBody(&ret.Body),
-		WithDefaultToUsername(&ret.DefaultToUsername),
+		WithID(&ret.ID, true),
+		WithAppID(&ret.AppID, false),
+		WithLangID(&ret.LangID, false),
+		WithUsedFor(&ret.UsedFor, false),
+		WithSender(&ret.Sender, false),
+		WithCcTos(&ret.CCTos, false),
+		WithReplyTos(&ret.ReplyTos, false),
+		WithSubject(&ret.Subject, false),
+		WithBody(&ret.Body, false),
+		WithDefaultToUsername(&ret.DefaultToUsername, false),
 	)
 	assert.Nil(t, err)
 
@@ -102,7 +103,7 @@ func updateEmailTemplate(t *testing.T) {
 func getEmailTemplate(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
-		WithID(&ret.ID),
+		WithEntID(&ret.EntID, true),
 	)
 	assert.Nil(t, err)
 
@@ -116,7 +117,7 @@ func getEmailTemplate(t *testing.T) {
 
 func getEmailTemplates(t *testing.T) {
 	conds := &npool.Conds{
-		ID: &basetypes.StringVal{Op: cruder.EQ, Value: ret.ID},
+		EntID: &basetypes.StringVal{Op: cruder.EQ, Value: ret.EntID},
 	}
 
 	handler, err := NewHandler(
@@ -136,7 +137,7 @@ func getEmailTemplates(t *testing.T) {
 func deleteEmailTemplate(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
-		WithID(&ret.ID),
+		WithID(&ret.ID, true),
 	)
 	assert.Nil(t, err)
 

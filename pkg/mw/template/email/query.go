@@ -25,6 +25,7 @@ type queryHandler struct {
 func (h *queryHandler) selectEmailTemplate(stm *ent.EmailTemplateQuery) {
 	h.stm = stm.Select(
 		entemailtemplate.FieldID,
+		entemailtemplate.FieldEntID,
 		entemailtemplate.FieldAppID,
 		entemailtemplate.FieldLangID,
 		entemailtemplate.FieldUsedFor,
@@ -40,17 +41,17 @@ func (h *queryHandler) selectEmailTemplate(stm *ent.EmailTemplateQuery) {
 }
 
 func (h *queryHandler) queryEmailTemplate(cli *ent.Client) error {
-	if h.ID == nil {
-		return fmt.Errorf("invalid emailtemplateid")
+	if h.ID == nil && h.EntID == nil {
+		return fmt.Errorf("invalid id")
 	}
-	h.selectEmailTemplate(
-		cli.EmailTemplate.
-			Query().
-			Where(
-				entemailtemplate.ID(*h.ID),
-				entemailtemplate.DeletedAt(0),
-			),
-	)
+	stm := cli.EmailTemplate.Query().Where(entemailtemplate.DeletedAt(0))
+	if h.ID != nil {
+		stm.Where(entemailtemplate.ID(*h.ID))
+	}
+	if h.EntID != nil {
+		stm.Where(entemailtemplate.EntID(*h.EntID))
+	}
+	h.selectEmailTemplate(stm)
 	return nil
 }
 

@@ -58,13 +58,13 @@ func (h *createHandler) createEmailTemplate(ctx context.Context, tx *ent.Tx, req
 	}
 
 	id := uuid.New()
-	if req.ID == nil {
-		req.ID = &id
+	if req.EntID == nil {
+		req.EntID = &id
 	}
 	info, err := emailtemplatecrud.CreateSet(
 		tx.EmailTemplate.Create(),
 		&emailtemplatecrud.Req{
-			ID:                req.ID,
+			EntID:             req.EntID,
 			AppID:             req.AppID,
 			LangID:            req.LangID,
 			UsedFor:           req.UsedFor,
@@ -81,6 +81,7 @@ func (h *createHandler) createEmailTemplate(ctx context.Context, tx *ent.Tx, req
 	}
 
 	h.ID = &info.ID
+	h.EntID = &info.EntID
 	return nil
 }
 
@@ -89,7 +90,7 @@ func (h *Handler) CreateEmailTemplate(ctx context.Context) (*npool.EmailTemplate
 		Handler: h,
 	}
 	req := &emailtemplatecrud.Req{
-		ID:                handler.ID,
+		EntID:             handler.EntID,
 		AppID:             handler.AppID,
 		LangID:            handler.LangID,
 		UsedFor:           handler.UsedFor,
@@ -124,7 +125,7 @@ func (h *Handler) CreateEmailTemplates(ctx context.Context) ([]*npool.EmailTempl
 			if err := handler.createEmailTemplate(ctx, tx, req); err != nil {
 				return err
 			}
-			ids = append(ids, *h.ID)
+			ids = append(ids, *h.EntID)
 		}
 		return nil
 	})
@@ -133,7 +134,7 @@ func (h *Handler) CreateEmailTemplates(ctx context.Context) ([]*npool.EmailTempl
 	}
 
 	h.Conds = &emailtemplatecrud.Conds{
-		IDs: &cruder.Cond{Op: cruder.IN, Val: ids},
+		EntIDs: &cruder.Cond{Op: cruder.IN, Val: ids},
 	}
 	h.Offset = 0
 	h.Limit = int32(len(ids))

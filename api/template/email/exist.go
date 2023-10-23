@@ -14,7 +14,7 @@ import (
 func (s *Server) ExistEmailTemplate(ctx context.Context, in *npool.ExistEmailTemplateRequest) (*npool.ExistEmailTemplateResponse, error) {
 	handler, err := emailtemplate1.NewHandler(
 		ctx,
-		emailtemplate1.WithID(&in.ID),
+		emailtemplate1.WithEntID(&in.EntID, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

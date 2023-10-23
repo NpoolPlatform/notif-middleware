@@ -21,7 +21,7 @@ func (s *Server) GetEmailTemplate(
 ) {
 	handler, err := emailtemplate1.NewHandler(
 		ctx,
-		emailtemplate1.WithID(&in.ID),
+		emailtemplate1.WithEntID(&in.EntID, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

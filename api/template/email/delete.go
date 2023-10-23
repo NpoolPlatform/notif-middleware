@@ -21,7 +21,7 @@ func (s *Server) DeleteEmailTemplate(
 	req := in.GetInfo()
 	handler, err := emailtemplate1.NewHandler(
 		ctx,
-		emailtemplate1.WithID(req.ID),
+		emailtemplate1.WithID(req.ID, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

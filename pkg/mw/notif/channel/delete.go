@@ -24,7 +24,6 @@ func (h *Handler) DeleteChannel(ctx context.Context) (*npool.Channel, error) {
 		if _, err := crud.UpdateSet(
 			cli.NotifChannel.UpdateOneID(*h.ID),
 			&crud.Req{
-				ID:        h.ID,
 				DeletedAt: &now,
 			},
 		).Save(ctx); err != nil {

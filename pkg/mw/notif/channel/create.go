@@ -30,7 +30,7 @@ func (h *Handler) CreateChannel(ctx context.Context) (info *npool.Channel, err e
 		info, err := crud.CreateSet(
 			cli.NotifChannel.Create(),
 			&crud.Req{
-				ID:        h.ID,
+				EntID:     h.EntID,
 				AppID:     h.AppID,
 				Channel:   h.Channel,
 				EventType: h.EventType,

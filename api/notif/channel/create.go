@@ -19,9 +19,9 @@ func (s *Server) CreateChannel(ctx context.Context, in *npool.CreateChannelReque
 	}
 	handler, err := channel1.NewHandler(
 		ctx,
-		channel1.WithAppID(req.AppID),
-		channel1.WithEventType(req.EventType),
-		channel1.WithChannel(req.Channel),
+		channel1.WithAppID(req.AppID, true),
+		channel1.WithEventType(req.EventType, true),
+		channel1.WithChannel(req.Channel, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

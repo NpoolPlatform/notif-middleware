@@ -47,7 +47,7 @@ func (s *Server) GetChannels(ctx context.Context, in *npool.GetChannelsRequest) 
 func (s *Server) GetChannel(ctx context.Context, in *npool.GetChannelRequest) (*npool.GetChannelResponse, error) {
 	handler, err := channel1.NewHandler(
 		ctx,
-		channel1.WithID(&in.ID),
+		channel1.WithEntID(&in.EntID, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

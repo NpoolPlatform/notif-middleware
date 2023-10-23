@@ -39,9 +39,9 @@ var (
 func createChannel(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
-		WithAppID(&ret.AppID),
-		WithEventType(&ret.EventType),
-		WithChannel(&ret.Channel),
+		WithAppID(&ret.AppID, true),
+		WithEventType(&ret.EventType, true),
+		WithChannel(&ret.Channel, true),
 	)
 	assert.Nil(t, err)
 
@@ -50,6 +50,7 @@ func createChannel(t *testing.T) {
 		ret.CreatedAt = info.CreatedAt
 		ret.UpdatedAt = info.UpdatedAt
 		ret.ID = info.ID
+		ret.EntID = info.EntID
 		assert.Equal(t, info, &ret)
 	}
 }
@@ -57,7 +58,7 @@ func createChannel(t *testing.T) {
 func getChannel(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
-		WithID(&ret.ID),
+		WithEntID(&ret.EntID, true),
 	)
 	assert.Nil(t, err)
 
@@ -91,7 +92,7 @@ func getChannels(t *testing.T) {
 func deleteChannel(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
-		WithID(&ret.ID),
+		WithID(&ret.ID, true),
 	)
 	assert.Nil(t, err)
 

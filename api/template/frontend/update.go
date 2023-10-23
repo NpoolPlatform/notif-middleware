@@ -22,11 +22,11 @@ func (s *Server) UpdateFrontendTemplate(
 	req := in.GetInfo()
 	handler, err := frontendtemplate1.NewHandler(
 		ctx,
-		frontendtemplate1.WithID(req.ID),
-		frontendtemplate1.WithAppID(req.AppID),
-		frontendtemplate1.WithUsedFor(req.UsedFor),
-		frontendtemplate1.WithTitle(req.Title),
-		frontendtemplate1.WithContent(req.Content),
+		frontendtemplate1.WithID(req.ID, true),
+		frontendtemplate1.WithAppID(req.AppID, false),
+		frontendtemplate1.WithUsedFor(req.UsedFor, false),
+		frontendtemplate1.WithTitle(req.Title, false),
+		frontendtemplate1.WithContent(req.Content, false),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

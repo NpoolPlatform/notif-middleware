@@ -22,12 +22,12 @@ func (s *Server) CreateFrontendTemplate(
 	req := in.GetInfo()
 	handler, err := frontendtemplate1.NewHandler(
 		ctx,
-		frontendtemplate1.WithID(req.ID),
-		frontendtemplate1.WithAppID(req.AppID),
-		frontendtemplate1.WithLangID(req.LangID),
-		frontendtemplate1.WithUsedFor(req.UsedFor),
-		frontendtemplate1.WithTitle(req.Title),
-		frontendtemplate1.WithContent(req.Content),
+		frontendtemplate1.WithEntID(req.EntID, false),
+		frontendtemplate1.WithAppID(req.AppID, true),
+		frontendtemplate1.WithLangID(req.LangID, true),
+		frontendtemplate1.WithUsedFor(req.UsedFor, true),
+		frontendtemplate1.WithTitle(req.Title, false),
+		frontendtemplate1.WithContent(req.Content, false),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
@@ -60,7 +60,7 @@ func (s *Server) CreateFrontendTemplates(
 ) {
 	handler, err := frontendtemplate1.NewHandler(
 		ctx,
-		frontendtemplate1.WithReqs(in.GetInfos()),
+		frontendtemplate1.WithReqs(in.GetInfos(), true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

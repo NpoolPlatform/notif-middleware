@@ -15,7 +15,8 @@ import (
 )
 
 type Handler struct {
-	ID      *uuid.UUID
+	ID      *uint32
+	EntID   *uuid.UUID
 	AppID   *uuid.UUID
 	LangID  *uuid.UUID
 	UsedFor *basetypes.UsedFor
@@ -39,51 +40,77 @@ func NewHandler(ctx context.Context, options ...func(context.Context, *Handler) 
 	return handler, nil
 }
 
-func WithID(id *string) func(context.Context, *Handler) error {
+func WithID(u *uint32, must bool) func(context.Context, *Handler) error {
+	return func(ctx context.Context, h *Handler) error {
+		if u == nil {
+			if must {
+				return fmt.Errorf("invalid id")
+			}
+			return nil
+		}
+		h.ID = u
+		return nil
+	}
+}
+
+func WithEntID(id *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if id == nil {
+			if must {
+				return fmt.Errorf("invalid entid")
+			}
 			return nil
 		}
 		_id, err := uuid.Parse(*id)
 		if err != nil {
 			return err
 		}
-		h.ID = &_id
+		h.EntID = &_id
 		return nil
 	}
 }
 
-func WithAppID(appid *string) func(context.Context, *Handler) error {
+func WithAppID(id *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		if appid == nil {
+		if id == nil {
+			if must {
+				return fmt.Errorf("invalid appid")
+			}
 			return nil
 		}
-		_appid, err := uuid.Parse(*appid)
+		_id, err := uuid.Parse(*id)
 		if err != nil {
 			return err
 		}
-		h.AppID = &_appid
+		h.AppID = &_id
 		return nil
 	}
 }
 
-func WithLangID(langid *string) func(context.Context, *Handler) error {
+func WithLangID(id *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		if langid == nil {
+		if id == nil {
+			if must {
+				return fmt.Errorf("invalid langid")
+			}
 			return nil
 		}
-		_langid, err := uuid.Parse(*langid)
+		_id, err := uuid.Parse(*id)
 		if err != nil {
 			return err
 		}
-		h.LangID = &_langid
+		h.LangID = &_id
 		return nil
 	}
 }
 
-func WithUsedFor(_usedFor *basetypes.UsedFor) func(context.Context, *Handler) error {
+//nolint:gocyclo
+func WithUsedFor(_usedFor *basetypes.UsedFor, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if _usedFor == nil {
+			if must {
+				return fmt.Errorf("invalid usedfor")
+			}
 			return nil
 		}
 		switch *_usedFor {
@@ -108,9 +135,12 @@ func WithUsedFor(_usedFor *basetypes.UsedFor) func(context.Context, *Handler) er
 	}
 }
 
-func WithTitle(title *string) func(context.Context, *Handler) error {
+func WithTitle(title *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if title == nil {
+			if must {
+				return fmt.Errorf("invalid title")
+			}
 			return nil
 		}
 		if *title == "" {
@@ -121,9 +151,12 @@ func WithTitle(title *string) func(context.Context, *Handler) error {
 	}
 }
 
-func WithContent(content *string) func(context.Context, *Handler) error {
+func WithContent(content *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if content == nil {
+			if must {
+				return fmt.Errorf("invalid content")
+			}
 			return nil
 		}
 		if *content == "" {
@@ -134,39 +167,59 @@ func WithContent(content *string) func(context.Context, *Handler) error {
 	}
 }
 
-func WithUserID(userid *string) func(context.Context, *Handler) error {
+func WithUserID(id *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		if userid == nil {
+		if id == nil {
+			if must {
+				return fmt.Errorf("invalid userid")
+			}
 			return nil
 		}
-		_userid, err := uuid.Parse(*userid)
+		_id, err := uuid.Parse(*id)
 		if err != nil {
 			return err
 		}
-		h.UserID = &_userid
+		h.UserID = &_id
 		return nil
 	}
 }
 
-func WithVars(vars *templatemwpb.TemplateVars) func(context.Context, *Handler) error {
+func WithVars(vars *templatemwpb.TemplateVars, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
+		if vars == nil {
+			if must {
+				return fmt.Errorf("invalid vars")
+			}
+			return nil
+		}
 		h.Vars = vars
 		return nil
 	}
 }
 
 // nolint:gocyclo
-func WithReqs(reqs []*npool.FrontendTemplateReq) func(context.Context, *Handler) error {
+func WithReqs(reqs []*npool.FrontendTemplateReq, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		_reqs := []*frontendtemplatecrud.Req{}
 		for _, req := range reqs {
+			if must {
+				if req.AppID == nil {
+					return fmt.Errorf("invalid appid")
+				}
+				if req.LangID == nil {
+					return fmt.Errorf("invalid langid")
+				}
+				if req.UsedFor == nil {
+					return fmt.Errorf("invalid usedfor")
+				}
+			}
 			_req := &frontendtemplatecrud.Req{}
-			if req.ID != nil {
-				id, err := uuid.Parse(req.GetID())
+			if req.EntID != nil {
+				id, err := uuid.Parse(req.GetEntID())
 				if err != nil {
 					return err
 				}
-				_req.ID = &id
+				_req.EntID = &id
 			}
 			if req.AppID != nil {
 				id, err := uuid.Parse(req.GetAppID())
@@ -220,13 +273,17 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		h.Conds = &frontendtemplatecrud.Conds{}
 		if conds.ID != nil {
-			id, err := uuid.Parse(conds.GetID().GetValue())
+			h.Conds.ID = &cruder.Cond{
+				Op: conds.GetID().GetOp(), Val: conds.GetID().GetValue(),
+			}
+		}
+		if conds.EntID != nil {
+			id, err := uuid.Parse(conds.GetEntID().GetValue())
 			if err != nil {
 				return err
 			}
-			h.Conds.ID = &cruder.Cond{
-				Op:  conds.GetID().GetOp(),
-				Val: id,
+			h.Conds.EntID = &cruder.Cond{
+				Op: conds.GetEntID().GetOp(), Val: id,
 			}
 		}
 		if conds.AppID != nil {

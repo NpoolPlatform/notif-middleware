@@ -21,7 +21,7 @@ func (s *Server) DeleteFrontendTemplate(
 	req := in.GetInfo()
 	handler, err := frontendtemplate1.NewHandler(
 		ctx,
-		frontendtemplate1.WithID(req.ID),
+		frontendtemplate1.WithID(req.ID, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

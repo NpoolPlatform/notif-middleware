@@ -24,6 +24,7 @@ type queryHandler struct {
 func (h *queryHandler) selectFrontendTemplate(stm *ent.FrontendTemplateQuery) {
 	h.stm = stm.Select(
 		entfrontendtemplate.FieldID,
+		entfrontendtemplate.FieldEntID,
 		entfrontendtemplate.FieldAppID,
 		entfrontendtemplate.FieldLangID,
 		entfrontendtemplate.FieldUsedFor,
@@ -35,18 +36,17 @@ func (h *queryHandler) selectFrontendTemplate(stm *ent.FrontendTemplateQuery) {
 }
 
 func (h *queryHandler) queryFrontendTemplate(cli *ent.Client) error {
-	if h.ID == nil {
-		return fmt.Errorf("invalid frontendtemplateid")
+	if h.ID == nil && h.EntID == nil {
+		return fmt.Errorf("invalid id")
 	}
-
-	h.selectFrontendTemplate(
-		cli.FrontendTemplate.
-			Query().
-			Where(
-				entfrontendtemplate.ID(*h.ID),
-				entfrontendtemplate.DeletedAt(0),
-			),
-	)
+	stm := cli.FrontendTemplate.Query().Where(entfrontendtemplate.DeletedAt(0))
+	if h.ID != nil {
+		stm.Where(entfrontendtemplate.ID(*h.ID))
+	}
+	if h.EntID != nil {
+		stm.Where(entfrontendtemplate.EntID(*h.EntID))
+	}
+	h.selectFrontendTemplate(stm)
 	return nil
 }
 

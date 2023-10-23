@@ -58,14 +58,14 @@ func (h *createHandler) createSMSTemplate(ctx context.Context, tx *ent.Tx, req *
 	}
 
 	id := uuid.New()
-	if req.ID == nil {
-		req.ID = &id
+	if req.EntID == nil {
+		req.EntID = &id
 	}
 
 	info, err := smstemplatecrud.CreateSet(
 		tx.SMSTemplate.Create(),
 		&smstemplatecrud.Req{
-			ID:      req.ID,
+			EntID:   req.EntID,
 			AppID:   req.AppID,
 			LangID:  req.LangID,
 			UsedFor: req.UsedFor,
@@ -78,6 +78,7 @@ func (h *createHandler) createSMSTemplate(ctx context.Context, tx *ent.Tx, req *
 	}
 
 	h.ID = &info.ID
+	h.EntID = &info.EntID
 
 	return nil
 }
@@ -87,7 +88,7 @@ func (h *Handler) CreateSMSTemplate(ctx context.Context) (*npool.SMSTemplate, er
 		Handler: h,
 	}
 	req := &smstemplatecrud.Req{
-		ID:      handler.ID,
+		EntID:   handler.EntID,
 		AppID:   handler.AppID,
 		LangID:  handler.LangID,
 		UsedFor: handler.UsedFor,
@@ -119,7 +120,7 @@ func (h *Handler) CreateSMSTemplates(ctx context.Context) ([]*npool.SMSTemplate,
 			if err := handler.createSMSTemplate(ctx, tx, req); err != nil {
 				return err
 			}
-			ids = append(ids, *h.ID)
+			ids = append(ids, *h.EntID)
 		}
 		return nil
 	})
@@ -128,7 +129,7 @@ func (h *Handler) CreateSMSTemplates(ctx context.Context) ([]*npool.SMSTemplate,
 	}
 
 	h.Conds = &smstemplatecrud.Conds{
-		IDs: &cruder.Cond{Op: cruder.IN, Val: ids},
+		EntIDs: &cruder.Cond{Op: cruder.IN, Val: ids},
 	}
 	h.Offset = 0
 	h.Limit = int32(len(ids))

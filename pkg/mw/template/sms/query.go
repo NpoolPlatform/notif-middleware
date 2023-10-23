@@ -24,6 +24,7 @@ type queryHandler struct {
 func (h *queryHandler) selectSMSTemplate(stm *ent.SMSTemplateQuery) {
 	h.stm = stm.Select(
 		entsmstemplate.FieldID,
+		entsmstemplate.FieldEntID,
 		entsmstemplate.FieldAppID,
 		entsmstemplate.FieldLangID,
 		entsmstemplate.FieldUsedFor,
@@ -35,18 +36,17 @@ func (h *queryHandler) selectSMSTemplate(stm *ent.SMSTemplateQuery) {
 }
 
 func (h *queryHandler) querySMSTemplate(cli *ent.Client) error {
-	if h.ID == nil {
-		return fmt.Errorf("invalid smstemplateid")
+	if h.ID == nil && h.EntID == nil {
+		return fmt.Errorf("invalid id")
 	}
-
-	h.selectSMSTemplate(
-		cli.SMSTemplate.
-			Query().
-			Where(
-				entsmstemplate.ID(*h.ID),
-				entsmstemplate.DeletedAt(0),
-			),
-	)
+	stm := cli.SMSTemplate.Query().Where(entsmstemplate.DeletedAt(0))
+	if h.ID != nil {
+		stm.Where(entsmstemplate.ID(*h.ID))
+	}
+	if h.EntID != nil {
+		stm.Where(entsmstemplate.EntID(*h.EntID))
+	}
+	h.selectSMSTemplate(stm)
 	return nil
 }
 

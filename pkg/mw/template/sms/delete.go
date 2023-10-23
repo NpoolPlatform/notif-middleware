@@ -16,7 +16,6 @@ func (h *Handler) DeleteSMSTemplate(ctx context.Context) (*npool.SMSTemplate, er
 	if h.ID == nil {
 		return nil, fmt.Errorf("invalid id")
 	}
-
 	info, err := h.GetSMSTemplate(ctx)
 	if err != nil {
 		return nil, err
@@ -30,7 +29,6 @@ func (h *Handler) DeleteSMSTemplate(ctx context.Context) (*npool.SMSTemplate, er
 		if _, err := smstemplatecrud.UpdateSet(
 			cli.SMSTemplate.UpdateOneID(*h.ID),
 			&smstemplatecrud.Req{
-				ID:        h.ID,
 				DeletedAt: &now,
 			},
 		).Save(ctx); err != nil {

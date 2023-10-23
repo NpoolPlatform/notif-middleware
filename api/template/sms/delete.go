@@ -15,7 +15,7 @@ func (s *Server) DeleteSMSTemplate(ctx context.Context, in *npool.DeleteSMSTempl
 	req := in.GetInfo()
 	handler, err := smstemplate1.NewHandler(
 		ctx,
-		smstemplate1.WithID(req.ID),
+		smstemplate1.WithID(req.ID, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

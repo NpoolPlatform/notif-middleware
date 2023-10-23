@@ -15,7 +15,7 @@ import (
 func (s *Server) GetSMSTemplate(ctx context.Context, in *npool.GetSMSTemplateRequest) (*npool.GetSMSTemplateResponse, error) {
 	handler, err := smstemplate1.NewHandler(
 		ctx,
-		smstemplate1.WithID(&in.ID),
+		smstemplate1.WithEntID(&in.EntID, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

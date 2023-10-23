@@ -37,7 +37,7 @@ func init() {
 
 var (
 	ret = npool.SMSTemplate{
-		ID:         uuid.NewString(),
+		EntID:      uuid.NewString(),
 		AppID:      uuid.NewString(),
 		LangID:     uuid.NewString(),
 		UsedFor:    basetypes.UsedFor_KYCApproved,
@@ -46,7 +46,7 @@ var (
 		Message:    "Message " + uuid.NewString(),
 	}
 	appInfo = npool.SMSTemplateReq{
-		ID:      &ret.ID,
+		EntID:   &ret.EntID,
 		AppID:   &ret.AppID,
 		LangID:  &ret.LangID,
 		UsedFor: &ret.UsedFor,
@@ -55,7 +55,7 @@ var (
 	}
 	rets = []npool.SMSTemplate{
 		{
-			ID:         uuid.NewString(),
+			EntID:      uuid.NewString(),
 			AppID:      ret.AppID,
 			LangID:     uuid.NewString(),
 			UsedFor:    basetypes.UsedFor_Signin,
@@ -64,7 +64,7 @@ var (
 			Message:    "Message1 " + uuid.NewString(),
 		},
 		{
-			ID:         uuid.NewString(),
+			EntID:      uuid.NewString(),
 			AppID:      ret.AppID,
 			LangID:     uuid.NewString(),
 			UsedFor:    basetypes.UsedFor_KYCRejected,
@@ -83,6 +83,8 @@ func createSMSTemplate(t *testing.T) {
 	if assert.Nil(t, err) {
 		ret.UpdatedAt = info.UpdatedAt
 		ret.CreatedAt = info.CreatedAt
+		ret.ID = info.ID
+		ret.EntID = info.EntID
 		assert.Equal(t, info, &ret)
 	}
 }
@@ -91,7 +93,7 @@ func createSMSTemplates(t *testing.T) {
 	apps := []*npool.SMSTemplateReq{}
 	for key := range rets {
 		apps = append(apps, &npool.SMSTemplateReq{
-			ID:      &rets[key].ID,
+			EntID:   &rets[key].EntID,
 			AppID:   &rets[key].AppID,
 			LangID:  &rets[key].LangID,
 			UsedFor: &rets[key].UsedFor,
@@ -102,13 +104,29 @@ func createSMSTemplates(t *testing.T) {
 
 	infos, err := CreateSMSTemplates(context.Background(), apps)
 	if assert.Nil(t, err) {
+		for key := range infos {
+			for key2 := range rets {
+				if infos[key].EntID == rets[key2].EntID {
+					rets[key2].ID = infos[key].ID
+					rets[key2].CreatedAt = infos[key].CreatedAt
+					rets[key2].UpdatedAt = infos[key].UpdatedAt
+				}
+			}
+		}
 		assert.Equal(t, len(infos), 2)
 	}
 }
 
 func updateSMSTemplate(t *testing.T) {
 	var err error
-	info, err = UpdateSMSTemplate(context.Background(), &appInfo)
+	ret.Subject = uuid.NewString()
+	ret.Message = uuid.NewString()
+	updateInfo := npool.SMSTemplateReq{
+		ID:      &ret.ID,
+		Subject: &ret.Subject,
+		Message: &ret.Message,
+	}
+	info, err = UpdateSMSTemplate(context.Background(), &updateInfo)
 	if assert.Nil(t, err) {
 		ret.UpdatedAt = info.UpdatedAt
 		assert.Equal(t, info, &ret)
@@ -117,7 +135,7 @@ func updateSMSTemplate(t *testing.T) {
 
 func getSMSTemplate(t *testing.T) {
 	var err error
-	info, err = GetSMSTemplate(context.Background(), info.ID)
+	info, err = GetSMSTemplate(context.Background(), info.EntID)
 	if assert.Nil(t, err) {
 		assert.Equal(t, info, &ret)
 	}
@@ -126,8 +144,8 @@ func getSMSTemplate(t *testing.T) {
 func getSMSTemplates(t *testing.T) {
 	infos, total, err := GetSMSTemplates(context.Background(),
 		&npool.Conds{
-			ID: &basetypes.StringVal{
-				Value: info.ID,
+			EntID: &basetypes.StringVal{
+				Value: info.EntID,
 				Op:    cruder.EQ,
 			},
 		}, 0, 1)
@@ -141,8 +159,8 @@ func getSMSTemplateOnly(t *testing.T) {
 	var err error
 	info, err = GetSMSTemplateOnly(context.Background(),
 		&npool.Conds{
-			ID: &basetypes.StringVal{
-				Value: info.ID,
+			EntID: &basetypes.StringVal{
+				Value: info.EntID,
 				Op:    cruder.EQ,
 			},
 		})
@@ -154,7 +172,7 @@ func getSMSTemplateOnly(t *testing.T) {
 }
 
 func existSMSTemplate(t *testing.T) {
-	exist, err := ExistSMSTemplate(context.Background(), info.ID)
+	exist, err := ExistSMSTemplate(context.Background(), info.EntID)
 	if assert.Nil(t, err) {
 		assert.Equal(t, exist, true)
 	}
@@ -163,8 +181,8 @@ func existSMSTemplate(t *testing.T) {
 func existSMSTemplateConds(t *testing.T) {
 	exist, err := ExistSMSTemplateConds(context.Background(),
 		&npool.Conds{
-			ID: &basetypes.StringVal{
-				Value: info.ID,
+			EntID: &basetypes.StringVal{
+				Value: info.EntID,
 				Op:    cruder.EQ,
 			},
 		},
@@ -186,8 +204,6 @@ func deleteSMSTemplate(t *testing.T) {
 			ID: &rets[key].ID,
 		})
 		if assert.Nil(t, err) {
-			rets[key].CreatedAt = info.CreatedAt
-			rets[key].UpdatedAt = info.UpdatedAt
 			assert.Equal(t, info, &rets[key])
 		}
 	}

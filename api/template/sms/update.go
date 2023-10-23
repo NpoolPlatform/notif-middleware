@@ -16,11 +16,11 @@ func (s *Server) UpdateSMSTemplate(ctx context.Context, in *npool.UpdateSMSTempl
 	req := in.GetInfo()
 	handler, err := smstemplate1.NewHandler(
 		ctx,
-		smstemplate1.WithID(req.ID),
-		smstemplate1.WithAppID(req.AppID),
-		smstemplate1.WithUsedFor(req.UsedFor),
-		smstemplate1.WithSubject(req.Subject),
-		smstemplate1.WithMessage(req.Message),
+		smstemplate1.WithID(req.ID, true),
+		smstemplate1.WithAppID(req.AppID, false),
+		smstemplate1.WithUsedFor(req.UsedFor, false),
+		smstemplate1.WithSubject(req.Subject, false),
+		smstemplate1.WithMessage(req.Message, false),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

@@ -22,14 +22,14 @@ func (s *Server) CreateGoodBenefit(
 	req := in.GetInfo()
 	handler, err := goodbenefit1.NewHandler(
 		ctx,
-		goodbenefit1.WithGoodID(req.GoodID),
-		goodbenefit1.WithGoodName(req.GoodName),
-		goodbenefit1.WithAmount(req.Amount),
-		goodbenefit1.WithState(req.State),
-		goodbenefit1.WithMessage(req.Message),
-		goodbenefit1.WithBenefitDate(req.BenefitDate),
-		goodbenefit1.WithTxID(req.TxID),
-		goodbenefit1.WithGenerated(req.Generated),
+		goodbenefit1.WithGoodID(req.GoodID, true),
+		goodbenefit1.WithGoodName(req.GoodName, true),
+		goodbenefit1.WithAmount(req.Amount, false),
+		goodbenefit1.WithState(req.State, true),
+		goodbenefit1.WithMessage(req.Message, false),
+		goodbenefit1.WithBenefitDate(req.BenefitDate, true),
+		goodbenefit1.WithTxID(req.TxID, false),
+		goodbenefit1.WithGenerated(req.Generated, false),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

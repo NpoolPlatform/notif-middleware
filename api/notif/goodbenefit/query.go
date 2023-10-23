@@ -49,7 +49,7 @@ func (s *Server) GetGoodBenefits(ctx context.Context, in *npool.GetGoodBenefitsR
 func (s *Server) GetGoodBenefit(ctx context.Context, in *npool.GetGoodBenefitRequest) (*npool.GetGoodBenefitResponse, error) {
 	handler, err := goodbenefit1.NewHandler(
 		ctx,
-		goodbenefit1.WithID(&in.ID),
+		goodbenefit1.WithEntID(&in.EntID, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

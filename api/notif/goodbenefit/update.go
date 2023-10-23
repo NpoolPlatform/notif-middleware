@@ -22,8 +22,8 @@ func (s *Server) UpdateGoodBenefit(
 	req := in.GetInfo()
 	handler, err := goodbenefit1.NewHandler(
 		ctx,
-		goodbenefit1.WithID(req.ID),
-		goodbenefit1.WithGenerated(req.Generated),
+		goodbenefit1.WithID(req.ID, true),
+		goodbenefit1.WithGenerated(req.Generated, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

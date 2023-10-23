@@ -50,8 +50,8 @@ func (h *Handler) CreateGoodBenefit(ctx context.Context) (*npool.GoodBenefit, er
 	}
 
 	id := uuid.New()
-	if h.ID == nil {
-		h.ID = &id
+	if h.EntID == nil {
+		h.EntID = &id
 	}
 
 	err := db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
@@ -63,7 +63,7 @@ func (h *Handler) CreateGoodBenefit(ctx context.Context) (*npool.GoodBenefit, er
 		if _, err := crud.CreateSet(
 			cli.GoodBenefit.Create(),
 			&crud.Req{
-				ID:          h.ID,
+				EntID:       h.EntID,
 				GoodID:      h.GoodID,
 				GoodName:    h.GoodName,
 				Amount:      amount,

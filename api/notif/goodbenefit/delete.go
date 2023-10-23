@@ -20,7 +20,7 @@ func (s *Server) DeleteGoodBenefit(
 	id := in.GetInfo().GetID()
 	handler, err := goodbenefit1.NewHandler(
 		ctx,
-		goodbenefit1.WithID(&id),
+		goodbenefit1.WithID(&id, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

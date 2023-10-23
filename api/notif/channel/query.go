@@ -67,33 +67,3 @@ func (s *Server) GetChannel(ctx context.Context, in *npool.GetChannelRequest) (*
 		Info: info,
 	}, nil
 }
-
-//nolint
-func (s *Server) GetChannelOnly(ctx context.Context, in *npool.GetChannelOnlyRequest) (*npool.GetChannelOnlyResponse, error) {
-	handler, err := channel1.NewHandler(
-		ctx,
-		channel1.WithConds(in.GetConds()),
-	)
-	if err != nil {
-		logger.Sugar().Errorw(
-			"GetChannelOnly",
-			"In", in,
-			"error", err,
-		)
-		return &npool.GetChannelOnlyResponse{}, status.Error(codes.InvalidArgument, err.Error())
-	}
-
-	info, err := handler.GetChannelOnly(ctx)
-	if err != nil {
-		logger.Sugar().Errorw(
-			"GetChannelOnly",
-			"In", in,
-			"Error", err,
-		)
-		return &npool.GetChannelOnlyResponse{}, status.Error(codes.Internal, err.Error())
-	}
-
-	return &npool.GetChannelOnlyResponse{
-		Info: info,
-	}, nil
-}

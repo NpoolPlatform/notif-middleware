@@ -46,40 +46,6 @@ func (s *Server) GetEmailTemplate(
 	}, nil
 }
 
-func (s *Server) GetEmailTemplateOnly(
-	ctx context.Context,
-	in *npool.GetEmailTemplateOnlyRequest,
-) (
-	*npool.GetEmailTemplateOnlyResponse,
-	error,
-) {
-	handler, err := emailtemplate1.NewHandler(
-		ctx,
-		emailtemplate1.WithConds(in.Conds),
-	)
-	if err != nil {
-		logger.Sugar().Errorw(
-			"GetEmailTemplateOnly",
-			"In", in,
-			"Error", err,
-		)
-		return &npool.GetEmailTemplateOnlyResponse{}, status.Error(codes.Aborted, err.Error())
-	}
-	info, err := handler.GetEmailTemplateOnly(ctx)
-	if err != nil {
-		logger.Sugar().Errorw(
-			"GetEmailTemplateOnly",
-			"In", in,
-			"Error", err,
-		)
-		return &npool.GetEmailTemplateOnlyResponse{}, status.Error(codes.Aborted, err.Error())
-	}
-
-	return &npool.GetEmailTemplateOnlyResponse{
-		Info: info,
-	}, nil
-}
-
 func (s *Server) GetEmailTemplates(
 	ctx context.Context,
 	in *npool.GetEmailTemplatesRequest,

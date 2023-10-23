@@ -40,34 +40,6 @@ func (s *Server) GetSMSTemplate(ctx context.Context, in *npool.GetSMSTemplateReq
 	}, nil
 }
 
-func (s *Server) GetSMSTemplateOnly(ctx context.Context, in *npool.GetSMSTemplateOnlyRequest) (*npool.GetSMSTemplateOnlyResponse, error) {
-	handler, err := smstemplate1.NewHandler(
-		ctx,
-		smstemplate1.WithConds(in.Conds),
-	)
-	if err != nil {
-		logger.Sugar().Errorw(
-			"GetSMSTemplateOnly",
-			"In", in,
-			"Error", err,
-		)
-		return &npool.GetSMSTemplateOnlyResponse{}, status.Error(codes.Aborted, err.Error())
-	}
-	info, err := handler.GetSMSTemplateOnly(ctx)
-	if err != nil {
-		logger.Sugar().Errorw(
-			"GetSMSTemplateOnly",
-			"In", in,
-			"Error", err,
-		)
-		return &npool.GetSMSTemplateOnlyResponse{}, status.Error(codes.Aborted, err.Error())
-	}
-
-	return &npool.GetSMSTemplateOnlyResponse{
-		Info: info,
-	}, nil
-}
-
 func (s *Server) GetSMSTemplates(ctx context.Context, in *npool.GetSMSTemplatesRequest) (*npool.GetSMSTemplatesResponse, error) {
 	handler, err := smstemplate1.NewHandler(
 		ctx,

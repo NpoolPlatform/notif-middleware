@@ -11,8 +11,8 @@ import (
 )
 
 func (h *Handler) ExistAnnouncement(ctx context.Context) (exist bool, err error) {
-	if h.ID == nil {
-		return false, fmt.Errorf("invalid id")
+	if h.EntID == nil {
+		return false, fmt.Errorf("invalid entid")
 	}
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
@@ -20,7 +20,7 @@ func (h *Handler) ExistAnnouncement(ctx context.Context) (exist bool, err error)
 			Announcement.
 			Query().
 			Where(
-				entamt.ID(*h.ID),
+				entamt.EntID(*h.EntID),
 				entamt.DeletedAt(0),
 			).
 			Exist(_ctx)

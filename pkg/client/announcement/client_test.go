@@ -68,6 +68,7 @@ func createAnnouncement(t *testing.T) {
 		ret.CreatedAt = info.CreatedAt
 		ret.UpdatedAt = info.UpdatedAt
 		ret.ID = info.ID
+		ret.EntID = info.EntID
 		assert.Equal(t, info, &ret)
 	}
 }
@@ -94,14 +95,14 @@ func updateAnnouncement(t *testing.T) {
 }
 
 func getAnnouncement(t *testing.T) {
-	info, err := GetAnnouncement(context.Background(), ret.ID)
+	info, err := GetAnnouncement(context.Background(), ret.EntID)
 	assert.Nil(t, err)
 	assert.NotNil(t, info)
 }
 
 func getAnnouncements(t *testing.T) {
 	infos, _, err := GetAnnouncements(context.Background(), &npool.Conds{
-		ID:      &basetypes.StringVal{Op: cruder.EQ, Value: ret.ID},
+		EntID:   &basetypes.StringVal{Op: cruder.EQ, Value: ret.EntID},
 		Channel: &basetypes.Uint32Val{Op: cruder.EQ, Value: uint32(basetypes.NotifChannel_value[ret.Channel.String()])},
 		StartAt: &basetypes.Uint32Val{Op: cruder.LTE, Value: ret.StartAt},
 		EndAt:   &basetypes.Uint32Val{Op: cruder.GTE, Value: ret.StartAt},
@@ -112,7 +113,7 @@ func getAnnouncements(t *testing.T) {
 }
 
 func existAnnouncement(t *testing.T) {
-	exist, err := ExistAnnouncement(context.Background(), ret.ID)
+	exist, err := ExistAnnouncement(context.Background(), ret.EntID)
 	assert.Nil(t, err)
 	assert.True(t, exist)
 }
@@ -122,7 +123,7 @@ func deleteAnnouncement(t *testing.T) {
 	if assert.Nil(t, err) {
 		assert.Equal(t, info, &ret)
 	}
-	info, err = GetAnnouncement(context.Background(), info.ID)
+	info, err = GetAnnouncement(context.Background(), info.EntID)
 	assert.Nil(t, err)
 	assert.Nil(t, info)
 }

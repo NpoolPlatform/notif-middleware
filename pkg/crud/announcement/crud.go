@@ -12,7 +12,7 @@ import (
 )
 
 type Req struct {
-	ID        *uuid.UUID
+	EntID     *uuid.UUID
 	AppID     *uuid.UUID
 	LangID    *uuid.UUID
 	Title     *string
@@ -25,8 +25,8 @@ type Req struct {
 }
 
 func CreateSet(c *ent.AnnouncementCreate, req *Req) *ent.AnnouncementCreate {
-	if req.ID != nil {
-		c.SetID(*req.ID)
+	if req.EntID != nil {
+		c.SetEntID(*req.EntID)
 	}
 	if req.AppID != nil {
 		c.SetAppID(*req.AppID)
@@ -82,6 +82,7 @@ func UpdateSet(u *ent.AnnouncementUpdateOne, req *Req) *ent.AnnouncementUpdateOn
 
 type Conds struct {
 	ID      *cruder.Cond
+	EntID   *cruder.Cond
 	AppID   *cruder.Cond
 	LangID  *cruder.Cond
 	StartAt *cruder.Cond
@@ -95,7 +96,7 @@ func SetQueryConds(q *ent.AnnouncementQuery, conds *Conds) (*ent.AnnouncementQue
 		return q, nil
 	}
 	if conds.ID != nil {
-		id, ok := conds.ID.Val.(uuid.UUID)
+		id, ok := conds.ID.Val.(uint32)
 		if !ok {
 			return nil, fmt.Errorf("invalid announcement id")
 		}
@@ -104,6 +105,18 @@ func SetQueryConds(q *ent.AnnouncementQuery, conds *Conds) (*ent.AnnouncementQue
 			q.Where(entamt.ID(id))
 		default:
 			return nil, fmt.Errorf("invalid announcement op field %s", conds.ID.Op)
+		}
+	}
+	if conds.EntID != nil {
+		id, ok := conds.EntID.Val.(uuid.UUID)
+		if !ok {
+			return nil, fmt.Errorf("invalid announcement entid")
+		}
+		switch conds.EntID.Op {
+		case cruder.EQ:
+			q.Where(entamt.EntID(id))
+		default:
+			return nil, fmt.Errorf("invalid announcement entid op field %s", conds.EntID.Op)
 		}
 	}
 	if conds.AppID != nil {

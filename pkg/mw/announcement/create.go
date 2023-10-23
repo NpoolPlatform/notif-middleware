@@ -16,27 +16,6 @@ type createHandler struct {
 }
 
 func (h *createHandler) validate() error {
-	if h.AppID == nil {
-		return fmt.Errorf("app is empty")
-	}
-	if h.Title == nil {
-		return fmt.Errorf("title is empty")
-	}
-	if h.Content == nil {
-		return fmt.Errorf("content is empty")
-	}
-	if h.Type == nil {
-		return fmt.Errorf("type is empty")
-	}
-	if h.Channel == nil {
-		return fmt.Errorf("channel is empty")
-	}
-	if h.StartAt == nil {
-		return fmt.Errorf("start at is empty")
-	}
-	if h.EndAt == nil {
-		return fmt.Errorf("end at is empty")
-	}
 	if *h.StartAt > *h.EndAt {
 		return fmt.Errorf("start at less than end at")
 	}
@@ -53,15 +32,15 @@ func (h *Handler) CreateAnnouncement(ctx context.Context) (info *npool.Announcem
 	}
 
 	id := uuid.New()
-	if h.ID == nil {
-		h.ID = &id
+	if h.EntID == nil {
+		h.EntID = &id
 	}
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
 		_, err := crud.CreateSet(
 			cli.Announcement.Create(),
 			&crud.Req{
-				ID:      h.ID,
+				EntID:   h.EntID,
 				AppID:   h.AppID,
 				Title:   h.Title,
 				Content: h.Content,

@@ -15,12 +15,12 @@ func (s *Server) UpdateAnnouncement(ctx context.Context, in *npool.UpdateAnnounc
 	req := in.GetInfo()
 	handler, err := announcement1.NewHandler(
 		ctx,
-		announcement1.WithID(req.ID),
-		announcement1.WithTitle(req.Title),
-		announcement1.WithContent(req.Content),
-		announcement1.WithAnnouncementType(req.AnnouncementType),
-		announcement1.WithStartAt(req.StartAt),
-		announcement1.WithEndAt(req.EndAt),
+		announcement1.WithID(req.ID, true),
+		announcement1.WithTitle(req.Title, false),
+		announcement1.WithContent(req.Content, false),
+		announcement1.WithAnnouncementType(req.AnnouncementType, false),
+		announcement1.WithStartAt(req.StartAt, false),
+		announcement1.WithEndAt(req.EndAt, false),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

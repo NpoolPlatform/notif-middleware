@@ -223,13 +223,13 @@ func SetQueryConds(q *ent.NotifQuery, conds *Conds) (*ent.NotifQuery, error) {
 		}
 	}
 	if conds.Type != nil {
-		_type, ok := conds.Type.Val.(string)
+		_type, ok := conds.Type.Val.(basetypes.NotifType)
 		if !ok {
 			return nil, fmt.Errorf("invalid type")
 		}
 		switch conds.Type.Op {
 		case cruder.EQ:
-			q.Where(entnotif.Type(_type))
+			q.Where(entnotif.Type(_type.String()))
 		default:
 			return nil, fmt.Errorf("invalid notif field")
 		}

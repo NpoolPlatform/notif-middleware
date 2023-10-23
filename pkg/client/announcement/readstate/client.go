@@ -98,22 +98,6 @@ func GetReadState(ctx context.Context, id string) (*npool.ReadState, error) {
 	return info.(*npool.ReadState), nil
 }
 
-func ExistReadState(ctx context.Context, id string) (bool, error) {
-	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		resp, err := cli.ExistReadState(ctx, &npool.ExistReadStateRequest{
-			EntID: id,
-		})
-		if err != nil {
-			return nil, fmt.Errorf("fail exist readstate: %v", err)
-		}
-		return resp.Info, nil
-	})
-	if err != nil {
-		return false, err
-	}
-	return info.(bool), nil
-}
-
 func ExistReadStateConds(ctx context.Context, conds *npool.Conds) (bool, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.ExistReadStateConds(ctx, &npool.ExistReadStateCondsRequest{

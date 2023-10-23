@@ -141,7 +141,7 @@ func SetQueryConds(q *ent.SendAnnouncementQuery, conds *Conds) (*ent.SendAnnounc
 		case cruder.IN:
 			q.Where(entsendamt.UserIDIn(ids...))
 		default:
-			return nil, fmt.Errorf("invalid user ids op field %s", conds.UserID.Op)
+			return nil, fmt.Errorf("invalid user ids op field %s", conds.UserIDs.Op)
 		}
 	}
 	return q, nil

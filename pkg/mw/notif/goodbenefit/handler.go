@@ -203,6 +203,9 @@ func WithTxID(txID *string, must bool) func(context.Context, *Handler) error {
 func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		h.Conds = &crud.Conds{}
+		if conds == nil {
+			return nil
+		}
 		if conds.ID != nil {
 			h.Conds.ID = &cruder.Cond{Op: conds.GetID().GetOp(), Val: conds.GetID().GetValue()}
 		}

@@ -466,6 +466,9 @@ func WithReqs(reqs []*npool.NotifReq, must bool) func(context.Context, *Handler)
 func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		h.Conds = &notifcrud.Conds{}
+		if conds == nil {
+			return nil
+		}
 		if conds.ID != nil {
 			h.Conds.ID = &cruder.Cond{Op: conds.GetID().GetOp(), Val: conds.GetID().GetValue()}
 		}
@@ -511,7 +514,8 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			default:
 				return fmt.Errorf("invalid Type")
 			}
-			h.Conds.Type = &cruder.Cond{Op: conds.GetNotifType().GetOp(), Val: conds.GetNotifType().GetValue()}
+			_type := conds.GetNotifType().GetValue()
+			h.Conds.Type = &cruder.Cond{Op: conds.GetNotifType().GetOp(), Val: basetypes.NotifType(_type)}
 		}
 		if conds.EventType != nil {
 			switch conds.GetEventType().GetValue() {
@@ -575,6 +579,9 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 		}
 		if conds.Extra != nil {
 			h.Conds.Extra = &cruder.Cond{Op: conds.GetExtra().GetOp(), Val: conds.GetExtra().GetValue()}
+		}
+		if conds.UseTemplate != nil {
+			h.Conds.UseTemplate = &cruder.Cond{Op: conds.GetUseTemplate().GetOp(), Val: conds.GetUseTemplate().GetValue()}
 		}
 		return nil
 	}

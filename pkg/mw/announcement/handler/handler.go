@@ -10,7 +10,8 @@ import (
 )
 
 type Handler struct {
-	ID             *uuid.UUID
+	ID             *uint32
+	EntID          *uuid.UUID
 	AppID          *uuid.UUID
 	UserID         *uuid.UUID
 	AnnouncementID *uuid.UUID
@@ -32,56 +33,87 @@ func NewHandler(ctx context.Context, options ...interface{}) (*Handler, error) {
 	return handler, nil
 }
 
-func WithID(id *string) func(context.Context, *Handler) error {
+func WithID(u *uint32, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
+		if u == nil {
+			if must {
+				return fmt.Errorf("invalid id")
+			}
+			return nil
+		}
+		h.ID = u
+		return nil
+	}
+}
+
+func WithEntID(id *string, must bool) func(context.Context, *Handler) error {
+	return func(ctx context.Context, h *Handler) error {
+		if id == nil {
+			if must {
+				return fmt.Errorf("invalid entid")
+			}
+			return nil
+		}
 		_id, err := uuid.Parse(*id)
 		if err != nil {
 			return err
 		}
-		h.ID = &_id
+		h.EntID = &_id
 		return nil
 	}
 }
 
-func WithAppID(appID *string) func(context.Context, *Handler) error {
+func WithAppID(id *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		if appID == nil {
-			return fmt.Errorf("invalid app id")
+		if id == nil {
+			if must {
+				return fmt.Errorf("invalid appid")
+			}
+			return nil
 		}
-		_appID, err := uuid.Parse(*appID)
+		_id, err := uuid.Parse(*id)
 		if err != nil {
 			return err
 		}
 
-		h.AppID = &_appID
+		h.AppID = &_id
 		return nil
 	}
 }
 
-func WithUserID(userID *string) func(context.Context, *Handler) error {
+func WithUserID(id *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		if userID == nil {
-			return fmt.Errorf("invalid user id")
+		if id == nil {
+			if must {
+				return fmt.Errorf("invalid userid")
+			}
+			return nil
 		}
-		_userID, err := uuid.Parse(*userID)
+		_id, err := uuid.Parse(*id)
 		if err != nil {
 			return err
 		}
 
-		h.UserID = &_userID
+		h.UserID = &_id
 		return nil
 	}
 }
 
-func WithAnnouncementID(appID, amtID *string) func(context.Context, *Handler) error {
+func WithAnnouncementID(appID, amtID *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
+		if amtID == nil {
+			if must {
+				return fmt.Errorf("invalid announcementid")
+			}
+			return nil
+		}
 		_amtID, err := uuid.Parse(*amtID)
 		if err != nil {
 			return err
 		}
 
 		handler, err := announcement1.NewHandler(ctx,
-			announcement1.WithID(amtID),
+			announcement1.WithEntID(amtID, true),
 		)
 		if err != nil {
 			return err

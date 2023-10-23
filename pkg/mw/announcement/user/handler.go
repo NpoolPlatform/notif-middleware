@@ -46,12 +46,17 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			return nil
 		}
 		if conds.ID != nil {
-			id, err := uuid.Parse(conds.GetID().GetValue())
+			h.Conds.ID = &cruder.Cond{
+				Op: conds.GetID().GetOp(), Val: conds.GetID().GetValue(),
+			}
+		}
+		if conds.EntID != nil {
+			id, err := uuid.Parse(conds.GetEntID().GetValue())
 			if err != nil {
 				return err
 			}
-			h.Conds.ID = &cruder.Cond{
-				Op: conds.GetID().GetOp(), Val: id,
+			h.Conds.EntID = &cruder.Cond{
+				Op: conds.GetEntID().GetOp(), Val: id,
 			}
 		}
 		if conds.AppID != nil {
@@ -85,10 +90,21 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 	}
 }
 
-func WithReqs(reqs []*npool.AnnouncementUserReq) func(context.Context, *Handler) error {
+func WithReqs(reqs []*npool.AnnouncementUserReq, must bool) func(context.Context, *Handler) error {
 	return func(_ctx context.Context, h *Handler) error {
 		_reqs := []*crud.Req{}
 		for _, req := range _reqs {
+			if must {
+				if req.AppID == nil {
+					return fmt.Errorf("invalid appid")
+				}
+				if req.UserID == nil {
+					return fmt.Errorf("invalid userid")
+				}
+				if req.AnnouncementID == nil {
+					return fmt.Errorf("invalid announcementid")
+				}
+			}
 			if req.AppID == nil || req.UserID == nil || req.AnnouncementID == nil {
 				continue
 			}
@@ -114,7 +130,7 @@ func WithReqs(reqs []*npool.AnnouncementUserReq) func(context.Context, *Handler)
 				return err
 			}
 			_amtID := req.AnnouncementID.String()
-			amtHandler, err := announcement1.NewHandler(_ctx, announcement1.WithID(&_amtID))
+			amtHandler, err := announcement1.NewHandler(_ctx, announcement1.WithEntID(&_amtID, true))
 			if err != nil {
 				return err
 			}

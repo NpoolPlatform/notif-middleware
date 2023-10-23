@@ -68,14 +68,14 @@ var (
 func setupAnnouncementUser(t *testing.T) func(*testing.T) {
 	handler, err := announcement1.NewHandler(
 		context.Background(),
-		announcement1.WithTitle(&announcement.Title),
-		announcement1.WithContent(&announcement.Content),
-		announcement1.WithAppID(&announcement.AppID),
-		announcement1.WithLangID(&announcement.LangID),
-		announcement1.WithChannel(&announcement.Channel),
-		announcement1.WithAnnouncementType(&announcement.AnnouncementType),
-		announcement1.WithStartAt(&announcement.StartAt),
-		announcement1.WithEndAt(&announcement.EndAt),
+		announcement1.WithTitle(&announcement.Title, true),
+		announcement1.WithContent(&announcement.Content, true),
+		announcement1.WithAppID(&announcement.AppID, true),
+		announcement1.WithLangID(&announcement.LangID, true),
+		announcement1.WithChannel(&announcement.Channel, true),
+		announcement1.WithAnnouncementType(&announcement.AnnouncementType, true),
+		announcement1.WithStartAt(&announcement.StartAt, true),
+		announcement1.WithEndAt(&announcement.EndAt, true),
 	)
 	assert.Nil(t, err)
 
@@ -83,11 +83,9 @@ func setupAnnouncementUser(t *testing.T) func(*testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, _announcement)
 
-	ret.AnnouncementID = _announcement.ID
+	ret.AnnouncementID = _announcement.EntID
 
-	_id, err := uuid.Parse(_announcement.ID)
-	assert.Nil(t, err)
-	handler.ID = &_id
+	handler.ID = &_announcement.ID
 
 	return func(*testing.T) {
 		_, _ = handler.DeleteAnnouncement(context.Background())
@@ -104,21 +102,22 @@ func createAnnouncementUser(t *testing.T) {
 		ret.CreatedAt = info.CreatedAt
 		ret.UpdatedAt = info.UpdatedAt
 		ret.ID = info.ID
+		ret.EntID = info.EntID
 		assert.Equal(t, info, &ret)
 	}
 }
 
 func getAnnouncementUser(t *testing.T) {
-	info, err := GetAnnouncementUser(context.Background(), ret.AppID, ret.ID)
+	info, err := GetAnnouncementUser(context.Background(), ret.AppID, ret.EntID)
 	assert.Nil(t, err)
 	assert.NotNil(t, info)
 }
 
 func getAnnouncementUsers(t *testing.T) {
 	infos, _, err := GetAnnouncementUsers(context.Background(), &npool.Conds{
-		ID: &basetypes.StringVal{
+		EntID: &basetypes.StringVal{
 			Op:    cruder.EQ,
-			Value: ret.ID,
+			Value: ret.EntID,
 		},
 	}, 0, 1)
 	if assert.Nil(t, err) {
@@ -131,7 +130,7 @@ func deleteAnnouncementUser(t *testing.T) {
 	if assert.Nil(t, err) {
 		assert.Equal(t, info, &ret)
 	}
-	info, err = GetAnnouncementUser(context.Background(), info.AppID, info.ID)
+	info, err = GetAnnouncementUser(context.Background(), info.AppID, info.EntID)
 	assert.Nil(t, err)
 	assert.Nil(t, info)
 }

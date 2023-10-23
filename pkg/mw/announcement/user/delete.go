@@ -24,7 +24,6 @@ func (h *Handler) DeleteAnnouncementUser(ctx context.Context) (*npool.Announceme
 		if _, err := crud.UpdateSet(
 			cli.UserAnnouncement.UpdateOneID(*h.ID),
 			&crud.Req{
-				ID:        h.ID,
 				DeletedAt: &now,
 			},
 		).Save(ctx); err != nil {

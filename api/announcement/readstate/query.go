@@ -47,7 +47,7 @@ func (s *Server) GetReadStates(ctx context.Context, in *npool.GetReadStatesReque
 func (s *Server) GetReadState(ctx context.Context, in *npool.GetReadStateRequest) (*npool.GetReadStateResponse, error) {
 	handler, err := amtread1.NewHandler(
 		ctx,
-		handler1.WithID(&in.ID),
+		handler1.WithEntID(&in.EntID, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

@@ -44,15 +44,15 @@ func (h *Handler) CreateReadState(ctx context.Context) (info *npool.ReadState, e
 	}
 
 	id := uuid.New()
-	if h.ID == nil {
-		h.ID = &id
+	if h.EntID == nil {
+		h.EntID = &id
 	}
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
 		_, err := crud.CreateSet(
 			cli.ReadAnnouncement.Create(),
 			&crud.Req{
-				ID:             h.ID,
+				EntID:          h.EntID,
 				AppID:          h.AppID,
 				UserID:         h.UserID,
 				AnnouncementID: h.AnnouncementID,

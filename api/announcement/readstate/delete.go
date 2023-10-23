@@ -15,7 +15,7 @@ func (s *Server) DeleteReadState(ctx context.Context, in *npool.DeleteReadStateR
 	id := in.GetInfo().GetID()
 	handler, err := amtread1.NewHandler(
 		ctx,
-		handler1.WithID(&id),
+		handler1.WithID(&id, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

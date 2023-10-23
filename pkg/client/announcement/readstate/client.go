@@ -44,7 +44,7 @@ func CreateReadState(ctx context.Context, in *npool.ReadStateReq) (*npool.ReadSt
 	return info.(*npool.ReadState), nil
 }
 
-func DeleteReadState(ctx context.Context, id string) (*npool.ReadState, error) {
+func DeleteReadState(ctx context.Context, id uint32) (*npool.ReadState, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.DeleteReadState(ctx, &npool.DeleteReadStateRequest{
 			Info: &npool.ReadStateReq{
@@ -85,7 +85,7 @@ func GetReadStates(ctx context.Context, conds *npool.Conds, offset, limit int32)
 func GetReadState(ctx context.Context, id string) (*npool.ReadState, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.GetReadState(ctx, &npool.GetReadStateRequest{
-			ID: id,
+			EntID: id,
 		})
 		if err != nil {
 			return nil, err
@@ -101,7 +101,7 @@ func GetReadState(ctx context.Context, id string) (*npool.ReadState, error) {
 func ExistReadState(ctx context.Context, id string) (bool, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.ExistReadState(ctx, &npool.ExistReadStateRequest{
-			ID: id,
+			EntID: id,
 		})
 		if err != nil {
 			return nil, fmt.Errorf("fail exist readstate: %v", err)

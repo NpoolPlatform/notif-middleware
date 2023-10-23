@@ -12,7 +12,7 @@ import (
 )
 
 type Req struct {
-	ID          *uuid.UUID
+	EntID       *uuid.UUID
 	AppID       *uuid.UUID
 	UsedFor     *basetypes.UsedFor
 	Account     *string
@@ -22,8 +22,8 @@ type Req struct {
 }
 
 func CreateSet(c *ent.ContactCreate, in *Req) *ent.ContactCreate {
-	if in.ID != nil {
-		c.SetID(*in.ID)
+	if in.EntID != nil {
+		c.SetEntID(*in.EntID)
 	}
 	if in.AppID != nil {
 		c.SetAppID(*in.AppID)
@@ -61,6 +61,7 @@ func UpdateSet(u *ent.ContactUpdateOne, req *Req) *ent.ContactUpdateOne {
 
 type Conds struct {
 	ID          *cruder.Cond
+	EntID       *cruder.Cond
 	AppID       *cruder.Cond
 	AccountType *cruder.Cond
 	UsedFor     *cruder.Cond
@@ -73,7 +74,7 @@ func SetQueryConds(q *ent.ContactQuery, conds *Conds) (*ent.ContactQuery, error)
 	}
 
 	if conds.ID != nil {
-		id, ok := conds.ID.Val.(uuid.UUID)
+		id, ok := conds.ID.Val.(uint32)
 		if !ok {
 			return nil, fmt.Errorf("invalid contact id")
 		}
@@ -83,6 +84,19 @@ func SetQueryConds(q *ent.ContactQuery, conds *Conds) (*ent.ContactQuery, error)
 			q.Where(contact.ID(id))
 		default:
 			return nil, fmt.Errorf("invalid contact field")
+		}
+	}
+	if conds.EntID != nil {
+		id, ok := conds.EntID.Val.(uuid.UUID)
+		if !ok {
+			return nil, fmt.Errorf("invalid contact entid")
+		}
+
+		switch conds.EntID.Op {
+		case cruder.EQ:
+			q.Where(contact.EntID(id))
+		default:
+			return nil, fmt.Errorf("invalid contact entid op field")
 		}
 	}
 

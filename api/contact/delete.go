@@ -14,7 +14,7 @@ func (s *Server) DeleteContact(ctx context.Context, in *npool.DeleteContactReque
 	id := in.GetInfo().GetID()
 	handler, err := contact1.NewHandler(
 		ctx,
-		contact1.WithID(&id),
+		contact1.WithID(&id, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

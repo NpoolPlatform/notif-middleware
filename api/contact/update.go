@@ -15,10 +15,10 @@ func (s *Server) UpdateContact(ctx context.Context, in *npool.UpdateContactReque
 	req := in.GetInfo()
 	handler, err := contact1.NewHandler(
 		ctx,
-		contact1.WithID(req.ID),
-		contact1.WithSender(req.Sender),
-		contact1.WithAccount(req.Account),
-		contact1.WithAccountType(req.AccountType),
+		contact1.WithID(req.ID, true),
+		contact1.WithSender(req.Sender, false),
+		contact1.WithAccount(req.Account, false),
+		contact1.WithAccountType(req.AccountType, false),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

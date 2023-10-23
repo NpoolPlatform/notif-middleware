@@ -13,7 +13,8 @@ import (
 )
 
 type Handler struct {
-	ID          *uuid.UUID
+	ID          *uint32
+	EntID       *uuid.UUID
 	AppID       *uuid.UUID
 	UsedFor     *basetypes.UsedFor
 	AccountType *basetypes.SignMethod
@@ -38,35 +39,60 @@ func NewHandler(ctx context.Context, options ...interface{}) (*Handler, error) {
 	return handler, nil
 }
 
-func WithID(id *string) func(context.Context, *Handler) error {
+func WithID(u *uint32, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
+		if u == nil {
+			if must {
+				return fmt.Errorf("invalid id")
+			}
+			return nil
+		}
+		h.ID = u
+		return nil
+	}
+}
+
+func WithEntID(id *string, must bool) func(context.Context, *Handler) error {
+	return func(ctx context.Context, h *Handler) error {
+		if id == nil {
+			if must {
+				return fmt.Errorf("invalid entid")
+			}
+			return nil
+		}
 		_id, err := uuid.Parse(*id)
 		if err != nil {
 			return err
 		}
-		h.ID = &_id
+		h.EntID = &_id
 		return nil
 	}
 }
 
-func WithAppID(appID *string) func(context.Context, *Handler) error {
+func WithAppID(id *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		if appID == nil {
-			return fmt.Errorf("app id is empty")
+		if id == nil {
+			if must {
+				return fmt.Errorf("invalid appid")
+			}
+			return nil
 		}
-		_appID, err := uuid.Parse(*appID)
+		_id, err := uuid.Parse(*id)
 		if err != nil {
 			return err
 		}
 
-		h.AppID = &_appID
+		h.AppID = &_id
 		return nil
 	}
 }
 
-func WithAccount(account *string) func(context.Context, *Handler) error {
+func WithAccount(account *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if account == nil {
+			if must {
+				return fmt.Errorf("invalid account")
+			}
 			return nil
 		}
 		if *account == "" {
@@ -77,9 +103,12 @@ func WithAccount(account *string) func(context.Context, *Handler) error {
 	}
 }
 
-func WithSender(sender *string) func(context.Context, *Handler) error {
+func WithSender(sender *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if sender == nil {
+			if must {
+				return fmt.Errorf("invalid sender")
+			}
 			return nil
 		}
 		if *sender == "" {
@@ -90,8 +119,14 @@ func WithSender(sender *string) func(context.Context, *Handler) error {
 	}
 }
 
-func WithUsedFor(usedFor *basetypes.UsedFor) func(context.Context, *Handler) error {
+func WithUsedFor(usedFor *basetypes.UsedFor, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
+		if usedFor == nil {
+			if must {
+				return fmt.Errorf("invalid usedfor")
+			}
+			return nil
+		}
 		switch *usedFor {
 		case basetypes.UsedFor_Contact:
 		default:
@@ -102,9 +137,12 @@ func WithUsedFor(usedFor *basetypes.UsedFor) func(context.Context, *Handler) err
 	}
 }
 
-func WithAccountType(_type *basetypes.SignMethod) func(context.Context, *Handler) error {
+func WithAccountType(_type *basetypes.SignMethod, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if _type == nil {
+			if must {
+				return fmt.Errorf("invalid accounttype")
+			}
 			return nil
 		}
 		switch *_type {
@@ -124,12 +162,18 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			return nil
 		}
 		if conds.ID != nil {
-			id, err := uuid.Parse(conds.GetID().GetValue())
+			h.Conds.ID = &cruder.Cond{
+				Op: conds.GetID().GetOp(), Val: conds.GetID().GetValue(),
+			}
+		}
+		if conds.EntID != nil {
+			id, err := uuid.Parse(conds.GetEntID().GetValue())
 			if err != nil {
 				return err
 			}
-			h.Conds.ID = &cruder.Cond{
-				Op: conds.GetID().GetOp(), Val: id}
+			h.Conds.EntID = &cruder.Cond{
+				Op: conds.GetEntID().GetOp(), Val: id,
+			}
 		}
 		if conds.AppID != nil {
 			id, err := uuid.Parse(conds.GetAppID().GetValue())

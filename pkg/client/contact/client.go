@@ -57,7 +57,7 @@ func CreateContact(ctx context.Context, in *npool.ContactReq) (*npool.Contact, e
 	return info.(*npool.Contact), nil
 }
 
-func DeleteContact(ctx context.Context, id string) (*npool.Contact, error) {
+func DeleteContact(ctx context.Context, id uint32) (*npool.Contact, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.DeleteContact(ctx, &npool.DeleteContactRequest{
 			Info: &npool.ContactReq{
@@ -114,7 +114,7 @@ func GetContacts(ctx context.Context, conds *npool.Conds, offset, limit int32) (
 func GetContact(ctx context.Context, id string) (*npool.Contact, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.GetContact(ctx, &npool.GetContactRequest{
-			ID: id,
+			EntID: id,
 		})
 		if err != nil {
 			return nil, err

@@ -30,7 +30,7 @@ func init() {
 
 var (
 	ret = npool.EmailTemplate{
-		ID:                uuid.NewString(),
+		EntID:             uuid.NewString(),
 		AppID:             uuid.NewString(),
 		LangID:            uuid.NewString(),
 		UsedFor:           basetypes.UsedFor_KYCApproved,
@@ -46,7 +46,7 @@ var (
 	}
 
 	chanret = notifchan.Channel{
-		ID:           uuid.NewString(),
+		EntID:        uuid.NewString(),
 		AppID:        ret.AppID,
 		EventType:    ret.UsedFor,
 		EventTypeStr: ret.UsedForStr,
@@ -75,9 +75,9 @@ var (
 func setupTemplate(t *testing.T) func(*testing.T) {
 	chanHandler, err := notifchanmw.NewHandler(
 		context.Background(),
-		notifchanmw.WithAppID(&chanret.AppID),
-		notifchanmw.WithEventType(&chanret.EventType),
-		notifchanmw.WithChannel(&chanret.Channel),
+		notifchanmw.WithAppID(&chanret.AppID, true),
+		notifchanmw.WithEventType(&chanret.EventType, true),
+		notifchanmw.WithChannel(&chanret.Channel, true),
 	)
 	assert.Nil(t, err)
 	chaninfo, err := chanHandler.CreateChannel(context.Background())
@@ -86,15 +86,15 @@ func setupTemplate(t *testing.T) func(*testing.T) {
 
 	emailtempHandler, err := emailtempmw.NewHandler(
 		context.Background(),
-		emailtempmw.WithID(&ret.ID),
-		emailtempmw.WithAppID(&ret.AppID),
-		emailtempmw.WithLangID(&ret.LangID),
-		emailtempmw.WithUsedFor(&ret.UsedFor),
-		emailtempmw.WithSender(&ret.Sender),
-		emailtempmw.WithReplyTos(&ret.ReplyTos),
-		emailtempmw.WithSubject(&ret.Subject),
-		emailtempmw.WithBody(&ret.Body),
-		emailtempmw.WithDefaultToUsername(&ret.DefaultToUsername),
+		emailtempmw.WithEntID(&ret.EntID, false),
+		emailtempmw.WithAppID(&ret.AppID, true),
+		emailtempmw.WithLangID(&ret.LangID, true),
+		emailtempmw.WithUsedFor(&ret.UsedFor, true),
+		emailtempmw.WithSender(&ret.Sender, false),
+		emailtempmw.WithReplyTos(&ret.ReplyTos, false),
+		emailtempmw.WithSubject(&ret.Subject, false),
+		emailtempmw.WithBody(&ret.Body, false),
+		emailtempmw.WithDefaultToUsername(&ret.DefaultToUsername, false),
 	)
 	assert.Nil(t, err)
 
@@ -111,10 +111,10 @@ func setupTemplate(t *testing.T) func(*testing.T) {
 func generateTemplate(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
-		WithAppID(&ret.AppID),
-		WithUserID(&userID),
-		WithUsedFor(&ret.UsedFor),
-		WithVars(vars),
+		WithAppID(&ret.AppID, true),
+		WithUserID(&userID, true),
+		WithUsedFor(&ret.UsedFor, true),
+		WithVars(vars, true),
 	)
 	assert.Nil(t, err)
 

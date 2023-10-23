@@ -65,10 +65,10 @@ func (h *Handler) GenerateNotifs(
 		case basetypes.NotifChannel_ChannelEmail:
 			emailHandler, err := email.NewHandler(
 				ctx,
-				email.WithAppID(&appID),
-				email.WithUserID(&userID),
-				email.WithUsedFor(h.UsedFor),
-				email.WithVars(h.Vars),
+				email.WithAppID(&appID, true),
+				email.WithUserID(&userID, true),
+				email.WithUsedFor(h.UsedFor, true),
+				email.WithVars(h.Vars, true),
 			)
 			if err != nil {
 				return nil, err
@@ -81,10 +81,10 @@ func (h *Handler) GenerateNotifs(
 		case basetypes.NotifChannel_ChannelSMS:
 			smsHandler, err := sms.NewHandler(
 				ctx,
-				sms.WithAppID(&appID),
-				sms.WithUserID(&userID),
-				sms.WithUsedFor(h.UsedFor),
-				sms.WithVars(h.Vars),
+				sms.WithAppID(&appID, true),
+				sms.WithUserID(&userID, true),
+				sms.WithUsedFor(h.UsedFor, true),
+				sms.WithVars(h.Vars, true),
 			)
 			if err != nil {
 				return nil, err
@@ -97,10 +97,10 @@ func (h *Handler) GenerateNotifs(
 		case basetypes.NotifChannel_ChannelFrontend:
 			frontendHandler, err := frontend.NewHandler(
 				ctx,
-				frontend.WithAppID(&appID),
-				frontend.WithUserID(&userID),
-				frontend.WithUsedFor(h.UsedFor),
-				frontend.WithVars(h.Vars),
+				frontend.WithAppID(&appID, true),
+				frontend.WithUserID(&userID, true),
+				frontend.WithUsedFor(h.UsedFor, true),
+				frontend.WithVars(h.Vars, true),
 			)
 			if err != nil {
 				return nil, err
@@ -137,10 +137,10 @@ func (h *Handler) GenerateText(
 	case basetypes.NotifChannel_ChannelEmail:
 		emailHandler, err := email.NewHandler(
 			ctx,
-			email.WithAppID(&appID),
-			email.WithLangID(&langID),
-			email.WithUsedFor(h.UsedFor),
-			email.WithVars(h.Vars),
+			email.WithAppID(&appID, true),
+			email.WithLangID(&langID, true),
+			email.WithUsedFor(h.UsedFor, true),
+			email.WithVars(h.Vars, true),
 		)
 		if err != nil {
 			return nil, err
@@ -149,10 +149,10 @@ func (h *Handler) GenerateText(
 	case basetypes.NotifChannel_ChannelSMS:
 		smsHandler, err := sms.NewHandler(
 			ctx,
-			sms.WithAppID(&appID),
-			sms.WithLangID(&langID),
-			sms.WithUsedFor(h.UsedFor),
-			sms.WithVars(h.Vars),
+			sms.WithAppID(&appID, true),
+			sms.WithLangID(&langID, true),
+			sms.WithUsedFor(h.UsedFor, true),
+			sms.WithVars(h.Vars, true),
 		)
 		if err != nil {
 			return nil, err
@@ -161,10 +161,10 @@ func (h *Handler) GenerateText(
 	case basetypes.NotifChannel_ChannelFrontend:
 		frontendHandler, err := frontend.NewHandler(
 			ctx,
-			frontend.WithAppID(&appID),
-			frontend.WithLangID(&langID),
-			frontend.WithUsedFor(h.UsedFor),
-			frontend.WithVars(h.Vars),
+			frontend.WithAppID(&appID, true),
+			frontend.WithLangID(&langID, true),
+			frontend.WithUsedFor(h.UsedFor, true),
+			frontend.WithVars(h.Vars, true),
 		)
 		if err != nil {
 			return nil, err

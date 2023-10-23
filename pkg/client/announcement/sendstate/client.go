@@ -62,7 +62,7 @@ func CreateSendStates(ctx context.Context, in []*npool.SendStateReq) ([]*npool.S
 	return info.([]*npool.SendState), nil
 }
 
-func DeleteSendState(ctx context.Context, id string) (*npool.SendState, error) {
+func DeleteSendState(ctx context.Context, id uint32) (*npool.SendState, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.DeleteSendState(ctx, &npool.DeleteSendStateRequest{
 			Info: &npool.SendStateReq{
@@ -103,7 +103,7 @@ func GetSendStates(ctx context.Context, conds *npool.Conds, offset, limit int32)
 func GetSendState(ctx context.Context, id string) (*npool.SendState, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.GetSendState(ctx, &npool.GetSendStateRequest{
-			ID: id,
+			EntID: id,
 		})
 		if err != nil {
 			return nil, err

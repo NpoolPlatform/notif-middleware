@@ -61,24 +61,22 @@ func setupSendState(t *testing.T) func(*testing.T) {
 	// Create Announcement First
 	announcementHandler, err := announcement1.NewHandler(
 		context.Background(),
-		announcement1.WithTitle(&announcement.Title),
-		announcement1.WithContent(&announcement.Content),
-		announcement1.WithAppID(&announcement.AppID),
-		announcement1.WithLangID(&announcement.LangID),
-		announcement1.WithChannel(&announcement.Channel),
-		announcement1.WithAnnouncementType(&announcement.AnnouncementType),
-		announcement1.WithStartAt(&announcement.StartAt),
-		announcement1.WithEndAt(&announcement.EndAt),
+		announcement1.WithTitle(&announcement.Title, true),
+		announcement1.WithContent(&announcement.Content, true),
+		announcement1.WithAppID(&announcement.AppID, true),
+		announcement1.WithLangID(&announcement.LangID, true),
+		announcement1.WithChannel(&announcement.Channel, true),
+		announcement1.WithAnnouncementType(&announcement.AnnouncementType, true),
+		announcement1.WithStartAt(&announcement.StartAt, true),
+		announcement1.WithEndAt(&announcement.EndAt, true),
 	)
 	assert.Nil(t, err)
 
 	announcement, err := announcementHandler.CreateAnnouncement(context.Background())
 	assert.Nil(t, err)
-	ret.AnnouncementID = announcement.ID
+	ret.AnnouncementID = announcement.EntID
 
-	_id, err := uuid.Parse(announcement.ID)
-	assert.Nil(t, err)
-	announcementHandler.ID = &_id
+	announcementHandler.ID = &announcement.ID
 
 	return func(*testing.T) {
 		_, _ = announcementHandler.DeleteAnnouncement(context.Background())
@@ -88,9 +86,9 @@ func setupSendState(t *testing.T) func(*testing.T) {
 func createSendState(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
-		handler1.WithAppID(&ret.AppID),
-		handler1.WithUserID(&ret.UserID),
-		handler1.WithAnnouncementID(&ret.AppID, &ret.AnnouncementID),
+		handler1.WithAppID(&ret.AppID, true),
+		handler1.WithUserID(&ret.UserID, true),
+		handler1.WithAnnouncementID(&ret.AppID, &ret.AnnouncementID, true),
 	)
 	assert.Nil(t, err)
 
@@ -99,6 +97,7 @@ func createSendState(t *testing.T) {
 		ret.CreatedAt = info.CreatedAt
 		ret.UpdatedAt = info.UpdatedAt
 		ret.ID = info.ID
+		ret.EntID = info.EntID
 		assert.Equal(t, info, &ret)
 	}
 }
@@ -113,7 +112,7 @@ func createSendStates(t *testing.T) {
 	}}
 	handler, err := NewHandler(
 		context.Background(),
-		WithReqs(reqs),
+		WithReqs(reqs, true),
 	)
 	assert.Nil(t, err)
 
@@ -123,7 +122,7 @@ func createSendStates(t *testing.T) {
 
 	handler2, err := NewHandler(
 		context.Background(),
-		handler1.WithID(&infos[0].ID),
+		handler1.WithID(&infos[0].ID, true),
 	)
 	assert.Nil(t, err)
 
@@ -134,7 +133,7 @@ func createSendStates(t *testing.T) {
 func getSendState(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
-		handler1.WithID(&ret.ID),
+		handler1.WithEntID(&ret.EntID, true),
 	)
 	assert.Nil(t, err)
 
@@ -169,7 +168,7 @@ func getSendStates(t *testing.T) {
 func deleteSendState(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
-		handler1.WithID(&ret.ID),
+		handler1.WithID(&ret.ID, true),
 	)
 	assert.Nil(t, err)
 

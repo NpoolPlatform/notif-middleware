@@ -31,7 +31,7 @@ func (h *Handler) CreateSendState(ctx context.Context) (info *npool.SendState, e
 
 	// get announcement first to get channel attr
 	amtID := handler.AnnouncementID.String()
-	amtHandler, err := amt.NewHandler(ctx, amt.WithID(&amtID))
+	amtHandler, err := amt.NewHandler(ctx, amt.WithEntID(&amtID, true))
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +62,7 @@ func (h *Handler) CreateSendState(ctx context.Context) (info *npool.SendState, e
 		info, err := crud.CreateSet(
 			cli.SendAnnouncement.Create(),
 			&crud.Req{
-				ID:             h.ID,
+				EntID:          h.EntID,
 				AppID:          h.AppID,
 				UserID:         h.UserID,
 				AnnouncementID: h.AnnouncementID,

@@ -41,8 +41,14 @@ func NewHandler(ctx context.Context, options ...interface{}) (*Handler, error) {
 	return h, nil
 }
 
-func WithChannel(channel *basetypes.NotifChannel) func(context.Context, *Handler) error {
+func WithChannel(channel *basetypes.NotifChannel, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
+		if channel == nil {
+			if must {
+				return fmt.Errorf("invalid channel")
+			}
+			return nil
+		}
 		switch *channel {
 		case basetypes.NotifChannel_ChannelEmail:
 		case basetypes.NotifChannel_ChannelSMS:
@@ -62,13 +68,17 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			return nil
 		}
 		if conds.ID != nil {
-			id, err := uuid.Parse(conds.GetID().GetValue())
+			h.Conds.ID = &cruder.Cond{
+				Op: conds.GetID().GetOp(), Val: conds.GetID().GetValue(),
+			}
+		}
+		if conds.EntID != nil {
+			id, err := uuid.Parse(conds.GetEntID().GetValue())
 			if err != nil {
 				return err
 			}
-			h.Conds.ID = &cruder.Cond{
-				Op:  conds.GetID().GetOp(),
-				Val: id,
+			h.Conds.EntID = &cruder.Cond{
+				Op: conds.GetEntID().GetOp(), Val: id,
 			}
 		}
 		if conds.AppID != nil {
@@ -122,12 +132,23 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 	}
 }
 
-func WithReqs(reqs []*npool.SendStateReq) func(context.Context, *Handler) error {
+func WithReqs(reqs []*npool.SendStateReq, must bool) func(context.Context, *Handler) error {
 	return func(_ctx context.Context, h *Handler) error {
 		if len(reqs) == 0 {
 			return fmt.Errorf("invalid reqs")
 		}
 		for _, req := range reqs {
+			if must {
+				if req.AppID == nil {
+					return fmt.Errorf("invalid appid")
+				}
+				if req.UserID == nil {
+					return fmt.Errorf("invalid userid")
+				}
+				if req.AnnouncementID == nil {
+					return fmt.Errorf("invalid announcementid")
+				}
+			}
 			if req.AppID == nil || req.UserID == nil || req.AnnouncementID == nil {
 				continue
 			}
@@ -152,7 +173,7 @@ func WithReqs(reqs []*npool.SendStateReq) func(context.Context, *Handler) error 
 			if err != nil {
 				return err
 			}
-			amtHandler, err := announcement1.NewHandler(_ctx, announcement1.WithID(req.AnnouncementID))
+			amtHandler, err := announcement1.NewHandler(_ctx, announcement1.WithEntID(req.AnnouncementID, true))
 			if err != nil {
 				return err
 			}

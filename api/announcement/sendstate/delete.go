@@ -15,7 +15,7 @@ func (s *Server) DeleteSendState(ctx context.Context, in *npool.DeleteSendStateR
 	id := in.GetInfo().GetID()
 	handler, err := amtsend1.NewHandler(
 		ctx,
-		handler1.WithID(&id),
+		handler1.WithID(&id, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

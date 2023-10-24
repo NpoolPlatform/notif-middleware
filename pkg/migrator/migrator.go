@@ -58,7 +58,7 @@ func open(hostname string) (conn *sql.DB, err error) {
 		return nil, err
 	}
 
-	logger.Sugar().Infow("open", "hdsn", hdsn)
+	logger.Sugar().Warnw("open", "hdsn", hdsn)
 
 	conn, err = sql.Open("mysql", hdsn)
 	if err != nil {
@@ -91,7 +91,7 @@ func tables(ctx context.Context, dbName string, tx *sql.DB) ([]string, error) {
 		}
 		tables = append(tables, string(table))
 	}
-	logger.Sugar().Infow(
+	logger.Sugar().Warnw(
 		"tables",
 		"Tables", tables,
 	)
@@ -118,7 +118,7 @@ func existIDInt(ctx context.Context, dbName, table string, tx *sql.DB) (bool, bo
 }
 
 func setIDUnsigned(ctx context.Context, dbName, table string, tx *sql.DB) error {
-	logger.Sugar().Infow(
+	logger.Sugar().Warnw(
 		"setIDUnsigned",
 		"db", dbName,
 		"table", table,
@@ -153,7 +153,7 @@ func existEntIDUnique(ctx context.Context, dbName, table string, tx *sql.DB) (bo
 }
 
 func setEmptyEntID(ctx context.Context, dbName, table string, tx *sql.DB) error {
-	logger.Sugar().Infow(
+	logger.Sugar().Warnw(
 		"setEmptyEntID",
 		"db", dbName,
 		"table", table,
@@ -186,7 +186,7 @@ func setEmptyEntID(ctx context.Context, dbName, table string, tx *sql.DB) error 
 }
 
 func setEntIDUnique(ctx context.Context, dbName, table string, tx *sql.DB) error {
-	logger.Sugar().Infow(
+	logger.Sugar().Warnw(
 		"setEntIDUnique",
 		"db", dbName,
 		"table", table,
@@ -203,7 +203,7 @@ func setEntIDUnique(ctx context.Context, dbName, table string, tx *sql.DB) error
 }
 
 func id2EntID(ctx context.Context, dbName, table string, tx *sql.DB) error {
-	logger.Sugar().Infow(
+	logger.Sugar().Warnw(
 		"id2EntID",
 		"db", dbName,
 		"table", table,
@@ -220,7 +220,7 @@ func id2EntID(ctx context.Context, dbName, table string, tx *sql.DB) error {
 }
 
 func addIDColumn(ctx context.Context, dbName, table string, tx *sql.DB) error {
-	logger.Sugar().Infow(
+	logger.Sugar().Warnw(
 		"addIDColumn",
 		"db", dbName,
 		"table", table,
@@ -237,7 +237,7 @@ func addIDColumn(ctx context.Context, dbName, table string, tx *sql.DB) error {
 }
 
 func dropPrimaryKey(ctx context.Context, dbName, table string, tx *sql.DB) error {
-	logger.Sugar().Infow(
+	logger.Sugar().Warnw(
 		"dropPrimaryKey",
 		"db", dbName,
 		"table", table,
@@ -259,7 +259,7 @@ func dropPrimaryKey(ctx context.Context, dbName, table string, tx *sql.DB) error
 }
 
 func addEntIDColumn(ctx context.Context, dbName, table string, tx *sql.DB) error {
-	logger.Sugar().Infow(
+	logger.Sugar().Warnw(
 		"addEntIDColumn",
 		"db", dbName,
 		"table", table,
@@ -276,7 +276,7 @@ func addEntIDColumn(ctx context.Context, dbName, table string, tx *sql.DB) error
 }
 
 func migrateEntID(ctx context.Context, dbName, table string, tx *sql.DB) error {
-	logger.Sugar().Infow(
+	logger.Sugar().Warnw(
 		"migrateEntID",
 		"db", dbName,
 		"table", table,
@@ -338,7 +338,7 @@ func migrateEntID(ctx context.Context, dbName, table string, tx *sql.DB) error {
 	if err := setEntIDUnique(ctx, dbName, table, tx); err != nil {
 		return err
 	}
-	logger.Sugar().Infow(
+	logger.Sugar().Warnw(
 		"migrateEntID",
 		"db", dbName,
 		"table", table,
@@ -351,14 +351,14 @@ func Migrate(ctx context.Context) error {
 	var err error
 	var conn *sql.DB
 
-	logger.Sugar().Infow("Migrate", "Start", "...")
+	logger.Sugar().Warnw("Migrate", "Start", "...")
 	err = redis2.TryLock(lockKey(), 0)
 	if err != nil {
 		return err
 	}
 	defer func(err *error) {
 		_ = redis2.Unlock(lockKey())
-		logger.Sugar().Infow("Migrate", "Done", "...", "error", *err)
+		logger.Sugar().Warnw("Migrate", "Done", "...", "error", *err)
 	}(&err)
 
 	conn, err = open(servicename.ServiceDomain)
@@ -377,7 +377,7 @@ func Migrate(ctx context.Context) error {
 		return err
 	}
 
-	logger.Sugar().Infow(
+	logger.Sugar().Warnw(
 		"Migrate",
 		"Round", 1,
 	)
@@ -387,7 +387,7 @@ func Migrate(ctx context.Context) error {
 		}
 	}
 
-	logger.Sugar().Infow(
+	logger.Sugar().Warnw(
 		"Migrate",
 		"Round", 2,
 	)

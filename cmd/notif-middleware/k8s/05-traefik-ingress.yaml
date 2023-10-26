@@ -35,3 +35,5 @@ spec:
       http: *http_rules
     - host: api.ohhash.com
       http: *http_rules
+    - host: api.development.npool.top
+      http: *http_rules

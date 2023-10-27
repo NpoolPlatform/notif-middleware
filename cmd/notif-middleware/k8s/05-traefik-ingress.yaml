@@ -29,6 +29,22 @@ spec:
             backend:
               serviceName: notif-middleware
               servicePort: 50690
+          - path: /api/notifmw/v1/notif_DeleteNotif
+            backend:
+              serviceName: notif-middleware
+              servicePort: 50690
+          - path: /api/notifmw/v1/template_DeleteEmailTemplate
+            backend:
+              serviceName: notif-middleware
+              servicePort: 50690
+          - path: /api/notifmw/v1/template_DeleteFrontendTemplate
+            backend:
+              serviceName: notif-middleware
+              servicePort: 50690
+          - path: /api/notifmw/v1/template_DeleteSMSTemplate
+            backend:
+              serviceName: notif-middleware
+              servicePort: 50690
     - host: api.procyon.vip
       http: *http_rules
     - host: api.xpool.top

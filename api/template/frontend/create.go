@@ -20,6 +20,13 @@ func (s *Server) CreateFrontendTemplate(
 	error,
 ) {
 	req := in.GetInfo()
+	if req == nil {
+		logger.Sugar().Errorw(
+			"CreateFrontendTemplate",
+			"In", in,
+		)
+		return &npool.CreateFrontendTemplateResponse{}, status.Error(codes.InvalidArgument, "Info is empty")
+	}
 	handler, err := frontendtemplate1.NewHandler(
 		ctx,
 		frontendtemplate1.WithEntID(req.EntID, false),

@@ -13,6 +13,13 @@ import (
 
 func (s *Server) CreateSendState(ctx context.Context, in *npool.CreateSendStateRequest) (*npool.CreateSendStateResponse, error) {
 	req := in.GetInfo()
+	if req == nil {
+		logger.Sugar().Errorw(
+			"CreateSendState",
+			"In", in,
+		)
+		return &npool.CreateSendStateResponse{}, status.Error(codes.InvalidArgument, "Info is empty")
+	}
 	handler, err := sendamt.NewHandler(
 		ctx,
 		handler1.WithAppID(req.AppID, true),

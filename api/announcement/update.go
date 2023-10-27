@@ -13,6 +13,13 @@ import (
 
 func (s *Server) UpdateAnnouncement(ctx context.Context, in *npool.UpdateAnnouncementRequest) (*npool.UpdateAnnouncementResponse, error) {
 	req := in.GetInfo()
+	if req == nil {
+		logger.Sugar().Errorw(
+			"UpdateAnnouncement",
+			"In", in,
+		)
+		return &npool.UpdateAnnouncementResponse{}, status.Error(codes.InvalidArgument, "Info is empty")
+	}
 	handler, err := announcement1.NewHandler(
 		ctx,
 		announcement1.WithID(req.ID, true),

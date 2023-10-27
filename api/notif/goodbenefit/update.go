@@ -20,6 +20,13 @@ func (s *Server) UpdateGoodBenefit(
 	error,
 ) {
 	req := in.GetInfo()
+	if req == nil {
+		logger.Sugar().Errorw(
+			"UpdateGoodBenefit",
+			"In", in,
+		)
+		return &npool.UpdateGoodBenefitResponse{}, status.Error(codes.InvalidArgument, "Info is empty")
+	}
 	handler, err := goodbenefit1.NewHandler(
 		ctx,
 		goodbenefit1.WithID(req.ID, true),

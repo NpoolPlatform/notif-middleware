@@ -20,6 +20,13 @@ func (s *Server) UpdateFrontendTemplate(
 	error,
 ) {
 	req := in.GetInfo()
+	if req == nil {
+		logger.Sugar().Errorw(
+			"UpdateFrontendTemplate",
+			"In", in,
+		)
+		return &npool.UpdateFrontendTemplateResponse{}, status.Error(codes.InvalidArgument, "Info is empty")
+	}
 	handler, err := frontendtemplate1.NewHandler(
 		ctx,
 		frontendtemplate1.WithID(req.ID, true),

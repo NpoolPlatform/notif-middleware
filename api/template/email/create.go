@@ -20,6 +20,13 @@ func (s *Server) CreateEmailTemplate(
 	error,
 ) {
 	req := in.GetInfo()
+	if req == nil {
+		logger.Sugar().Errorw(
+			"CreateEmailTemplate",
+			"In", in,
+		)
+		return &npool.CreateEmailTemplateResponse{}, status.Error(codes.InvalidArgument, "Info is empty")
+	}
 	handler, err := emailtemplate1.NewHandler(
 		ctx,
 		emailtemplate1.WithEntID(req.EntID, false),

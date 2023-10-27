@@ -14,6 +14,13 @@ import (
 
 func (s *Server) UpdateNotifUser(ctx context.Context, in *npool.UpdateNotifUserRequest) (*npool.UpdateNotifUserResponse, error) {
 	req := in.GetInfo()
+	if req == nil {
+		logger.Sugar().Errorw(
+			"UpdateNotifUser",
+			"In", in,
+		)
+		return &npool.UpdateNotifUserResponse{}, status.Error(codes.InvalidArgument, "Info is empty")
+	}
 	handler, err := user1.NewHandler(
 		ctx,
 		user1.WithID(req.ID, true),

@@ -18,10 +18,10 @@ func (s *Server) DeleteEmailTemplate(
 	*npool.DeleteEmailTemplateResponse,
 	error,
 ) {
-	req := in.GetInfo()
+	id := in.GetInfo().GetID()
 	handler, err := emailtemplate1.NewHandler(
 		ctx,
-		emailtemplate1.WithID(req.ID, true),
+		emailtemplate1.WithID(&id, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

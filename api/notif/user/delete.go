@@ -12,10 +12,10 @@ import (
 )
 
 func (s *Server) DeleteNotifUser(ctx context.Context, in *npool.DeleteNotifUserRequest) (*npool.DeleteNotifUserResponse, error) {
-	req := in.GetInfo()
+	id := in.GetInfo().GetID()
 	handler, err := user1.NewHandler(
 		ctx,
-		user1.WithID(req.ID, true),
+		user1.WithID(&id, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

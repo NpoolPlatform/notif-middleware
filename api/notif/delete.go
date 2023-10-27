@@ -12,10 +12,10 @@ import (
 )
 
 func (s *Server) DeleteNotif(ctx context.Context, in *npool.DeleteNotifRequest) (*npool.DeleteNotifResponse, error) {
-	req := in.GetInfo()
+	id := in.GetInfo().GetID()
 	handler, err := notif1.NewHandler(
 		ctx,
-		notif1.WithID(req.ID, true),
+		notif1.WithID(&id, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

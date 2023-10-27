@@ -14,6 +14,13 @@ import (
 
 func (s *Server) CreateNotif(ctx context.Context, in *npool.CreateNotifRequest) (*npool.CreateNotifResponse, error) {
 	req := in.GetInfo()
+	if req == nil {
+		logger.Sugar().Errorw(
+			"CreateNotif",
+			"In", in,
+		)
+		return &npool.CreateNotifResponse{}, status.Error(codes.InvalidArgument, "Info is empty")
+	}
 	handler, err := notif1.NewHandler(
 		ctx,
 		notif1.WithEntID(req.EntID, false),

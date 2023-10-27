@@ -12,10 +12,10 @@ import (
 )
 
 func (s *Server) DeleteSMSTemplate(ctx context.Context, in *npool.DeleteSMSTemplateRequest) (*npool.DeleteSMSTemplateResponse, error) {
-	req := in.GetInfo()
+	id := in.GetInfo().GetID()
 	handler, err := smstemplate1.NewHandler(
 		ctx,
-		smstemplate1.WithID(req.ID, true),
+		smstemplate1.WithID(&id, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

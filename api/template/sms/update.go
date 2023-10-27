@@ -14,6 +14,13 @@ import (
 
 func (s *Server) UpdateSMSTemplate(ctx context.Context, in *npool.UpdateSMSTemplateRequest) (*npool.UpdateSMSTemplateResponse, error) {
 	req := in.GetInfo()
+	if req == nil {
+		logger.Sugar().Errorw(
+			"UpdateSMSTemplate",
+			"In", in,
+		)
+		return &npool.UpdateSMSTemplateResponse{}, status.Error(codes.InvalidArgument, "Info is empty")
+	}
 	handler, err := smstemplate1.NewHandler(
 		ctx,
 		smstemplate1.WithID(req.ID, true),

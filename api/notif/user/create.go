@@ -14,6 +14,13 @@ import (
 
 func (s *Server) CreateNotifUser(ctx context.Context, in *npool.CreateNotifUserRequest) (*npool.CreateNotifUserResponse, error) {
 	req := in.GetInfo()
+	if req == nil {
+		logger.Sugar().Errorw(
+			"CreateNotifUser",
+			"In", in,
+		)
+		return &npool.CreateNotifUserResponse{}, status.Error(codes.InvalidArgument, "Info is empty")
+	}
 	handler, err := user1.NewHandler(
 		ctx,
 		user1.WithEntID(req.EntID, false),

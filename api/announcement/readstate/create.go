@@ -13,6 +13,13 @@ import (
 
 func (s *Server) CreateReadState(ctx context.Context, in *npool.CreateReadStateRequest) (*npool.CreateReadStateResponse, error) {
 	req := in.GetInfo()
+	if req == nil {
+		logger.Sugar().Errorw(
+			"CreateReadState",
+			"In", in,
+		)
+		return &npool.CreateReadStateResponse{}, status.Error(codes.InvalidArgument, "Info is empty")
+	}
 	handler, err := amtread1.NewHandler(
 		ctx,
 		handler1.WithAppID(req.AppID, true),

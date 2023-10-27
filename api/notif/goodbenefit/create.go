@@ -20,6 +20,13 @@ func (s *Server) CreateGoodBenefit(
 	error,
 ) {
 	req := in.GetInfo()
+	if req == nil {
+		logger.Sugar().Errorw(
+			"CreateGoodBenefit",
+			"In", in,
+		)
+		return &npool.CreateGoodBenefitResponse{}, status.Error(codes.InvalidArgument, "Info is empty")
+	}
 	handler, err := goodbenefit1.NewHandler(
 		ctx,
 		goodbenefit1.WithGoodID(req.GoodID, true),

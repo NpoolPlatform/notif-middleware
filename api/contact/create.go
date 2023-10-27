@@ -13,6 +13,13 @@ import (
 
 func (s *Server) CreateContact(ctx context.Context, in *npool.CreateContactRequest) (*npool.CreateContactResponse, error) {
 	req := in.GetInfo()
+	if req == nil {
+		logger.Sugar().Errorw(
+			"CreateContact",
+			"In", in,
+		)
+		return &npool.CreateContactResponse{}, status.Error(codes.InvalidArgument, "Info is empty")
+	}
 	handler, err := contact1.NewHandler(
 		ctx,
 		contact1.WithAppID(req.AppID, true),

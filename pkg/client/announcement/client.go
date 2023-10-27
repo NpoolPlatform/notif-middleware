@@ -146,3 +146,31 @@ func GetAnnouncement(ctx context.Context, id string) (*npool.Announcement, error
 	}
 	return info.(*npool.Announcement), nil
 }
+
+func GetAnnouncementOnly(ctx context.Context, conds *npool.Conds) (*npool.Announcement, error) {
+	const limit = 2
+	infos, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		resp, err := cli.GetAnnouncements(ctx, &npool.GetAnnouncementsRequest{
+			Conds:  conds,
+			Offset: 0,
+			Limit:  limit,
+		})
+		if err != nil {
+			return nil, err
+		}
+		return resp.Infos, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	if err != nil {
+		return nil, err
+	}
+	if len(infos.([]*npool.Announcement)) == 0 {
+		return nil, nil
+	}
+	if len(infos.([]*npool.Announcement)) > 1 {
+		return nil, fmt.Errorf("too many records")
+	}
+	return infos.([]*npool.Announcement)[0], nil
+}

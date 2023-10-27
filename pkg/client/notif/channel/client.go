@@ -125,9 +125,11 @@ func GetChannel(ctx context.Context, appID, id string) (*npool.Channel, error) {
 	return info.(*npool.Channel), nil
 }
 
-func ExistChannelConds(ctx context.Context, conds *npool.ExistChannelCondsRequest) (bool, error) {
+func ExistChannelConds(ctx context.Context, conds *npool.Conds) (bool, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		resp, err := cli.ExistChannelConds(ctx, conds)
+		resp, err := cli.ExistChannelConds(ctx, &npool.ExistChannelCondsRequest{
+			Conds: conds,
+		})
 		if err != nil {
 			return nil, fmt.Errorf("fail exist channel: %v", err)
 		}

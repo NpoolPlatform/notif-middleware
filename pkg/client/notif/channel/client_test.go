@@ -64,20 +64,18 @@ func createChannel(t *testing.T) {
 }
 
 func existChannelConds(t *testing.T) {
-	exist, err := ExistChannelConds(context.Background(), &npool.ExistChannelCondsRequest{
-		Conds: &npool.Conds{
-			AppID: &basetypes.StringVal{
-				Op:    cruder.EQ,
-				Value: ret.AppID,
-			},
-			EventType: &basetypes.Uint32Val{
-				Op:    cruder.EQ,
-				Value: uint32(ret.EventType),
-			},
-			Channel: &basetypes.Uint32Val{
-				Op:    cruder.EQ,
-				Value: uint32(ret.Channel),
-			},
+	exist, err := ExistChannelConds(context.Background(), &npool.Conds{
+		AppID: &basetypes.StringVal{
+			Op:    cruder.EQ,
+			Value: ret.AppID,
+		},
+		EventType: &basetypes.Uint32Val{
+			Op:    cruder.EQ,
+			Value: uint32(ret.EventType),
+		},
+		Channel: &basetypes.Uint32Val{
+			Op:    cruder.EQ,
+			Value: uint32(ret.Channel),
 		},
 	})
 	if assert.Nil(t, err) {

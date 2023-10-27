@@ -127,9 +127,11 @@ func GetContact(ctx context.Context, id string) (*npool.Contact, error) {
 	return info.(*npool.Contact), nil
 }
 
-func ExistContactConds(ctx context.Context, conds *npool.ExistContactCondsRequest) (bool, error) {
+func ExistContactConds(ctx context.Context, conds *npool.Conds) (bool, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		resp, err := cli.ExistContactConds(ctx, conds)
+		resp, err := cli.ExistContactConds(ctx, &npool.ExistContactCondsRequest{
+			Conds: conds,
+		})
 		if err != nil {
 			return nil, fmt.Errorf("fail exist contact: %v", err)
 		}

@@ -80,20 +80,18 @@ func updateContact(t *testing.T) {
 }
 
 func existContactConds(t *testing.T) {
-	exist, err := ExistContactConds(context.Background(), &npool.ExistContactCondsRequest{
-		Conds: &npool.Conds{
-			AppID: &basetypes.StringVal{
-				Op:    cruder.EQ,
-				Value: ret.AppID,
-			},
-			AccountType: &basetypes.Uint32Val{
-				Op:    cruder.EQ,
-				Value: uint32(ret.AccountType),
-			},
-			UsedFor: &basetypes.Uint32Val{
-				Op:    cruder.EQ,
-				Value: uint32(ret.UsedFor),
-			},
+	exist, err := ExistContactConds(context.Background(), &npool.Conds{
+		AppID: &basetypes.StringVal{
+			Op:    cruder.EQ,
+			Value: ret.AppID,
+		},
+		AccountType: &basetypes.Uint32Val{
+			Op:    cruder.EQ,
+			Value: uint32(ret.AccountType),
+		},
+		UsedFor: &basetypes.Uint32Val{
+			Op:    cruder.EQ,
+			Value: uint32(ret.UsedFor),
 		},
 	})
 	if assert.Nil(t, err) {

@@ -99,9 +99,11 @@ func GetAnnouncementUser(ctx context.Context, appID, id string) (*npool.Announce
 	return info.(*npool.AnnouncementUser), nil
 }
 
-func ExistAnnouncementUserConds(ctx context.Context, conds *npool.ExistAnnouncementUserCondsRequest) (bool, error) {
+func ExistAnnouncementUserConds(ctx context.Context, conds *npool.Conds) (bool, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		resp, err := cli.ExistAnnouncementUserConds(ctx, conds)
+		resp, err := cli.ExistAnnouncementUserConds(ctx, &npool.ExistAnnouncementUserCondsRequest{
+			Conds: conds,
+		})
 		if err != nil {
 			return nil, fmt.Errorf("fail exist announcement user: %v", err)
 		}

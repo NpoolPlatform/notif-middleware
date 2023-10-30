@@ -159,6 +159,9 @@ func (h *Handler) GetContactOnly(ctx context.Context) (*npool.Contact, error) {
 	if len(handler.infos) > 1 {
 		return nil, fmt.Errorf("to many record")
 	}
+	if len(handler.infos) == 0 {
+		return nil, nil
+	}
 
 	return handler.infos[0], nil
 }

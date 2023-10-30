@@ -1,6 +1,8 @@
 package contact
 
 import (
+	"context"
+
 	contact "github.com/NpoolPlatform/message/npool/notif/mw/v1/contact"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -16,5 +18,5 @@ func Register(server grpc.ServiceRegistrar) {
 }
 
 func RegisterGateway(mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) error {
-	return nil
+	return contact.RegisterMiddlewareHandlerFromEndpoint(context.Background(), mux, endpoint, opts)
 }

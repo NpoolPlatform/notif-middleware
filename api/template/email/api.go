@@ -5,7 +5,6 @@ import (
 
 	"github.com/NpoolPlatform/message/npool/notif/mw/v1/template/email"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-
 	"google.golang.org/grpc"
 )
 

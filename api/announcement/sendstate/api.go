@@ -1,6 +1,8 @@
 package sendstate
 
 import (
+	"context"
+
 	sendamt "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement/sendstate"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -16,5 +18,5 @@ func Register(server grpc.ServiceRegistrar) {
 }
 
 func RegisterGateway(mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) error {
-	return nil
+	return sendamt.RegisterMiddlewareHandlerFromEndpoint(context.Background(), mux, endpoint, opts)
 }

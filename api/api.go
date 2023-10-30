@@ -60,5 +60,8 @@ func RegisterGateway(mux *runtime.ServeMux, endpoint string, opts []grpc.DialOpt
 	if err := sms.RegisterGateway(mux, endpoint, opts); err != nil {
 		return err
 	}
+	if err := sendstate.RegisterGateway(mux, endpoint, opts); err != nil {
+		return err
+	}
 	return nil
 }

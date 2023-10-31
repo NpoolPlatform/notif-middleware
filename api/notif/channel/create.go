@@ -22,6 +22,7 @@ func (s *Server) CreateChannel(ctx context.Context, in *npool.CreateChannelReque
 	}
 	handler, err := channel1.NewHandler(
 		ctx,
+		channel1.WithEntID(req.EntID, false),
 		channel1.WithAppID(req.AppID, true),
 		channel1.WithEventType(req.EventType, true),
 		channel1.WithChannel(req.Channel, true),

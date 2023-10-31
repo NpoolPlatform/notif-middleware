@@ -10,6 +10,7 @@ import (
 	"github.com/NpoolPlatform/notif-middleware/pkg/db"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
 	amt "github.com/NpoolPlatform/notif-middleware/pkg/mw/announcement"
+	"github.com/google/uuid"
 )
 
 type createHandler struct {
@@ -56,6 +57,11 @@ func (h *Handler) CreateSendState(ctx context.Context) (info *npool.SendState, e
 	}
 	if exist {
 		return nil, fmt.Errorf("send state exist")
+	}
+
+	id := uuid.New()
+	if h.EntID == nil {
+		h.EntID = &id
 	}
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {

@@ -12,10 +12,17 @@ import (
 )
 
 func (s *Server) DeleteReadState(ctx context.Context, in *npool.DeleteReadStateRequest) (*npool.DeleteReadStateResponse, error) {
-	id := in.GetInfo().GetID()
+	req := in.GetInfo()
+	if req == nil {
+		logger.Sugar().Errorw(
+			"DeleteReadState",
+			"In", in,
+		)
+		return &npool.DeleteReadStateResponse{}, status.Error(codes.InvalidArgument, "Info is empty")
+	}
 	handler, err := amtread1.NewHandler(
 		ctx,
-		handler1.WithID(&id, true),
+		handler1.WithID(req.ID, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

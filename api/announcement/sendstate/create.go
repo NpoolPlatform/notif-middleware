@@ -22,6 +22,7 @@ func (s *Server) CreateSendState(ctx context.Context, in *npool.CreateSendStateR
 	}
 	handler, err := sendamt.NewHandler(
 		ctx,
+		handler1.WithEntID(req.EntID, false),
 		handler1.WithAppID(req.AppID, true),
 		handler1.WithUserID(req.UserID, true),
 		handler1.WithAnnouncementID(req.AppID, req.AnnouncementID, true),

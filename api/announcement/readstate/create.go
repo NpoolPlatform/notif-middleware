@@ -22,6 +22,7 @@ func (s *Server) CreateReadState(ctx context.Context, in *npool.CreateReadStateR
 	}
 	handler, err := amtread1.NewHandler(
 		ctx,
+		handler1.WithEntID(req.EntID, false),
 		handler1.WithAppID(req.AppID, true),
 		handler1.WithUserID(req.UserID, true),
 		handler1.WithAnnouncementID(req.AppID, req.AnnouncementID, true),

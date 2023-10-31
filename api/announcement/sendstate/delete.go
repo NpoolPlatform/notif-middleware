@@ -12,10 +12,17 @@ import (
 )
 
 func (s *Server) DeleteSendState(ctx context.Context, in *npool.DeleteSendStateRequest) (*npool.DeleteSendStateResponse, error) {
-	id := in.GetInfo().GetID()
+	req := in.GetInfo()
+	if req == nil {
+		logger.Sugar().Errorw(
+			"DeleteSendState",
+			"In", in,
+		)
+		return &npool.DeleteSendStateResponse{}, status.Error(codes.InvalidArgument, "Info is empty")
+	}
 	handler, err := amtsend1.NewHandler(
 		ctx,
-		handler1.WithID(&id, true),
+		handler1.WithID(req.ID, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

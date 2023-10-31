@@ -22,6 +22,7 @@ func (s *Server) CreateAnnouncementUser(ctx context.Context, in *npool.CreateAnn
 	}
 	handler1, err := amtuser1.NewHandler(
 		ctx,
+		handler.WithEntID(req.EntID, false),
 		handler.WithAppID(req.AppID, true),
 		handler.WithUserID(req.UserID, true),
 		handler.WithAnnouncementID(req.AppID, req.AnnouncementID, true),

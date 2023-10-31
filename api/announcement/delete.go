@@ -11,10 +11,17 @@ import (
 )
 
 func (s *Server) DeleteAnnouncement(ctx context.Context, in *npool.DeleteAnnouncementRequest) (*npool.DeleteAnnouncementResponse, error) {
-	id := in.GetInfo().GetID()
+	req := in.GetInfo()
+	if req == nil {
+		logger.Sugar().Errorw(
+			"DeleteAnnouncement",
+			"In", in,
+		)
+		return &npool.DeleteAnnouncementResponse{}, status.Error(codes.InvalidArgument, "Info is empty")
+	}
 	handler, err := announcement1.NewHandler(
 		ctx,
-		announcement1.WithID(&id, true),
+		announcement1.WithID(req.ID, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

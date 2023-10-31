@@ -29,6 +29,7 @@ func (s *Server) CreateGoodBenefit(
 	}
 	handler, err := goodbenefit1.NewHandler(
 		ctx,
+		goodbenefit1.WithEntID(req.EntID, false),
 		goodbenefit1.WithGoodID(req.GoodID, true),
 		goodbenefit1.WithGoodName(req.GoodName, true),
 		goodbenefit1.WithAmount(req.Amount, false),

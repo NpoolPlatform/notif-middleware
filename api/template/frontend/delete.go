@@ -18,10 +18,17 @@ func (s *Server) DeleteFrontendTemplate(
 	*npool.DeleteFrontendTemplateResponse,
 	error,
 ) {
-	id := in.GetInfo().GetID()
+	req := in.GetInfo()
+	if req == nil {
+		logger.Sugar().Errorw(
+			"DeleteFrontendTemplate",
+			"In", in,
+		)
+		return &npool.DeleteFrontendTemplateResponse{}, status.Error(codes.InvalidArgument, "Info is empty")
+	}
 	handler, err := frontendtemplate1.NewHandler(
 		ctx,
-		frontendtemplate1.WithID(&id, true),
+		frontendtemplate1.WithID(req.ID, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

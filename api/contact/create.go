@@ -22,6 +22,7 @@ func (s *Server) CreateContact(ctx context.Context, in *npool.CreateContactReque
 	}
 	handler, err := contact1.NewHandler(
 		ctx,
+		contact1.WithEntID(req.EntID, false),
 		contact1.WithAppID(req.AppID, true),
 		contact1.WithAccount(req.Account, true),
 		contact1.WithAccountType(req.AccountType, true),

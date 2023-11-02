@@ -124,13 +124,25 @@ func setIDUnsigned(ctx context.Context, dbName, table string, tx *sql.DB) error 
 		"table", table,
 		"State", "INT UNSIGNED",
 	)
-	_, err := tx.ExecContext(
+	result, err := tx.ExecContext(
 		ctx,
 		fmt.Sprintf("alter table %v.%v change id id int unsigned not null auto_increment", dbName, table),
 	)
 	if err != nil {
 		return err
 	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	logger.Sugar().Warnw(
+		"setIDUnsigned",
+		"db", dbName,
+		"table", table,
+		"State", "INT UNSIGNED",
+		"rowsAffected", rowsAffected,
+	)
 	return nil
 }
 
@@ -175,12 +187,24 @@ func setEmptyEntID(ctx context.Context, dbName, table string, tx *sql.DB) error 
 		if _, err := uuid.Parse(entID); err == nil {
 			continue
 		}
-		if _, err := tx.ExecContext(
+		result, err := tx.ExecContext(
 			ctx,
 			fmt.Sprintf("update %v.%v set ent_id='%v' where id=%v", dbName, table, uuid.New(), id),
-		); err != nil {
+		)
+		if err != nil {
 			return err
 		}
+		rowsAffected, err := result.RowsAffected()
+		if err != nil {
+			return err
+		}
+		logger.Sugar().Warnw(
+			"setEmptyEntID",
+			"db", dbName,
+			"table", table,
+			"State", "ENT_ID UUID",
+			"rowsAffected", rowsAffected,
+		)
 	}
 	return nil
 }
@@ -192,13 +216,24 @@ func setEntIDUnique(ctx context.Context, dbName, table string, tx *sql.DB) error
 		"table", table,
 		"State", "ENT_ID UNIQUE",
 	)
-	_, err := tx.ExecContext(
+	result, err := tx.ExecContext(
 		ctx,
 		fmt.Sprintf("alter table %v.%v change column ent_id ent_id char(36) unique", dbName, table),
 	)
 	if err != nil {
 		return err
 	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	logger.Sugar().Warnw(
+		"setEntIDUnique",
+		"db", dbName,
+		"table", table,
+		"State", "ENT_ID UNIQUE",
+		"rowsAffected", rowsAffected,
+	)
 	return nil
 }
 
@@ -209,13 +244,24 @@ func id2EntID(ctx context.Context, dbName, table string, tx *sql.DB) error {
 		"table", table,
 		"State", "ID -> EntID",
 	)
-	_, err := tx.ExecContext(
+	result, err := tx.ExecContext(
 		ctx,
 		fmt.Sprintf("alter table %v.%v change column id ent_id char(36) unique", dbName, table),
 	)
 	if err != nil {
 		return err
 	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	logger.Sugar().Warnw(
+		"id2EntID",
+		"db", dbName,
+		"table", table,
+		"State", "ID -> EntID",
+		"rowsAffected", rowsAffected,
+	)
 	return nil
 }
 
@@ -226,13 +272,24 @@ func addIDColumn(ctx context.Context, dbName, table string, tx *sql.DB) error {
 		"table", table,
 		"State", "ID INT",
 	)
-	_, err := tx.ExecContext(
+	result, err := tx.ExecContext(
 		ctx,
 		fmt.Sprintf("alter table %v.%v add id int unsigned not null auto_increment, add primary key(id)", dbName, table),
 	)
 	if err != nil {
 		return err
 	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	logger.Sugar().Warnw(
+		"addIDColumn",
+		"db", dbName,
+		"table", table,
+		"State", "ID INT",
+		"rowsAffected", rowsAffected,
+	)
 	return nil
 }
 
@@ -243,7 +300,7 @@ func dropPrimaryKey(ctx context.Context, dbName, table string, tx *sql.DB) error
 		"table", table,
 		"State", "DROP PRIMARY",
 	)
-	_, err := tx.ExecContext(
+	result, err := tx.ExecContext(
 		ctx,
 		fmt.Sprintf("alter table %v.%v drop primary key", dbName, table),
 	)
@@ -255,6 +312,17 @@ func dropPrimaryKey(ctx context.Context, dbName, table string, tx *sql.DB) error
 			"Error", err,
 		)
 	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	logger.Sugar().Warnw(
+		"dropPrimaryKey",
+		"db", dbName,
+		"table", table,
+		"State", "DROP PRIMARY",
+		"rowsAffected", rowsAffected,
+	)
 	return nil
 }
 
@@ -265,13 +333,24 @@ func addEntIDColumn(ctx context.Context, dbName, table string, tx *sql.DB) error
 		"table", table,
 		"State", "ADD ENT_ID",
 	)
-	_, err := tx.ExecContext(
+	result, err := tx.ExecContext(
 		ctx,
 		fmt.Sprintf("alter table %v.%v add ent_id char(36) not null", dbName, table),
 	)
 	if err != nil {
 		return err
 	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	logger.Sugar().Warnw(
+		"addEntIDColumn",
+		"db", dbName,
+		"table", table,
+		"State", "ADD ENT_ID",
+		"rowsAffected", rowsAffected,
+	)
 	return nil
 }
 

@@ -20,12 +20,24 @@ type createHandler struct {
 	*Handler
 }
 
+func (h *createHandler) checkRepeat() error {
+	countryMap := map[string]*uuid.UUID{}
+	for _, req := range h.Reqs {
+		_, ok := countryMap[req.AppID.String()+req.LangID.String()+req.UsedFor.String()]
+		if ok {
+			return fmt.Errorf("duplicate emailtemplate")
+		}
+		countryMap[req.AppID.String()+req.LangID.String()+req.UsedFor.String()] = req.LangID
+	}
+	return nil
+}
+
 func (h *createHandler) createEmailTemplate(ctx context.Context, tx *ent.Tx, req *emailtemplatecrud.Req) error {
 	if req.AppID == nil {
-		return fmt.Errorf("invalid lang")
+		return fmt.Errorf("invalid appid")
 	}
 	if req.LangID == nil {
-		return fmt.Errorf("invalid logo")
+		return fmt.Errorf("invalid langid")
 	}
 	if req.UsedFor == nil {
 		return fmt.Errorf("invalid usedfor")
@@ -121,6 +133,9 @@ func (h *Handler) CreateEmailTemplates(ctx context.Context) ([]*npool.EmailTempl
 	ids := []uuid.UUID{}
 
 	err := db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
+		if err := handler.checkRepeat(); err != nil {
+			return err
+		}
 		for _, req := range h.Reqs {
 			if err := handler.createEmailTemplate(ctx, tx, req); err != nil {
 				return err

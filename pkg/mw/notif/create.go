@@ -21,6 +21,18 @@ type createHandler struct {
 	*Handler
 }
 
+func (h *createHandler) checkRepeat() error {
+	countryMap := map[string]*uuid.UUID{}
+	for _, req := range h.Reqs {
+		_, ok := countryMap[req.AppID.String()+req.LangID.String()+req.EventID.String()]
+		if ok {
+			return fmt.Errorf("duplicate notif")
+		}
+		countryMap[req.AppID.String()+req.LangID.String()+req.EventID.String()] = req.LangID
+	}
+	return nil
+}
+
 func (h *createHandler) createNotif(ctx context.Context, tx *ent.Tx, req *notifcrud.Req) error {
 	lockKey := fmt.Sprintf(
 		"%v:%v:%v:%v",
@@ -108,6 +120,9 @@ func (h *Handler) CreateNotifs(ctx context.Context) ([]*npool.Notif, error) {
 	ids := []uuid.UUID{}
 
 	err := db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
+		if err := handler.checkRepeat(); err != nil {
+			return err
+		}
 		for _, req := range h.Reqs {
 			if req.EntID != nil {
 				handler.EntID = req.EntID

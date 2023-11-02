@@ -264,6 +264,8 @@ func SetQueryConds(q *ent.NotifQuery, conds *Conds) (*ent.NotifQuery, error) {
 			return nil, fmt.Errorf("invalid extra")
 		}
 		switch conds.Extra.Op {
+		case cruder.EQ:
+			q.Where(entnotif.ExtraContains(extra))
 		case cruder.LIKE:
 			q.Where(entnotif.ExtraContains(extra))
 		default:

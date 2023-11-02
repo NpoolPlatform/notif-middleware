@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/announcement"
 	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/announcement"
@@ -12,6 +13,7 @@ import (
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
 	entamt "github.com/NpoolPlatform/notif-middleware/pkg/db/ent/announcement"
 	entread "github.com/NpoolPlatform/notif-middleware/pkg/db/ent/readannouncement"
+	"github.com/google/uuid"
 )
 
 type queryHandler struct {
@@ -38,7 +40,7 @@ func (h *queryHandler) selectAnnouncement(stm *ent.AnnouncementQuery) {
 	)
 }
 
-func (h *queryHandler) queryJoinReadState(s *sql.Selector) {
+func (h *queryHandler) queryJoinReadState(s *sql.Selector) error {
 	t1 := sql.Table(entread.Table)
 	s.
 		LeftJoin(t1).
@@ -52,12 +54,31 @@ func (h *queryHandler) queryJoinReadState(s *sql.Selector) {
 		AppendSelect(
 			sql.As(t1.C(entread.FieldUserID), "user_id"),
 		)
+
+	if h.Conds != nil && h.Conds.UserID != nil {
+		id, ok := h.Conds.UserID.Val.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("invalid cointypeid")
+		}
+		switch h.Conds.UserID.Op {
+		case cruder.EQ:
+			s.Where(
+				sql.EQ(t1.C(entread.FieldUserID), id),
+			)
+		default:
+			return fmt.Errorf("invalid currency field op")
+		}
+	}
+
+	return nil
 }
 
 func (h *queryHandler) queryJoin() {
 	h.stm.Modify(func(s *sql.Selector) {
 		if h.UserID != nil {
-			h.queryJoinReadState(s)
+			if err := h.queryJoinReadState(s); err != nil {
+				return
+			}
 		}
 	})
 }

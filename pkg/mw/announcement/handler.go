@@ -288,6 +288,18 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			_userID := userID.String()
 			h.UserID = &_userID
 		}
+		if conds.AnnouncementType != nil {
+			switch conds.GetAnnouncementType().GetValue() {
+			case uint32(basetypes.NotifType_NotifBroadcast):
+			case uint32(basetypes.NotifType_NotifMulticast):
+			default:
+				return fmt.Errorf("invalid announcementtype")
+			}
+			_type := conds.GetAnnouncementType().GetValue()
+			h.Conds.AnnouncementType = &cruder.Cond{
+				Op: conds.GetAnnouncementType().GetOp(), Val: basetypes.NotifType(_type),
+			}
+		}
 		return nil
 	}
 }

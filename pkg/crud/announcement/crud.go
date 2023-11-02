@@ -81,13 +81,15 @@ func UpdateSet(u *ent.AnnouncementUpdateOne, req *Req) *ent.AnnouncementUpdateOn
 }
 
 type Conds struct {
-	ID      *cruder.Cond
-	EntID   *cruder.Cond
-	AppID   *cruder.Cond
-	LangID  *cruder.Cond
-	StartAt *cruder.Cond
-	EndAt   *cruder.Cond
-	Channel *cruder.Cond
+	ID               *cruder.Cond
+	EntID            *cruder.Cond
+	AppID            *cruder.Cond
+	UserID           *cruder.Cond
+	LangID           *cruder.Cond
+	AnnouncementType *cruder.Cond
+	StartAt          *cruder.Cond
+	EndAt            *cruder.Cond
+	Channel          *cruder.Cond
 }
 
 //nolint
@@ -188,6 +190,17 @@ func SetQueryConds(q *ent.AnnouncementQuery, conds *Conds) (*ent.AnnouncementQue
 			return nil, fmt.Errorf("invalid channel op field %s", conds.Channel.Op)
 		}
 	}
-
+	if conds.AnnouncementType != nil {
+		_type, ok := conds.AnnouncementType.Val.(basetypes.NotifType)
+		if !ok {
+			return nil, fmt.Errorf("invalid announcementtype")
+		}
+		switch conds.AnnouncementType.Op {
+		case cruder.EQ:
+			q.Where(entamt.Type(_type.String()))
+		default:
+			return nil, fmt.Errorf("invalid announcementtype op field %s", conds.Channel.Op)
+		}
+	}
 	return q, nil
 }

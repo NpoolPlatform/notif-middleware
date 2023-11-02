@@ -368,7 +368,7 @@ func WithReqs(reqs []*npool.EmailTemplateReq, must bool) func(context.Context, *
 	}
 }
 
-// nolint:gocyclo
+//nolint:funlen,dupl,gocyclo
 func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		h.Conds = &emailtemplatecrud.Conds{}

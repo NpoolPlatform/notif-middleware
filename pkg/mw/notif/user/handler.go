@@ -233,7 +233,7 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			case uint32(basetypes.UsedFor_Announcement):
 			case uint32(basetypes.UsedFor_GoodBenefit1):
 			default:
-				return fmt.Errorf("invalid usedfor")
+				return fmt.Errorf("invalid eventtype")
 			}
 			_type := conds.GetEventType().GetValue()
 			h.Conds.EventType = &cruder.Cond{

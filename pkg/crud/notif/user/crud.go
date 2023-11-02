@@ -104,7 +104,7 @@ func SetQueryConds(q *ent.NotifUserQuery, conds *Conds) (*ent.NotifUserQuery, er
 	if conds.EventType != nil {
 		eventtype, ok := conds.EventType.Val.(basetypes.UsedFor)
 		if !ok {
-			return nil, fmt.Errorf("invalid notifid")
+			return nil, fmt.Errorf("invalid eventtype")
 		}
 		switch conds.EventType.Op {
 		case cruder.EQ:

@@ -22,7 +22,7 @@ func (s *Server) GenerateNotifs(ctx context.Context, in *npool.GenerateNotifsReq
 		notif1.WithUserID(&in.UserID, true),
 		notif1.WithEventType(&in.EventType, true),
 		notif1.WithExtra(in.Extra, false),
-		notif1.WithVars(in.Vars, true),
+		notif1.WithVars(in.Vars, false),
 		notif1.WithNotifType(&in.NotifType, true),
 	)
 	if err != nil {

@@ -63,7 +63,7 @@ func (h *generateHandler) createUserNotifs(ctx context.Context, appID, eventID, 
 		tmplmw.WithAppID(&appID, true),
 		tmplmw.WithUserID(&userID, true),
 		tmplmw.WithUsedFor(h.EventType, true),
-		tmplmw.WithVars(h.Vars, true),
+		tmplmw.WithVars(h.Vars, false),
 	)
 	if err != nil {
 		return nil, err

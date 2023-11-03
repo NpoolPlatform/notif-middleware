@@ -20,7 +20,7 @@ func (s *Server) GenerateText(ctx context.Context, in *npool.GenerateTextRequest
 		template1.WithLangID(&in.LangID, true),
 		template1.WithUsedFor(&in.EventType, true),
 		template1.WithChannel(&in.Channel, true),
-		template1.WithVars(in.Vars, true),
+		template1.WithVars(in.Vars, false),
 	)
 	if err != nil {
 		return nil, err

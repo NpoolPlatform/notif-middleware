@@ -68,7 +68,7 @@ func (h *Handler) GenerateNotifs(
 				email.WithAppID(&appID, true),
 				email.WithUserID(&userID, true),
 				email.WithUsedFor(h.UsedFor, true),
-				email.WithVars(h.Vars, true),
+				email.WithVars(h.Vars, false),
 			)
 			if err != nil {
 				return nil, err
@@ -84,7 +84,7 @@ func (h *Handler) GenerateNotifs(
 				sms.WithAppID(&appID, true),
 				sms.WithUserID(&userID, true),
 				sms.WithUsedFor(h.UsedFor, true),
-				sms.WithVars(h.Vars, true),
+				sms.WithVars(h.Vars, false),
 			)
 			if err != nil {
 				return nil, err
@@ -100,7 +100,7 @@ func (h *Handler) GenerateNotifs(
 				frontend.WithAppID(&appID, true),
 				frontend.WithUserID(&userID, true),
 				frontend.WithUsedFor(h.UsedFor, true),
-				frontend.WithVars(h.Vars, true),
+				frontend.WithVars(h.Vars, false),
 			)
 			if err != nil {
 				return nil, err
@@ -140,7 +140,7 @@ func (h *Handler) GenerateText(
 			email.WithAppID(&appID, true),
 			email.WithLangID(&langID, true),
 			email.WithUsedFor(h.UsedFor, true),
-			email.WithVars(h.Vars, true),
+			email.WithVars(h.Vars, false),
 		)
 		if err != nil {
 			return nil, err
@@ -152,7 +152,7 @@ func (h *Handler) GenerateText(
 			sms.WithAppID(&appID, true),
 			sms.WithLangID(&langID, true),
 			sms.WithUsedFor(h.UsedFor, true),
-			sms.WithVars(h.Vars, true),
+			sms.WithVars(h.Vars, false),
 		)
 		if err != nil {
 			return nil, err
@@ -164,7 +164,7 @@ func (h *Handler) GenerateText(
 			frontend.WithAppID(&appID, true),
 			frontend.WithLangID(&langID, true),
 			frontend.WithUsedFor(h.UsedFor, true),
-			frontend.WithVars(h.Vars, true),
+			frontend.WithVars(h.Vars, false),
 		)
 		if err != nil {
 			return nil, err

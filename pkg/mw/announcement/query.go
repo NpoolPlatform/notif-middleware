@@ -55,6 +55,9 @@ func (h *queryHandler) queryJoinReadState(s *sql.Selector) {
 		OnP(
 			sql.EQ(t1.C(entread.FieldUserID), *h.UserID),
 		).
+		OnP(
+			sql.EQ(t1.C(entread.FieldDeletedAt), 0),
+		).
 		AppendSelect(
 			sql.As(t1.C(entread.FieldUserID), "user_id"),
 		)

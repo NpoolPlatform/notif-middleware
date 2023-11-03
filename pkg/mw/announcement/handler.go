@@ -288,6 +288,9 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			}
 			_userID := userID.String()
 			h.UserID = &_userID
+			h.Conds.UserID = &cruder.Cond{
+				Op: conds.GetUserID().GetOp(), Val: userID,
+			}
 		}
 		if conds.AnnouncementType != nil {
 			switch conds.GetAnnouncementType().GetValue() {

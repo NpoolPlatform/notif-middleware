@@ -131,7 +131,7 @@ func SetQueryConds(q *ent.GoodBenefitQuery, conds *Conds) (*ent.GoodBenefitQuery
 		}
 		switch conds.BenefitDateStart.Op {
 		case cruder.EQ:
-			q.Where(entgoodbenefit.BenefitDateLTE(_date))
+			q.Where(entgoodbenefit.BenefitDateGTE(_date))
 		case cruder.LTE:
 			q.Where(entgoodbenefit.BenefitDateLTE(_date))
 		case cruder.LT:
@@ -149,11 +149,13 @@ func SetQueryConds(q *ent.GoodBenefitQuery, conds *Conds) (*ent.GoodBenefitQuery
 		}
 		switch conds.BenefitDateEnd.Op {
 		case cruder.EQ:
-			q.Where(entgoodbenefit.BenefitDateGTE(_date))
+			q.Where(entgoodbenefit.BenefitDateLTE(_date))
 		case cruder.GTE:
 			q.Where(entgoodbenefit.BenefitDateGTE(_date))
 		case cruder.GT:
 			q.Where(entgoodbenefit.BenefitDateGT(_date))
+		case cruder.LTE:
+			q.Where(entgoodbenefit.BenefitDateLTE(_date))
 		default:
 			return nil, fmt.Errorf("invalid good benefit benefit date op field %s", conds.BenefitDateEnd.Op)
 		}

@@ -152,7 +152,7 @@ func SetQueryConds(q *ent.AnnouncementQuery, conds *Conds) (*ent.AnnouncementQue
 		}
 		switch conds.StartAt.Op {
 		case cruder.EQ:
-			q.Where(entamt.StartAtLTE(startAt))
+			q.Where(entamt.StartAtGTE(startAt))
 		case cruder.LT:
 			q.Where(entamt.StartAtLT(startAt))
 		case cruder.LTE:
@@ -168,7 +168,7 @@ func SetQueryConds(q *ent.AnnouncementQuery, conds *Conds) (*ent.AnnouncementQue
 		}
 		switch conds.EndAt.Op {
 		case cruder.EQ:
-			q.Where(entamt.EndAtGTE(endAt))
+			q.Where(entamt.EndAtLTE(endAt))
 		case cruder.GT:
 			q.Where(entamt.EndAtGT(endAt))
 		case cruder.GTE:

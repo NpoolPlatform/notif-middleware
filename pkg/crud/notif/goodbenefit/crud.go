@@ -136,6 +136,8 @@ func SetQueryConds(q *ent.GoodBenefitQuery, conds *Conds) (*ent.GoodBenefitQuery
 			q.Where(entgoodbenefit.BenefitDateLTE(_date))
 		case cruder.LT:
 			q.Where(entgoodbenefit.BenefitDateLT(_date))
+		case cruder.GT:
+			q.Where(entgoodbenefit.BenefitDateGT(_date))
 		case cruder.GTE:
 			q.Where(entgoodbenefit.BenefitDateGTE(_date))
 		default:
@@ -154,6 +156,8 @@ func SetQueryConds(q *ent.GoodBenefitQuery, conds *Conds) (*ent.GoodBenefitQuery
 			q.Where(entgoodbenefit.BenefitDateGTE(_date))
 		case cruder.GT:
 			q.Where(entgoodbenefit.BenefitDateGT(_date))
+		case cruder.LT:
+			q.Where(entgoodbenefit.BenefitDateLT(_date))
 		case cruder.LTE:
 			q.Where(entgoodbenefit.BenefitDateLTE(_date))
 		default:

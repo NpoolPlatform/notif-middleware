@@ -15,7 +15,7 @@ import (
 func (s *Server) GetNotifUser(ctx context.Context, in *npool.GetNotifUserRequest) (*npool.GetNotifUserResponse, error) {
 	handler, err := user1.NewHandler(
 		ctx,
-		user1.WithID(&in.ID),
+		user1.WithEntID(&in.EntID, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
@@ -36,34 +36,6 @@ func (s *Server) GetNotifUser(ctx context.Context, in *npool.GetNotifUserRequest
 	}
 
 	return &npool.GetNotifUserResponse{
-		Info: info,
-	}, nil
-}
-
-func (s *Server) GetNotifUserOnly(ctx context.Context, in *npool.GetNotifUserOnlyRequest) (*npool.GetNotifUserOnlyResponse, error) {
-	handler, err := user1.NewHandler(
-		ctx,
-		user1.WithConds(in.Conds),
-	)
-	if err != nil {
-		logger.Sugar().Errorw(
-			"GetNotifUserOnly",
-			"In", in,
-			"Error", err,
-		)
-		return &npool.GetNotifUserOnlyResponse{}, status.Error(codes.Aborted, err.Error())
-	}
-	info, err := handler.GetNotifUserOnly(ctx)
-	if err != nil {
-		logger.Sugar().Errorw(
-			"GetNotifUserOnly",
-			"In", in,
-			"Error", err,
-		)
-		return &npool.GetNotifUserOnlyResponse{}, status.Error(codes.Aborted, err.Error())
-	}
-
-	return &npool.GetNotifUserOnlyResponse{
 		Info: info,
 	}, nil
 }

@@ -22,6 +22,7 @@ type queryHandler struct {
 func (h *queryHandler) selectChannel(stm *ent.NotifChannelQuery) {
 	h.stm = stm.Select(
 		entchannel.FieldID,
+		entchannel.FieldEntID,
 		entchannel.FieldAppID,
 		entchannel.FieldChannel,
 		entchannel.FieldEventType,
@@ -38,17 +39,17 @@ func (h *queryHandler) formalize() {
 }
 
 func (h *queryHandler) queryChannel(cli *ent.Client) error {
-	if h.ID == nil {
-		return fmt.Errorf("invalid channel id")
+	if h.ID == nil && h.EntID == nil {
+		return fmt.Errorf("invalid id")
 	}
-	h.selectChannel(
-		cli.NotifChannel.
-			Query().
-			Where(
-				entchannel.ID(*h.ID),
-				entchannel.DeletedAt(0),
-			),
-	)
+	stm := cli.NotifChannel.Query().Where(entchannel.DeletedAt(0))
+	if h.ID != nil {
+		stm.Where(entchannel.ID(*h.ID))
+	}
+	if h.EntID != nil {
+		stm.Where(entchannel.EntID(*h.EntID))
+	}
+	h.selectChannel(stm)
 	return nil
 }
 

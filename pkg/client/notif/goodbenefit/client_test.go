@@ -76,6 +76,7 @@ func createGoodBenefit(t *testing.T) {
 		ret.CreatedAt = info.CreatedAt
 		ret.UpdatedAt = info.UpdatedAt
 		ret.ID = info.ID
+		ret.EntID = info.EntID
 		assert.Equal(t, info, &ret)
 	}
 
@@ -93,6 +94,7 @@ func createGoodBenefit(t *testing.T) {
 		ret2.CreatedAt = _info.CreatedAt
 		ret2.UpdatedAt = _info.UpdatedAt
 		ret2.ID = _info.ID
+		ret2.EntID = _info.EntID
 		assert.Equal(t, _info, &ret2)
 	}
 }
@@ -110,7 +112,7 @@ func updateGoodBenefit(t *testing.T) {
 }
 
 func getGoodBenefit(t *testing.T) {
-	info, err := GetGoodBenefit(context.Background(), ret.ID)
+	info, err := GetGoodBenefit(context.Background(), ret.EntID)
 	if assert.Nil(t, err) {
 		assert.Equal(t, info, &ret)
 	}
@@ -139,7 +141,7 @@ func getGoodBenefits(t *testing.T) {
 func deleteGoodBenefit(t *testing.T) {
 	handler, err := goodbenefit1.NewHandler(
 		context.Background(),
-		goodbenefit1.WithID(&ret.ID),
+		goodbenefit1.WithID(&ret.ID, true),
 	)
 	assert.Nil(t, err)
 
@@ -151,9 +153,7 @@ func deleteGoodBenefit(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Nil(t, info)
 
-	_id, err := uuid.Parse(ret2.ID)
-	assert.Nil(t, err)
-	handler.ID = &_id
+	handler.ID = &ret2.ID
 
 	_info, err := handler.DeleteGoodBenefit(context.Background())
 	assert.Nil(t, err)

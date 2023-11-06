@@ -30,7 +30,7 @@ func (h *Handler) CreateAnnouncementUser(ctx context.Context) (info *npool.Annou
 
 	// only announcement type is Multicast can create user
 	announcementID := h.AnnouncementID.String()
-	announcementHandler, err := announcement1.NewHandler(ctx, announcement1.WithID(&announcementID))
+	announcementHandler, err := announcement1.NewHandler(ctx, announcement1.WithEntID(&announcementID, true))
 	if err != nil {
 		return nil, err
 	}
@@ -43,15 +43,15 @@ func (h *Handler) CreateAnnouncementUser(ctx context.Context) (info *npool.Annou
 	}
 
 	id := uuid.New()
-	if h.ID == nil {
-		h.ID = &id
+	if h.EntID == nil {
+		h.EntID = &id
 	}
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
 		_, err := crud.CreateSet(
 			cli.UserAnnouncement.Create(),
 			&crud.Req{
-				ID:             h.ID,
+				EntID:          h.EntID,
 				AppID:          h.AppID,
 				UserID:         h.UserID,
 				AnnouncementID: h.AnnouncementID,

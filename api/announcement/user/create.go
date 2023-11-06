@@ -13,11 +13,19 @@ import (
 
 func (s *Server) CreateAnnouncementUser(ctx context.Context, in *npool.CreateAnnouncementUserRequest) (*npool.CreateAnnouncementUserResponse, error) {
 	req := in.GetInfo()
+	if req == nil {
+		logger.Sugar().Errorw(
+			"CreateAnnouncementUser",
+			"In", in,
+		)
+		return &npool.CreateAnnouncementUserResponse{}, status.Error(codes.InvalidArgument, "Info is empty")
+	}
 	handler1, err := amtuser1.NewHandler(
 		ctx,
-		handler.WithAppID(req.AppID),
-		handler.WithUserID(req.UserID),
-		handler.WithAnnouncementID(req.AppID, req.AnnouncementID),
+		handler.WithEntID(req.EntID, false),
+		handler.WithAppID(req.AppID, true),
+		handler.WithUserID(req.UserID, true),
+		handler.WithAnnouncementID(req.AppID, req.AnnouncementID, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 
-	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -61,6 +60,20 @@ func (nc *NotifCreate) SetDeletedAt(u uint32) *NotifCreate {
 func (nc *NotifCreate) SetNillableDeletedAt(u *uint32) *NotifCreate {
 	if u != nil {
 		nc.SetDeletedAt(*u)
+	}
+	return nc
+}
+
+// SetEntID sets the "ent_id" field.
+func (nc *NotifCreate) SetEntID(u uuid.UUID) *NotifCreate {
+	nc.mutation.SetEntID(u)
+	return nc
+}
+
+// SetNillableEntID sets the "ent_id" field if the given value is not nil.
+func (nc *NotifCreate) SetNillableEntID(u *uuid.UUID) *NotifCreate {
+	if u != nil {
+		nc.SetEntID(*u)
 	}
 	return nc
 }
@@ -234,16 +247,8 @@ func (nc *NotifCreate) SetNillableType(s *string) *NotifCreate {
 }
 
 // SetID sets the "id" field.
-func (nc *NotifCreate) SetID(u uuid.UUID) *NotifCreate {
+func (nc *NotifCreate) SetID(u uint32) *NotifCreate {
 	nc.mutation.SetID(u)
-	return nc
-}
-
-// SetNillableID sets the "id" field if the given value is not nil.
-func (nc *NotifCreate) SetNillableID(u *uuid.UUID) *NotifCreate {
-	if u != nil {
-		nc.SetID(*u)
-	}
 	return nc
 }
 
@@ -347,6 +352,13 @@ func (nc *NotifCreate) defaults() error {
 		v := notif.DefaultDeletedAt()
 		nc.mutation.SetDeletedAt(v)
 	}
+	if _, ok := nc.mutation.EntID(); !ok {
+		if notif.DefaultEntID == nil {
+			return fmt.Errorf("ent: uninitialized notif.DefaultEntID (forgotten import ent/runtime?)")
+		}
+		v := notif.DefaultEntID()
+		nc.mutation.SetEntID(v)
+	}
 	if _, ok := nc.mutation.AppID(); !ok {
 		if notif.DefaultAppID == nil {
 			return fmt.Errorf("ent: uninitialized notif.DefaultAppID (forgotten import ent/runtime?)")
@@ -407,13 +419,6 @@ func (nc *NotifCreate) defaults() error {
 		v := notif.DefaultType
 		nc.mutation.SetType(v)
 	}
-	if _, ok := nc.mutation.ID(); !ok {
-		if notif.DefaultID == nil {
-			return fmt.Errorf("ent: uninitialized notif.DefaultID (forgotten import ent/runtime?)")
-		}
-		v := notif.DefaultID()
-		nc.mutation.SetID(v)
-	}
 	return nil
 }
 
@@ -428,6 +433,9 @@ func (nc *NotifCreate) check() error {
 	if _, ok := nc.mutation.DeletedAt(); !ok {
 		return &ValidationError{Name: "deleted_at", err: errors.New(`ent: missing required field "Notif.deleted_at"`)}
 	}
+	if _, ok := nc.mutation.EntID(); !ok {
+		return &ValidationError{Name: "ent_id", err: errors.New(`ent: missing required field "Notif.ent_id"`)}
+	}
 	return nil
 }
 
@@ -439,12 +447,9 @@ func (nc *NotifCreate) sqlSave(ctx context.Context) (*Notif, error) {
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
-			_node.ID = *id
-		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
-			return nil, err
-		}
+	if _spec.ID.Value != _node.ID {
+		id := _spec.ID.Value.(int64)
+		_node.ID = uint32(id)
 	}
 	return _node, nil
 }
@@ -455,7 +460,7 @@ func (nc *NotifCreate) createSpec() (*Notif, *sqlgraph.CreateSpec) {
 		_spec = &sqlgraph.CreateSpec{
 			Table: notif.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: notif.FieldID,
 			},
 		}
@@ -463,7 +468,7 @@ func (nc *NotifCreate) createSpec() (*Notif, *sqlgraph.CreateSpec) {
 	_spec.OnConflict = nc.conflict
 	if id, ok := nc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = &id
+		_spec.ID.Value = id
 	}
 	if value, ok := nc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -488,6 +493,14 @@ func (nc *NotifCreate) createSpec() (*Notif, *sqlgraph.CreateSpec) {
 			Column: notif.FieldDeletedAt,
 		})
 		_node.DeletedAt = value
+	}
+	if value, ok := nc.mutation.EntID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: notif.FieldEntID,
+		})
+		_node.EntID = value
 	}
 	if value, ok := nc.mutation.AppID(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -690,6 +703,18 @@ func (u *NotifUpsert) UpdateDeletedAt() *NotifUpsert {
 // AddDeletedAt adds v to the "deleted_at" field.
 func (u *NotifUpsert) AddDeletedAt(v uint32) *NotifUpsert {
 	u.Add(notif.FieldDeletedAt, v)
+	return u
+}
+
+// SetEntID sets the "ent_id" field.
+func (u *NotifUpsert) SetEntID(v uuid.UUID) *NotifUpsert {
+	u.Set(notif.FieldEntID, v)
+	return u
+}
+
+// UpdateEntID sets the "ent_id" field to the value that was provided on create.
+func (u *NotifUpsert) UpdateEntID() *NotifUpsert {
+	u.SetExcluded(notif.FieldEntID)
 	return u
 }
 
@@ -1022,6 +1047,20 @@ func (u *NotifUpsertOne) UpdateDeletedAt() *NotifUpsertOne {
 	})
 }
 
+// SetEntID sets the "ent_id" field.
+func (u *NotifUpsertOne) SetEntID(v uuid.UUID) *NotifUpsertOne {
+	return u.Update(func(s *NotifUpsert) {
+		s.SetEntID(v)
+	})
+}
+
+// UpdateEntID sets the "ent_id" field to the value that was provided on create.
+func (u *NotifUpsertOne) UpdateEntID() *NotifUpsertOne {
+	return u.Update(func(s *NotifUpsert) {
+		s.UpdateEntID()
+	})
+}
+
 // SetAppID sets the "app_id" field.
 func (u *NotifUpsertOne) SetAppID(v uuid.UUID) *NotifUpsertOne {
 	return u.Update(func(s *NotifUpsert) {
@@ -1290,12 +1329,7 @@ func (u *NotifUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *NotifUpsertOne) ID(ctx context.Context) (id uuid.UUID, err error) {
-	if u.create.driver.Dialect() == dialect.MySQL {
-		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
-		// fields from the database since MySQL does not support the RETURNING clause.
-		return id, errors.New("ent: NotifUpsertOne.ID is not supported by MySQL driver. Use NotifUpsertOne.Exec instead")
-	}
+func (u *NotifUpsertOne) ID(ctx context.Context) (id uint32, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -1304,7 +1338,7 @@ func (u *NotifUpsertOne) ID(ctx context.Context) (id uuid.UUID, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *NotifUpsertOne) IDX(ctx context.Context) uuid.UUID {
+func (u *NotifUpsertOne) IDX(ctx context.Context) uint32 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -1355,6 +1389,10 @@ func (ncb *NotifCreateBulk) Save(ctx context.Context) ([]*Notif, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
+				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
+					id := specs[i].ID.Value.(int64)
+					nodes[i].ID = uint32(id)
+				}
 				mutation.done = true
 				return nodes[i], nil
 			})
@@ -1550,6 +1588,20 @@ func (u *NotifUpsertBulk) AddDeletedAt(v uint32) *NotifUpsertBulk {
 func (u *NotifUpsertBulk) UpdateDeletedAt() *NotifUpsertBulk {
 	return u.Update(func(s *NotifUpsert) {
 		s.UpdateDeletedAt()
+	})
+}
+
+// SetEntID sets the "ent_id" field.
+func (u *NotifUpsertBulk) SetEntID(v uuid.UUID) *NotifUpsertBulk {
+	return u.Update(func(s *NotifUpsert) {
+		s.SetEntID(v)
+	})
+}
+
+// UpdateEntID sets the "ent_id" field to the value that was provided on create.
+func (u *NotifUpsertBulk) UpdateEntID() *NotifUpsertBulk {
+	return u.Update(func(s *NotifUpsert) {
+		s.UpdateEntID()
 	})
 }
 

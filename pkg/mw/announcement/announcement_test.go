@@ -45,14 +45,14 @@ var (
 func createAnnouncement(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
-		WithAppID(&ret.AppID),
-		WithLangID(&ret.LangID),
-		WithTitle(&ret.Title),
-		WithContent(&ret.Content),
-		WithChannel(&ret.Channel),
-		WithAnnouncementType(&ret.AnnouncementType),
-		WithStartAt(&ret.StartAt),
-		WithEndAt(&ret.EndAt),
+		WithAppID(&ret.AppID, true),
+		WithLangID(&ret.LangID, true),
+		WithTitle(&ret.Title, true),
+		WithContent(&ret.Content, true),
+		WithChannel(&ret.Channel, true),
+		WithAnnouncementType(&ret.AnnouncementType, true),
+		WithStartAt(&ret.StartAt, true),
+		WithEndAt(&ret.EndAt, true),
 	)
 	assert.Nil(t, err)
 
@@ -61,6 +61,7 @@ func createAnnouncement(t *testing.T) {
 		ret.CreatedAt = info.CreatedAt
 		ret.UpdatedAt = info.UpdatedAt
 		ret.ID = info.ID
+		ret.EntID = info.EntID
 		assert.Equal(t, info, &ret)
 	}
 }
@@ -74,12 +75,12 @@ func updateAnnouncement(t *testing.T) {
 	ret.EndAt = uint32(time.Now().Add(10 * time.Hour).Unix())
 	handler, err := NewHandler(
 		context.Background(),
-		WithID(&ret.ID),
-		WithTitle(&ret.Title),
-		WithContent(&ret.Content),
-		WithAnnouncementType(&ret.AnnouncementType),
-		WithStartAt(&ret.StartAt),
-		WithEndAt(&ret.EndAt),
+		WithID(&ret.ID, true),
+		WithTitle(&ret.Title, false),
+		WithContent(&ret.Content, false),
+		WithAnnouncementType(&ret.AnnouncementType, false),
+		WithStartAt(&ret.StartAt, false),
+		WithEndAt(&ret.EndAt, false),
 	)
 	assert.Nil(t, err)
 
@@ -93,7 +94,7 @@ func updateAnnouncement(t *testing.T) {
 func getAnnouncement(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
-		WithID(&ret.ID),
+		WithEntID(&ret.EntID, true),
 	)
 	assert.Nil(t, err)
 
@@ -105,7 +106,7 @@ func getAnnouncement(t *testing.T) {
 
 func getAnnouncements(t *testing.T) {
 	conds := &npool.Conds{
-		ID:      &basetypes.StringVal{Op: cruder.EQ, Value: ret.ID},
+		EntID:   &basetypes.StringVal{Op: cruder.EQ, Value: ret.EntID},
 		Channel: &basetypes.Uint32Val{Op: cruder.EQ, Value: uint32(basetypes.NotifChannel_value[ret.Channel.String()])},
 		StartAt: &basetypes.Uint32Val{Op: cruder.LTE, Value: ret.StartAt},
 		EndAt:   &basetypes.Uint32Val{Op: cruder.GTE, Value: ret.StartAt},
@@ -128,7 +129,7 @@ func getAnnouncements(t *testing.T) {
 func deleteAnnouncement(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
-		WithID(&ret.ID),
+		WithID(&ret.ID, true),
 	)
 	assert.Nil(t, err)
 

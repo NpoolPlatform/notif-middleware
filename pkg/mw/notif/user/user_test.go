@@ -28,7 +28,7 @@ func init() {
 
 var (
 	ret = npool.NotifUser{
-		ID:           uuid.NewString(),
+		EntID:        uuid.NewString(),
 		AppID:        uuid.NewString(),
 		EventType:    basetypes.UsedFor_WithdrawalRequest,
 		EventTypeStr: basetypes.UsedFor_WithdrawalRequest.String(),
@@ -39,10 +39,10 @@ var (
 func createNotifUser(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
-		WithID(&ret.ID),
-		WithAppID(&ret.AppID),
-		WithUserID(&ret.UserID),
-		WithEventType(&ret.EventType),
+		WithEntID(&ret.EntID, true),
+		WithAppID(&ret.AppID, true),
+		WithUserID(&ret.UserID, true),
+		WithEventType(&ret.EventType, true),
 	)
 	assert.Nil(t, err)
 
@@ -50,6 +50,8 @@ func createNotifUser(t *testing.T) {
 	if assert.Nil(t, err) {
 		ret.CreatedAt = info.CreatedAt
 		ret.UpdatedAt = info.UpdatedAt
+		ret.ID = info.ID
+		ret.EntID = info.EntID
 		assert.Equal(t, info, &ret)
 	}
 }
@@ -57,7 +59,7 @@ func createNotifUser(t *testing.T) {
 func getNotifUser(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
-		WithID(&ret.ID),
+		WithEntID(&ret.EntID, true),
 	)
 	assert.Nil(t, err)
 
@@ -69,7 +71,7 @@ func getNotifUser(t *testing.T) {
 
 func getNotifUsers(t *testing.T) {
 	conds := &npool.Conds{
-		ID: &basetypes.StringVal{Op: cruder.EQ, Value: ret.ID},
+		EntID: &basetypes.StringVal{Op: cruder.EQ, Value: ret.EntID},
 	}
 
 	handler, err := NewHandler(
@@ -89,7 +91,7 @@ func getNotifUsers(t *testing.T) {
 func deleteNotifUser(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
-		WithID(&ret.ID),
+		WithID(&ret.ID, true),
 	)
 	assert.Nil(t, err)
 

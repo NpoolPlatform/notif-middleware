@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 
-	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -61,6 +60,20 @@ func (etc *EmailTemplateCreate) SetDeletedAt(u uint32) *EmailTemplateCreate {
 func (etc *EmailTemplateCreate) SetNillableDeletedAt(u *uint32) *EmailTemplateCreate {
 	if u != nil {
 		etc.SetDeletedAt(*u)
+	}
+	return etc
+}
+
+// SetEntID sets the "ent_id" field.
+func (etc *EmailTemplateCreate) SetEntID(u uuid.UUID) *EmailTemplateCreate {
+	etc.mutation.SetEntID(u)
+	return etc
+}
+
+// SetNillableEntID sets the "ent_id" field if the given value is not nil.
+func (etc *EmailTemplateCreate) SetNillableEntID(u *uuid.UUID) *EmailTemplateCreate {
+	if u != nil {
+		etc.SetEntID(*u)
 	}
 	return etc
 }
@@ -152,16 +165,8 @@ func (etc *EmailTemplateCreate) SetNillableBody(s *string) *EmailTemplateCreate 
 }
 
 // SetID sets the "id" field.
-func (etc *EmailTemplateCreate) SetID(u uuid.UUID) *EmailTemplateCreate {
+func (etc *EmailTemplateCreate) SetID(u uint32) *EmailTemplateCreate {
 	etc.mutation.SetID(u)
-	return etc
-}
-
-// SetNillableID sets the "id" field if the given value is not nil.
-func (etc *EmailTemplateCreate) SetNillableID(u *uuid.UUID) *EmailTemplateCreate {
-	if u != nil {
-		etc.SetID(*u)
-	}
 	return etc
 }
 
@@ -265,6 +270,13 @@ func (etc *EmailTemplateCreate) defaults() error {
 		v := emailtemplate.DefaultDeletedAt()
 		etc.mutation.SetDeletedAt(v)
 	}
+	if _, ok := etc.mutation.EntID(); !ok {
+		if emailtemplate.DefaultEntID == nil {
+			return fmt.Errorf("ent: uninitialized emailtemplate.DefaultEntID (forgotten import ent/runtime?)")
+		}
+		v := emailtemplate.DefaultEntID()
+		etc.mutation.SetEntID(v)
+	}
 	if _, ok := etc.mutation.UsedFor(); !ok {
 		v := emailtemplate.DefaultUsedFor
 		etc.mutation.SetUsedFor(v)
@@ -289,13 +301,6 @@ func (etc *EmailTemplateCreate) defaults() error {
 		v := emailtemplate.DefaultBody
 		etc.mutation.SetBody(v)
 	}
-	if _, ok := etc.mutation.ID(); !ok {
-		if emailtemplate.DefaultID == nil {
-			return fmt.Errorf("ent: uninitialized emailtemplate.DefaultID (forgotten import ent/runtime?)")
-		}
-		v := emailtemplate.DefaultID()
-		etc.mutation.SetID(v)
-	}
 	return nil
 }
 
@@ -309,6 +314,9 @@ func (etc *EmailTemplateCreate) check() error {
 	}
 	if _, ok := etc.mutation.DeletedAt(); !ok {
 		return &ValidationError{Name: "deleted_at", err: errors.New(`ent: missing required field "EmailTemplate.deleted_at"`)}
+	}
+	if _, ok := etc.mutation.EntID(); !ok {
+		return &ValidationError{Name: "ent_id", err: errors.New(`ent: missing required field "EmailTemplate.ent_id"`)}
 	}
 	if _, ok := etc.mutation.AppID(); !ok {
 		return &ValidationError{Name: "app_id", err: errors.New(`ent: missing required field "EmailTemplate.app_id"`)}
@@ -330,12 +338,9 @@ func (etc *EmailTemplateCreate) sqlSave(ctx context.Context) (*EmailTemplate, er
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
-			_node.ID = *id
-		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
-			return nil, err
-		}
+	if _spec.ID.Value != _node.ID {
+		id := _spec.ID.Value.(int64)
+		_node.ID = uint32(id)
 	}
 	return _node, nil
 }
@@ -346,7 +351,7 @@ func (etc *EmailTemplateCreate) createSpec() (*EmailTemplate, *sqlgraph.CreateSp
 		_spec = &sqlgraph.CreateSpec{
 			Table: emailtemplate.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: emailtemplate.FieldID,
 			},
 		}
@@ -354,7 +359,7 @@ func (etc *EmailTemplateCreate) createSpec() (*EmailTemplate, *sqlgraph.CreateSp
 	_spec.OnConflict = etc.conflict
 	if id, ok := etc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = &id
+		_spec.ID.Value = id
 	}
 	if value, ok := etc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -379,6 +384,14 @@ func (etc *EmailTemplateCreate) createSpec() (*EmailTemplate, *sqlgraph.CreateSp
 			Column: emailtemplate.FieldDeletedAt,
 		})
 		_node.DeletedAt = value
+	}
+	if value, ok := etc.mutation.EntID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: emailtemplate.FieldEntID,
+		})
+		_node.EntID = value
 	}
 	if value, ok := etc.mutation.AppID(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -557,6 +570,18 @@ func (u *EmailTemplateUpsert) UpdateDeletedAt() *EmailTemplateUpsert {
 // AddDeletedAt adds v to the "deleted_at" field.
 func (u *EmailTemplateUpsert) AddDeletedAt(v uint32) *EmailTemplateUpsert {
 	u.Add(emailtemplate.FieldDeletedAt, v)
+	return u
+}
+
+// SetEntID sets the "ent_id" field.
+func (u *EmailTemplateUpsert) SetEntID(v uuid.UUID) *EmailTemplateUpsert {
+	u.Set(emailtemplate.FieldEntID, v)
+	return u
+}
+
+// UpdateEntID sets the "ent_id" field to the value that was provided on create.
+func (u *EmailTemplateUpsert) UpdateEntID() *EmailTemplateUpsert {
+	u.SetExcluded(emailtemplate.FieldEntID)
 	return u
 }
 
@@ -817,6 +842,20 @@ func (u *EmailTemplateUpsertOne) UpdateDeletedAt() *EmailTemplateUpsertOne {
 	})
 }
 
+// SetEntID sets the "ent_id" field.
+func (u *EmailTemplateUpsertOne) SetEntID(v uuid.UUID) *EmailTemplateUpsertOne {
+	return u.Update(func(s *EmailTemplateUpsert) {
+		s.SetEntID(v)
+	})
+}
+
+// UpdateEntID sets the "ent_id" field to the value that was provided on create.
+func (u *EmailTemplateUpsertOne) UpdateEntID() *EmailTemplateUpsertOne {
+	return u.Update(func(s *EmailTemplateUpsert) {
+		s.UpdateEntID()
+	})
+}
+
 // SetAppID sets the "app_id" field.
 func (u *EmailTemplateUpsertOne) SetAppID(v uuid.UUID) *EmailTemplateUpsertOne {
 	return u.Update(func(s *EmailTemplateUpsert) {
@@ -1001,12 +1040,7 @@ func (u *EmailTemplateUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *EmailTemplateUpsertOne) ID(ctx context.Context) (id uuid.UUID, err error) {
-	if u.create.driver.Dialect() == dialect.MySQL {
-		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
-		// fields from the database since MySQL does not support the RETURNING clause.
-		return id, errors.New("ent: EmailTemplateUpsertOne.ID is not supported by MySQL driver. Use EmailTemplateUpsertOne.Exec instead")
-	}
+func (u *EmailTemplateUpsertOne) ID(ctx context.Context) (id uint32, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -1015,7 +1049,7 @@ func (u *EmailTemplateUpsertOne) ID(ctx context.Context) (id uuid.UUID, err erro
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *EmailTemplateUpsertOne) IDX(ctx context.Context) uuid.UUID {
+func (u *EmailTemplateUpsertOne) IDX(ctx context.Context) uint32 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -1066,6 +1100,10 @@ func (etcb *EmailTemplateCreateBulk) Save(ctx context.Context) ([]*EmailTemplate
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
+				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
+					id := specs[i].ID.Value.(int64)
+					nodes[i].ID = uint32(id)
+				}
 				mutation.done = true
 				return nodes[i], nil
 			})
@@ -1261,6 +1299,20 @@ func (u *EmailTemplateUpsertBulk) AddDeletedAt(v uint32) *EmailTemplateUpsertBul
 func (u *EmailTemplateUpsertBulk) UpdateDeletedAt() *EmailTemplateUpsertBulk {
 	return u.Update(func(s *EmailTemplateUpsert) {
 		s.UpdateDeletedAt()
+	})
+}
+
+// SetEntID sets the "ent_id" field.
+func (u *EmailTemplateUpsertBulk) SetEntID(v uuid.UUID) *EmailTemplateUpsertBulk {
+	return u.Update(func(s *EmailTemplateUpsert) {
+		s.SetEntID(v)
+	})
+}
+
+// UpdateEntID sets the "ent_id" field to the value that was provided on create.
+func (u *EmailTemplateUpsertBulk) UpdateEntID() *EmailTemplateUpsertBulk {
+	return u.Update(func(s *EmailTemplateUpsert) {
+		s.UpdateEntID()
 	})
 }
 

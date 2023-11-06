@@ -11,7 +11,7 @@ import (
 )
 
 type Req struct {
-	ID        *uuid.UUID
+	EntID     *uuid.UUID
 	AppID     *uuid.UUID
 	Channel   *basetypes.NotifChannel
 	EventType *basetypes.UsedFor
@@ -19,8 +19,8 @@ type Req struct {
 }
 
 func CreateSet(c *ent.NotifChannelCreate, req *Req) *ent.NotifChannelCreate {
-	if req.ID != nil {
-		c.SetID(*req.ID)
+	if req.EntID != nil {
+		c.SetEntID(*req.EntID)
 	}
 	if req.AppID != nil {
 		c.SetAppID(*req.AppID)
@@ -43,17 +43,19 @@ func UpdateSet(u *ent.NotifChannelUpdateOne, req *Req) *ent.NotifChannelUpdateOn
 
 type Conds struct {
 	ID        *cruder.Cond
+	EntID     *cruder.Cond
 	AppID     *cruder.Cond
 	Channel   *cruder.Cond
 	EventType *cruder.Cond
 }
 
+//nolint:gocyclo
 func SetQueryConds(q *ent.NotifChannelQuery, conds *Conds) (*ent.NotifChannelQuery, error) {
 	if conds == nil {
 		return q, nil
 	}
 	if conds.ID != nil {
-		id, ok := conds.ID.Val.(uuid.UUID)
+		id, ok := conds.ID.Val.(uint32)
 		if !ok {
 			return nil, fmt.Errorf("invalid channel id")
 		}
@@ -62,6 +64,18 @@ func SetQueryConds(q *ent.NotifChannelQuery, conds *Conds) (*ent.NotifChannelQue
 			q.Where(entchannel.ID(id))
 		default:
 			return nil, fmt.Errorf("invalid channel id op field")
+		}
+	}
+	if conds.EntID != nil {
+		id, ok := conds.EntID.Val.(uuid.UUID)
+		if !ok {
+			return nil, fmt.Errorf("invalid channel entid")
+		}
+		switch conds.EntID.Op {
+		case cruder.EQ:
+			q.Where(entchannel.EntID(id))
+		default:
+			return nil, fmt.Errorf("invalid channel entid op field")
 		}
 	}
 	if conds.AppID != nil {

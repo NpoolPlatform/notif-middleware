@@ -11,7 +11,7 @@ import (
 )
 
 type Req struct {
-	ID          *uuid.UUID
+	EntID       *uuid.UUID
 	GoodID      *uuid.UUID
 	GoodName    *string
 	Amount      *string
@@ -24,8 +24,8 @@ type Req struct {
 }
 
 func CreateSet(c *ent.GoodBenefitCreate, req *Req) *ent.GoodBenefitCreate {
-	if req.ID != nil {
-		c.SetID(*req.ID)
+	if req.EntID != nil {
+		c.SetEntID(*req.EntID)
 	}
 	if req.GoodID != nil {
 		c.SetGoodID(*req.GoodID)
@@ -64,6 +64,7 @@ func UpdateSet(u *ent.GoodBenefitUpdateOne, req *Req) *ent.GoodBenefitUpdateOne 
 
 type Conds struct {
 	ID               *cruder.Cond
+	EntID            *cruder.Cond
 	GoodID           *cruder.Cond
 	Generated        *cruder.Cond
 	BenefitDateStart *cruder.Cond
@@ -76,7 +77,7 @@ func SetQueryConds(q *ent.GoodBenefitQuery, conds *Conds) (*ent.GoodBenefitQuery
 		return q, nil
 	}
 	if conds.ID != nil {
-		id, ok := conds.ID.Val.(uuid.UUID)
+		id, ok := conds.ID.Val.(uint32)
 		if !ok {
 			return nil, fmt.Errorf("invalid good benefit id")
 		}
@@ -85,6 +86,18 @@ func SetQueryConds(q *ent.GoodBenefitQuery, conds *Conds) (*ent.GoodBenefitQuery
 			q.Where(entgoodbenefit.ID(id))
 		default:
 			return nil, fmt.Errorf("invalid good benefit id op field %s", conds.ID.Op)
+		}
+	}
+	if conds.EntID != nil {
+		id, ok := conds.EntID.Val.(uuid.UUID)
+		if !ok {
+			return nil, fmt.Errorf("invalid good benefit entid")
+		}
+		switch conds.EntID.Op {
+		case cruder.EQ:
+			q.Where(entgoodbenefit.EntID(id))
+		default:
+			return nil, fmt.Errorf("invalid good benefit op field %s", conds.EntID.Op)
 		}
 	}
 	if conds.GoodID != nil {
@@ -117,10 +130,14 @@ func SetQueryConds(q *ent.GoodBenefitQuery, conds *Conds) (*ent.GoodBenefitQuery
 			return nil, fmt.Errorf("invalid good benefit benefit date %s", conds.BenefitDateStart.Op)
 		}
 		switch conds.BenefitDateStart.Op {
+		case cruder.EQ:
+			q.Where(entgoodbenefit.BenefitDateGTE(_date))
 		case cruder.LTE:
 			q.Where(entgoodbenefit.BenefitDateLTE(_date))
 		case cruder.LT:
 			q.Where(entgoodbenefit.BenefitDateLT(_date))
+		case cruder.GT:
+			q.Where(entgoodbenefit.BenefitDateGT(_date))
 		case cruder.GTE:
 			q.Where(entgoodbenefit.BenefitDateGTE(_date))
 		default:
@@ -133,10 +150,16 @@ func SetQueryConds(q *ent.GoodBenefitQuery, conds *Conds) (*ent.GoodBenefitQuery
 			return nil, fmt.Errorf("invalid good benefit benefit date %s", conds.BenefitDateEnd.Op)
 		}
 		switch conds.BenefitDateEnd.Op {
+		case cruder.EQ:
+			q.Where(entgoodbenefit.BenefitDateLTE(_date))
 		case cruder.GTE:
 			q.Where(entgoodbenefit.BenefitDateGTE(_date))
 		case cruder.GT:
 			q.Where(entgoodbenefit.BenefitDateGT(_date))
+		case cruder.LT:
+			q.Where(entgoodbenefit.BenefitDateLT(_date))
+		case cruder.LTE:
+			q.Where(entgoodbenefit.BenefitDateLTE(_date))
 		default:
 			return nil, fmt.Errorf("invalid good benefit benefit date op field %s", conds.BenefitDateEnd.Op)
 		}

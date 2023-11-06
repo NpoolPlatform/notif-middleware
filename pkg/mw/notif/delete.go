@@ -30,7 +30,6 @@ func (h *Handler) DeleteNotif(ctx context.Context) (*npool.Notif, error) {
 		if _, err := notifcrud.UpdateSet(
 			cli.Notif.UpdateOneID(*h.ID),
 			&notifcrud.Req{
-				ID:        h.ID,
 				DeletedAt: &now,
 			},
 		).Save(ctx); err != nil {

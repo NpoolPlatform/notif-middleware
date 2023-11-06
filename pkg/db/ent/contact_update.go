@@ -84,6 +84,20 @@ func (cu *ContactUpdate) AddDeletedAt(u int32) *ContactUpdate {
 	return cu
 }
 
+// SetEntID sets the "ent_id" field.
+func (cu *ContactUpdate) SetEntID(u uuid.UUID) *ContactUpdate {
+	cu.mutation.SetEntID(u)
+	return cu
+}
+
+// SetNillableEntID sets the "ent_id" field if the given value is not nil.
+func (cu *ContactUpdate) SetNillableEntID(u *uuid.UUID) *ContactUpdate {
+	if u != nil {
+		cu.SetEntID(*u)
+	}
+	return cu
+}
+
 // SetAppID sets the "app_id" field.
 func (cu *ContactUpdate) SetAppID(u uuid.UUID) *ContactUpdate {
 	cu.mutation.SetAppID(u)
@@ -256,7 +270,7 @@ func (cu *ContactUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   contact.Table,
 			Columns: contact.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: contact.FieldID,
 			},
 		},
@@ -308,6 +322,13 @@ func (cu *ContactUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeUint32,
 			Value:  value,
 			Column: contact.FieldDeletedAt,
+		})
+	}
+	if value, ok := cu.mutation.EntID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: contact.FieldEntID,
 		})
 	}
 	if value, ok := cu.mutation.AppID(); ok {
@@ -442,6 +463,20 @@ func (cuo *ContactUpdateOne) SetNillableDeletedAt(u *uint32) *ContactUpdateOne {
 // AddDeletedAt adds u to the "deleted_at" field.
 func (cuo *ContactUpdateOne) AddDeletedAt(u int32) *ContactUpdateOne {
 	cuo.mutation.AddDeletedAt(u)
+	return cuo
+}
+
+// SetEntID sets the "ent_id" field.
+func (cuo *ContactUpdateOne) SetEntID(u uuid.UUID) *ContactUpdateOne {
+	cuo.mutation.SetEntID(u)
+	return cuo
+}
+
+// SetNillableEntID sets the "ent_id" field if the given value is not nil.
+func (cuo *ContactUpdateOne) SetNillableEntID(u *uuid.UUID) *ContactUpdateOne {
+	if u != nil {
+		cuo.SetEntID(*u)
+	}
 	return cuo
 }
 
@@ -630,7 +665,7 @@ func (cuo *ContactUpdateOne) sqlSave(ctx context.Context) (_node *Contact, err e
 			Table:   contact.Table,
 			Columns: contact.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: contact.FieldID,
 			},
 		},
@@ -699,6 +734,13 @@ func (cuo *ContactUpdateOne) sqlSave(ctx context.Context) (_node *Contact, err e
 			Type:   field.TypeUint32,
 			Value:  value,
 			Column: contact.FieldDeletedAt,
+		})
+	}
+	if value, ok := cuo.mutation.EntID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: contact.FieldEntID,
 		})
 	}
 	if value, ok := cuo.mutation.AppID(); ok {

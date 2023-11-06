@@ -14,7 +14,6 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/contact"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/predicate"
-	"github.com/google/uuid"
 )
 
 // ContactQuery is the builder for querying Contact entities.
@@ -87,8 +86,8 @@ func (cq *ContactQuery) FirstX(ctx context.Context) *Contact {
 
 // FirstID returns the first Contact ID from the query.
 // Returns a *NotFoundError when no Contact ID was found.
-func (cq *ContactQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
-	var ids []uuid.UUID
+func (cq *ContactQuery) FirstID(ctx context.Context) (id uint32, err error) {
+	var ids []uint32
 	if ids, err = cq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -100,7 +99,7 @@ func (cq *ContactQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (cq *ContactQuery) FirstIDX(ctx context.Context) uuid.UUID {
+func (cq *ContactQuery) FirstIDX(ctx context.Context) uint32 {
 	id, err := cq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -138,8 +137,8 @@ func (cq *ContactQuery) OnlyX(ctx context.Context) *Contact {
 // OnlyID is like Only, but returns the only Contact ID in the query.
 // Returns a *NotSingularError when more than one Contact ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (cq *ContactQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
-	var ids []uuid.UUID
+func (cq *ContactQuery) OnlyID(ctx context.Context) (id uint32, err error) {
+	var ids []uint32
 	if ids, err = cq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -155,7 +154,7 @@ func (cq *ContactQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (cq *ContactQuery) OnlyIDX(ctx context.Context) uuid.UUID {
+func (cq *ContactQuery) OnlyIDX(ctx context.Context) uint32 {
 	id, err := cq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -181,8 +180,8 @@ func (cq *ContactQuery) AllX(ctx context.Context) []*Contact {
 }
 
 // IDs executes the query and returns a list of Contact IDs.
-func (cq *ContactQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
-	var ids []uuid.UUID
+func (cq *ContactQuery) IDs(ctx context.Context) ([]uint32, error) {
+	var ids []uint32
 	if err := cq.Select(contact.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -190,7 +189,7 @@ func (cq *ContactQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (cq *ContactQuery) IDsX(ctx context.Context) []uuid.UUID {
+func (cq *ContactQuery) IDsX(ctx context.Context) []uint32 {
 	ids, err := cq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -377,7 +376,7 @@ func (cq *ContactQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   contact.Table,
 			Columns: contact.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: contact.FieldID,
 			},
 		},

@@ -44,16 +44,18 @@ var (
 func setupGenerateContact(t *testing.T) func(*testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
-		contact.WithAppID(&ret.AppID),
-		contact.WithAccount(&ret.Account),
-		contact.WithAccountType(&ret.AccountType),
-		contact.WithUsedFor(&ret.UsedFor),
-		contact.WithSender(&ret.Sender),
+		contact.WithAppID(&ret.AppID, true),
+		contact.WithAccount(&ret.Account, true),
+		contact.WithAccountType(&ret.AccountType, true),
+		contact.WithUsedFor(&ret.UsedFor, true),
+		contact.WithSender(&ret.Sender, true),
 	)
 	assert.Nil(t, err)
 
-	_, err = handler.CreateContact(context.Background())
+	contact1, err := handler.CreateContact(context.Background())
 	assert.Nil(t, err)
+
+	handler.ID = &contact1.ID
 
 	return func(*testing.T) {
 		_, _ = handler.DeleteContact(context.Background())
@@ -63,12 +65,12 @@ func setupGenerateContact(t *testing.T) func(*testing.T) {
 func generateContact(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
-		contact.WithAppID(&ret.AppID),
-		contact.WithUsedFor(&ret.UsedFor),
-		contact.WithSender(&ret.Sender),
-		WithSubject(&subject),
-		WithBody(&body),
-		WithSenderName(&senderName),
+		contact.WithAppID(&ret.AppID, true),
+		contact.WithUsedFor(&ret.UsedFor, true),
+		contact.WithSender(&ret.Sender, true),
+		WithSubject(&subject, true),
+		WithBody(&body, true),
+		WithSenderName(&senderName, true),
 	)
 	assert.Nil(t, err)
 

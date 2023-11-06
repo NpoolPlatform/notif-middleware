@@ -11,10 +11,17 @@ import (
 )
 
 func (s *Server) DeleteChannel(ctx context.Context, in *npool.DeleteChannelRequest) (*npool.DeleteChannelResponse, error) {
-	id := in.GetInfo().GetID()
+	req := in.GetInfo()
+	if req == nil {
+		logger.Sugar().Errorw(
+			"DeleteChannel",
+			"In", in,
+		)
+		return &npool.DeleteChannelResponse{}, status.Error(codes.InvalidArgument, "Info is empty")
+	}
 	handler, err := channel1.NewHandler(
 		ctx,
-		channel1.WithID(&id),
+		channel1.WithID(req.ID, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

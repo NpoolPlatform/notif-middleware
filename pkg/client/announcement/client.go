@@ -45,7 +45,7 @@ func CreateAnnouncement(ctx context.Context, in *npool.AnnouncementReq) (*npool.
 	return info.(*npool.Announcement), nil
 }
 
-func DeleteAnnouncement(ctx context.Context, id string) (*npool.Announcement, error) {
+func DeleteAnnouncement(ctx context.Context, id uint32) (*npool.Announcement, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.DeleteAnnouncement(ctx, &npool.DeleteAnnouncementRequest{
 			Info: &npool.AnnouncementReq{
@@ -82,7 +82,7 @@ func UpdateAnnouncement(ctx context.Context, in *npool.AnnouncementReq) (*npool.
 func ExistAnnouncement(ctx context.Context, id string) (bool, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.ExistAnnouncement(ctx, &npool.ExistAnnouncementRequest{
-			ID: id,
+			EntID: id,
 		})
 		if err != nil {
 			return nil, fmt.Errorf("fail exist announcement: %v", err)
@@ -134,7 +134,7 @@ func GetAnnouncements(ctx context.Context, conds *npool.Conds, offset, limit int
 func GetAnnouncement(ctx context.Context, id string) (*npool.Announcement, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.GetAnnouncement(ctx, &npool.GetAnnouncementRequest{
-			ID: id,
+			EntID: id,
 		})
 		if err != nil {
 			return nil, fmt.Errorf("fail get announcement: %v", err)
@@ -145,4 +145,32 @@ func GetAnnouncement(ctx context.Context, id string) (*npool.Announcement, error
 		return nil, err
 	}
 	return info.(*npool.Announcement), nil
+}
+
+func GetAnnouncementOnly(ctx context.Context, conds *npool.Conds) (*npool.Announcement, error) {
+	const limit = 2
+	infos, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		resp, err := cli.GetAnnouncements(ctx, &npool.GetAnnouncementsRequest{
+			Conds:  conds,
+			Offset: 0,
+			Limit:  limit,
+		})
+		if err != nil {
+			return nil, err
+		}
+		return resp.Infos, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	if err != nil {
+		return nil, err
+	}
+	if len(infos.([]*npool.Announcement)) == 0 {
+		return nil, nil
+	}
+	if len(infos.([]*npool.Announcement)) > 1 {
+		return nil, fmt.Errorf("too many records")
+	}
+	return infos.([]*npool.Announcement)[0], nil
 }

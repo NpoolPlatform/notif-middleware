@@ -15,7 +15,8 @@ import (
 )
 
 type Handler struct {
-	ID          *uuid.UUID
+	ID          *uint32
+	EntID       *uuid.UUID
 	GoodID      *uuid.UUID
 	GoodName    *string
 	Amount      *decimal.Decimal
@@ -40,41 +41,75 @@ func NewHandler(ctx context.Context, options ...func(context.Context, *Handler) 
 	return handler, nil
 }
 
-func WithID(id *string) func(context.Context, *Handler) error {
+func WithID(u *uint32, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
+		if u == nil {
+			if must {
+				return fmt.Errorf("invalid id")
+			}
+			return nil
+		}
+		h.ID = u
+		return nil
+	}
+}
+
+func WithEntID(id *string, must bool) func(context.Context, *Handler) error {
+	return func(ctx context.Context, h *Handler) error {
+		if id == nil {
+			if must {
+				return fmt.Errorf("invalid entid")
+			}
+			return nil
+		}
 		_id, err := uuid.Parse(*id)
 		if err != nil {
 			return err
 		}
-		h.ID = &_id
+		h.EntID = &_id
 		return nil
 	}
 }
 
-func WithGoodID(goodID *string) func(context.Context, *Handler) error {
+func WithGoodID(id *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		_goodID, err := uuid.Parse(*goodID)
+		if id == nil {
+			if must {
+				return fmt.Errorf("invalid goodid")
+			}
+			return nil
+		}
+		_id, err := uuid.Parse(*id)
 		if err != nil {
 			return err
 		}
-		h.GoodID = &_goodID
+		h.GoodID = &_id
 		return nil
 	}
 }
 
-func WithGoodName(goodName *string) func(context.Context, *Handler) error {
+func WithGoodName(name *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		if goodName == nil || *goodName == "" {
+		if name == nil {
+			if must {
+				return fmt.Errorf("invalid goodname")
+			}
+			return nil
+		}
+		if *name == "" {
 			return fmt.Errorf("invalid good name")
 		}
-		h.GoodName = goodName
+		h.GoodName = name
 		return nil
 	}
 }
 
-func WithAmount(amount *string) func(context.Context, *Handler) error {
+func WithAmount(amount *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if amount == nil {
+			if must {
+				return fmt.Errorf("invalid amount")
+			}
 			return nil
 		}
 		_amount, err := decimal.NewFromString(*amount)
@@ -86,10 +121,13 @@ func WithAmount(amount *string) func(context.Context, *Handler) error {
 	}
 }
 
-func WithState(state *basetypes.Result) func(context.Context, *Handler) error {
+func WithState(state *basetypes.Result, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if state == nil {
-			return fmt.Errorf("state is empty")
+			if must {
+				return fmt.Errorf("invalid state")
+			}
+			return nil
 		}
 		switch *state {
 		case basetypes.Result_Fail:
@@ -103,9 +141,15 @@ func WithState(state *basetypes.Result) func(context.Context, *Handler) error {
 	}
 }
 
-func WithMessage(message *string) func(context.Context, *Handler) error {
+func WithMessage(message *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		if message == nil || *message == "" {
+		if message == nil {
+			if must {
+				return fmt.Errorf("invalid message")
+			}
+			return nil
+		}
+		if *message == "" {
 			return fmt.Errorf("invalid message")
 		}
 		h.Message = message
@@ -113,9 +157,12 @@ func WithMessage(message *string) func(context.Context, *Handler) error {
 	}
 }
 
-func WithGenerated(generated *bool) func(context.Context, *Handler) error {
+func WithGenerated(generated *bool, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if generated == nil {
+			if must {
+				return fmt.Errorf("invalid generated")
+			}
 			return nil
 		}
 		h.Generated = generated
@@ -123,19 +170,25 @@ func WithGenerated(generated *bool) func(context.Context, *Handler) error {
 	}
 }
 
-func WithBenefitDate(_date *uint32) func(context.Context, *Handler) error {
+func WithBenefitDate(_date *uint32, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if _date == nil {
-			return fmt.Errorf("benefit date is empty")
+			if must {
+				return fmt.Errorf("invalid benefitdate")
+			}
+			return nil
 		}
 		h.BenefitDate = _date
 		return nil
 	}
 }
 
-func WithTxID(txID *string) func(context.Context, *Handler) error {
+func WithTxID(txID *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if txID == nil {
+			if must {
+				return fmt.Errorf("invalid txid")
+			}
 			return nil
 		}
 		_txID, err := uuid.Parse(*txID)
@@ -150,12 +203,18 @@ func WithTxID(txID *string) func(context.Context, *Handler) error {
 func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		h.Conds = &crud.Conds{}
+		if conds == nil {
+			return nil
+		}
 		if conds.ID != nil {
-			id, err := uuid.Parse(conds.GetID().GetValue())
+			h.Conds.ID = &cruder.Cond{Op: conds.GetID().GetOp(), Val: conds.GetID().GetValue()}
+		}
+		if conds.EntID != nil {
+			id, err := uuid.Parse(conds.GetEntID().GetValue())
 			if err != nil {
 				return err
 			}
-			h.Conds.ID = &cruder.Cond{Op: conds.GetID().GetOp(), Val: id}
+			h.Conds.EntID = &cruder.Cond{Op: conds.GetEntID().GetOp(), Val: id}
 		}
 		if conds.GoodID != nil {
 			goodID, err := uuid.Parse(conds.GetGoodID().GetValue())

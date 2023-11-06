@@ -13,7 +13,8 @@ import (
 )
 
 type Handler struct {
-	ID        *uuid.UUID
+	ID        *uint32
+	EntID     *uuid.UUID
 	AppID     *uuid.UUID
 	Channel   *basetypes.NotifChannel
 	EventType *basetypes.UsedFor
@@ -33,36 +34,61 @@ func NewHandler(ctx context.Context, options ...func(context.Context, *Handler) 
 	return handler, nil
 }
 
-func WithID(id *string) func(context.Context, *Handler) error {
+func WithID(u *uint32, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
+		if u == nil {
+			if must {
+				return fmt.Errorf("invalid id")
+			}
+			return nil
+		}
+		h.ID = u
+		return nil
+	}
+}
+
+func WithEntID(id *string, must bool) func(context.Context, *Handler) error {
+	return func(ctx context.Context, h *Handler) error {
+		if id == nil {
+			if must {
+				return fmt.Errorf("invalid entid")
+			}
+			return nil
+		}
 		_id, err := uuid.Parse(*id)
 		if err != nil {
 			return err
 		}
-		h.ID = &_id
+		h.EntID = &_id
 		return nil
 	}
 }
 
-func WithAppID(appID *string) func(context.Context, *Handler) error {
+func WithAppID(id *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		if appID == nil {
-			return fmt.Errorf("invalid app id")
+		if id == nil {
+			if must {
+				return fmt.Errorf("invalid appid")
+			}
+			return nil
 		}
-		_appID, err := uuid.Parse(*appID)
+		_id, err := uuid.Parse(*id)
 		if err != nil {
 			return err
 		}
 
-		h.AppID = &_appID
+		h.AppID = &_id
 		return nil
 	}
 }
 
-func WithChannel(channel *basetypes.NotifChannel) func(context.Context, *Handler) error {
+func WithChannel(channel *basetypes.NotifChannel, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if channel == nil {
-			return fmt.Errorf("invalid channel")
+			if must {
+				return fmt.Errorf("invalid channel")
+			}
+			return nil
 		}
 		switch *channel {
 		case basetypes.NotifChannel_ChannelEmail:
@@ -76,10 +102,14 @@ func WithChannel(channel *basetypes.NotifChannel) func(context.Context, *Handler
 	}
 }
 
-func WithEventType(_type *basetypes.UsedFor) func(context.Context, *Handler) error {
+//nolint:gocyclo
+func WithEventType(_type *basetypes.UsedFor, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if _type == nil {
-			return fmt.Errorf("invalid event type")
+			if must {
+				return fmt.Errorf("invalid eventtype")
+			}
+			return nil
 		}
 		switch *_type {
 		case basetypes.UsedFor_WithdrawalRequest:
@@ -128,11 +158,14 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			return nil
 		}
 		if conds.ID != nil {
-			id, err := uuid.Parse(conds.GetID().GetValue())
+			h.Conds.ID = &cruder.Cond{Op: conds.GetID().GetOp(), Val: conds.GetID().GetValue()}
+		}
+		if conds.EntID != nil {
+			id, err := uuid.Parse(conds.GetEntID().GetValue())
 			if err != nil {
 				return err
 			}
-			h.Conds.ID = &cruder.Cond{Op: conds.GetID().GetOp(), Val: id}
+			h.Conds.EntID = &cruder.Cond{Op: conds.GetEntID().GetOp(), Val: id}
 		}
 		if conds.AppID != nil {
 			appID, err := uuid.Parse(conds.GetAppID().GetValue())
@@ -153,10 +186,22 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 	}
 }
 
-func WithReqs(reqs []*npool.ChannelReq) func(context.Context, *Handler) error {
+//nolint:gocyclo
+func WithReqs(reqs []*npool.ChannelReq, must bool) func(context.Context, *Handler) error {
 	return func(_ctx context.Context, h *Handler) error {
 		_reqs := []*crud.Req{}
 		for _, req := range _reqs {
+			if must {
+				if req.AppID == nil {
+					return fmt.Errorf("invalid appid")
+				}
+				if req.EventType == nil {
+					return fmt.Errorf("invalid eventtype")
+				}
+				if req.Channel == nil {
+					return fmt.Errorf("invalid channel")
+				}
+			}
 			if req.AppID == nil || req.Channel == nil || req.EventType == nil {
 				continue
 			}

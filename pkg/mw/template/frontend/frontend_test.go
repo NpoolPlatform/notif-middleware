@@ -28,7 +28,7 @@ func init() {
 
 var (
 	ret = npool.FrontendTemplate{
-		ID:         uuid.NewString(),
+		EntID:      uuid.NewString(),
 		AppID:      uuid.NewString(),
 		LangID:     uuid.NewString(),
 		UsedFor:    basetypes.UsedFor_KYCApproved,
@@ -41,12 +41,12 @@ var (
 func createFrontendTemplate(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
-		WithID(&ret.ID),
-		WithAppID(&ret.AppID),
-		WithLangID(&ret.LangID),
-		WithUsedFor(&ret.UsedFor),
-		WithTitle(&ret.Title),
-		WithContent(&ret.Content),
+		WithEntID(&ret.EntID, false),
+		WithAppID(&ret.AppID, true),
+		WithLangID(&ret.LangID, true),
+		WithUsedFor(&ret.UsedFor, true),
+		WithTitle(&ret.Title, false),
+		WithContent(&ret.Content, false),
 	)
 	assert.Nil(t, err)
 
@@ -54,6 +54,7 @@ func createFrontendTemplate(t *testing.T) {
 	if assert.Nil(t, err) {
 		ret.CreatedAt = info.CreatedAt
 		ret.UpdatedAt = info.UpdatedAt
+		ret.ID = info.ID
 		assert.Equal(t, info, &ret)
 	}
 }
@@ -63,12 +64,12 @@ func updateFrontendTemplate(t *testing.T) {
 	ret.Content = "change Content " + uuid.NewString()
 	handler, err := NewHandler(
 		context.Background(),
-		WithID(&ret.ID),
-		WithAppID(&ret.AppID),
-		WithLangID(&ret.LangID),
-		WithUsedFor(&ret.UsedFor),
-		WithTitle(&ret.Title),
-		WithContent(&ret.Content),
+		WithID(&ret.ID, true),
+		WithAppID(&ret.AppID, false),
+		WithLangID(&ret.LangID, false),
+		WithUsedFor(&ret.UsedFor, false),
+		WithTitle(&ret.Title, false),
+		WithContent(&ret.Content, false),
 	)
 	assert.Nil(t, err)
 
@@ -82,7 +83,7 @@ func updateFrontendTemplate(t *testing.T) {
 func getFrontendTemplate(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
-		WithID(&ret.ID),
+		WithEntID(&ret.EntID, true),
 	)
 	assert.Nil(t, err)
 
@@ -94,7 +95,7 @@ func getFrontendTemplate(t *testing.T) {
 
 func getFrontendTemplates(t *testing.T) {
 	conds := &npool.Conds{
-		ID: &basetypes.StringVal{Op: cruder.EQ, Value: ret.ID},
+		EntID: &basetypes.StringVal{Op: cruder.EQ, Value: ret.EntID},
 	}
 
 	handler, err := NewHandler(
@@ -114,7 +115,7 @@ func getFrontendTemplates(t *testing.T) {
 func deleteFrontendTemplate(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
-		WithID(&ret.ID),
+		WithID(&ret.ID, true),
 	)
 	assert.Nil(t, err)
 

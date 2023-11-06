@@ -13,11 +13,19 @@ import (
 
 func (s *Server) CreateSendState(ctx context.Context, in *npool.CreateSendStateRequest) (*npool.CreateSendStateResponse, error) {
 	req := in.GetInfo()
+	if req == nil {
+		logger.Sugar().Errorw(
+			"CreateSendState",
+			"In", in,
+		)
+		return &npool.CreateSendStateResponse{}, status.Error(codes.InvalidArgument, "Info is empty")
+	}
 	handler, err := sendamt.NewHandler(
 		ctx,
-		handler1.WithAppID(req.AppID),
-		handler1.WithUserID(req.UserID),
-		handler1.WithAnnouncementID(req.AppID, req.AnnouncementID),
+		handler1.WithEntID(req.EntID, false),
+		handler1.WithAppID(req.AppID, true),
+		handler1.WithUserID(req.UserID, true),
+		handler1.WithAnnouncementID(req.AppID, req.AnnouncementID, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
@@ -43,11 +51,10 @@ func (s *Server) CreateSendState(ctx context.Context, in *npool.CreateSendStateR
 	}, nil
 }
 
-//nolint
 func (s *Server) CreateSendStates(ctx context.Context, in *npool.CreateSendStatesRequest) (*npool.CreateSendStatesResponse, error) {
 	handler, err := sendamt.NewHandler(
 		ctx,
-		sendamt.WithReqs(in.GetInfos()),
+		sendamt.WithReqs(in.GetInfos(), true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

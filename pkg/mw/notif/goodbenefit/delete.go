@@ -24,7 +24,6 @@ func (h *Handler) DeleteGoodBenefit(ctx context.Context) (*npool.GoodBenefit, er
 		if _, err := crud.UpdateSet(
 			cli.GoodBenefit.UpdateOneID(*h.ID),
 			&crud.Req{
-				ID:        h.ID,
 				DeletedAt: &now,
 			},
 		).Save(ctx); err != nil {

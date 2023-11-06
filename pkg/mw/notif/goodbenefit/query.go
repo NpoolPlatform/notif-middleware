@@ -22,6 +22,7 @@ type queryHandler struct {
 func (h *queryHandler) selectGoodBenefit(stm *ent.GoodBenefitQuery) {
 	h.stm = stm.Select(
 		entgoodbenefit.FieldID,
+		entgoodbenefit.FieldEntID,
 		entgoodbenefit.FieldGoodID,
 		entgoodbenefit.FieldGoodName,
 		entgoodbenefit.FieldAmount,
@@ -42,17 +43,17 @@ func (h *queryHandler) formalize() {
 }
 
 func (h *queryHandler) queryGoodBenefit(cli *ent.Client) error {
-	if h.ID == nil {
-		return fmt.Errorf("good benefit id is empty")
+	if h.ID == nil && h.EntID == nil {
+		return fmt.Errorf("invalid id")
 	}
-	h.selectGoodBenefit(
-		cli.GoodBenefit.
-			Query().
-			Where(
-				entgoodbenefit.ID(*h.ID),
-				entgoodbenefit.DeletedAt(0),
-			),
-	)
+	stm := cli.GoodBenefit.Query().Where(entgoodbenefit.DeletedAt(0))
+	if h.ID != nil {
+		stm.Where(entgoodbenefit.ID(*h.ID))
+	}
+	if h.EntID != nil {
+		stm.Where(entgoodbenefit.EntID(*h.EntID))
+	}
+	h.selectGoodBenefit(stm)
 	return nil
 }
 

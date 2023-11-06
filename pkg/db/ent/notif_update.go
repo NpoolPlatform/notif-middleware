@@ -84,6 +84,20 @@ func (nu *NotifUpdate) AddDeletedAt(u int32) *NotifUpdate {
 	return nu
 }
 
+// SetEntID sets the "ent_id" field.
+func (nu *NotifUpdate) SetEntID(u uuid.UUID) *NotifUpdate {
+	nu.mutation.SetEntID(u)
+	return nu
+}
+
+// SetNillableEntID sets the "ent_id" field if the given value is not nil.
+func (nu *NotifUpdate) SetNillableEntID(u *uuid.UUID) *NotifUpdate {
+	if u != nil {
+		nu.SetEntID(*u)
+	}
+	return nu
+}
+
 // SetAppID sets the "app_id" field.
 func (nu *NotifUpdate) SetAppID(u uuid.UUID) *NotifUpdate {
 	nu.mutation.SetAppID(u)
@@ -410,7 +424,7 @@ func (nu *NotifUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   notif.Table,
 			Columns: notif.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: notif.FieldID,
 			},
 		},
@@ -462,6 +476,13 @@ func (nu *NotifUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeUint32,
 			Value:  value,
 			Column: notif.FieldDeletedAt,
+		})
+	}
+	if value, ok := nu.mutation.EntID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: notif.FieldEntID,
 		})
 	}
 	if value, ok := nu.mutation.AppID(); ok {
@@ -693,6 +714,20 @@ func (nuo *NotifUpdateOne) SetNillableDeletedAt(u *uint32) *NotifUpdateOne {
 // AddDeletedAt adds u to the "deleted_at" field.
 func (nuo *NotifUpdateOne) AddDeletedAt(u int32) *NotifUpdateOne {
 	nuo.mutation.AddDeletedAt(u)
+	return nuo
+}
+
+// SetEntID sets the "ent_id" field.
+func (nuo *NotifUpdateOne) SetEntID(u uuid.UUID) *NotifUpdateOne {
+	nuo.mutation.SetEntID(u)
+	return nuo
+}
+
+// SetNillableEntID sets the "ent_id" field if the given value is not nil.
+func (nuo *NotifUpdateOne) SetNillableEntID(u *uuid.UUID) *NotifUpdateOne {
+	if u != nil {
+		nuo.SetEntID(*u)
+	}
 	return nuo
 }
 
@@ -1035,7 +1070,7 @@ func (nuo *NotifUpdateOne) sqlSave(ctx context.Context) (_node *Notif, err error
 			Table:   notif.Table,
 			Columns: notif.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: notif.FieldID,
 			},
 		},
@@ -1104,6 +1139,13 @@ func (nuo *NotifUpdateOne) sqlSave(ctx context.Context) (_node *Notif, err error
 			Type:   field.TypeUint32,
 			Value:  value,
 			Column: notif.FieldDeletedAt,
+		})
+	}
+	if value, ok := nuo.mutation.EntID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: notif.FieldEntID,
 		})
 	}
 	if value, ok := nuo.mutation.AppID(); ok {

@@ -32,7 +32,7 @@ func init() {
 
 var (
 	announcement = announcementpb.Announcement{
-		ID:                  uuid.NewString(),
+		EntID:               uuid.NewString(),
 		AppID:               uuid.NewString(),
 		LangID:              uuid.NewString(),
 		Title:               uuid.NewString(),
@@ -62,24 +62,22 @@ func setupReadState(t *testing.T) func(*testing.T) {
 	// Create Announcement First
 	announcementHandler, err := announcement1.NewHandler(
 		context.Background(),
-		announcement1.WithTitle(&announcement.Title),
-		announcement1.WithContent(&announcement.Content),
-		announcement1.WithAppID(&announcement.AppID),
-		announcement1.WithLangID(&announcement.LangID),
-		announcement1.WithChannel(&announcement.Channel),
-		announcement1.WithAnnouncementType(&announcement.AnnouncementType),
-		announcement1.WithStartAt(&announcement.StartAt),
-		announcement1.WithEndAt(&announcement.EndAt),
+		announcement1.WithTitle(&announcement.Title, true),
+		announcement1.WithContent(&announcement.Content, true),
+		announcement1.WithAppID(&announcement.AppID, true),
+		announcement1.WithLangID(&announcement.LangID, true),
+		announcement1.WithChannel(&announcement.Channel, true),
+		announcement1.WithAnnouncementType(&announcement.AnnouncementType, true),
+		announcement1.WithStartAt(&announcement.StartAt, true),
+		announcement1.WithEndAt(&announcement.EndAt, true),
 	)
 	assert.Nil(t, err)
 
 	announcement, err := announcementHandler.CreateAnnouncement(context.Background())
 	assert.Nil(t, err)
-	ret.AnnouncementID = announcement.ID
+	ret.AnnouncementID = announcement.EntID
 
-	_id, err := uuid.Parse(announcement.ID)
-	assert.Nil(t, err)
-	announcementHandler.ID = &_id
+	announcementHandler.ID = &announcement.ID
 
 	return func(*testing.T) {
 		_, _ = announcementHandler.DeleteAnnouncement(context.Background())
@@ -89,9 +87,9 @@ func setupReadState(t *testing.T) func(*testing.T) {
 func createReadState(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
-		handler1.WithAppID(&ret.AppID),
-		handler1.WithUserID(&ret.UserID),
-		handler1.WithAnnouncementID(&ret.AppID, &ret.AnnouncementID),
+		handler1.WithAppID(&ret.AppID, true),
+		handler1.WithUserID(&ret.UserID, true),
+		handler1.WithAnnouncementID(&ret.AppID, &ret.AnnouncementID, true),
 	)
 	assert.Nil(t, err)
 
@@ -100,6 +98,7 @@ func createReadState(t *testing.T) {
 		ret.CreatedAt = info.CreatedAt
 		ret.UpdatedAt = info.UpdatedAt
 		ret.ID = info.ID
+		ret.EntID = info.EntID
 		assert.Equal(t, info, &ret)
 	}
 }
@@ -107,7 +106,7 @@ func createReadState(t *testing.T) {
 func getReadState(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
-		handler1.WithID(&ret.ID),
+		handler1.WithEntID(&ret.EntID, true),
 	)
 	assert.Nil(t, err)
 
@@ -139,7 +138,7 @@ func getReadStates(t *testing.T) {
 func deleteReadState(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
-		handler1.WithID(&ret.ID),
+		handler1.WithID(&ret.ID, true),
 	)
 	assert.Nil(t, err)
 
@@ -148,7 +147,6 @@ func deleteReadState(t *testing.T) {
 		ret.UpdatedAt = info.UpdatedAt
 		assert.Equal(t, info, &ret)
 	}
-
 	info, err = handler.GetReadState(context.Background())
 	assert.Nil(t, err)
 	assert.Nil(t, info)

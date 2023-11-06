@@ -14,7 +14,8 @@ import (
 )
 
 type Handler struct {
-	ID        *uuid.UUID
+	ID        *uint32
+	EntID     *uuid.UUID
 	AppID     *uuid.UUID
 	UserID    *uuid.UUID
 	EventType *basetypes.UsedFor
@@ -34,51 +35,76 @@ func NewHandler(ctx context.Context, options ...func(context.Context, *Handler) 
 	return handler, nil
 }
 
-func WithID(id *string) func(context.Context, *Handler) error {
+func WithID(u *uint32, must bool) func(context.Context, *Handler) error {
+	return func(ctx context.Context, h *Handler) error {
+		if u == nil {
+			if must {
+				return fmt.Errorf("invalid id")
+			}
+			return nil
+		}
+		h.ID = u
+		return nil
+	}
+}
+
+func WithEntID(id *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if id == nil {
+			if must {
+				return fmt.Errorf("invalid entid")
+			}
 			return nil
 		}
 		_id, err := uuid.Parse(*id)
 		if err != nil {
 			return err
 		}
-		h.ID = &_id
+		h.EntID = &_id
 		return nil
 	}
 }
 
-func WithAppID(appid *string) func(context.Context, *Handler) error {
+func WithAppID(id *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		if appid == nil {
+		if id == nil {
+			if must {
+				return fmt.Errorf("invalid appid")
+			}
 			return nil
 		}
-		_appid, err := uuid.Parse(*appid)
+		_id, err := uuid.Parse(*id)
 		if err != nil {
 			return err
 		}
-		h.AppID = &_appid
+		h.AppID = &_id
 		return nil
 	}
 }
 
-func WithUserID(userid *string) func(context.Context, *Handler) error {
+func WithUserID(id *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		if userid == nil {
+		if id == nil {
+			if must {
+				return fmt.Errorf("invalid userid")
+			}
 			return nil
 		}
-		_userid, err := uuid.Parse(*userid)
+		_id, err := uuid.Parse(*id)
 		if err != nil {
 			return err
 		}
-		h.UserID = &_userid
+		h.UserID = &_id
 		return nil
 	}
 }
 
-func WithEventType(eventtype *basetypes.UsedFor) func(context.Context, *Handler) error {
+func WithEventType(eventtype *basetypes.UsedFor, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if eventtype == nil {
+			if must {
+				return fmt.Errorf("invalid eventtype")
+			}
 			return nil
 		}
 		switch *eventtype {
@@ -98,17 +124,28 @@ func WithEventType(eventtype *basetypes.UsedFor) func(context.Context, *Handler)
 }
 
 //nolint
-func WithReqs(reqs []*npool.NotifUserReq) func(context.Context, *Handler) error {
+func WithReqs(reqs []*npool.NotifUserReq, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		_reqs := []*usercrud.Req{}
 		for _, req := range reqs {
+			if must {
+				if req.AppID == nil {
+					return fmt.Errorf("invalid appid")
+				}
+				if req.UserID == nil {
+					return fmt.Errorf("invalid userid")
+				}
+				if req.EventType == nil {
+					return fmt.Errorf("invalid eventtype")
+				}
+			}
 			_req := &usercrud.Req{}
-			if req.ID != nil {
-				id, err := uuid.Parse(req.GetID())
+			if req.EntID != nil {
+				id, err := uuid.Parse(req.GetEntID())
 				if err != nil {
 					return err
 				}
-				_req.ID = &id
+				_req.EntID = &id
 			}
 			if req.AppID != nil {
 				id, err := uuid.Parse(req.GetAppID())
@@ -145,17 +182,25 @@ func WithReqs(reqs []*npool.NotifUserReq) func(context.Context, *Handler) error 
 	}
 }
 
+//nolint:gocyclo
 func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		h.Conds = &usercrud.Conds{}
+		if conds == nil {
+			return nil
+		}
 		if conds.ID != nil {
-			id, err := uuid.Parse(conds.GetID().GetValue())
+			h.Conds.ID = &cruder.Cond{
+				Op: conds.GetID().GetOp(), Val: conds.GetID().GetValue(),
+			}
+		}
+		if conds.EntID != nil {
+			id, err := uuid.Parse(conds.GetEntID().GetValue())
 			if err != nil {
 				return err
 			}
-			h.Conds.ID = &cruder.Cond{
-				Op:  conds.GetID().GetOp(),
-				Val: id,
+			h.Conds.EntID = &cruder.Cond{
+				Op: conds.GetEntID().GetOp(), Val: id,
 			}
 		}
 		if conds.AppID != nil {
@@ -188,7 +233,7 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			case uint32(basetypes.UsedFor_Announcement):
 			case uint32(basetypes.UsedFor_GoodBenefit1):
 			default:
-				return fmt.Errorf("invalid usedfor")
+				return fmt.Errorf("invalid eventtype")
 			}
 			_type := conds.GetEventType().GetValue()
 			h.Conds.EventType = &cruder.Cond{

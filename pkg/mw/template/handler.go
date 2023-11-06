@@ -29,52 +29,64 @@ func NewHandler(ctx context.Context, options ...func(context.Context, *Handler) 
 	return handler, nil
 }
 
-func WithAppID(appid *string) func(context.Context, *Handler) error {
+func WithAppID(id *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		if appid == nil {
+		if id == nil {
+			if must {
+				return fmt.Errorf("invalid appid")
+			}
 			return nil
 		}
-		_appid, err := uuid.Parse(*appid)
+		_id, err := uuid.Parse(*id)
 		if err != nil {
 			return err
 		}
-		h.AppID = &_appid
+		h.AppID = &_id
 		return nil
 	}
 }
 
-func WithUserID(userid *string) func(context.Context, *Handler) error {
+func WithUserID(id *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		if userid == nil {
+		if id == nil {
+			if must {
+				return fmt.Errorf("invalid userid")
+			}
 			return nil
 		}
-		_userid, err := uuid.Parse(*userid)
+		_id, err := uuid.Parse(*id)
 		if err != nil {
 			return err
 		}
-		h.UserID = &_userid
+		h.UserID = &_id
 		return nil
 	}
 }
 
-func WithLangID(langid *string) func(context.Context, *Handler) error {
+func WithLangID(id *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		if langid == nil {
+		if id == nil {
+			if must {
+				return fmt.Errorf("invalid langid")
+			}
 			return nil
 		}
-		_langid, err := uuid.Parse(*langid)
+		_id, err := uuid.Parse(*id)
 		if err != nil {
 			return err
 		}
-		h.LangID = &_langid
+		h.LangID = &_id
 		return nil
 	}
 }
 
 // nolint:gocyclo
-func WithUsedFor(_usedFor *basetypes.UsedFor) func(context.Context, *Handler) error {
+func WithUsedFor(_usedFor *basetypes.UsedFor, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if _usedFor == nil {
+			if must {
+				return fmt.Errorf("invalid usedfor")
+			}
 			return nil
 		}
 		switch *_usedFor {
@@ -107,10 +119,13 @@ func WithUsedFor(_usedFor *basetypes.UsedFor) func(context.Context, *Handler) er
 	}
 }
 
-func WithChannel(channel *basetypes.NotifChannel) func(context.Context, *Handler) error {
+func WithChannel(channel *basetypes.NotifChannel, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if channel == nil {
-			return fmt.Errorf("invalid channel")
+			if must {
+				return fmt.Errorf("invalid channel")
+			}
+			return nil
 		}
 		switch *channel {
 		case basetypes.NotifChannel_ChannelEmail:
@@ -124,8 +139,14 @@ func WithChannel(channel *basetypes.NotifChannel) func(context.Context, *Handler
 	}
 }
 
-func WithVars(vars *templatemwpb.TemplateVars) func(context.Context, *Handler) error {
+func WithVars(vars *templatemwpb.TemplateVars, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
+		if vars == nil {
+			if must {
+				return fmt.Errorf("invalid vars")
+			}
+			return nil
+		}
 		h.Vars = vars
 		return nil
 	}

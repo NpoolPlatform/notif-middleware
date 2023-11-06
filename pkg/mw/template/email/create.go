@@ -20,12 +20,24 @@ type createHandler struct {
 	*Handler
 }
 
+func (h *createHandler) checkRepeat() error {
+	countryMap := map[string]*uuid.UUID{}
+	for _, req := range h.Reqs {
+		_, ok := countryMap[req.AppID.String()+req.LangID.String()+req.UsedFor.String()]
+		if ok {
+			return fmt.Errorf("duplicate emailtemplate")
+		}
+		countryMap[req.AppID.String()+req.LangID.String()+req.UsedFor.String()] = req.LangID
+	}
+	return nil
+}
+
 func (h *createHandler) createEmailTemplate(ctx context.Context, tx *ent.Tx, req *emailtemplatecrud.Req) error {
 	if req.AppID == nil {
-		return fmt.Errorf("invalid lang")
+		return fmt.Errorf("invalid appid")
 	}
 	if req.LangID == nil {
-		return fmt.Errorf("invalid logo")
+		return fmt.Errorf("invalid langid")
 	}
 	if req.UsedFor == nil {
 		return fmt.Errorf("invalid usedfor")
@@ -58,13 +70,13 @@ func (h *createHandler) createEmailTemplate(ctx context.Context, tx *ent.Tx, req
 	}
 
 	id := uuid.New()
-	if req.ID == nil {
-		req.ID = &id
+	if req.EntID == nil {
+		req.EntID = &id
 	}
 	info, err := emailtemplatecrud.CreateSet(
 		tx.EmailTemplate.Create(),
 		&emailtemplatecrud.Req{
-			ID:                req.ID,
+			EntID:             req.EntID,
 			AppID:             req.AppID,
 			LangID:            req.LangID,
 			UsedFor:           req.UsedFor,
@@ -81,6 +93,7 @@ func (h *createHandler) createEmailTemplate(ctx context.Context, tx *ent.Tx, req
 	}
 
 	h.ID = &info.ID
+	h.EntID = &info.EntID
 	return nil
 }
 
@@ -89,7 +102,7 @@ func (h *Handler) CreateEmailTemplate(ctx context.Context) (*npool.EmailTemplate
 		Handler: h,
 	}
 	req := &emailtemplatecrud.Req{
-		ID:                handler.ID,
+		EntID:             handler.EntID,
 		AppID:             handler.AppID,
 		LangID:            handler.LangID,
 		UsedFor:           handler.UsedFor,
@@ -120,11 +133,14 @@ func (h *Handler) CreateEmailTemplates(ctx context.Context) ([]*npool.EmailTempl
 	ids := []uuid.UUID{}
 
 	err := db.WithTx(ctx, func(_ctx context.Context, tx *ent.Tx) error {
+		if err := handler.checkRepeat(); err != nil {
+			return err
+		}
 		for _, req := range h.Reqs {
 			if err := handler.createEmailTemplate(ctx, tx, req); err != nil {
 				return err
 			}
-			ids = append(ids, *h.ID)
+			ids = append(ids, *h.EntID)
 		}
 		return nil
 	})
@@ -133,7 +149,7 @@ func (h *Handler) CreateEmailTemplates(ctx context.Context) ([]*npool.EmailTempl
 	}
 
 	h.Conds = &emailtemplatecrud.Conds{
-		IDs: &cruder.Cond{Op: cruder.IN, Val: ids},
+		EntIDs: &cruder.Cond{Op: cruder.IN, Val: ids},
 	}
 	h.Offset = 0
 	h.Limit = int32(len(ids))

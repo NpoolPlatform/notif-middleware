@@ -47,7 +47,7 @@ func (s *Server) GetContacts(ctx context.Context, in *npool.GetContactsRequest) 
 func (s *Server) GetContact(ctx context.Context, in *npool.GetContactRequest) (*npool.GetContactResponse, error) {
 	handler, err := contact1.NewHandler(
 		ctx,
-		contact1.WithID(&in.ID),
+		contact1.WithEntID(&in.EntID, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

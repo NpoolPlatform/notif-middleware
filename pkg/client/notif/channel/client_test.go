@@ -58,25 +58,24 @@ func createChannel(t *testing.T) {
 		ret.CreatedAt = info.CreatedAt
 		ret.UpdatedAt = info.UpdatedAt
 		ret.ID = info.ID
+		ret.EntID = info.EntID
 		assert.Equal(t, info, &ret)
 	}
 }
 
 func existChannelConds(t *testing.T) {
-	exist, err := ExistChannelConds(context.Background(), &npool.ExistChannelCondsRequest{
-		Conds: &npool.Conds{
-			AppID: &basetypes.StringVal{
-				Op:    cruder.EQ,
-				Value: ret.AppID,
-			},
-			EventType: &basetypes.Uint32Val{
-				Op:    cruder.EQ,
-				Value: uint32(ret.EventType),
-			},
-			Channel: &basetypes.Uint32Val{
-				Op:    cruder.EQ,
-				Value: uint32(ret.Channel),
-			},
+	exist, err := ExistChannelConds(context.Background(), &npool.Conds{
+		AppID: &basetypes.StringVal{
+			Op:    cruder.EQ,
+			Value: ret.AppID,
+		},
+		EventType: &basetypes.Uint32Val{
+			Op:    cruder.EQ,
+			Value: uint32(ret.EventType),
+		},
+		Channel: &basetypes.Uint32Val{
+			Op:    cruder.EQ,
+			Value: uint32(ret.Channel),
 		},
 	})
 	if assert.Nil(t, err) {
@@ -85,7 +84,7 @@ func existChannelConds(t *testing.T) {
 }
 
 func getChannel(t *testing.T) {
-	info, err := GetChannel(context.Background(), ret.AppID, ret.ID)
+	info, err := GetChannel(context.Background(), ret.AppID, ret.EntID)
 	assert.Nil(t, err)
 	assert.NotNil(t, info)
 }
@@ -115,7 +114,7 @@ func deleteChannel(t *testing.T) {
 	if assert.Nil(t, err) {
 		assert.Equal(t, info, &ret)
 	}
-	info, err = GetChannel(context.Background(), info.AppID, info.ID)
+	info, err = GetChannel(context.Background(), info.AppID, info.EntID)
 	assert.Nil(t, err)
 	assert.Nil(t, info)
 }

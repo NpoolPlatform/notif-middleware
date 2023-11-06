@@ -37,7 +37,7 @@ func init() {
 
 var (
 	ret = &npool.Notif{
-		ID:           uuid.NewString(),
+		EntID:        uuid.NewString(),
 		AppID:        uuid.NewString(),
 		UserID:       uuid.NewString(),
 		Notified:     false,
@@ -55,7 +55,7 @@ var (
 	}
 
 	retReq = &npool.NotifReq{
-		ID:          &ret.ID,
+		EntID:       &ret.EntID,
 		AppID:       &ret.AppID,
 		UserID:      &ret.UserID,
 		Notified:    &ret.Notified,
@@ -71,7 +71,7 @@ var (
 
 	rets = []npool.Notif{
 		{
-			ID:           uuid.NewString(),
+			EntID:        uuid.NewString(),
 			AppID:        ret.AppID,
 			UserID:       uuid.NewString(),
 			Notified:     false,
@@ -88,7 +88,7 @@ var (
 			NotifTypeStr: basetypes.NotifType_NotifUnicast.String(),
 		},
 		{
-			ID:           uuid.NewString(),
+			EntID:        uuid.NewString(),
 			AppID:        ret.AppID,
 			UserID:       uuid.NewString(),
 			Notified:     false,
@@ -108,7 +108,7 @@ var (
 
 	retsReq = []*npool.NotifReq{
 		{
-			ID:          &rets[0].ID,
+			EntID:       &rets[0].EntID,
 			AppID:       &rets[0].AppID,
 			UserID:      &rets[0].UserID,
 			Notified:    &rets[0].Notified,
@@ -122,7 +122,7 @@ var (
 			NotifType:   &rets[0].NotifType,
 		},
 		{
-			ID:          &rets[1].ID,
+			EntID:       &rets[1].EntID,
 			AppID:       &rets[1].AppID,
 			UserID:      &rets[1].UserID,
 			Notified:    &rets[1].Notified,
@@ -145,19 +145,31 @@ func createNotif(t *testing.T) {
 		ret.CreatedAt = info.CreatedAt
 		ret.UpdatedAt = info.UpdatedAt
 		ret.Notified = info.Notified
+		ret.ID = info.ID
+		ret.EntID = info.EntID
 		assert.Equal(t, ret, info)
 	}
 }
 
 func createNotifs(t *testing.T) {
 	infos, err := CreateNotifs(context.Background(), retsReq)
+	fmt.Println("creates err: ", err)
 	if assert.Nil(t, err) {
+		for key := range infos {
+			if infos[key].EntID == rets[0].EntID {
+				rets[0].ID = infos[key].ID
+			}
+			if infos[key].EntID == rets[1].EntID {
+				rets[1].ID = infos[key].ID
+			}
+		}
 		assert.Equal(t, len(infos), 2)
 	}
 }
 
 func updateNotif(t *testing.T) {
 	ret.Notified = true
+	retReq.ID = &ret.ID
 	info, err := UpdateNotif(context.Background(), retReq)
 	if assert.Nil(t, err) {
 		ret.UserID = info.UserID
@@ -181,13 +193,14 @@ func updateNotifs(t *testing.T) {
 		},
 	}
 	infos, err := UpdateNotifs(context.Background(), updReq)
+	fmt.Println("UPDATEs err: ", err)
 	if assert.Nil(t, err) {
 		assert.Equal(t, len(infos), 2)
 	}
 }
 
 func getNotif(t *testing.T) {
-	info, err := GetNotif(context.Background(), ret.ID)
+	info, err := GetNotif(context.Background(), ret.EntID)
 	if assert.Nil(t, err) {
 		assert.Equal(t, ret.String(), info.String())
 	}
@@ -200,6 +213,7 @@ func getNotifs(t *testing.T) {
 			Value: ret.AppID,
 		},
 	}, 0, 3)
+	fmt.Println("GETS err: ", err)
 	if assert.Nil(t, err) {
 		assert.Equal(t, total, uint32(3))
 		assert.Equal(t, len(infos), 3)
@@ -208,9 +222,9 @@ func getNotifs(t *testing.T) {
 
 func getNotifOnly(t *testing.T) {
 	info, err := GetNotifOnly(context.Background(), &npool.Conds{
-		ID: &basetypes.StringVal{
+		EntID: &basetypes.StringVal{
 			Op:    cruder.EQ,
-			Value: ret.ID,
+			Value: ret.EntID,
 		},
 	})
 	if assert.Nil(t, err) {
@@ -239,7 +253,7 @@ func deleteNotif(t *testing.T) {
 		ID: &ret.ID,
 	})
 	assert.Nil(t, err)
-	info, err = GetNotif(context.Background(), info.ID)
+	info, err = GetNotif(context.Background(), info.EntID)
 	assert.Nil(t, err)
 	assert.Nil(t, info)
 	for key := range rets {

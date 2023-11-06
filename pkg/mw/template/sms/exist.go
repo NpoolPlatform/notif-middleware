@@ -12,8 +12,8 @@ import (
 )
 
 func (h *Handler) ExistSMSTemplate(ctx context.Context) (exist bool, err error) {
-	if h.ID == nil {
-		return false, fmt.Errorf("invalid id")
+	if h.EntID == nil {
+		return false, fmt.Errorf("invalid entid")
 	}
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
@@ -21,7 +21,7 @@ func (h *Handler) ExistSMSTemplate(ctx context.Context) (exist bool, err error) 
 			SMSTemplate.
 			Query().
 			Where(
-				entsmstemplate.ID(*h.ID),
+				entsmstemplate.EntID(*h.EntID),
 				entsmstemplate.DeletedAt(0),
 			).
 			Exist(_ctx)

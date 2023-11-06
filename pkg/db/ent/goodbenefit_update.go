@@ -84,6 +84,20 @@ func (gbu *GoodBenefitUpdate) AddDeletedAt(u int32) *GoodBenefitUpdate {
 	return gbu
 }
 
+// SetEntID sets the "ent_id" field.
+func (gbu *GoodBenefitUpdate) SetEntID(u uuid.UUID) *GoodBenefitUpdate {
+	gbu.mutation.SetEntID(u)
+	return gbu
+}
+
+// SetNillableEntID sets the "ent_id" field if the given value is not nil.
+func (gbu *GoodBenefitUpdate) SetNillableEntID(u *uuid.UUID) *GoodBenefitUpdate {
+	if u != nil {
+		gbu.SetEntID(*u)
+	}
+	return gbu
+}
+
 // SetGoodID sets the "good_id" field.
 func (gbu *GoodBenefitUpdate) SetGoodID(u uuid.UUID) *GoodBenefitUpdate {
 	gbu.mutation.SetGoodID(u)
@@ -337,7 +351,7 @@ func (gbu *GoodBenefitUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   goodbenefit.Table,
 			Columns: goodbenefit.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: goodbenefit.FieldID,
 			},
 		},
@@ -389,6 +403,13 @@ func (gbu *GoodBenefitUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeUint32,
 			Value:  value,
 			Column: goodbenefit.FieldDeletedAt,
+		})
+	}
+	if value, ok := gbu.mutation.EntID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: goodbenefit.FieldEntID,
 		})
 	}
 	if value, ok := gbu.mutation.GoodID(); ok {
@@ -575,6 +596,20 @@ func (gbuo *GoodBenefitUpdateOne) SetNillableDeletedAt(u *uint32) *GoodBenefitUp
 // AddDeletedAt adds u to the "deleted_at" field.
 func (gbuo *GoodBenefitUpdateOne) AddDeletedAt(u int32) *GoodBenefitUpdateOne {
 	gbuo.mutation.AddDeletedAt(u)
+	return gbuo
+}
+
+// SetEntID sets the "ent_id" field.
+func (gbuo *GoodBenefitUpdateOne) SetEntID(u uuid.UUID) *GoodBenefitUpdateOne {
+	gbuo.mutation.SetEntID(u)
+	return gbuo
+}
+
+// SetNillableEntID sets the "ent_id" field if the given value is not nil.
+func (gbuo *GoodBenefitUpdateOne) SetNillableEntID(u *uuid.UUID) *GoodBenefitUpdateOne {
+	if u != nil {
+		gbuo.SetEntID(*u)
+	}
 	return gbuo
 }
 
@@ -844,7 +879,7 @@ func (gbuo *GoodBenefitUpdateOne) sqlSave(ctx context.Context) (_node *GoodBenef
 			Table:   goodbenefit.Table,
 			Columns: goodbenefit.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: goodbenefit.FieldID,
 			},
 		},
@@ -913,6 +948,13 @@ func (gbuo *GoodBenefitUpdateOne) sqlSave(ctx context.Context) (_node *GoodBenef
 			Type:   field.TypeUint32,
 			Value:  value,
 			Column: goodbenefit.FieldDeletedAt,
+		})
+	}
+	if value, ok := gbuo.mutation.EntID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: goodbenefit.FieldEntID,
 		})
 	}
 	if value, ok := gbuo.mutation.GoodID(); ok {

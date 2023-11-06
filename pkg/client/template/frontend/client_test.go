@@ -38,7 +38,7 @@ func init() {
 
 var (
 	ret = npool.FrontendTemplate{
-		ID:         uuid.NewString(),
+		EntID:      uuid.NewString(),
 		AppID:      uuid.NewString(),
 		LangID:     uuid.NewString(),
 		UsedFor:    basetypes.UsedFor_KYCApproved,
@@ -48,7 +48,7 @@ var (
 	}
 
 	appInfo = npool.FrontendTemplateReq{
-		ID:      &ret.ID,
+		EntID:   &ret.EntID,
 		AppID:   &ret.AppID,
 		LangID:  &ret.LangID,
 		UsedFor: &ret.UsedFor,
@@ -58,7 +58,7 @@ var (
 
 	rets = []npool.FrontendTemplate{
 		{
-			ID:         uuid.NewString(),
+			EntID:      uuid.NewString(),
 			AppID:      ret.AppID,
 			LangID:     uuid.NewString(),
 			UsedFor:    basetypes.UsedFor_KYCRejected,
@@ -67,7 +67,7 @@ var (
 			Content:    "Content1 " + uuid.NewString(),
 		},
 		{
-			ID:         uuid.NewString(),
+			EntID:      uuid.NewString(),
 			AppID:      ret.AppID,
 			LangID:     uuid.NewString(),
 			UsedFor:    basetypes.UsedFor_WithdrawalCompleted,
@@ -86,6 +86,8 @@ func createFrontendTemplate(t *testing.T) {
 	if assert.Nil(t, err) {
 		ret.UpdatedAt = info.UpdatedAt
 		ret.CreatedAt = info.CreatedAt
+		ret.ID = info.ID
+		ret.EntID = info.EntID
 		assert.Equal(t, info, &ret)
 	}
 }
@@ -105,13 +107,27 @@ func createFrontendTemplates(t *testing.T) {
 
 	infos, err := CreateFrontendTemplates(context.Background(), apps)
 	if assert.Nil(t, err) {
+		for key := range infos {
+			for key2 := range rets {
+				if infos[key].EntID == rets[key2].EntID {
+					rets[key2].ID = infos[key].ID
+				}
+			}
+		}
 		assert.Equal(t, len(infos), 2)
 	}
 }
 
 func updateFrontendTemplate(t *testing.T) {
 	var err error
-	info, err = UpdateFrontendTemplate(context.Background(), &appInfo)
+	ret.Title = uuid.NewString()
+	ret.Content = uuid.NewString()
+	updateInfo := &npool.FrontendTemplateReq{
+		ID:      &ret.ID,
+		Title:   &ret.Title,
+		Content: &ret.Content,
+	}
+	info, err = UpdateFrontendTemplate(context.Background(), updateInfo)
 	if assert.Nil(t, err) {
 		ret.UpdatedAt = info.UpdatedAt
 		assert.Equal(t, info, &ret)
@@ -120,7 +136,7 @@ func updateFrontendTemplate(t *testing.T) {
 
 func getFrontendTemplate(t *testing.T) {
 	var err error
-	info, err = GetFrontendTemplate(context.Background(), info.ID)
+	info, err = GetFrontendTemplate(context.Background(), info.EntID)
 	if assert.Nil(t, err) {
 		assert.Equal(t, info, &ret)
 	}
@@ -129,8 +145,8 @@ func getFrontendTemplate(t *testing.T) {
 func getFrontendTemplates(t *testing.T) {
 	infos, total, err := GetFrontendTemplates(context.Background(),
 		&npool.Conds{
-			ID: &basetypes.StringVal{
-				Value: info.ID,
+			EntID: &basetypes.StringVal{
+				Value: info.EntID,
 				Op:    cruder.EQ,
 			},
 		}, 0, 1)
@@ -144,20 +160,18 @@ func getFrontendTemplateOnly(t *testing.T) {
 	var err error
 	info, err = GetFrontendTemplateOnly(context.Background(),
 		&npool.Conds{
-			ID: &basetypes.StringVal{
-				Value: info.ID,
+			EntID: &basetypes.StringVal{
+				Value: info.EntID,
 				Op:    cruder.EQ,
 			},
 		})
 	if assert.Nil(t, err) {
-		ret.UpdatedAt = info.UpdatedAt
-		ret.CreatedAt = info.CreatedAt
 		assert.Equal(t, info, &ret)
 	}
 }
 
 func existFrontendTemplate(t *testing.T) {
-	exist, err := ExistFrontendTemplate(context.Background(), info.ID)
+	exist, err := ExistFrontendTemplate(context.Background(), info.EntID)
 	if assert.Nil(t, err) {
 		assert.Equal(t, exist, true)
 	}
@@ -166,8 +180,8 @@ func existFrontendTemplate(t *testing.T) {
 func existFrontendTemplateConds(t *testing.T) {
 	exist, err := ExistFrontendTemplateConds(context.Background(),
 		&npool.Conds{
-			ID: &basetypes.StringVal{
-				Value: info.ID,
+			EntID: &basetypes.StringVal{
+				Value: info.EntID,
 				Op:    cruder.EQ,
 			},
 		},

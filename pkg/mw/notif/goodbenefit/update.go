@@ -11,13 +11,6 @@ import (
 )
 
 func (h *Handler) UpdateGoodBenefit(ctx context.Context) (info *npool.GoodBenefit, err error) {
-	if h.ID == nil {
-		return nil, fmt.Errorf("id is empty")
-	}
-	if h.Generated == nil {
-		return nil, fmt.Errorf("generated is empty")
-	}
-
 	info, err = h.GetGoodBenefit(ctx)
 	if err != nil {
 		return nil, err
@@ -33,7 +26,6 @@ func (h *Handler) UpdateGoodBenefit(ctx context.Context) (info *npool.GoodBenefi
 		if _, err := crud.UpdateSet(
 			cli.GoodBenefit.UpdateOneID(*h.ID),
 			&crud.Req{
-				ID:        h.ID,
 				Generated: h.Generated,
 			},
 		).Save(_ctx); err != nil {

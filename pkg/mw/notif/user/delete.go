@@ -30,7 +30,6 @@ func (h *Handler) DeleteNotifUser(ctx context.Context) (*npool.NotifUser, error)
 		if _, err := usercrud.UpdateSet(
 			cli.NotifUser.UpdateOneID(*h.ID),
 			&usercrud.Req{
-				ID:        h.ID,
 				DeletedAt: &now,
 			},
 		).Save(ctx); err != nil {

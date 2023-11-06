@@ -4,6 +4,7 @@ package schema
 import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
+	crudermixin "github.com/NpoolPlatform/libent-cruder/pkg/mixin"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/mixin"
 	"github.com/google/uuid"
 
@@ -18,16 +19,13 @@ type GoodBenefit struct {
 func (GoodBenefit) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		mixin.TimeMixin{},
+		crudermixin.AutoIDMixin{},
 	}
 }
 
 // Fields of the GoodBenefit.
 func (GoodBenefit) Fields() []ent.Field {
 	return []ent.Field{
-		field.
-			UUID("id", uuid.UUID{}).
-			Default(uuid.New).
-			Unique(),
 		field.
 			UUID("good_id", uuid.UUID{}).
 			Optional().

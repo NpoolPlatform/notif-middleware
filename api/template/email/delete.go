@@ -19,9 +19,16 @@ func (s *Server) DeleteEmailTemplate(
 	error,
 ) {
 	req := in.GetInfo()
+	if req == nil {
+		logger.Sugar().Errorw(
+			"DeleteEmailTemplate",
+			"In", in,
+		)
+		return &npool.DeleteEmailTemplateResponse{}, status.Error(codes.InvalidArgument, "Info is empty")
+	}
 	handler, err := emailtemplate1.NewHandler(
 		ctx,
-		emailtemplate1.WithID(req.ID),
+		emailtemplate1.WithID(req.ID, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

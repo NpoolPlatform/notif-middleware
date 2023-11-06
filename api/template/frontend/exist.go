@@ -20,7 +20,7 @@ func (s *Server) ExistFrontendTemplate(
 ) {
 	handler, err := frontendtemplate1.NewHandler(
 		ctx,
-		frontendtemplate1.WithID(&in.ID),
+		frontendtemplate1.WithEntID(&in.EntID, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

@@ -72,7 +72,7 @@ func (etd *EmailTemplateDelete) sqlExec(ctx context.Context) (int, error) {
 		Node: &sqlgraph.NodeSpec{
 			Table: emailtemplate.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: emailtemplate.FieldID,
 			},
 		},

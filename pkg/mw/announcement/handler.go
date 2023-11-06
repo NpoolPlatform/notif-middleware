@@ -14,7 +14,8 @@ import (
 )
 
 type Handler struct {
-	ID      *uuid.UUID
+	ID      *uint32
+	EntID   *uuid.UUID
 	AppID   *uuid.UUID
 	LangID  *uuid.UUID
 	Title   *string
@@ -39,43 +40,76 @@ func NewHandler(ctx context.Context, options ...func(context.Context, *Handler) 
 	return handler, nil
 }
 
-func WithID(id *string) func(context.Context, *Handler) error {
+func WithID(u *uint32, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
+		if u == nil {
+			if must {
+				return fmt.Errorf("invalid id")
+			}
+			return nil
+		}
+		h.ID = u
+		return nil
+	}
+}
+
+func WithEntID(id *string, must bool) func(context.Context, *Handler) error {
+	return func(ctx context.Context, h *Handler) error {
+		if id == nil {
+			if must {
+				return fmt.Errorf("invalid entid")
+			}
+			return nil
+		}
 		_id, err := uuid.Parse(*id)
 		if err != nil {
 			return err
 		}
-		h.ID = &_id
+		h.EntID = &_id
 		return nil
 	}
 }
 
-func WithAppID(appID *string) func(context.Context, *Handler) error {
+func WithAppID(id *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		_appID, err := uuid.Parse(*appID)
+		if id == nil {
+			if must {
+				return fmt.Errorf("invalid appid")
+			}
+			return nil
+		}
+		_id, err := uuid.Parse(*id)
 		if err != nil {
 			return err
 		}
-		h.AppID = &_appID
+		h.AppID = &_id
 		return nil
 	}
 }
 
-func WithLangID(langID *string) func(context.Context, *Handler) error {
+func WithLangID(id *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		_langID, err := uuid.Parse(*langID)
+		if id == nil {
+			if must {
+				return fmt.Errorf("invalid langid")
+			}
+		}
+		_id, err := uuid.Parse(*id)
 		if err != nil {
 			return err
 		}
 
-		h.LangID = &_langID
+		h.LangID = &_id
 		return nil
 	}
 }
 
-func WithTitle(title *string) func(context.Context, *Handler) error {
+func WithTitle(title *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if title == nil {
+			if must {
+				return fmt.Errorf("invalid title")
+			}
 			return nil
 		}
 		const leastTitleLen = 4
@@ -87,9 +121,12 @@ func WithTitle(title *string) func(context.Context, *Handler) error {
 	}
 }
 
-func WithContent(content *string) func(context.Context, *Handler) error {
+func WithContent(content *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if content == nil {
+			if must {
+				return fmt.Errorf("invalid content")
+			}
 			return nil
 		}
 		const leastContentLen = 4
@@ -101,9 +138,12 @@ func WithContent(content *string) func(context.Context, *Handler) error {
 	}
 }
 
-func WithChannel(channel *basetypes.NotifChannel) func(context.Context, *Handler) error {
+func WithChannel(channel *basetypes.NotifChannel, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if channel == nil {
+			if must {
+				return fmt.Errorf("invalid channel")
+			}
 			return nil
 		}
 		switch *channel {
@@ -118,9 +158,12 @@ func WithChannel(channel *basetypes.NotifChannel) func(context.Context, *Handler
 	}
 }
 
-func WithAnnouncementType(_type *basetypes.NotifType) func(context.Context, *Handler) error {
+func WithAnnouncementType(_type *basetypes.NotifType, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if _type == nil {
+			if must {
+				return fmt.Errorf("invalid announcementtype")
+			}
 			return nil
 		}
 		switch *_type {
@@ -134,9 +177,12 @@ func WithAnnouncementType(_type *basetypes.NotifType) func(context.Context, *Han
 	}
 }
 
-func WithStartAt(startAt *uint32) func(context.Context, *Handler) error {
+func WithStartAt(startAt *uint32, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if startAt == nil {
+			if must {
+				return fmt.Errorf("invalid startat")
+			}
 			return nil
 		}
 		if *startAt < uint32(time.Now().Unix()) {
@@ -147,9 +193,12 @@ func WithStartAt(startAt *uint32) func(context.Context, *Handler) error {
 	}
 }
 
-func WithEndAt(endAt *uint32) func(context.Context, *Handler) error {
+func WithEndAt(endAt *uint32, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if endAt == nil {
+			if must {
+				return fmt.Errorf("invalid endat")
+			}
 			return nil
 		}
 		if *endAt < uint32(time.Now().Unix()) {
@@ -177,6 +226,7 @@ func WithLimit(limit int32) func(context.Context, *Handler) error {
 	}
 }
 
+//nolint:gocyclo
 func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		h.Conds = &crud.Conds{}
@@ -184,12 +234,17 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			return nil
 		}
 		if conds.ID != nil {
-			id, err := uuid.Parse(conds.GetID().GetValue())
+			h.Conds.ID = &cruder.Cond{
+				Op: conds.GetID().GetOp(), Val: conds.GetID().GetValue(),
+			}
+		}
+		if conds.EntID != nil {
+			id, err := uuid.Parse(conds.GetEntID().GetValue())
 			if err != nil {
 				return err
 			}
-			h.Conds.ID = &cruder.Cond{
-				Op: conds.GetID().GetOp(), Val: id,
+			h.Conds.EntID = &cruder.Cond{
+				Op: conds.GetEntID().GetOp(), Val: id,
 			}
 		}
 		if conds.AppID != nil {
@@ -233,6 +288,21 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			}
 			_userID := userID.String()
 			h.UserID = &_userID
+			h.Conds.UserID = &cruder.Cond{
+				Op: conds.GetUserID().GetOp(), Val: userID,
+			}
+		}
+		if conds.AnnouncementType != nil {
+			switch conds.GetAnnouncementType().GetValue() {
+			case uint32(basetypes.NotifType_NotifBroadcast):
+			case uint32(basetypes.NotifType_NotifMulticast):
+			default:
+				return fmt.Errorf("invalid announcementtype")
+			}
+			_type := conds.GetAnnouncementType().GetValue()
+			h.Conds.AnnouncementType = &cruder.Cond{
+				Op: conds.GetAnnouncementType().GetOp(), Val: basetypes.NotifType(_type),
+			}
 		}
 		return nil
 	}

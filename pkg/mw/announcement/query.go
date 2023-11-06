@@ -16,24 +16,31 @@ import (
 
 type queryHandler struct {
 	*Handler
-	stm   *ent.AnnouncementSelect
-	infos []*npool.Announcement
-	total uint32
+	stmSelect *ent.AnnouncementSelect
+	stmCount  *ent.AnnouncementSelect
+	infos     []*npool.Announcement
+	total     uint32
 }
 
-func (h *queryHandler) selectAnnouncement(stm *ent.AnnouncementQuery) {
-	h.stm = stm.Select(
-		entamt.FieldID,
-		entamt.FieldAppID,
-		entamt.FieldLangID,
-		entamt.FieldTitle,
-		entamt.FieldContent,
-		entamt.FieldChannel,
-		entamt.FieldType,
-		entamt.FieldStartAt,
-		entamt.FieldEndAt,
-		entamt.FieldCreatedAt,
-		entamt.FieldUpdatedAt,
+func (h *queryHandler) selectAnnouncement(stm *ent.AnnouncementQuery) *ent.AnnouncementSelect {
+	return stm.Select(entamt.FieldID)
+}
+
+func (h *queryHandler) queryJoinMyself(s *sql.Selector) {
+	t := sql.Table(entamt.Table)
+	s.AppendSelect(
+		sql.As(t.C(entamt.FieldID), "id"),
+		sql.As(t.C(entamt.FieldEntID), "ent_id"),
+		sql.As(t.C(entamt.FieldAppID), "app_id"),
+		sql.As(t.C(entamt.FieldLangID), "lang_id"),
+		sql.As(t.C(entamt.FieldTitle), "title"),
+		sql.As(t.C(entamt.FieldContent), "content"),
+		sql.As(t.C(entamt.FieldChannel), "channel"),
+		sql.As(t.C(entamt.FieldType), "type"),
+		sql.As(t.C(entamt.FieldStartAt), "start_at"),
+		sql.As(t.C(entamt.FieldEndAt), "end_at"),
+		sql.As(t.C(entamt.FieldCreatedAt), "created_at"),
+		sql.As(t.C(entamt.FieldUpdatedAt), "updated_at"),
 	)
 }
 
@@ -42,11 +49,14 @@ func (h *queryHandler) queryJoinReadState(s *sql.Selector) {
 	s.
 		LeftJoin(t1).
 		On(
-			s.C(entamt.FieldID),
+			s.C(entamt.FieldEntID),
 			t1.C(entread.FieldAnnouncementID),
 		).
 		OnP(
 			sql.EQ(t1.C(entread.FieldUserID), *h.UserID),
+		).
+		OnP(
+			sql.EQ(t1.C(entread.FieldDeletedAt), 0),
 		).
 		AppendSelect(
 			sql.As(t1.C(entread.FieldUserID), "user_id"),
@@ -54,7 +64,16 @@ func (h *queryHandler) queryJoinReadState(s *sql.Selector) {
 }
 
 func (h *queryHandler) queryJoin() {
-	h.stm.Modify(func(s *sql.Selector) {
+	h.stmSelect.Modify(func(s *sql.Selector) {
+		h.queryJoinMyself(s)
+		if h.UserID != nil {
+			h.queryJoinReadState(s)
+		}
+	})
+	if h.stmCount == nil {
+		return
+	}
+	h.stmCount.Modify(func(s *sql.Selector) {
 		if h.UserID != nil {
 			h.queryJoinReadState(s)
 		}
@@ -62,17 +81,17 @@ func (h *queryHandler) queryJoin() {
 }
 
 func (h *queryHandler) queryAnnouncement(cli *ent.Client) error {
-	if h.ID == nil {
-		return fmt.Errorf("invalid announcement id")
+	if h.ID == nil && h.EntID == nil {
+		return fmt.Errorf("invalid id")
 	}
-	h.selectAnnouncement(
-		cli.Announcement.
-			Query().
-			Where(
-				entamt.ID(*h.ID),
-				entamt.DeletedAt(0),
-			),
-	)
+	stm := cli.Announcement.Query().Where(entamt.DeletedAt(0))
+	if h.ID != nil {
+		stm.Where(entamt.ID(*h.ID))
+	}
+	if h.EntID != nil {
+		stm.Where(entamt.EntID(*h.EntID))
+	}
+	h.stmSelect = h.selectAnnouncement(stm)
 	return nil
 }
 
@@ -84,40 +103,42 @@ func (h *queryHandler) formalize() {
 	}
 }
 
-func (h *queryHandler) queryAnnouncementsByConds(ctx context.Context, cli *ent.Client) (err error) {
+func (h *queryHandler) queryAnnouncements(cli *ent.Client) (*ent.AnnouncementSelect, error) {
 	stm, err := crud.SetQueryConds(cli.Announcement.Query(), h.Conds)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	total, err := stm.Count(ctx)
-	if err != nil {
-		return err
-	}
-
-	h.total = uint32(total)
-
-	h.selectAnnouncement(stm)
-	return nil
+	return h.selectAnnouncement(stm), nil
 }
 
 func (h *queryHandler) scan(ctx context.Context) error {
-	return h.stm.Scan(ctx, &h.infos)
+	return h.stmSelect.Scan(ctx, &h.infos)
 }
 
 func (h *Handler) GetAnnouncements(ctx context.Context) ([]*npool.Announcement, uint32, error) {
 	handler := &queryHandler{
 		Handler: h,
 	}
-
-	err := db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
-		if err := handler.queryAnnouncementsByConds(_ctx, cli); err != nil {
+	var err error
+	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
+		handler.stmSelect, err = handler.queryAnnouncements(cli)
+		if err != nil {
+			return err
+		}
+		handler.stmCount, err = handler.queryAnnouncements(cli)
+		if err != nil {
 			return err
 		}
 
 		handler.queryJoin()
+		_total, err := handler.stmCount.Count(_ctx)
+		if err != nil {
+			return err
+		}
+		handler.total = uint32(_total)
 		handler.
-			stm.
+			stmSelect.
 			Offset(int(h.Offset)).
 			Order(ent.Desc(entamt.FieldUpdatedAt)).
 			Limit(int(h.Limit))
@@ -145,13 +166,12 @@ func (h *Handler) GetAnnouncement(ctx context.Context) (info *npool.Announcement
 			return err
 		}
 
-		if err := handler.scan(_ctx); err != nil {
-			return err
-		}
-
 		handler.queryJoin()
-		handler.formalize()
-		return nil
+		const singleRowLimit = 1
+		handler.stmSelect.
+			Offset(0).
+			Limit(singleRowLimit)
+		return handler.scan(_ctx)
 	})
 	if err != nil {
 		return
@@ -160,6 +180,8 @@ func (h *Handler) GetAnnouncement(ctx context.Context) (info *npool.Announcement
 	if len(handler.infos) == 0 {
 		return nil, nil
 	}
+
+	handler.formalize()
 
 	return handler.infos[0], nil
 }

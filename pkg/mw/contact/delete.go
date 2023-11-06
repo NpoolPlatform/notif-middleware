@@ -24,7 +24,6 @@ func (h *Handler) DeleteContact(ctx context.Context) (*npool.Contact, error) {
 		if _, err := crud.UpdateSet(
 			cli.Contact.UpdateOneID(*h.ID),
 			&crud.Req{
-				ID:        h.ID,
 				DeletedAt: &now,
 			},
 		).Save(ctx); err != nil {

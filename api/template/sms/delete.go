@@ -13,9 +13,16 @@ import (
 
 func (s *Server) DeleteSMSTemplate(ctx context.Context, in *npool.DeleteSMSTemplateRequest) (*npool.DeleteSMSTemplateResponse, error) {
 	req := in.GetInfo()
+	if req == nil {
+		logger.Sugar().Errorw(
+			"DeleteSMSTemplate",
+			"In", in,
+		)
+		return &npool.DeleteSMSTemplateResponse{}, status.Error(codes.InvalidArgument, "Info is empty")
+	}
 	handler, err := smstemplate1.NewHandler(
 		ctx,
-		smstemplate1.WithID(req.ID),
+		smstemplate1.WithID(req.ID, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

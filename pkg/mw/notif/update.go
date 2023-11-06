@@ -83,7 +83,6 @@ func (h *Handler) UpdateNotifs(ctx context.Context) ([]*npool.Notif, error) {
 					return fmt.Errorf("invalid notified")
 				}
 			}
-
 			if _, err := notifcrud.UpdateSet(
 				tx.Notif.UpdateOneID(*req.ID),
 				&notifcrud.Req{
@@ -92,8 +91,8 @@ func (h *Handler) UpdateNotifs(ctx context.Context) ([]*npool.Notif, error) {
 			).Save(ctx); err != nil {
 				return err
 			}
-
-			ids = append(ids, *req.ID)
+			entID := uuid.MustParse(info.EntID)
+			ids = append(ids, entID)
 		}
 		return nil
 	})
@@ -102,7 +101,7 @@ func (h *Handler) UpdateNotifs(ctx context.Context) ([]*npool.Notif, error) {
 	}
 
 	h.Conds = &notifcrud.Conds{
-		IDs: &cruder.Cond{Op: cruder.IN, Val: ids},
+		EntIDs: &cruder.Cond{Op: cruder.IN, Val: ids},
 	}
 	h.Offset = 0
 	h.Limit = int32(len(ids))

@@ -60,14 +60,14 @@ var (
 func setupAnnouncementUser(t *testing.T) func(*testing.T) {
 	handler, err := announcement1.NewHandler(
 		context.Background(),
-		announcement1.WithTitle(&announcement.Title),
-		announcement1.WithContent(&announcement.Content),
-		announcement1.WithAppID(&announcement.AppID),
-		announcement1.WithLangID(&announcement.LangID),
-		announcement1.WithChannel(&announcement.Channel),
-		announcement1.WithAnnouncementType(&announcement.AnnouncementType),
-		announcement1.WithStartAt(&announcement.StartAt),
-		announcement1.WithEndAt(&announcement.EndAt),
+		announcement1.WithTitle(&announcement.Title, true),
+		announcement1.WithContent(&announcement.Content, true),
+		announcement1.WithAppID(&announcement.AppID, true),
+		announcement1.WithLangID(&announcement.LangID, true),
+		announcement1.WithChannel(&announcement.Channel, true),
+		announcement1.WithAnnouncementType(&announcement.AnnouncementType, true),
+		announcement1.WithStartAt(&announcement.StartAt, true),
+		announcement1.WithEndAt(&announcement.EndAt, true),
 	)
 	assert.Nil(t, err)
 
@@ -75,11 +75,9 @@ func setupAnnouncementUser(t *testing.T) func(*testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, _announcement)
 
-	ret.AnnouncementID = _announcement.ID
+	ret.AnnouncementID = _announcement.EntID
 
-	_id, err := uuid.Parse(_announcement.ID)
-	assert.Nil(t, err)
-	handler.ID = &_id
+	handler.ID = &_announcement.ID
 
 	return func(*testing.T) {
 		_, _ = handler.DeleteAnnouncement(context.Background())
@@ -89,9 +87,9 @@ func setupAnnouncementUser(t *testing.T) func(*testing.T) {
 func createAnnouncementUser(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
-		handler1.WithAppID(&ret.AppID),
-		handler1.WithUserID(&ret.UserID),
-		handler1.WithAnnouncementID(&ret.AppID, &ret.AnnouncementID),
+		handler1.WithAppID(&ret.AppID, true),
+		handler1.WithUserID(&ret.UserID, true),
+		handler1.WithAnnouncementID(&ret.AppID, &ret.AnnouncementID, true),
 	)
 	assert.Nil(t, err)
 
@@ -100,6 +98,7 @@ func createAnnouncementUser(t *testing.T) {
 		ret.CreatedAt = info.CreatedAt
 		ret.UpdatedAt = info.UpdatedAt
 		ret.ID = info.ID
+		ret.EntID = info.EntID
 		assert.Equal(t, info, &ret)
 	}
 }
@@ -107,7 +106,7 @@ func createAnnouncementUser(t *testing.T) {
 func getAnnouncementUser(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
-		handler1.WithID(&ret.ID),
+		handler1.WithEntID(&ret.EntID, true),
 	)
 	assert.Nil(t, err)
 
@@ -139,7 +138,7 @@ func getAnnouncementUsers(t *testing.T) {
 func deleteAnnouncementUser(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
-		handler1.WithID(&ret.ID),
+		handler1.WithID(&ret.ID, true),
 	)
 	assert.Nil(t, err)
 

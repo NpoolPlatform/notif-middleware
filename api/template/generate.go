@@ -16,11 +16,11 @@ import (
 func (s *Server) GenerateText(ctx context.Context, in *npool.GenerateTextRequest) (*npool.GenerateTextResponse, error) {
 	handler, err := template1.NewHandler(
 		ctx,
-		template1.WithAppID(&in.AppID),
-		template1.WithLangID(&in.LangID),
-		template1.WithUsedFor(&in.EventType),
-		template1.WithChannel(&in.Channel),
-		template1.WithVars(in.Vars),
+		template1.WithAppID(&in.AppID, true),
+		template1.WithLangID(&in.LangID, true),
+		template1.WithUsedFor(&in.EventType, true),
+		template1.WithChannel(&in.Channel, true),
+		template1.WithVars(in.Vars, false),
 	)
 	if err != nil {
 		return nil, err

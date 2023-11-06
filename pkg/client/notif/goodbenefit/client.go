@@ -31,7 +31,7 @@ func do(ctx context.Context, fn func(_ctx context.Context, cli npool.MiddlewareC
 func GetGoodBenefit(ctx context.Context, id string) (*npool.GoodBenefit, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.GetGoodBenefit(ctx, &npool.GetGoodBenefitRequest{
-			ID: id,
+			EntID: id,
 		})
 		if err != nil {
 			return nil, fmt.Errorf("fail get good benefit: %v", err)

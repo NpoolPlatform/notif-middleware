@@ -14,7 +14,7 @@ import (
 func (s *Server) ExistNotifUser(ctx context.Context, in *npool.ExistNotifUserRequest) (*npool.ExistNotifUserResponse, error) {
 	handler, err := user1.NewHandler(
 		ctx,
-		user1.WithID(&in.ID),
+		user1.WithEntID(&in.EntID, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

@@ -40,6 +40,8 @@ func init() {
 	}
 	announcementMixinFields0 := announcementMixin[0].Fields()
 	_ = announcementMixinFields0
+	announcementMixinFields1 := announcementMixin[1].Fields()
+	_ = announcementMixinFields1
 	announcementFields := schema.Announcement{}.Fields()
 	_ = announcementFields
 	// announcementDescCreatedAt is the schema descriptor for created_at field.
@@ -56,42 +58,42 @@ func init() {
 	announcementDescDeletedAt := announcementMixinFields0[2].Descriptor()
 	// announcement.DefaultDeletedAt holds the default value on creation for the deleted_at field.
 	announcement.DefaultDeletedAt = announcementDescDeletedAt.Default.(func() uint32)
+	// announcementDescEntID is the schema descriptor for ent_id field.
+	announcementDescEntID := announcementMixinFields1[1].Descriptor()
+	// announcement.DefaultEntID holds the default value on creation for the ent_id field.
+	announcement.DefaultEntID = announcementDescEntID.Default.(func() uuid.UUID)
 	// announcementDescAppID is the schema descriptor for app_id field.
-	announcementDescAppID := announcementFields[1].Descriptor()
+	announcementDescAppID := announcementFields[0].Descriptor()
 	// announcement.DefaultAppID holds the default value on creation for the app_id field.
 	announcement.DefaultAppID = announcementDescAppID.Default.(func() uuid.UUID)
 	// announcementDescLangID is the schema descriptor for lang_id field.
-	announcementDescLangID := announcementFields[2].Descriptor()
+	announcementDescLangID := announcementFields[1].Descriptor()
 	// announcement.DefaultLangID holds the default value on creation for the lang_id field.
 	announcement.DefaultLangID = announcementDescLangID.Default.(func() uuid.UUID)
 	// announcementDescTitle is the schema descriptor for title field.
-	announcementDescTitle := announcementFields[3].Descriptor()
+	announcementDescTitle := announcementFields[2].Descriptor()
 	// announcement.DefaultTitle holds the default value on creation for the title field.
 	announcement.DefaultTitle = announcementDescTitle.Default.(string)
 	// announcementDescContent is the schema descriptor for content field.
-	announcementDescContent := announcementFields[4].Descriptor()
+	announcementDescContent := announcementFields[3].Descriptor()
 	// announcement.DefaultContent holds the default value on creation for the content field.
 	announcement.DefaultContent = announcementDescContent.Default.(string)
 	// announcementDescChannel is the schema descriptor for channel field.
-	announcementDescChannel := announcementFields[5].Descriptor()
+	announcementDescChannel := announcementFields[4].Descriptor()
 	// announcement.DefaultChannel holds the default value on creation for the channel field.
 	announcement.DefaultChannel = announcementDescChannel.Default.(string)
 	// announcementDescStartAt is the schema descriptor for start_at field.
-	announcementDescStartAt := announcementFields[6].Descriptor()
+	announcementDescStartAt := announcementFields[5].Descriptor()
 	// announcement.DefaultStartAt holds the default value on creation for the start_at field.
 	announcement.DefaultStartAt = announcementDescStartAt.Default.(uint32)
 	// announcementDescEndAt is the schema descriptor for end_at field.
-	announcementDescEndAt := announcementFields[7].Descriptor()
+	announcementDescEndAt := announcementFields[6].Descriptor()
 	// announcement.DefaultEndAt holds the default value on creation for the end_at field.
 	announcement.DefaultEndAt = announcementDescEndAt.Default.(uint32)
 	// announcementDescType is the schema descriptor for type field.
-	announcementDescType := announcementFields[8].Descriptor()
+	announcementDescType := announcementFields[7].Descriptor()
 	// announcement.DefaultType holds the default value on creation for the type field.
 	announcement.DefaultType = announcementDescType.Default.(string)
-	// announcementDescID is the schema descriptor for id field.
-	announcementDescID := announcementFields[0].Descriptor()
-	// announcement.DefaultID holds the default value on creation for the id field.
-	announcement.DefaultID = announcementDescID.Default.(func() uuid.UUID)
 	contactMixin := schema.Contact{}.Mixin()
 	contact.Policy = privacy.NewPolicies(contactMixin[0], schema.Contact{})
 	contact.Hooks[0] = func(next ent.Mutator) ent.Mutator {
@@ -104,6 +106,8 @@ func init() {
 	}
 	contactMixinFields0 := contactMixin[0].Fields()
 	_ = contactMixinFields0
+	contactMixinFields1 := contactMixin[1].Fields()
+	_ = contactMixinFields1
 	contactFields := schema.Contact{}.Fields()
 	_ = contactFields
 	// contactDescCreatedAt is the schema descriptor for created_at field.
@@ -120,26 +124,26 @@ func init() {
 	contactDescDeletedAt := contactMixinFields0[2].Descriptor()
 	// contact.DefaultDeletedAt holds the default value on creation for the deleted_at field.
 	contact.DefaultDeletedAt = contactDescDeletedAt.Default.(func() uint32)
+	// contactDescEntID is the schema descriptor for ent_id field.
+	contactDescEntID := contactMixinFields1[1].Descriptor()
+	// contact.DefaultEntID holds the default value on creation for the ent_id field.
+	contact.DefaultEntID = contactDescEntID.Default.(func() uuid.UUID)
 	// contactDescUsedFor is the schema descriptor for used_for field.
-	contactDescUsedFor := contactFields[2].Descriptor()
+	contactDescUsedFor := contactFields[1].Descriptor()
 	// contact.DefaultUsedFor holds the default value on creation for the used_for field.
 	contact.DefaultUsedFor = contactDescUsedFor.Default.(string)
 	// contactDescSender is the schema descriptor for sender field.
-	contactDescSender := contactFields[3].Descriptor()
+	contactDescSender := contactFields[2].Descriptor()
 	// contact.DefaultSender holds the default value on creation for the sender field.
 	contact.DefaultSender = contactDescSender.Default.(string)
 	// contactDescAccount is the schema descriptor for account field.
-	contactDescAccount := contactFields[4].Descriptor()
+	contactDescAccount := contactFields[3].Descriptor()
 	// contact.DefaultAccount holds the default value on creation for the account field.
 	contact.DefaultAccount = contactDescAccount.Default.(string)
 	// contactDescAccountType is the schema descriptor for account_type field.
-	contactDescAccountType := contactFields[5].Descriptor()
+	contactDescAccountType := contactFields[4].Descriptor()
 	// contact.DefaultAccountType holds the default value on creation for the account_type field.
 	contact.DefaultAccountType = contactDescAccountType.Default.(string)
-	// contactDescID is the schema descriptor for id field.
-	contactDescID := contactFields[0].Descriptor()
-	// contact.DefaultID holds the default value on creation for the id field.
-	contact.DefaultID = contactDescID.Default.(func() uuid.UUID)
 	emailtemplateMixin := schema.EmailTemplate{}.Mixin()
 	emailtemplate.Policy = privacy.NewPolicies(emailtemplateMixin[0], schema.EmailTemplate{})
 	emailtemplate.Hooks[0] = func(next ent.Mutator) ent.Mutator {
@@ -152,6 +156,8 @@ func init() {
 	}
 	emailtemplateMixinFields0 := emailtemplateMixin[0].Fields()
 	_ = emailtemplateMixinFields0
+	emailtemplateMixinFields1 := emailtemplateMixin[1].Fields()
+	_ = emailtemplateMixinFields1
 	emailtemplateFields := schema.EmailTemplate{}.Fields()
 	_ = emailtemplateFields
 	// emailtemplateDescCreatedAt is the schema descriptor for created_at field.
@@ -168,34 +174,34 @@ func init() {
 	emailtemplateDescDeletedAt := emailtemplateMixinFields0[2].Descriptor()
 	// emailtemplate.DefaultDeletedAt holds the default value on creation for the deleted_at field.
 	emailtemplate.DefaultDeletedAt = emailtemplateDescDeletedAt.Default.(func() uint32)
+	// emailtemplateDescEntID is the schema descriptor for ent_id field.
+	emailtemplateDescEntID := emailtemplateMixinFields1[1].Descriptor()
+	// emailtemplate.DefaultEntID holds the default value on creation for the ent_id field.
+	emailtemplate.DefaultEntID = emailtemplateDescEntID.Default.(func() uuid.UUID)
 	// emailtemplateDescUsedFor is the schema descriptor for used_for field.
-	emailtemplateDescUsedFor := emailtemplateFields[4].Descriptor()
+	emailtemplateDescUsedFor := emailtemplateFields[3].Descriptor()
 	// emailtemplate.DefaultUsedFor holds the default value on creation for the used_for field.
 	emailtemplate.DefaultUsedFor = emailtemplateDescUsedFor.Default.(string)
 	// emailtemplateDescSender is the schema descriptor for sender field.
-	emailtemplateDescSender := emailtemplateFields[5].Descriptor()
+	emailtemplateDescSender := emailtemplateFields[4].Descriptor()
 	// emailtemplate.DefaultSender holds the default value on creation for the sender field.
 	emailtemplate.DefaultSender = emailtemplateDescSender.Default.(string)
 	// emailtemplateDescReplyTos is the schema descriptor for reply_tos field.
-	emailtemplateDescReplyTos := emailtemplateFields[6].Descriptor()
+	emailtemplateDescReplyTos := emailtemplateFields[5].Descriptor()
 	// emailtemplate.DefaultReplyTos holds the default value on creation for the reply_tos field.
 	emailtemplate.DefaultReplyTos = emailtemplateDescReplyTos.Default.([]string)
 	// emailtemplateDescCcTos is the schema descriptor for cc_tos field.
-	emailtemplateDescCcTos := emailtemplateFields[7].Descriptor()
+	emailtemplateDescCcTos := emailtemplateFields[6].Descriptor()
 	// emailtemplate.DefaultCcTos holds the default value on creation for the cc_tos field.
 	emailtemplate.DefaultCcTos = emailtemplateDescCcTos.Default.([]string)
 	// emailtemplateDescSubject is the schema descriptor for subject field.
-	emailtemplateDescSubject := emailtemplateFields[8].Descriptor()
+	emailtemplateDescSubject := emailtemplateFields[7].Descriptor()
 	// emailtemplate.DefaultSubject holds the default value on creation for the subject field.
 	emailtemplate.DefaultSubject = emailtemplateDescSubject.Default.(string)
 	// emailtemplateDescBody is the schema descriptor for body field.
-	emailtemplateDescBody := emailtemplateFields[9].Descriptor()
+	emailtemplateDescBody := emailtemplateFields[8].Descriptor()
 	// emailtemplate.DefaultBody holds the default value on creation for the body field.
 	emailtemplate.DefaultBody = emailtemplateDescBody.Default.(string)
-	// emailtemplateDescID is the schema descriptor for id field.
-	emailtemplateDescID := emailtemplateFields[0].Descriptor()
-	// emailtemplate.DefaultID holds the default value on creation for the id field.
-	emailtemplate.DefaultID = emailtemplateDescID.Default.(func() uuid.UUID)
 	frontendtemplateMixin := schema.FrontendTemplate{}.Mixin()
 	frontendtemplate.Policy = privacy.NewPolicies(frontendtemplateMixin[0], schema.FrontendTemplate{})
 	frontendtemplate.Hooks[0] = func(next ent.Mutator) ent.Mutator {
@@ -208,6 +214,8 @@ func init() {
 	}
 	frontendtemplateMixinFields0 := frontendtemplateMixin[0].Fields()
 	_ = frontendtemplateMixinFields0
+	frontendtemplateMixinFields1 := frontendtemplateMixin[1].Fields()
+	_ = frontendtemplateMixinFields1
 	frontendtemplateFields := schema.FrontendTemplate{}.Fields()
 	_ = frontendtemplateFields
 	// frontendtemplateDescCreatedAt is the schema descriptor for created_at field.
@@ -224,22 +232,22 @@ func init() {
 	frontendtemplateDescDeletedAt := frontendtemplateMixinFields0[2].Descriptor()
 	// frontendtemplate.DefaultDeletedAt holds the default value on creation for the deleted_at field.
 	frontendtemplate.DefaultDeletedAt = frontendtemplateDescDeletedAt.Default.(func() uint32)
+	// frontendtemplateDescEntID is the schema descriptor for ent_id field.
+	frontendtemplateDescEntID := frontendtemplateMixinFields1[1].Descriptor()
+	// frontendtemplate.DefaultEntID holds the default value on creation for the ent_id field.
+	frontendtemplate.DefaultEntID = frontendtemplateDescEntID.Default.(func() uuid.UUID)
 	// frontendtemplateDescUsedFor is the schema descriptor for used_for field.
-	frontendtemplateDescUsedFor := frontendtemplateFields[3].Descriptor()
+	frontendtemplateDescUsedFor := frontendtemplateFields[2].Descriptor()
 	// frontendtemplate.DefaultUsedFor holds the default value on creation for the used_for field.
 	frontendtemplate.DefaultUsedFor = frontendtemplateDescUsedFor.Default.(string)
 	// frontendtemplateDescTitle is the schema descriptor for title field.
-	frontendtemplateDescTitle := frontendtemplateFields[4].Descriptor()
+	frontendtemplateDescTitle := frontendtemplateFields[3].Descriptor()
 	// frontendtemplate.DefaultTitle holds the default value on creation for the title field.
 	frontendtemplate.DefaultTitle = frontendtemplateDescTitle.Default.(string)
 	// frontendtemplateDescContent is the schema descriptor for content field.
-	frontendtemplateDescContent := frontendtemplateFields[5].Descriptor()
+	frontendtemplateDescContent := frontendtemplateFields[4].Descriptor()
 	// frontendtemplate.DefaultContent holds the default value on creation for the content field.
 	frontendtemplate.DefaultContent = frontendtemplateDescContent.Default.(string)
-	// frontendtemplateDescID is the schema descriptor for id field.
-	frontendtemplateDescID := frontendtemplateFields[0].Descriptor()
-	// frontendtemplate.DefaultID holds the default value on creation for the id field.
-	frontendtemplate.DefaultID = frontendtemplateDescID.Default.(func() uuid.UUID)
 	goodbenefitMixin := schema.GoodBenefit{}.Mixin()
 	goodbenefit.Policy = privacy.NewPolicies(goodbenefitMixin[0], schema.GoodBenefit{})
 	goodbenefit.Hooks[0] = func(next ent.Mutator) ent.Mutator {
@@ -252,6 +260,8 @@ func init() {
 	}
 	goodbenefitMixinFields0 := goodbenefitMixin[0].Fields()
 	_ = goodbenefitMixinFields0
+	goodbenefitMixinFields1 := goodbenefitMixin[1].Fields()
+	_ = goodbenefitMixinFields1
 	goodbenefitFields := schema.GoodBenefit{}.Fields()
 	_ = goodbenefitFields
 	// goodbenefitDescCreatedAt is the schema descriptor for created_at field.
@@ -268,42 +278,42 @@ func init() {
 	goodbenefitDescDeletedAt := goodbenefitMixinFields0[2].Descriptor()
 	// goodbenefit.DefaultDeletedAt holds the default value on creation for the deleted_at field.
 	goodbenefit.DefaultDeletedAt = goodbenefitDescDeletedAt.Default.(func() uint32)
+	// goodbenefitDescEntID is the schema descriptor for ent_id field.
+	goodbenefitDescEntID := goodbenefitMixinFields1[1].Descriptor()
+	// goodbenefit.DefaultEntID holds the default value on creation for the ent_id field.
+	goodbenefit.DefaultEntID = goodbenefitDescEntID.Default.(func() uuid.UUID)
 	// goodbenefitDescGoodID is the schema descriptor for good_id field.
-	goodbenefitDescGoodID := goodbenefitFields[1].Descriptor()
+	goodbenefitDescGoodID := goodbenefitFields[0].Descriptor()
 	// goodbenefit.DefaultGoodID holds the default value on creation for the good_id field.
 	goodbenefit.DefaultGoodID = goodbenefitDescGoodID.Default.(func() uuid.UUID)
 	// goodbenefitDescGoodName is the schema descriptor for good_name field.
-	goodbenefitDescGoodName := goodbenefitFields[2].Descriptor()
+	goodbenefitDescGoodName := goodbenefitFields[1].Descriptor()
 	// goodbenefit.DefaultGoodName holds the default value on creation for the good_name field.
 	goodbenefit.DefaultGoodName = goodbenefitDescGoodName.Default.(string)
 	// goodbenefitDescAmount is the schema descriptor for amount field.
-	goodbenefitDescAmount := goodbenefitFields[3].Descriptor()
+	goodbenefitDescAmount := goodbenefitFields[2].Descriptor()
 	// goodbenefit.DefaultAmount holds the default value on creation for the amount field.
 	goodbenefit.DefaultAmount = goodbenefitDescAmount.Default.(string)
 	// goodbenefitDescState is the schema descriptor for state field.
-	goodbenefitDescState := goodbenefitFields[4].Descriptor()
+	goodbenefitDescState := goodbenefitFields[3].Descriptor()
 	// goodbenefit.DefaultState holds the default value on creation for the state field.
 	goodbenefit.DefaultState = goodbenefitDescState.Default.(string)
 	// goodbenefitDescMessage is the schema descriptor for message field.
-	goodbenefitDescMessage := goodbenefitFields[5].Descriptor()
+	goodbenefitDescMessage := goodbenefitFields[4].Descriptor()
 	// goodbenefit.DefaultMessage holds the default value on creation for the message field.
 	goodbenefit.DefaultMessage = goodbenefitDescMessage.Default.(string)
 	// goodbenefitDescBenefitDate is the schema descriptor for benefit_date field.
-	goodbenefitDescBenefitDate := goodbenefitFields[6].Descriptor()
+	goodbenefitDescBenefitDate := goodbenefitFields[5].Descriptor()
 	// goodbenefit.DefaultBenefitDate holds the default value on creation for the benefit_date field.
 	goodbenefit.DefaultBenefitDate = goodbenefitDescBenefitDate.Default.(uint32)
 	// goodbenefitDescTxID is the schema descriptor for tx_id field.
-	goodbenefitDescTxID := goodbenefitFields[7].Descriptor()
+	goodbenefitDescTxID := goodbenefitFields[6].Descriptor()
 	// goodbenefit.DefaultTxID holds the default value on creation for the tx_id field.
 	goodbenefit.DefaultTxID = goodbenefitDescTxID.Default.(func() uuid.UUID)
 	// goodbenefitDescGenerated is the schema descriptor for generated field.
-	goodbenefitDescGenerated := goodbenefitFields[8].Descriptor()
+	goodbenefitDescGenerated := goodbenefitFields[7].Descriptor()
 	// goodbenefit.DefaultGenerated holds the default value on creation for the generated field.
 	goodbenefit.DefaultGenerated = goodbenefitDescGenerated.Default.(bool)
-	// goodbenefitDescID is the schema descriptor for id field.
-	goodbenefitDescID := goodbenefitFields[0].Descriptor()
-	// goodbenefit.DefaultID holds the default value on creation for the id field.
-	goodbenefit.DefaultID = goodbenefitDescID.Default.(func() uuid.UUID)
 	notifMixin := schema.Notif{}.Mixin()
 	notif.Policy = privacy.NewPolicies(notifMixin[0], schema.Notif{})
 	notif.Hooks[0] = func(next ent.Mutator) ent.Mutator {
@@ -316,6 +326,8 @@ func init() {
 	}
 	notifMixinFields0 := notifMixin[0].Fields()
 	_ = notifMixinFields0
+	notifMixinFields1 := notifMixin[1].Fields()
+	_ = notifMixinFields1
 	notifFields := schema.Notif{}.Fields()
 	_ = notifFields
 	// notifDescCreatedAt is the schema descriptor for created_at field.
@@ -332,58 +344,58 @@ func init() {
 	notifDescDeletedAt := notifMixinFields0[2].Descriptor()
 	// notif.DefaultDeletedAt holds the default value on creation for the deleted_at field.
 	notif.DefaultDeletedAt = notifDescDeletedAt.Default.(func() uint32)
+	// notifDescEntID is the schema descriptor for ent_id field.
+	notifDescEntID := notifMixinFields1[1].Descriptor()
+	// notif.DefaultEntID holds the default value on creation for the ent_id field.
+	notif.DefaultEntID = notifDescEntID.Default.(func() uuid.UUID)
 	// notifDescAppID is the schema descriptor for app_id field.
-	notifDescAppID := notifFields[1].Descriptor()
+	notifDescAppID := notifFields[0].Descriptor()
 	// notif.DefaultAppID holds the default value on creation for the app_id field.
 	notif.DefaultAppID = notifDescAppID.Default.(func() uuid.UUID)
 	// notifDescUserID is the schema descriptor for user_id field.
-	notifDescUserID := notifFields[2].Descriptor()
+	notifDescUserID := notifFields[1].Descriptor()
 	// notif.DefaultUserID holds the default value on creation for the user_id field.
 	notif.DefaultUserID = notifDescUserID.Default.(func() uuid.UUID)
 	// notifDescNotified is the schema descriptor for notified field.
-	notifDescNotified := notifFields[3].Descriptor()
+	notifDescNotified := notifFields[2].Descriptor()
 	// notif.DefaultNotified holds the default value on creation for the notified field.
 	notif.DefaultNotified = notifDescNotified.Default.(bool)
 	// notifDescLangID is the schema descriptor for lang_id field.
-	notifDescLangID := notifFields[4].Descriptor()
+	notifDescLangID := notifFields[3].Descriptor()
 	// notif.DefaultLangID holds the default value on creation for the lang_id field.
 	notif.DefaultLangID = notifDescLangID.Default.(func() uuid.UUID)
 	// notifDescEventID is the schema descriptor for event_id field.
-	notifDescEventID := notifFields[5].Descriptor()
+	notifDescEventID := notifFields[4].Descriptor()
 	// notif.DefaultEventID holds the default value on creation for the event_id field.
 	notif.DefaultEventID = notifDescEventID.Default.(func() uuid.UUID)
 	// notifDescEventType is the schema descriptor for event_type field.
-	notifDescEventType := notifFields[6].Descriptor()
+	notifDescEventType := notifFields[5].Descriptor()
 	// notif.DefaultEventType holds the default value on creation for the event_type field.
 	notif.DefaultEventType = notifDescEventType.Default.(string)
 	// notifDescUseTemplate is the schema descriptor for use_template field.
-	notifDescUseTemplate := notifFields[7].Descriptor()
+	notifDescUseTemplate := notifFields[6].Descriptor()
 	// notif.DefaultUseTemplate holds the default value on creation for the use_template field.
 	notif.DefaultUseTemplate = notifDescUseTemplate.Default.(bool)
 	// notifDescTitle is the schema descriptor for title field.
-	notifDescTitle := notifFields[8].Descriptor()
+	notifDescTitle := notifFields[7].Descriptor()
 	// notif.DefaultTitle holds the default value on creation for the title field.
 	notif.DefaultTitle = notifDescTitle.Default.(string)
 	// notifDescContent is the schema descriptor for content field.
-	notifDescContent := notifFields[9].Descriptor()
+	notifDescContent := notifFields[8].Descriptor()
 	// notif.DefaultContent holds the default value on creation for the content field.
 	notif.DefaultContent = notifDescContent.Default.(string)
 	// notifDescChannel is the schema descriptor for channel field.
-	notifDescChannel := notifFields[10].Descriptor()
+	notifDescChannel := notifFields[9].Descriptor()
 	// notif.DefaultChannel holds the default value on creation for the channel field.
 	notif.DefaultChannel = notifDescChannel.Default.(string)
 	// notifDescExtra is the schema descriptor for extra field.
-	notifDescExtra := notifFields[11].Descriptor()
+	notifDescExtra := notifFields[10].Descriptor()
 	// notif.DefaultExtra holds the default value on creation for the extra field.
 	notif.DefaultExtra = notifDescExtra.Default.(string)
 	// notifDescType is the schema descriptor for type field.
-	notifDescType := notifFields[12].Descriptor()
+	notifDescType := notifFields[11].Descriptor()
 	// notif.DefaultType holds the default value on creation for the type field.
 	notif.DefaultType = notifDescType.Default.(string)
-	// notifDescID is the schema descriptor for id field.
-	notifDescID := notifFields[0].Descriptor()
-	// notif.DefaultID holds the default value on creation for the id field.
-	notif.DefaultID = notifDescID.Default.(func() uuid.UUID)
 	notifchannelMixin := schema.NotifChannel{}.Mixin()
 	notifchannel.Policy = privacy.NewPolicies(notifchannelMixin[0], schema.NotifChannel{})
 	notifchannel.Hooks[0] = func(next ent.Mutator) ent.Mutator {
@@ -396,6 +408,8 @@ func init() {
 	}
 	notifchannelMixinFields0 := notifchannelMixin[0].Fields()
 	_ = notifchannelMixinFields0
+	notifchannelMixinFields1 := notifchannelMixin[1].Fields()
+	_ = notifchannelMixinFields1
 	notifchannelFields := schema.NotifChannel{}.Fields()
 	_ = notifchannelFields
 	// notifchannelDescCreatedAt is the schema descriptor for created_at field.
@@ -412,22 +426,22 @@ func init() {
 	notifchannelDescDeletedAt := notifchannelMixinFields0[2].Descriptor()
 	// notifchannel.DefaultDeletedAt holds the default value on creation for the deleted_at field.
 	notifchannel.DefaultDeletedAt = notifchannelDescDeletedAt.Default.(func() uint32)
+	// notifchannelDescEntID is the schema descriptor for ent_id field.
+	notifchannelDescEntID := notifchannelMixinFields1[1].Descriptor()
+	// notifchannel.DefaultEntID holds the default value on creation for the ent_id field.
+	notifchannel.DefaultEntID = notifchannelDescEntID.Default.(func() uuid.UUID)
 	// notifchannelDescAppID is the schema descriptor for app_id field.
-	notifchannelDescAppID := notifchannelFields[1].Descriptor()
+	notifchannelDescAppID := notifchannelFields[0].Descriptor()
 	// notifchannel.DefaultAppID holds the default value on creation for the app_id field.
 	notifchannel.DefaultAppID = notifchannelDescAppID.Default.(func() uuid.UUID)
 	// notifchannelDescEventType is the schema descriptor for event_type field.
-	notifchannelDescEventType := notifchannelFields[2].Descriptor()
+	notifchannelDescEventType := notifchannelFields[1].Descriptor()
 	// notifchannel.DefaultEventType holds the default value on creation for the event_type field.
 	notifchannel.DefaultEventType = notifchannelDescEventType.Default.(string)
 	// notifchannelDescChannel is the schema descriptor for channel field.
-	notifchannelDescChannel := notifchannelFields[3].Descriptor()
+	notifchannelDescChannel := notifchannelFields[2].Descriptor()
 	// notifchannel.DefaultChannel holds the default value on creation for the channel field.
 	notifchannel.DefaultChannel = notifchannelDescChannel.Default.(string)
-	// notifchannelDescID is the schema descriptor for id field.
-	notifchannelDescID := notifchannelFields[0].Descriptor()
-	// notifchannel.DefaultID holds the default value on creation for the id field.
-	notifchannel.DefaultID = notifchannelDescID.Default.(func() uuid.UUID)
 	notifuserMixin := schema.NotifUser{}.Mixin()
 	notifuser.Policy = privacy.NewPolicies(notifuserMixin[0], schema.NotifUser{})
 	notifuser.Hooks[0] = func(next ent.Mutator) ent.Mutator {
@@ -440,6 +454,8 @@ func init() {
 	}
 	notifuserMixinFields0 := notifuserMixin[0].Fields()
 	_ = notifuserMixinFields0
+	notifuserMixinFields1 := notifuserMixin[1].Fields()
+	_ = notifuserMixinFields1
 	notifuserFields := schema.NotifUser{}.Fields()
 	_ = notifuserFields
 	// notifuserDescCreatedAt is the schema descriptor for created_at field.
@@ -456,22 +472,22 @@ func init() {
 	notifuserDescDeletedAt := notifuserMixinFields0[2].Descriptor()
 	// notifuser.DefaultDeletedAt holds the default value on creation for the deleted_at field.
 	notifuser.DefaultDeletedAt = notifuserDescDeletedAt.Default.(func() uint32)
+	// notifuserDescEntID is the schema descriptor for ent_id field.
+	notifuserDescEntID := notifuserMixinFields1[1].Descriptor()
+	// notifuser.DefaultEntID holds the default value on creation for the ent_id field.
+	notifuser.DefaultEntID = notifuserDescEntID.Default.(func() uuid.UUID)
 	// notifuserDescAppID is the schema descriptor for app_id field.
-	notifuserDescAppID := notifuserFields[1].Descriptor()
+	notifuserDescAppID := notifuserFields[0].Descriptor()
 	// notifuser.DefaultAppID holds the default value on creation for the app_id field.
 	notifuser.DefaultAppID = notifuserDescAppID.Default.(func() uuid.UUID)
 	// notifuserDescUserID is the schema descriptor for user_id field.
-	notifuserDescUserID := notifuserFields[2].Descriptor()
+	notifuserDescUserID := notifuserFields[1].Descriptor()
 	// notifuser.DefaultUserID holds the default value on creation for the user_id field.
 	notifuser.DefaultUserID = notifuserDescUserID.Default.(func() uuid.UUID)
 	// notifuserDescEventType is the schema descriptor for event_type field.
-	notifuserDescEventType := notifuserFields[3].Descriptor()
+	notifuserDescEventType := notifuserFields[2].Descriptor()
 	// notifuser.DefaultEventType holds the default value on creation for the event_type field.
 	notifuser.DefaultEventType = notifuserDescEventType.Default.(string)
-	// notifuserDescID is the schema descriptor for id field.
-	notifuserDescID := notifuserFields[0].Descriptor()
-	// notifuser.DefaultID holds the default value on creation for the id field.
-	notifuser.DefaultID = notifuserDescID.Default.(func() uuid.UUID)
 	readannouncementMixin := schema.ReadAnnouncement{}.Mixin()
 	readannouncement.Policy = privacy.NewPolicies(readannouncementMixin[0], schema.ReadAnnouncement{})
 	readannouncement.Hooks[0] = func(next ent.Mutator) ent.Mutator {
@@ -484,6 +500,8 @@ func init() {
 	}
 	readannouncementMixinFields0 := readannouncementMixin[0].Fields()
 	_ = readannouncementMixinFields0
+	readannouncementMixinFields1 := readannouncementMixin[1].Fields()
+	_ = readannouncementMixinFields1
 	readannouncementFields := schema.ReadAnnouncement{}.Fields()
 	_ = readannouncementFields
 	// readannouncementDescCreatedAt is the schema descriptor for created_at field.
@@ -500,22 +518,22 @@ func init() {
 	readannouncementDescDeletedAt := readannouncementMixinFields0[2].Descriptor()
 	// readannouncement.DefaultDeletedAt holds the default value on creation for the deleted_at field.
 	readannouncement.DefaultDeletedAt = readannouncementDescDeletedAt.Default.(func() uint32)
+	// readannouncementDescEntID is the schema descriptor for ent_id field.
+	readannouncementDescEntID := readannouncementMixinFields1[1].Descriptor()
+	// readannouncement.DefaultEntID holds the default value on creation for the ent_id field.
+	readannouncement.DefaultEntID = readannouncementDescEntID.Default.(func() uuid.UUID)
 	// readannouncementDescAppID is the schema descriptor for app_id field.
-	readannouncementDescAppID := readannouncementFields[1].Descriptor()
+	readannouncementDescAppID := readannouncementFields[0].Descriptor()
 	// readannouncement.DefaultAppID holds the default value on creation for the app_id field.
 	readannouncement.DefaultAppID = readannouncementDescAppID.Default.(func() uuid.UUID)
 	// readannouncementDescUserID is the schema descriptor for user_id field.
-	readannouncementDescUserID := readannouncementFields[2].Descriptor()
+	readannouncementDescUserID := readannouncementFields[1].Descriptor()
 	// readannouncement.DefaultUserID holds the default value on creation for the user_id field.
 	readannouncement.DefaultUserID = readannouncementDescUserID.Default.(func() uuid.UUID)
 	// readannouncementDescAnnouncementID is the schema descriptor for announcement_id field.
-	readannouncementDescAnnouncementID := readannouncementFields[3].Descriptor()
+	readannouncementDescAnnouncementID := readannouncementFields[2].Descriptor()
 	// readannouncement.DefaultAnnouncementID holds the default value on creation for the announcement_id field.
 	readannouncement.DefaultAnnouncementID = readannouncementDescAnnouncementID.Default.(func() uuid.UUID)
-	// readannouncementDescID is the schema descriptor for id field.
-	readannouncementDescID := readannouncementFields[0].Descriptor()
-	// readannouncement.DefaultID holds the default value on creation for the id field.
-	readannouncement.DefaultID = readannouncementDescID.Default.(func() uuid.UUID)
 	smstemplateMixin := schema.SMSTemplate{}.Mixin()
 	smstemplate.Policy = privacy.NewPolicies(smstemplateMixin[0], schema.SMSTemplate{})
 	smstemplate.Hooks[0] = func(next ent.Mutator) ent.Mutator {
@@ -528,6 +546,8 @@ func init() {
 	}
 	smstemplateMixinFields0 := smstemplateMixin[0].Fields()
 	_ = smstemplateMixinFields0
+	smstemplateMixinFields1 := smstemplateMixin[1].Fields()
+	_ = smstemplateMixinFields1
 	smstemplateFields := schema.SMSTemplate{}.Fields()
 	_ = smstemplateFields
 	// smstemplateDescCreatedAt is the schema descriptor for created_at field.
@@ -544,22 +564,22 @@ func init() {
 	smstemplateDescDeletedAt := smstemplateMixinFields0[2].Descriptor()
 	// smstemplate.DefaultDeletedAt holds the default value on creation for the deleted_at field.
 	smstemplate.DefaultDeletedAt = smstemplateDescDeletedAt.Default.(func() uint32)
+	// smstemplateDescEntID is the schema descriptor for ent_id field.
+	smstemplateDescEntID := smstemplateMixinFields1[1].Descriptor()
+	// smstemplate.DefaultEntID holds the default value on creation for the ent_id field.
+	smstemplate.DefaultEntID = smstemplateDescEntID.Default.(func() uuid.UUID)
 	// smstemplateDescUsedFor is the schema descriptor for used_for field.
-	smstemplateDescUsedFor := smstemplateFields[3].Descriptor()
+	smstemplateDescUsedFor := smstemplateFields[2].Descriptor()
 	// smstemplate.DefaultUsedFor holds the default value on creation for the used_for field.
 	smstemplate.DefaultUsedFor = smstemplateDescUsedFor.Default.(string)
 	// smstemplateDescSubject is the schema descriptor for subject field.
-	smstemplateDescSubject := smstemplateFields[4].Descriptor()
+	smstemplateDescSubject := smstemplateFields[3].Descriptor()
 	// smstemplate.DefaultSubject holds the default value on creation for the subject field.
 	smstemplate.DefaultSubject = smstemplateDescSubject.Default.(string)
 	// smstemplateDescMessage is the schema descriptor for message field.
-	smstemplateDescMessage := smstemplateFields[5].Descriptor()
+	smstemplateDescMessage := smstemplateFields[4].Descriptor()
 	// smstemplate.DefaultMessage holds the default value on creation for the message field.
 	smstemplate.DefaultMessage = smstemplateDescMessage.Default.(string)
-	// smstemplateDescID is the schema descriptor for id field.
-	smstemplateDescID := smstemplateFields[0].Descriptor()
-	// smstemplate.DefaultID holds the default value on creation for the id field.
-	smstemplate.DefaultID = smstemplateDescID.Default.(func() uuid.UUID)
 	sendannouncementMixin := schema.SendAnnouncement{}.Mixin()
 	sendannouncement.Policy = privacy.NewPolicies(sendannouncementMixin[0], schema.SendAnnouncement{})
 	sendannouncement.Hooks[0] = func(next ent.Mutator) ent.Mutator {
@@ -572,6 +592,8 @@ func init() {
 	}
 	sendannouncementMixinFields0 := sendannouncementMixin[0].Fields()
 	_ = sendannouncementMixinFields0
+	sendannouncementMixinFields1 := sendannouncementMixin[1].Fields()
+	_ = sendannouncementMixinFields1
 	sendannouncementFields := schema.SendAnnouncement{}.Fields()
 	_ = sendannouncementFields
 	// sendannouncementDescCreatedAt is the schema descriptor for created_at field.
@@ -588,26 +610,26 @@ func init() {
 	sendannouncementDescDeletedAt := sendannouncementMixinFields0[2].Descriptor()
 	// sendannouncement.DefaultDeletedAt holds the default value on creation for the deleted_at field.
 	sendannouncement.DefaultDeletedAt = sendannouncementDescDeletedAt.Default.(func() uint32)
+	// sendannouncementDescEntID is the schema descriptor for ent_id field.
+	sendannouncementDescEntID := sendannouncementMixinFields1[1].Descriptor()
+	// sendannouncement.DefaultEntID holds the default value on creation for the ent_id field.
+	sendannouncement.DefaultEntID = sendannouncementDescEntID.Default.(func() uuid.UUID)
 	// sendannouncementDescAppID is the schema descriptor for app_id field.
-	sendannouncementDescAppID := sendannouncementFields[1].Descriptor()
+	sendannouncementDescAppID := sendannouncementFields[0].Descriptor()
 	// sendannouncement.DefaultAppID holds the default value on creation for the app_id field.
 	sendannouncement.DefaultAppID = sendannouncementDescAppID.Default.(func() uuid.UUID)
 	// sendannouncementDescUserID is the schema descriptor for user_id field.
-	sendannouncementDescUserID := sendannouncementFields[2].Descriptor()
+	sendannouncementDescUserID := sendannouncementFields[1].Descriptor()
 	// sendannouncement.DefaultUserID holds the default value on creation for the user_id field.
 	sendannouncement.DefaultUserID = sendannouncementDescUserID.Default.(func() uuid.UUID)
 	// sendannouncementDescAnnouncementID is the schema descriptor for announcement_id field.
-	sendannouncementDescAnnouncementID := sendannouncementFields[3].Descriptor()
+	sendannouncementDescAnnouncementID := sendannouncementFields[2].Descriptor()
 	// sendannouncement.DefaultAnnouncementID holds the default value on creation for the announcement_id field.
 	sendannouncement.DefaultAnnouncementID = sendannouncementDescAnnouncementID.Default.(func() uuid.UUID)
 	// sendannouncementDescChannel is the schema descriptor for channel field.
-	sendannouncementDescChannel := sendannouncementFields[4].Descriptor()
+	sendannouncementDescChannel := sendannouncementFields[3].Descriptor()
 	// sendannouncement.DefaultChannel holds the default value on creation for the channel field.
 	sendannouncement.DefaultChannel = sendannouncementDescChannel.Default.(string)
-	// sendannouncementDescID is the schema descriptor for id field.
-	sendannouncementDescID := sendannouncementFields[0].Descriptor()
-	// sendannouncement.DefaultID holds the default value on creation for the id field.
-	sendannouncement.DefaultID = sendannouncementDescID.Default.(func() uuid.UUID)
 	userannouncementMixin := schema.UserAnnouncement{}.Mixin()
 	userannouncement.Policy = privacy.NewPolicies(userannouncementMixin[0], schema.UserAnnouncement{})
 	userannouncement.Hooks[0] = func(next ent.Mutator) ent.Mutator {
@@ -620,6 +642,8 @@ func init() {
 	}
 	userannouncementMixinFields0 := userannouncementMixin[0].Fields()
 	_ = userannouncementMixinFields0
+	userannouncementMixinFields1 := userannouncementMixin[1].Fields()
+	_ = userannouncementMixinFields1
 	userannouncementFields := schema.UserAnnouncement{}.Fields()
 	_ = userannouncementFields
 	// userannouncementDescCreatedAt is the schema descriptor for created_at field.
@@ -636,22 +660,22 @@ func init() {
 	userannouncementDescDeletedAt := userannouncementMixinFields0[2].Descriptor()
 	// userannouncement.DefaultDeletedAt holds the default value on creation for the deleted_at field.
 	userannouncement.DefaultDeletedAt = userannouncementDescDeletedAt.Default.(func() uint32)
+	// userannouncementDescEntID is the schema descriptor for ent_id field.
+	userannouncementDescEntID := userannouncementMixinFields1[1].Descriptor()
+	// userannouncement.DefaultEntID holds the default value on creation for the ent_id field.
+	userannouncement.DefaultEntID = userannouncementDescEntID.Default.(func() uuid.UUID)
 	// userannouncementDescAppID is the schema descriptor for app_id field.
-	userannouncementDescAppID := userannouncementFields[1].Descriptor()
+	userannouncementDescAppID := userannouncementFields[0].Descriptor()
 	// userannouncement.DefaultAppID holds the default value on creation for the app_id field.
 	userannouncement.DefaultAppID = userannouncementDescAppID.Default.(func() uuid.UUID)
 	// userannouncementDescUserID is the schema descriptor for user_id field.
-	userannouncementDescUserID := userannouncementFields[2].Descriptor()
+	userannouncementDescUserID := userannouncementFields[1].Descriptor()
 	// userannouncement.DefaultUserID holds the default value on creation for the user_id field.
 	userannouncement.DefaultUserID = userannouncementDescUserID.Default.(func() uuid.UUID)
 	// userannouncementDescAnnouncementID is the schema descriptor for announcement_id field.
-	userannouncementDescAnnouncementID := userannouncementFields[3].Descriptor()
+	userannouncementDescAnnouncementID := userannouncementFields[2].Descriptor()
 	// userannouncement.DefaultAnnouncementID holds the default value on creation for the announcement_id field.
 	userannouncement.DefaultAnnouncementID = userannouncementDescAnnouncementID.Default.(func() uuid.UUID)
-	// userannouncementDescID is the schema descriptor for id field.
-	userannouncementDescID := userannouncementFields[0].Descriptor()
-	// userannouncement.DefaultID holds the default value on creation for the id field.
-	userannouncement.DefaultID = userannouncementDescID.Default.(func() uuid.UUID)
 }
 
 const (

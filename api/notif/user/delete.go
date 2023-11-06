@@ -13,9 +13,16 @@ import (
 
 func (s *Server) DeleteNotifUser(ctx context.Context, in *npool.DeleteNotifUserRequest) (*npool.DeleteNotifUserResponse, error) {
 	req := in.GetInfo()
+	if req == nil {
+		logger.Sugar().Errorw(
+			"DeleteNotifUser",
+			"In", in,
+		)
+		return &npool.DeleteNotifUserResponse{}, status.Error(codes.InvalidArgument, "Info is empty")
+	}
 	handler, err := user1.NewHandler(
 		ctx,
-		user1.WithID(req.ID),
+		user1.WithID(req.ID, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

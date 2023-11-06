@@ -19,12 +19,12 @@ import (
 func (s *Server) GenerateContact(ctx context.Context, in *npool.GenerateContactRequest) (*npool.GenerateContactResponse, error) {
 	handler, err := contact1.NewHandler(
 		ctx,
-		contact1.WithSubject(&in.Subject),
-		contact1.WithBody(&in.Body),
-		contact.WithUsedFor(&in.UsedFor),
-		contact.WithAppID(&in.AppID),
-		contact.WithSender(&in.Sender),
-		contact1.WithSenderName(&in.SenderName),
+		contact1.WithSubject(&in.Subject, true),
+		contact1.WithBody(&in.Body, true),
+		contact.WithUsedFor(&in.UsedFor, true),
+		contact.WithAppID(&in.AppID, true),
+		contact.WithSender(&in.Sender, true),
+		contact1.WithSenderName(&in.SenderName, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

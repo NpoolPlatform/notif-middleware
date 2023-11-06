@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 
-	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -61,6 +60,20 @@ func (stc *SMSTemplateCreate) SetDeletedAt(u uint32) *SMSTemplateCreate {
 func (stc *SMSTemplateCreate) SetNillableDeletedAt(u *uint32) *SMSTemplateCreate {
 	if u != nil {
 		stc.SetDeletedAt(*u)
+	}
+	return stc
+}
+
+// SetEntID sets the "ent_id" field.
+func (stc *SMSTemplateCreate) SetEntID(u uuid.UUID) *SMSTemplateCreate {
+	stc.mutation.SetEntID(u)
+	return stc
+}
+
+// SetNillableEntID sets the "ent_id" field if the given value is not nil.
+func (stc *SMSTemplateCreate) SetNillableEntID(u *uuid.UUID) *SMSTemplateCreate {
+	if u != nil {
+		stc.SetEntID(*u)
 	}
 	return stc
 }
@@ -120,16 +133,8 @@ func (stc *SMSTemplateCreate) SetNillableMessage(s *string) *SMSTemplateCreate {
 }
 
 // SetID sets the "id" field.
-func (stc *SMSTemplateCreate) SetID(u uuid.UUID) *SMSTemplateCreate {
+func (stc *SMSTemplateCreate) SetID(u uint32) *SMSTemplateCreate {
 	stc.mutation.SetID(u)
-	return stc
-}
-
-// SetNillableID sets the "id" field if the given value is not nil.
-func (stc *SMSTemplateCreate) SetNillableID(u *uuid.UUID) *SMSTemplateCreate {
-	if u != nil {
-		stc.SetID(*u)
-	}
 	return stc
 }
 
@@ -233,6 +238,13 @@ func (stc *SMSTemplateCreate) defaults() error {
 		v := smstemplate.DefaultDeletedAt()
 		stc.mutation.SetDeletedAt(v)
 	}
+	if _, ok := stc.mutation.EntID(); !ok {
+		if smstemplate.DefaultEntID == nil {
+			return fmt.Errorf("ent: uninitialized smstemplate.DefaultEntID (forgotten import ent/runtime?)")
+		}
+		v := smstemplate.DefaultEntID()
+		stc.mutation.SetEntID(v)
+	}
 	if _, ok := stc.mutation.UsedFor(); !ok {
 		v := smstemplate.DefaultUsedFor
 		stc.mutation.SetUsedFor(v)
@@ -244,13 +256,6 @@ func (stc *SMSTemplateCreate) defaults() error {
 	if _, ok := stc.mutation.Message(); !ok {
 		v := smstemplate.DefaultMessage
 		stc.mutation.SetMessage(v)
-	}
-	if _, ok := stc.mutation.ID(); !ok {
-		if smstemplate.DefaultID == nil {
-			return fmt.Errorf("ent: uninitialized smstemplate.DefaultID (forgotten import ent/runtime?)")
-		}
-		v := smstemplate.DefaultID()
-		stc.mutation.SetID(v)
 	}
 	return nil
 }
@@ -265,6 +270,9 @@ func (stc *SMSTemplateCreate) check() error {
 	}
 	if _, ok := stc.mutation.DeletedAt(); !ok {
 		return &ValidationError{Name: "deleted_at", err: errors.New(`ent: missing required field "SMSTemplate.deleted_at"`)}
+	}
+	if _, ok := stc.mutation.EntID(); !ok {
+		return &ValidationError{Name: "ent_id", err: errors.New(`ent: missing required field "SMSTemplate.ent_id"`)}
 	}
 	if _, ok := stc.mutation.AppID(); !ok {
 		return &ValidationError{Name: "app_id", err: errors.New(`ent: missing required field "SMSTemplate.app_id"`)}
@@ -283,12 +291,9 @@ func (stc *SMSTemplateCreate) sqlSave(ctx context.Context) (*SMSTemplate, error)
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
-			_node.ID = *id
-		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
-			return nil, err
-		}
+	if _spec.ID.Value != _node.ID {
+		id := _spec.ID.Value.(int64)
+		_node.ID = uint32(id)
 	}
 	return _node, nil
 }
@@ -299,7 +304,7 @@ func (stc *SMSTemplateCreate) createSpec() (*SMSTemplate, *sqlgraph.CreateSpec) 
 		_spec = &sqlgraph.CreateSpec{
 			Table: smstemplate.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: smstemplate.FieldID,
 			},
 		}
@@ -307,7 +312,7 @@ func (stc *SMSTemplateCreate) createSpec() (*SMSTemplate, *sqlgraph.CreateSpec) 
 	_spec.OnConflict = stc.conflict
 	if id, ok := stc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = &id
+		_spec.ID.Value = id
 	}
 	if value, ok := stc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -332,6 +337,14 @@ func (stc *SMSTemplateCreate) createSpec() (*SMSTemplate, *sqlgraph.CreateSpec) 
 			Column: smstemplate.FieldDeletedAt,
 		})
 		_node.DeletedAt = value
+	}
+	if value, ok := stc.mutation.EntID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: smstemplate.FieldEntID,
+		})
+		_node.EntID = value
 	}
 	if value, ok := stc.mutation.AppID(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -478,6 +491,18 @@ func (u *SMSTemplateUpsert) UpdateDeletedAt() *SMSTemplateUpsert {
 // AddDeletedAt adds v to the "deleted_at" field.
 func (u *SMSTemplateUpsert) AddDeletedAt(v uint32) *SMSTemplateUpsert {
 	u.Add(smstemplate.FieldDeletedAt, v)
+	return u
+}
+
+// SetEntID sets the "ent_id" field.
+func (u *SMSTemplateUpsert) SetEntID(v uuid.UUID) *SMSTemplateUpsert {
+	u.Set(smstemplate.FieldEntID, v)
+	return u
+}
+
+// UpdateEntID sets the "ent_id" field to the value that was provided on create.
+func (u *SMSTemplateUpsert) UpdateEntID() *SMSTemplateUpsert {
+	u.SetExcluded(smstemplate.FieldEntID)
 	return u
 }
 
@@ -672,6 +697,20 @@ func (u *SMSTemplateUpsertOne) UpdateDeletedAt() *SMSTemplateUpsertOne {
 	})
 }
 
+// SetEntID sets the "ent_id" field.
+func (u *SMSTemplateUpsertOne) SetEntID(v uuid.UUID) *SMSTemplateUpsertOne {
+	return u.Update(func(s *SMSTemplateUpsert) {
+		s.SetEntID(v)
+	})
+}
+
+// UpdateEntID sets the "ent_id" field to the value that was provided on create.
+func (u *SMSTemplateUpsertOne) UpdateEntID() *SMSTemplateUpsertOne {
+	return u.Update(func(s *SMSTemplateUpsert) {
+		s.UpdateEntID()
+	})
+}
+
 // SetAppID sets the "app_id" field.
 func (u *SMSTemplateUpsertOne) SetAppID(v uuid.UUID) *SMSTemplateUpsertOne {
 	return u.Update(func(s *SMSTemplateUpsert) {
@@ -779,12 +818,7 @@ func (u *SMSTemplateUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *SMSTemplateUpsertOne) ID(ctx context.Context) (id uuid.UUID, err error) {
-	if u.create.driver.Dialect() == dialect.MySQL {
-		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
-		// fields from the database since MySQL does not support the RETURNING clause.
-		return id, errors.New("ent: SMSTemplateUpsertOne.ID is not supported by MySQL driver. Use SMSTemplateUpsertOne.Exec instead")
-	}
+func (u *SMSTemplateUpsertOne) ID(ctx context.Context) (id uint32, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -793,7 +827,7 @@ func (u *SMSTemplateUpsertOne) ID(ctx context.Context) (id uuid.UUID, err error)
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *SMSTemplateUpsertOne) IDX(ctx context.Context) uuid.UUID {
+func (u *SMSTemplateUpsertOne) IDX(ctx context.Context) uint32 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -844,6 +878,10 @@ func (stcb *SMSTemplateCreateBulk) Save(ctx context.Context) ([]*SMSTemplate, er
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
+				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
+					id := specs[i].ID.Value.(int64)
+					nodes[i].ID = uint32(id)
+				}
 				mutation.done = true
 				return nodes[i], nil
 			})
@@ -1039,6 +1077,20 @@ func (u *SMSTemplateUpsertBulk) AddDeletedAt(v uint32) *SMSTemplateUpsertBulk {
 func (u *SMSTemplateUpsertBulk) UpdateDeletedAt() *SMSTemplateUpsertBulk {
 	return u.Update(func(s *SMSTemplateUpsert) {
 		s.UpdateDeletedAt()
+	})
+}
+
+// SetEntID sets the "ent_id" field.
+func (u *SMSTemplateUpsertBulk) SetEntID(v uuid.UUID) *SMSTemplateUpsertBulk {
+	return u.Update(func(s *SMSTemplateUpsert) {
+		s.SetEntID(v)
+	})
+}
+
+// UpdateEntID sets the "ent_id" field to the value that was provided on create.
+func (u *SMSTemplateUpsertBulk) UpdateEntID() *SMSTemplateUpsertBulk {
+	return u.Update(func(s *SMSTemplateUpsert) {
+		s.UpdateEntID()
 	})
 }
 

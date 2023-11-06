@@ -12,8 +12,8 @@ import (
 )
 
 func (h *Handler) ExistEmailTemplate(ctx context.Context) (exist bool, err error) {
-	if h.ID == nil {
-		return false, fmt.Errorf("invalid id")
+	if h.EntID == nil {
+		return false, fmt.Errorf("invalid entid")
 	}
 
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
@@ -21,7 +21,7 @@ func (h *Handler) ExistEmailTemplate(ctx context.Context) (exist bool, err error
 			EmailTemplate.
 			Query().
 			Where(
-				entemailtemplate.ID(*h.ID),
+				entemailtemplate.EntID(*h.EntID),
 				entemailtemplate.DeletedAt(0),
 			).
 			Exist(_ctx)

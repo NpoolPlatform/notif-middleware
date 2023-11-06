@@ -24,7 +24,6 @@ func (h *Handler) DeleteReadState(ctx context.Context) (*npool.ReadState, error)
 		if _, err := crud.UpdateSet(
 			cli.ReadAnnouncement.UpdateOneID(*h.ID),
 			&crud.Req{
-				ID:        h.ID,
 				DeletedAt: &now,
 			},
 		).Save(ctx); err != nil {
@@ -35,6 +34,5 @@ func (h *Handler) DeleteReadState(ctx context.Context) (*npool.ReadState, error)
 	if err != nil {
 		return nil, err
 	}
-
 	return info, nil
 }

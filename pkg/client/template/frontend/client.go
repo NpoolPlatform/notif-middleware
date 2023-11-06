@@ -81,7 +81,7 @@ func UpdateFrontendTemplate(ctx context.Context, req *npool.FrontendTemplateReq)
 func GetFrontendTemplate(ctx context.Context, id string) (*npool.FrontendTemplate, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.GetFrontendTemplate(ctx, &npool.GetFrontendTemplateRequest{
-			ID: id,
+			EntID: id,
 		})
 		if err != nil {
 			return nil, err
@@ -158,7 +158,7 @@ func DeleteFrontendTemplate(ctx context.Context, req *npool.FrontendTemplateReq)
 func ExistFrontendTemplate(ctx context.Context, id string) (bool, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.ExistFrontendTemplate(ctx, &npool.ExistFrontendTemplateRequest{
-			ID: id,
+			EntID: id,
 		})
 		if err != nil {
 			return nil, err

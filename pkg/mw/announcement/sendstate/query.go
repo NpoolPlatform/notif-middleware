@@ -23,6 +23,7 @@ type queryHandler struct {
 func (h *queryHandler) selectSendState(stm *ent.SendAnnouncementQuery) {
 	h.stm = stm.Select(
 		entsendamt.FieldID,
+		entsendamt.FieldEntID,
 		entsendamt.FieldAppID,
 		entsendamt.FieldUserID,
 		entsendamt.FieldAnnouncementID,
@@ -37,7 +38,7 @@ func (h *queryHandler) queryJoinAnnouncement(s *sql.Selector) {
 	s.LeftJoin(t).
 		On(
 			s.C(entsendamt.FieldAnnouncementID),
-			t.C(entamt.FieldID),
+			t.C(entamt.FieldEntID),
 		).
 		AppendSelect(
 			t.C(entamt.FieldLangID),
@@ -56,17 +57,17 @@ func (h *queryHandler) queryJoin() {
 }
 
 func (h *queryHandler) querySendState(cli *ent.Client) error {
-	if h.ID == nil {
-		return fmt.Errorf("invalid user announcement id")
+	if h.ID == nil && h.EntID == nil {
+		return fmt.Errorf("invalid id")
 	}
-	h.selectSendState(
-		cli.SendAnnouncement.
-			Query().
-			Where(
-				entsendamt.ID(*h.ID),
-				entsendamt.DeletedAt(0),
-			),
-	)
+	stm := cli.SendAnnouncement.Query().Where(entsendamt.DeletedAt(0))
+	if h.ID != nil {
+		stm.Where(entsendamt.ID(*h.ID))
+	}
+	if h.EntID != nil {
+		stm.Where(entsendamt.EntID(*h.EntID))
+	}
+	h.selectSendState(stm)
 	return nil
 }
 

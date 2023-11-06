@@ -17,10 +17,17 @@ func (s *Server) DeleteGoodBenefit(
 	*npool.DeleteGoodBenefitResponse,
 	error,
 ) {
-	id := in.GetInfo().GetID()
+	req := in.GetInfo()
+	if req == nil {
+		logger.Sugar().Errorw(
+			"DeleteGoodBenefit",
+			"In", in,
+		)
+		return &npool.DeleteGoodBenefitResponse{}, status.Error(codes.InvalidArgument, "Info is empty")
+	}
 	handler, err := goodbenefit1.NewHandler(
 		ctx,
-		goodbenefit1.WithID(&id),
+		goodbenefit1.WithID(req.ID, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

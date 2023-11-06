@@ -14,21 +14,28 @@ import (
 
 func (s *Server) CreateNotif(ctx context.Context, in *npool.CreateNotifRequest) (*npool.CreateNotifResponse, error) {
 	req := in.GetInfo()
+	if req == nil {
+		logger.Sugar().Errorw(
+			"CreateNotif",
+			"In", in,
+		)
+		return &npool.CreateNotifResponse{}, status.Error(codes.InvalidArgument, "Info is empty")
+	}
 	handler, err := notif1.NewHandler(
 		ctx,
-		notif1.WithID(req.ID),
-		notif1.WithAppID(req.AppID),
-		notif1.WithLangID(req.LangID),
-		notif1.WithUserID(req.UserID),
-		notif1.WithEventID(req.EventID),
-		notif1.WithNotified(req.Notified),
-		notif1.WithEventType(req.EventType),
-		notif1.WithUseTemplate(req.UseTemplate),
-		notif1.WithTitle(req.Title),
-		notif1.WithContent(req.Content),
-		notif1.WithChannel(req.Channel),
-		notif1.WithExtra(req.Extra),
-		notif1.WithNotifType(req.NotifType),
+		notif1.WithEntID(req.EntID, false),
+		notif1.WithAppID(req.AppID, true),
+		notif1.WithLangID(req.LangID, true),
+		notif1.WithUserID(req.UserID, false),
+		notif1.WithEventID(req.EventID, true),
+		notif1.WithNotified(req.Notified, false),
+		notif1.WithEventType(req.EventType, true),
+		notif1.WithUseTemplate(req.UseTemplate, false),
+		notif1.WithTitle(req.Title, true),
+		notif1.WithContent(req.Content, true),
+		notif1.WithChannel(req.Channel, true),
+		notif1.WithExtra(req.Extra, false),
+		notif1.WithNotifType(req.NotifType, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
@@ -55,7 +62,7 @@ func (s *Server) CreateNotif(ctx context.Context, in *npool.CreateNotifRequest) 
 func (s *Server) CreateNotifs(ctx context.Context, in *npool.CreateNotifsRequest) (*npool.CreateNotifsResponse, error) {
 	handler, err := notif1.NewHandler(
 		ctx,
-		notif1.WithReqs(in.GetInfos()),
+		notif1.WithReqs(in.GetInfos(), true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

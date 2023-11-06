@@ -84,6 +84,20 @@ func (ncu *NotifChannelUpdate) AddDeletedAt(u int32) *NotifChannelUpdate {
 	return ncu
 }
 
+// SetEntID sets the "ent_id" field.
+func (ncu *NotifChannelUpdate) SetEntID(u uuid.UUID) *NotifChannelUpdate {
+	ncu.mutation.SetEntID(u)
+	return ncu
+}
+
+// SetNillableEntID sets the "ent_id" field if the given value is not nil.
+func (ncu *NotifChannelUpdate) SetNillableEntID(u *uuid.UUID) *NotifChannelUpdate {
+	if u != nil {
+		ncu.SetEntID(*u)
+	}
+	return ncu
+}
+
 // SetAppID sets the "app_id" field.
 func (ncu *NotifChannelUpdate) SetAppID(u uuid.UUID) *NotifChannelUpdate {
 	ncu.mutation.SetAppID(u)
@@ -230,7 +244,7 @@ func (ncu *NotifChannelUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   notifchannel.Table,
 			Columns: notifchannel.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: notifchannel.FieldID,
 			},
 		},
@@ -282,6 +296,13 @@ func (ncu *NotifChannelUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeUint32,
 			Value:  value,
 			Column: notifchannel.FieldDeletedAt,
+		})
+	}
+	if value, ok := ncu.mutation.EntID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: notifchannel.FieldEntID,
 		})
 	}
 	if value, ok := ncu.mutation.AppID(); ok {
@@ -396,6 +417,20 @@ func (ncuo *NotifChannelUpdateOne) SetNillableDeletedAt(u *uint32) *NotifChannel
 // AddDeletedAt adds u to the "deleted_at" field.
 func (ncuo *NotifChannelUpdateOne) AddDeletedAt(u int32) *NotifChannelUpdateOne {
 	ncuo.mutation.AddDeletedAt(u)
+	return ncuo
+}
+
+// SetEntID sets the "ent_id" field.
+func (ncuo *NotifChannelUpdateOne) SetEntID(u uuid.UUID) *NotifChannelUpdateOne {
+	ncuo.mutation.SetEntID(u)
+	return ncuo
+}
+
+// SetNillableEntID sets the "ent_id" field if the given value is not nil.
+func (ncuo *NotifChannelUpdateOne) SetNillableEntID(u *uuid.UUID) *NotifChannelUpdateOne {
+	if u != nil {
+		ncuo.SetEntID(*u)
+	}
 	return ncuo
 }
 
@@ -558,7 +593,7 @@ func (ncuo *NotifChannelUpdateOne) sqlSave(ctx context.Context) (_node *NotifCha
 			Table:   notifchannel.Table,
 			Columns: notifchannel.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: notifchannel.FieldID,
 			},
 		},
@@ -627,6 +662,13 @@ func (ncuo *NotifChannelUpdateOne) sqlSave(ctx context.Context) (_node *NotifCha
 			Type:   field.TypeUint32,
 			Value:  value,
 			Column: notifchannel.FieldDeletedAt,
+		})
+	}
+	if value, ok := ncuo.mutation.EntID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: notifchannel.FieldEntID,
 		})
 	}
 	if value, ok := ncuo.mutation.AppID(); ok {

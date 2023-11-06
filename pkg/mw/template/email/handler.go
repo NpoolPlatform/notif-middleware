@@ -15,7 +15,8 @@ import (
 )
 
 type Handler struct {
-	ID                *uuid.UUID
+	ID                *uint32
+	EntID             *uuid.UUID
 	AppID             *uuid.UUID
 	LangID            *uuid.UUID
 	DefaultToUsername *string
@@ -43,23 +44,42 @@ func NewHandler(ctx context.Context, options ...func(context.Context, *Handler) 
 	return handler, nil
 }
 
-func WithID(id *string) func(context.Context, *Handler) error {
+func WithID(u *uint32, must bool) func(context.Context, *Handler) error {
+	return func(ctx context.Context, h *Handler) error {
+		if u == nil {
+			if must {
+				return fmt.Errorf("invalid id")
+			}
+			return nil
+		}
+		h.ID = u
+		return nil
+	}
+}
+
+func WithEntID(id *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if id == nil {
+			if must {
+				return fmt.Errorf("invalid entid")
+			}
 			return nil
 		}
 		_id, err := uuid.Parse(*id)
 		if err != nil {
 			return err
 		}
-		h.ID = &_id
+		h.EntID = &_id
 		return nil
 	}
 }
 
-func WithAppID(appid *string) func(context.Context, *Handler) error {
+func WithAppID(appid *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if appid == nil {
+			if must {
+				return fmt.Errorf("invalid appid")
+			}
 			return nil
 		}
 		_appid, err := uuid.Parse(*appid)
@@ -71,9 +91,12 @@ func WithAppID(appid *string) func(context.Context, *Handler) error {
 	}
 }
 
-func WithLangID(langid *string) func(context.Context, *Handler) error {
+func WithLangID(langid *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if langid == nil {
+			if must {
+				return fmt.Errorf("invalid langid")
+			}
 			return nil
 		}
 		_langid, err := uuid.Parse(*langid)
@@ -85,9 +108,12 @@ func WithLangID(langid *string) func(context.Context, *Handler) error {
 	}
 }
 
-func WithDefaultToUsername(defaultToUsername *string) func(context.Context, *Handler) error {
+func WithDefaultToUsername(defaultToUsername *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if defaultToUsername == nil {
+			if must {
+				return fmt.Errorf("invalid defaulttousername")
+			}
 			return nil
 		}
 		if *defaultToUsername == "" {
@@ -99,9 +125,12 @@ func WithDefaultToUsername(defaultToUsername *string) func(context.Context, *Han
 }
 
 // nolint
-func WithUsedFor(_usedFor *basetypes.UsedFor) func(context.Context, *Handler) error {
+func WithUsedFor(_usedFor *basetypes.UsedFor, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if _usedFor == nil {
+			if must {
+				return fmt.Errorf("invalid usedfor")
+			}
 			return nil
 		}
 		switch *_usedFor {
@@ -136,9 +165,12 @@ func WithUsedFor(_usedFor *basetypes.UsedFor) func(context.Context, *Handler) er
 	}
 }
 
-func WithSender(sender *string) func(context.Context, *Handler) error {
+func WithSender(sender *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if sender == nil {
+			if must {
+				return fmt.Errorf("invalid sender")
+			}
 			return nil
 		}
 		if *sender == "" {
@@ -149,9 +181,12 @@ func WithSender(sender *string) func(context.Context, *Handler) error {
 	}
 }
 
-func WithReplyTos(replyTos *[]string) func(context.Context, *Handler) error {
+func WithReplyTos(replyTos *[]string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if replyTos == nil {
+			if must {
+				return fmt.Errorf("invalid replyTos")
+			}
 			return nil
 		}
 		if len(*replyTos) == 0 {
@@ -162,9 +197,12 @@ func WithReplyTos(replyTos *[]string) func(context.Context, *Handler) error {
 	}
 }
 
-func WithCcTos(ccTos *[]string) func(context.Context, *Handler) error {
+func WithCcTos(ccTos *[]string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if ccTos == nil {
+			if must {
+				return fmt.Errorf("invalid cctos")
+			}
 			return nil
 		}
 		if len(*ccTos) == 0 {
@@ -175,9 +213,12 @@ func WithCcTos(ccTos *[]string) func(context.Context, *Handler) error {
 	}
 }
 
-func WithSubject(subject *string) func(context.Context, *Handler) error {
+func WithSubject(subject *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if subject == nil {
+			if must {
+				return fmt.Errorf("invalid subject")
+			}
 			return nil
 		}
 		if *subject == "" {
@@ -188,9 +229,12 @@ func WithSubject(subject *string) func(context.Context, *Handler) error {
 	}
 }
 
-func WithBody(body *string) func(context.Context, *Handler) error {
+func WithBody(body *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if body == nil {
+			if must {
+				return fmt.Errorf("invalid body")
+			}
 			return nil
 		}
 		if *body == "" {
@@ -201,23 +245,29 @@ func WithBody(body *string) func(context.Context, *Handler) error {
 	}
 }
 
-func WithUserID(userid *string) func(context.Context, *Handler) error {
+func WithUserID(id *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
-		if userid == nil {
+		if id == nil {
+			if must {
+				return fmt.Errorf("invalid userid")
+			}
 			return nil
 		}
-		_userid, err := uuid.Parse(*userid)
+		_id, err := uuid.Parse(*id)
 		if err != nil {
 			return err
 		}
-		h.UserID = &_userid
+		h.UserID = &_id
 		return nil
 	}
 }
 
-func WithVars(vars *templatemwpb.TemplateVars) func(context.Context, *Handler) error {
+func WithVars(vars *templatemwpb.TemplateVars, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if vars == nil {
+			if must {
+				return fmt.Errorf("invalid vars")
+			}
 			return nil
 		}
 		h.Vars = vars
@@ -226,17 +276,28 @@ func WithVars(vars *templatemwpb.TemplateVars) func(context.Context, *Handler) e
 }
 
 //nolint
-func WithReqs(reqs []*npool.EmailTemplateReq) func(context.Context, *Handler) error {
+func WithReqs(reqs []*npool.EmailTemplateReq, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		_reqs := []*emailtemplatecrud.Req{}
 		for _, req := range reqs {
+			if must {
+				if req.AppID == nil {
+					return fmt.Errorf("invalid appid")
+				}
+				if req.LangID == nil {
+					return fmt.Errorf("invalid langid")
+				}
+				if req.UsedFor == nil {
+					return fmt.Errorf("invalid usedfor")
+				}
+			}
 			_req := &emailtemplatecrud.Req{}
-			if req.ID != nil {
-				id, err := uuid.Parse(req.GetID())
+			if req.EntID != nil {
+				id, err := uuid.Parse(req.GetEntID())
 				if err != nil {
 					return err
 				}
-				_req.ID = &id
+				_req.EntID = &id
 			}
 			if req.AppID != nil {
 				id, err := uuid.Parse(req.GetAppID())
@@ -307,18 +368,25 @@ func WithReqs(reqs []*npool.EmailTemplateReq) func(context.Context, *Handler) er
 	}
 }
 
-// nolint:gocyclo
+//nolint:funlen,dupl,gocyclo
 func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		h.Conds = &emailtemplatecrud.Conds{}
+		if conds == nil {
+			return nil
+		}
 		if conds.ID != nil {
-			id, err := uuid.Parse(conds.GetID().GetValue())
+			h.Conds.ID = &cruder.Cond{
+				Op: conds.GetID().GetOp(), Val: conds.GetID().GetValue(),
+			}
+		}
+		if conds.EntID != nil {
+			id, err := uuid.Parse(conds.GetEntID().GetValue())
 			if err != nil {
 				return err
 			}
-			h.Conds.ID = &cruder.Cond{
-				Op:  conds.GetID().GetOp(),
-				Val: id,
+			h.Conds.EntID = &cruder.Cond{
+				Op: conds.GetEntID().GetOp(), Val: id,
 			}
 		}
 		if conds.AppID != nil {
@@ -374,6 +442,63 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 				Op:  conds.GetUsedFor().GetOp(),
 				Val: basetypes.UsedFor(usedFor),
 			}
+		}
+		if conds.AppIDs != nil {
+			ids := []uuid.UUID{}
+			for _, id := range conds.GetAppIDs().GetValue() {
+				_id, err := uuid.Parse(id)
+				if err != nil {
+					return err
+				}
+				ids = append(ids, _id)
+			}
+			h.Conds.AppIDs = &cruder.Cond{Op: conds.GetAppIDs().GetOp(), Val: ids}
+		}
+		if conds.LangIDs != nil {
+			ids := []uuid.UUID{}
+			for _, id := range conds.GetLangIDs().GetValue() {
+				_id, err := uuid.Parse(id)
+				if err != nil {
+					return err
+				}
+				ids = append(ids, _id)
+			}
+			h.Conds.LangIDs = &cruder.Cond{Op: conds.GetLangIDs().GetOp(), Val: ids}
+		}
+		if conds.UsedFors != nil {
+			usedFors := []string{}
+			for _, usedFor := range conds.GetUsedFors().GetValue() {
+				switch usedFor {
+				case uint32(basetypes.UsedFor_Signup):
+				case uint32(basetypes.UsedFor_Signin):
+				case uint32(basetypes.UsedFor_Update):
+				case uint32(basetypes.UsedFor_Contact):
+				case uint32(basetypes.UsedFor_SetWithdrawAddress):
+				case uint32(basetypes.UsedFor_Withdraw):
+				case uint32(basetypes.UsedFor_CreateInvitationCode):
+				case uint32(basetypes.UsedFor_SetCommission):
+				case uint32(basetypes.UsedFor_SetTransferTargetUser):
+				case uint32(basetypes.UsedFor_Transfer):
+				case uint32(basetypes.UsedFor_WithdrawalRequest):
+				case uint32(basetypes.UsedFor_WithdrawalCompleted):
+				case uint32(basetypes.UsedFor_DepositReceived):
+				case uint32(basetypes.UsedFor_KYCApproved):
+				case uint32(basetypes.UsedFor_KYCRejected):
+				case uint32(basetypes.UsedFor_Announcement):
+				case uint32(basetypes.UsedFor_GoodBenefit1):
+				case uint32(basetypes.UsedFor_UpdateEmail):
+				case uint32(basetypes.UsedFor_UpdateMobile):
+				case uint32(basetypes.UsedFor_UpdatePassword):
+				case uint32(basetypes.UsedFor_UpdateGoogleAuth):
+				case uint32(basetypes.UsedFor_NewLogin):
+				case uint32(basetypes.UsedFor_OrderCompleted):
+				default:
+					return fmt.Errorf("invalid usedfor")
+				}
+				_usedFor := basetypes.UsedFor(usedFor).String()
+				usedFors = append(usedFors, _usedFor)
+			}
+			h.Conds.UsedFors = &cruder.Cond{Op: conds.GetUsedFors().GetOp(), Val: usedFors}
 		}
 		return nil
 	}

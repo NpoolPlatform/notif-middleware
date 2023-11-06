@@ -84,6 +84,20 @@ func (sau *SendAnnouncementUpdate) AddDeletedAt(u int32) *SendAnnouncementUpdate
 	return sau
 }
 
+// SetEntID sets the "ent_id" field.
+func (sau *SendAnnouncementUpdate) SetEntID(u uuid.UUID) *SendAnnouncementUpdate {
+	sau.mutation.SetEntID(u)
+	return sau
+}
+
+// SetNillableEntID sets the "ent_id" field if the given value is not nil.
+func (sau *SendAnnouncementUpdate) SetNillableEntID(u *uuid.UUID) *SendAnnouncementUpdate {
+	if u != nil {
+		sau.SetEntID(*u)
+	}
+	return sau
+}
+
 // SetAppID sets the "app_id" field.
 func (sau *SendAnnouncementUpdate) SetAppID(u uuid.UUID) *SendAnnouncementUpdate {
 	sau.mutation.SetAppID(u)
@@ -250,7 +264,7 @@ func (sau *SendAnnouncementUpdate) sqlSave(ctx context.Context) (n int, err erro
 			Table:   sendannouncement.Table,
 			Columns: sendannouncement.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: sendannouncement.FieldID,
 			},
 		},
@@ -302,6 +316,13 @@ func (sau *SendAnnouncementUpdate) sqlSave(ctx context.Context) (n int, err erro
 			Type:   field.TypeUint32,
 			Value:  value,
 			Column: sendannouncement.FieldDeletedAt,
+		})
+	}
+	if value, ok := sau.mutation.EntID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: sendannouncement.FieldEntID,
 		})
 	}
 	if value, ok := sau.mutation.AppID(); ok {
@@ -429,6 +450,20 @@ func (sauo *SendAnnouncementUpdateOne) SetNillableDeletedAt(u *uint32) *SendAnno
 // AddDeletedAt adds u to the "deleted_at" field.
 func (sauo *SendAnnouncementUpdateOne) AddDeletedAt(u int32) *SendAnnouncementUpdateOne {
 	sauo.mutation.AddDeletedAt(u)
+	return sauo
+}
+
+// SetEntID sets the "ent_id" field.
+func (sauo *SendAnnouncementUpdateOne) SetEntID(u uuid.UUID) *SendAnnouncementUpdateOne {
+	sauo.mutation.SetEntID(u)
+	return sauo
+}
+
+// SetNillableEntID sets the "ent_id" field if the given value is not nil.
+func (sauo *SendAnnouncementUpdateOne) SetNillableEntID(u *uuid.UUID) *SendAnnouncementUpdateOne {
+	if u != nil {
+		sauo.SetEntID(*u)
+	}
 	return sauo
 }
 
@@ -611,7 +646,7 @@ func (sauo *SendAnnouncementUpdateOne) sqlSave(ctx context.Context) (_node *Send
 			Table:   sendannouncement.Table,
 			Columns: sendannouncement.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: sendannouncement.FieldID,
 			},
 		},
@@ -680,6 +715,13 @@ func (sauo *SendAnnouncementUpdateOne) sqlSave(ctx context.Context) (_node *Send
 			Type:   field.TypeUint32,
 			Value:  value,
 			Column: sendannouncement.FieldDeletedAt,
+		})
+	}
+	if value, ok := sauo.mutation.EntID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: sendannouncement.FieldEntID,
 		})
 	}
 	if value, ok := sauo.mutation.AppID(); ok {

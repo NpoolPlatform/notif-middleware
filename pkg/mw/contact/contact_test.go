@@ -41,11 +41,11 @@ var (
 func createContact(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
-		WithAppID(&ret.AppID),
-		WithAccount(&ret.Account),
-		WithAccountType(&ret.AccountType),
-		WithUsedFor(&ret.UsedFor),
-		WithSender(&ret.Sender),
+		WithAppID(&ret.AppID, true),
+		WithAccount(&ret.Account, true),
+		WithAccountType(&ret.AccountType, true),
+		WithUsedFor(&ret.UsedFor, true),
+		WithSender(&ret.Sender, true),
 	)
 	assert.Nil(t, err)
 
@@ -54,6 +54,7 @@ func createContact(t *testing.T) {
 		ret.CreatedAt = info.CreatedAt
 		ret.UpdatedAt = info.UpdatedAt
 		ret.ID = info.ID
+		ret.EntID = info.EntID
 		assert.Equal(t, info, &ret)
 	}
 }
@@ -65,11 +66,11 @@ func updateContact(t *testing.T) {
 	ret.AccountTypeStr = basetypes.SignMethod_Email.String()
 	handler, err := NewHandler(
 		context.Background(),
-		WithID(&ret.ID),
-		WithAppID(&ret.AppID),
-		WithAccount(&ret.Account),
-		WithSender(&ret.Sender),
-		WithAccountType(&ret.AccountType),
+		WithID(&ret.ID, true),
+		WithAppID(&ret.AppID, false),
+		WithAccount(&ret.Account, false),
+		WithSender(&ret.Sender, false),
+		WithAccountType(&ret.AccountType, false),
 	)
 	assert.Nil(t, err)
 
@@ -83,7 +84,7 @@ func updateContact(t *testing.T) {
 func getContact(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
-		WithID(&ret.ID),
+		WithEntID(&ret.EntID, true),
 	)
 	assert.Nil(t, err)
 
@@ -117,7 +118,7 @@ func getContacts(t *testing.T) {
 func deleteContact(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
-		WithID(&ret.ID),
+		WithID(&ret.ID, true),
 	)
 	assert.Nil(t, err)
 

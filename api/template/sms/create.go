@@ -14,14 +14,21 @@ import (
 
 func (s *Server) CreateSMSTemplate(ctx context.Context, in *npool.CreateSMSTemplateRequest) (*npool.CreateSMSTemplateResponse, error) {
 	req := in.GetInfo()
+	if req == nil {
+		logger.Sugar().Errorw(
+			"CreateSMSTemplate",
+			"In", in,
+		)
+		return &npool.CreateSMSTemplateResponse{}, status.Error(codes.InvalidArgument, "Info is empty")
+	}
 	handler, err := smstemplate1.NewHandler(
 		ctx,
-		smstemplate1.WithID(req.ID),
-		smstemplate1.WithAppID(req.AppID),
-		smstemplate1.WithLangID(req.LangID),
-		smstemplate1.WithSubject(req.Subject),
-		smstemplate1.WithUsedFor(req.UsedFor),
-		smstemplate1.WithMessage(req.Message),
+		smstemplate1.WithEntID(req.EntID, false),
+		smstemplate1.WithAppID(req.AppID, true),
+		smstemplate1.WithLangID(req.LangID, true),
+		smstemplate1.WithSubject(req.Subject, false),
+		smstemplate1.WithUsedFor(req.UsedFor, true),
+		smstemplate1.WithMessage(req.Message, false),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
@@ -48,7 +55,7 @@ func (s *Server) CreateSMSTemplate(ctx context.Context, in *npool.CreateSMSTempl
 func (s *Server) CreateSMSTemplates(ctx context.Context, in *npool.CreateSMSTemplatesRequest) (*npool.CreateSMSTemplatesResponse, error) {
 	handler, err := smstemplate1.NewHandler(
 		ctx,
-		smstemplate1.WithReqs(in.GetInfos()),
+		smstemplate1.WithReqs(in.GetInfos(), true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

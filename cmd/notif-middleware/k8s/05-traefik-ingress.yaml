@@ -20,7 +20,39 @@ spec:
     - host: api.npool.top
       http: &http_rules
         paths:
+          - path: /api/notifmw/v1/notif_CreateNotif
+            backend:
+              serviceName: notif-middleware
+              servicePort: 50690
+          - path: /api/notifmw/v1/notif_CreateNotifs
+            backend:
+              serviceName: notif-middleware
+              servicePort: 50690
+          - path: /api/notifmw/v1/notif_DeleteNotif
+            backend:
+              serviceName: notif-middleware
+              servicePort: 50690
           - path: /api/notifmw/v1/template_DeleteEmailTemplate
+            backend:
+              serviceName: notif-middleware
+              servicePort: 50690
+          - path: /api/notifmw/v1/template_DeleteFrontendTemplate
+            backend:
+              serviceName: notif-middleware
+              servicePort: 50690
+          - path: /api/notifmw/v1/template_DeleteSMSTemplate
+            backend:
+              serviceName: notif-middleware
+              servicePort: 50690
+          - path: /api/notifmw/v1/sendstate_CreateSendState
+            backend:
+              serviceName: notif-middleware
+              servicePort: 50690
+          - path: /api/notifmw/v1/sendstate_DeleteSendState
+            backend:
+              serviceName: notif-middleware
+              servicePort: 50690
+          - path: /api/notifmw/v1/contact_DeleteContact
             backend:
               serviceName: notif-middleware
               servicePort: 50690

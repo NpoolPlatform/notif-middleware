@@ -23,6 +23,7 @@ type queryHandler struct {
 func (h *queryHandler) selectReadState(stm *ent.ReadAnnouncementQuery) {
 	h.stm = stm.Select(
 		entreadamt.FieldID,
+		entreadamt.FieldEntID,
 		entreadamt.FieldAppID,
 		entreadamt.FieldUserID,
 		entreadamt.FieldAnnouncementID,
@@ -36,7 +37,7 @@ func (h *queryHandler) queryJoinAnnouncement(s *sql.Selector) {
 	s.LeftJoin(t).
 		On(
 			s.C(entreadamt.FieldAnnouncementID),
-			t.C(entamt.FieldID),
+			t.C(entamt.FieldEntID),
 		).
 		AppendSelect(
 			t.C(entamt.FieldLangID),
@@ -55,17 +56,17 @@ func (h *queryHandler) queryJoin() {
 }
 
 func (h *queryHandler) queryReadState(cli *ent.Client) error {
-	if h.ID == nil {
-		return fmt.Errorf("invalid user announcement id")
+	if h.ID == nil && h.EntID == nil {
+		return fmt.Errorf("invalid id")
 	}
-	h.selectReadState(
-		cli.ReadAnnouncement.
-			Query().
-			Where(
-				entreadamt.ID(*h.ID),
-				entreadamt.DeletedAt(0),
-			),
-	)
+	stm := cli.ReadAnnouncement.Query().Where(entreadamt.DeletedAt(0))
+	if h.ID != nil {
+		stm.Where(entreadamt.ID(*h.ID))
+	}
+	if h.EntID != nil {
+		stm.Where(entreadamt.EntID(*h.EntID))
+	}
+	h.selectReadState(stm)
 	return nil
 }
 

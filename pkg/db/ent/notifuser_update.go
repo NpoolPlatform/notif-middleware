@@ -84,6 +84,20 @@ func (nuu *NotifUserUpdate) AddDeletedAt(u int32) *NotifUserUpdate {
 	return nuu
 }
 
+// SetEntID sets the "ent_id" field.
+func (nuu *NotifUserUpdate) SetEntID(u uuid.UUID) *NotifUserUpdate {
+	nuu.mutation.SetEntID(u)
+	return nuu
+}
+
+// SetNillableEntID sets the "ent_id" field if the given value is not nil.
+func (nuu *NotifUserUpdate) SetNillableEntID(u *uuid.UUID) *NotifUserUpdate {
+	if u != nil {
+		nuu.SetEntID(*u)
+	}
+	return nuu
+}
+
 // SetAppID sets the "app_id" field.
 func (nuu *NotifUserUpdate) SetAppID(u uuid.UUID) *NotifUserUpdate {
 	nuu.mutation.SetAppID(u)
@@ -230,7 +244,7 @@ func (nuu *NotifUserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   notifuser.Table,
 			Columns: notifuser.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: notifuser.FieldID,
 			},
 		},
@@ -282,6 +296,13 @@ func (nuu *NotifUserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeUint32,
 			Value:  value,
 			Column: notifuser.FieldDeletedAt,
+		})
+	}
+	if value, ok := nuu.mutation.EntID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: notifuser.FieldEntID,
 		})
 	}
 	if value, ok := nuu.mutation.AppID(); ok {
@@ -396,6 +417,20 @@ func (nuuo *NotifUserUpdateOne) SetNillableDeletedAt(u *uint32) *NotifUserUpdate
 // AddDeletedAt adds u to the "deleted_at" field.
 func (nuuo *NotifUserUpdateOne) AddDeletedAt(u int32) *NotifUserUpdateOne {
 	nuuo.mutation.AddDeletedAt(u)
+	return nuuo
+}
+
+// SetEntID sets the "ent_id" field.
+func (nuuo *NotifUserUpdateOne) SetEntID(u uuid.UUID) *NotifUserUpdateOne {
+	nuuo.mutation.SetEntID(u)
+	return nuuo
+}
+
+// SetNillableEntID sets the "ent_id" field if the given value is not nil.
+func (nuuo *NotifUserUpdateOne) SetNillableEntID(u *uuid.UUID) *NotifUserUpdateOne {
+	if u != nil {
+		nuuo.SetEntID(*u)
+	}
 	return nuuo
 }
 
@@ -558,7 +593,7 @@ func (nuuo *NotifUserUpdateOne) sqlSave(ctx context.Context) (_node *NotifUser, 
 			Table:   notifuser.Table,
 			Columns: notifuser.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: notifuser.FieldID,
 			},
 		},
@@ -627,6 +662,13 @@ func (nuuo *NotifUserUpdateOne) sqlSave(ctx context.Context) (_node *NotifUser, 
 			Type:   field.TypeUint32,
 			Value:  value,
 			Column: notifuser.FieldDeletedAt,
+		})
+	}
+	if value, ok := nuuo.mutation.EntID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: notifuser.FieldEntID,
 		})
 	}
 	if value, ok := nuuo.mutation.AppID(); ok {

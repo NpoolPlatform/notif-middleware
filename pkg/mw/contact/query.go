@@ -22,6 +22,7 @@ type queryHandler struct {
 func (h *queryHandler) selectContact(stm *ent.ContactQuery) {
 	h.stm = stm.Select(
 		entamt.FieldID,
+		entamt.FieldEntID,
 		entamt.FieldAppID,
 		entamt.FieldAccount,
 		entamt.FieldAccountType,
@@ -40,17 +41,17 @@ func (h *queryHandler) formalize() {
 }
 
 func (h *queryHandler) queryContact(cli *ent.Client) error {
-	if h.ID == nil {
-		return fmt.Errorf("invalid contact id")
+	if h.ID == nil && h.EntID == nil {
+		return fmt.Errorf("invalid id")
 	}
-	h.selectContact(
-		cli.Contact.
-			Query().
-			Where(
-				entamt.ID(*h.ID),
-				entamt.DeletedAt(0),
-			),
-	)
+	stm := cli.Contact.Query().Where(entamt.DeletedAt(0))
+	if h.ID != nil {
+		stm.Where(entamt.ID(*h.ID))
+	}
+	if h.EntID != nil {
+		stm.Where(entamt.EntID(*h.EntID))
+	}
+	h.selectContact(stm)
 	return nil
 }
 
@@ -157,6 +158,9 @@ func (h *Handler) GetContactOnly(ctx context.Context) (*npool.Contact, error) {
 	}
 	if len(handler.infos) > 1 {
 		return nil, fmt.Errorf("to many record")
+	}
+	if len(handler.infos) == 0 {
+		return nil, nil
 	}
 
 	return handler.infos[0], nil

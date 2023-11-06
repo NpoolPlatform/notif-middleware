@@ -23,6 +23,7 @@ type queryHandler struct {
 func (h *queryHandler) selectAnnouncementUser(stm *ent.UserAnnouncementQuery) {
 	h.stm = stm.Select(
 		entuseramt.FieldID,
+		entuseramt.FieldEntID,
 		entuseramt.FieldAppID,
 		entuseramt.FieldUserID,
 		entuseramt.FieldAnnouncementID,
@@ -36,7 +37,7 @@ func (h *queryHandler) queryJoinAnnouncement(s *sql.Selector) {
 	s.LeftJoin(t).
 		On(
 			s.C(entuseramt.FieldAnnouncementID),
-			t.C(entamt.FieldID),
+			t.C(entamt.FieldEntID),
 		).
 		AppendSelect(
 			t.C(entamt.FieldLangID),
@@ -55,17 +56,17 @@ func (h *queryHandler) queryJoin() {
 }
 
 func (h *queryHandler) queryAnnouncementUser(cli *ent.Client) error {
-	if h.ID == nil {
-		return fmt.Errorf("invalid announcement user id")
+	if h.ID == nil && h.EntID == nil {
+		return fmt.Errorf("invalid id")
 	}
-	h.selectAnnouncementUser(
-		cli.UserAnnouncement.
-			Query().
-			Where(
-				entuseramt.ID(*h.ID),
-				entuseramt.DeletedAt(0),
-			),
-	)
+	stm := cli.UserAnnouncement.Query().Where(entuseramt.DeletedAt(0))
+	if h.ID != nil {
+		stm.Where(entuseramt.ID(*h.ID))
+	}
+	if h.EntID != nil {
+		stm.Where(entuseramt.EntID(*h.EntID))
+	}
+	h.selectAnnouncementUser(stm)
 	return nil
 }
 

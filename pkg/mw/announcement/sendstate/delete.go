@@ -24,7 +24,6 @@ func (h *Handler) DeleteSendState(ctx context.Context) (*npool.SendState, error)
 		if _, err := crud.UpdateSet(
 			cli.SendAnnouncement.UpdateOneID(*h.ID),
 			&crud.Req{
-				ID:        h.ID,
 				DeletedAt: &now,
 			},
 		).Save(ctx); err != nil {

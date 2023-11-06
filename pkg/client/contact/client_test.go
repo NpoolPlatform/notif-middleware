@@ -57,6 +57,7 @@ func createContact(t *testing.T) {
 		ret.CreatedAt = info.CreatedAt
 		ret.UpdatedAt = info.UpdatedAt
 		ret.ID = info.ID
+		ret.EntID = info.EntID
 		assert.Equal(t, info, &ret)
 	}
 }
@@ -79,20 +80,18 @@ func updateContact(t *testing.T) {
 }
 
 func existContactConds(t *testing.T) {
-	exist, err := ExistContactConds(context.Background(), &npool.ExistContactCondsRequest{
-		Conds: &npool.Conds{
-			AppID: &basetypes.StringVal{
-				Op:    cruder.EQ,
-				Value: ret.AppID,
-			},
-			AccountType: &basetypes.Uint32Val{
-				Op:    cruder.EQ,
-				Value: uint32(ret.AccountType),
-			},
-			UsedFor: &basetypes.Uint32Val{
-				Op:    cruder.EQ,
-				Value: uint32(ret.UsedFor),
-			},
+	exist, err := ExistContactConds(context.Background(), &npool.Conds{
+		AppID: &basetypes.StringVal{
+			Op:    cruder.EQ,
+			Value: ret.AppID,
+		},
+		AccountType: &basetypes.Uint32Val{
+			Op:    cruder.EQ,
+			Value: uint32(ret.AccountType),
+		},
+		UsedFor: &basetypes.Uint32Val{
+			Op:    cruder.EQ,
+			Value: uint32(ret.UsedFor),
 		},
 	})
 	if assert.Nil(t, err) {
@@ -101,7 +100,7 @@ func existContactConds(t *testing.T) {
 }
 
 func getContact(t *testing.T) {
-	info, err := GetContact(context.Background(), ret.ID)
+	info, err := GetContact(context.Background(), ret.EntID)
 	assert.Nil(t, err)
 	assert.NotNil(t, info)
 }
@@ -145,7 +144,7 @@ func deleteContact(t *testing.T) {
 	if assert.Nil(t, err) {
 		assert.Equal(t, info, &ret)
 	}
-	info, err = GetContact(context.Background(), info.ID)
+	info, err = GetContact(context.Background(), info.EntID)
 	assert.Nil(t, err)
 	assert.Nil(t, info)
 }

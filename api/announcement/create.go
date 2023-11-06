@@ -13,16 +13,24 @@ import (
 
 func (s *Server) CreateAnnouncement(ctx context.Context, in *npool.CreateAnnouncementRequest) (*npool.CreateAnnouncementResponse, error) {
 	req := in.GetInfo()
+	if req == nil {
+		logger.Sugar().Errorw(
+			"CreateAnnouncement",
+			"In", in,
+		)
+		return &npool.CreateAnnouncementResponse{}, status.Error(codes.InvalidArgument, "Info is empty")
+	}
 	handler, err := announcement1.NewHandler(
 		ctx,
-		announcement1.WithAppID(req.AppID),
-		announcement1.WithLangID(req.LangID),
-		announcement1.WithTitle(req.Title),
-		announcement1.WithContent(req.Content),
-		announcement1.WithChannel(req.Channel),
-		announcement1.WithAnnouncementType(req.AnnouncementType),
-		announcement1.WithStartAt(req.StartAt),
-		announcement1.WithEndAt(req.EndAt),
+		announcement1.WithEntID(req.EntID, false),
+		announcement1.WithAppID(req.AppID, true),
+		announcement1.WithLangID(req.LangID, true),
+		announcement1.WithTitle(req.Title, true),
+		announcement1.WithContent(req.Content, true),
+		announcement1.WithChannel(req.Channel, true),
+		announcement1.WithAnnouncementType(req.AnnouncementType, true),
+		announcement1.WithStartAt(req.StartAt, true),
+		announcement1.WithEndAt(req.EndAt, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

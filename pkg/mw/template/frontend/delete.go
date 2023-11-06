@@ -30,7 +30,6 @@ func (h *Handler) DeleteFrontendTemplate(ctx context.Context) (*npool.FrontendTe
 		if _, err := frontendtemplatecrud.UpdateSet(
 			cli.FrontendTemplate.UpdateOneID(*h.ID),
 			&frontendtemplatecrud.Req{
-				ID:        h.ID,
 				DeletedAt: &now,
 			},
 		).Save(ctx); err != nil {

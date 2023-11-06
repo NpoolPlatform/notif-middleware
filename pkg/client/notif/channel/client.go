@@ -48,19 +48,31 @@ func GetChannels(ctx context.Context, conds *npool.Conds, offset, limit int32) (
 }
 
 func GetChannelOnly(ctx context.Context, conds *npool.Conds) (*npool.Channel, error) {
-	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		resp, err := cli.GetChannelOnly(ctx, &npool.GetChannelOnlyRequest{
-			Conds: conds,
+	const limit = 2
+	infos, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		resp, err := cli.GetChannels(ctx, &npool.GetChannelsRequest{
+			Conds:  conds,
+			Offset: 0,
+			Limit:  limit,
 		})
 		if err != nil {
-			return nil, fmt.Errorf("fail get channel only: %v", err)
+			return nil, err
 		}
-		return resp.Info, nil
+		return resp.Infos, nil
 	})
 	if err != nil {
-		return nil, fmt.Errorf("fail get channel only: %v", err)
+		return nil, err
 	}
-	return info.(*npool.Channel), nil
+	if err != nil {
+		return nil, err
+	}
+	if len(infos.([]*npool.Channel)) == 0 {
+		return nil, nil
+	}
+	if len(infos.([]*npool.Channel)) > 1 {
+		return nil, fmt.Errorf("too many records")
+	}
+	return infos.([]*npool.Channel)[0], nil
 }
 
 func CreateChannel(ctx context.Context, in *npool.ChannelReq) (*npool.Channel, error) {
@@ -79,7 +91,7 @@ func CreateChannel(ctx context.Context, in *npool.ChannelReq) (*npool.Channel, e
 	return info.(*npool.Channel), nil
 }
 
-func DeleteChannel(ctx context.Context, id string) (*npool.Channel, error) {
+func DeleteChannel(ctx context.Context, id uint32) (*npool.Channel, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.DeleteChannel(ctx, &npool.DeleteChannelRequest{
 			Info: &npool.ChannelReq{
@@ -100,7 +112,7 @@ func DeleteChannel(ctx context.Context, id string) (*npool.Channel, error) {
 func GetChannel(ctx context.Context, appID, id string) (*npool.Channel, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.GetChannel(ctx, &npool.GetChannelRequest{
-			ID: id,
+			EntID: id,
 		})
 		if err != nil {
 			return nil, err
@@ -113,9 +125,11 @@ func GetChannel(ctx context.Context, appID, id string) (*npool.Channel, error) {
 	return info.(*npool.Channel), nil
 }
 
-func ExistChannelConds(ctx context.Context, conds *npool.ExistChannelCondsRequest) (bool, error) {
+func ExistChannelConds(ctx context.Context, conds *npool.Conds) (bool, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		resp, err := cli.ExistChannelConds(ctx, conds)
+		resp, err := cli.ExistChannelConds(ctx, &npool.ExistChannelCondsRequest{
+			Conds: conds,
+		})
 		if err != nil {
 			return nil, fmt.Errorf("fail exist channel: %v", err)
 		}

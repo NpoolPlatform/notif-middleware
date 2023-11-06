@@ -81,7 +81,7 @@ func UpdateSMSTemplate(ctx context.Context, req *npool.SMSTemplateReq) (*npool.S
 func GetSMSTemplate(ctx context.Context, id string) (*npool.SMSTemplate, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.GetSMSTemplate(ctx, &npool.GetSMSTemplateRequest{
-			ID: id,
+			EntID: id,
 		})
 		if err != nil {
 			return nil, err
@@ -158,7 +158,7 @@ func DeleteSMSTemplate(ctx context.Context, req *npool.SMSTemplateReq) (*npool.S
 func ExistSMSTemplate(ctx context.Context, id string) (bool, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.ExistSMSTemplate(ctx, &npool.ExistSMSTemplateRequest{
-			ID: id,
+			EntID: id,
 		})
 		if err != nil {
 			return nil, err

@@ -12,7 +12,7 @@ import (
 )
 
 type Req struct {
-	ID        *uuid.UUID
+	EntID     *uuid.UUID
 	AppID     *uuid.UUID
 	LangID    *uuid.UUID
 	UsedFor   *basetypes.UsedFor
@@ -22,8 +22,8 @@ type Req struct {
 }
 
 func CreateSet(c *ent.SMSTemplateCreate, req *Req) *ent.SMSTemplateCreate {
-	if req.ID != nil {
-		c.SetID(*req.ID)
+	if req.EntID != nil {
+		c.SetEntID(*req.EntID)
 	}
 	if req.AppID != nil {
 		c.SetAppID(*req.AppID)
@@ -61,10 +61,11 @@ func UpdateSet(u *ent.SMSTemplateUpdateOne, req *Req) *ent.SMSTemplateUpdateOne 
 
 type Conds struct {
 	ID       *cruder.Cond
+	EntID    *cruder.Cond
 	AppID    *cruder.Cond
 	LangID   *cruder.Cond
 	UsedFor  *cruder.Cond
-	IDs      *cruder.Cond
+	EntIDs   *cruder.Cond
 	AppIDs   *cruder.Cond
 	LangIDs  *cruder.Cond
 	UsedFors *cruder.Cond
@@ -73,13 +74,25 @@ type Conds struct {
 // nolint:funlen,gocyclo
 func SetQueryConds(q *ent.SMSTemplateQuery, conds *Conds) (*ent.SMSTemplateQuery, error) {
 	if conds.ID != nil {
-		id, ok := conds.ID.Val.(uuid.UUID)
+		id, ok := conds.ID.Val.(uint32)
 		if !ok {
 			return nil, fmt.Errorf("invalid id")
 		}
 		switch conds.ID.Op {
 		case cruder.EQ:
 			q.Where(entsmstemplate.ID(id))
+		default:
+			return nil, fmt.Errorf("invalid sms field")
+		}
+	}
+	if conds.EntID != nil {
+		id, ok := conds.EntID.Val.(uuid.UUID)
+		if !ok {
+			return nil, fmt.Errorf("invalid entid")
+		}
+		switch conds.EntID.Op {
+		case cruder.EQ:
+			q.Where(entsmstemplate.EntID(id))
 		default:
 			return nil, fmt.Errorf("invalid sms field")
 		}
@@ -120,20 +133,20 @@ func SetQueryConds(q *ent.SMSTemplateQuery, conds *Conds) (*ent.SMSTemplateQuery
 			return nil, fmt.Errorf("invalid sms field")
 		}
 	}
-	if conds.IDs != nil {
-		ids, ok := conds.IDs.Val.([]uuid.UUID)
+	if conds.EntIDs != nil {
+		ids, ok := conds.EntIDs.Val.([]uuid.UUID)
 		if !ok {
-			return nil, fmt.Errorf("invalid ids")
+			return nil, fmt.Errorf("invalid entids")
 		}
-		switch conds.IDs.Op {
+		switch conds.EntIDs.Op {
 		case cruder.IN:
-			q.Where(entsmstemplate.IDIn(ids...))
+			q.Where(entsmstemplate.EntIDIn(ids...))
 		default:
 			return nil, fmt.Errorf("invalid sms field")
 		}
 	}
 	if conds.AppIDs != nil {
-		appids, ok := conds.IDs.Val.([]uuid.UUID)
+		appids, ok := conds.AppIDs.Val.([]uuid.UUID)
 		if !ok {
 			return nil, fmt.Errorf("invalid appids")
 		}
@@ -145,7 +158,7 @@ func SetQueryConds(q *ent.SMSTemplateQuery, conds *Conds) (*ent.SMSTemplateQuery
 		}
 	}
 	if conds.LangIDs != nil {
-		langids, ok := conds.IDs.Val.([]uuid.UUID)
+		langids, ok := conds.LangIDs.Val.([]uuid.UUID)
 		if !ok {
 			return nil, fmt.Errorf("invalid langids")
 		}
@@ -157,7 +170,7 @@ func SetQueryConds(q *ent.SMSTemplateQuery, conds *Conds) (*ent.SMSTemplateQuery
 		}
 	}
 	if conds.UsedFors != nil {
-		usedFors, ok := conds.IDs.Val.([]string)
+		usedFors, ok := conds.UsedFors.Val.([]string)
 		if !ok {
 			return nil, fmt.Errorf("invalid usedFors")
 		}

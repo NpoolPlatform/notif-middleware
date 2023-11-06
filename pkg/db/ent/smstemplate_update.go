@@ -84,6 +84,20 @@ func (stu *SMSTemplateUpdate) AddDeletedAt(u int32) *SMSTemplateUpdate {
 	return stu
 }
 
+// SetEntID sets the "ent_id" field.
+func (stu *SMSTemplateUpdate) SetEntID(u uuid.UUID) *SMSTemplateUpdate {
+	stu.mutation.SetEntID(u)
+	return stu
+}
+
+// SetNillableEntID sets the "ent_id" field if the given value is not nil.
+func (stu *SMSTemplateUpdate) SetNillableEntID(u *uuid.UUID) *SMSTemplateUpdate {
+	if u != nil {
+		stu.SetEntID(*u)
+	}
+	return stu
+}
+
 // SetAppID sets the "app_id" field.
 func (stu *SMSTemplateUpdate) SetAppID(u uuid.UUID) *SMSTemplateUpdate {
 	stu.mutation.SetAppID(u)
@@ -242,7 +256,7 @@ func (stu *SMSTemplateUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   smstemplate.Table,
 			Columns: smstemplate.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: smstemplate.FieldID,
 			},
 		},
@@ -294,6 +308,13 @@ func (stu *SMSTemplateUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeUint32,
 			Value:  value,
 			Column: smstemplate.FieldDeletedAt,
+		})
+	}
+	if value, ok := stu.mutation.EntID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: smstemplate.FieldEntID,
 		})
 	}
 	if value, ok := stu.mutation.AppID(); ok {
@@ -422,6 +443,20 @@ func (stuo *SMSTemplateUpdateOne) SetNillableDeletedAt(u *uint32) *SMSTemplateUp
 // AddDeletedAt adds u to the "deleted_at" field.
 func (stuo *SMSTemplateUpdateOne) AddDeletedAt(u int32) *SMSTemplateUpdateOne {
 	stuo.mutation.AddDeletedAt(u)
+	return stuo
+}
+
+// SetEntID sets the "ent_id" field.
+func (stuo *SMSTemplateUpdateOne) SetEntID(u uuid.UUID) *SMSTemplateUpdateOne {
+	stuo.mutation.SetEntID(u)
+	return stuo
+}
+
+// SetNillableEntID sets the "ent_id" field if the given value is not nil.
+func (stuo *SMSTemplateUpdateOne) SetNillableEntID(u *uuid.UUID) *SMSTemplateUpdateOne {
+	if u != nil {
+		stuo.SetEntID(*u)
+	}
 	return stuo
 }
 
@@ -596,7 +631,7 @@ func (stuo *SMSTemplateUpdateOne) sqlSave(ctx context.Context) (_node *SMSTempla
 			Table:   smstemplate.Table,
 			Columns: smstemplate.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: smstemplate.FieldID,
 			},
 		},
@@ -665,6 +700,13 @@ func (stuo *SMSTemplateUpdateOne) sqlSave(ctx context.Context) (_node *SMSTempla
 			Type:   field.TypeUint32,
 			Value:  value,
 			Column: smstemplate.FieldDeletedAt,
+		})
+	}
+	if value, ok := stuo.mutation.EntID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: smstemplate.FieldEntID,
 		})
 	}
 	if value, ok := stuo.mutation.AppID(); ok {

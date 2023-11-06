@@ -64,7 +64,7 @@ func UpdateNotifUser(ctx context.Context, req *npool.NotifUserReq) (*npool.Notif
 func GetNotifUser(ctx context.Context, id string) (*npool.NotifUser, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.GetNotifUser(ctx, &npool.GetNotifUserRequest{
-			ID: id,
+			EntID: id,
 		})
 		if err != nil {
 			return nil, err

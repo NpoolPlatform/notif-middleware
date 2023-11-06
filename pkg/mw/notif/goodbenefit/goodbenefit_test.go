@@ -57,14 +57,14 @@ var (
 func createGoodBenefit(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
-		WithGoodID(&ret.GoodID),
-		WithGoodName(&ret.GoodName),
-		WithAmount(&ret.Amount),
-		WithState(&ret.State),
-		WithMessage(&ret.Message),
-		WithBenefitDate(&ret.BenefitDate),
-		WithTxID(&ret.TxID),
-		WithGenerated(&ret.Generated),
+		WithGoodID(&ret.GoodID, true),
+		WithGoodName(&ret.GoodName, true),
+		WithAmount(&ret.Amount, false),
+		WithState(&ret.State, true),
+		WithMessage(&ret.Message, false),
+		WithBenefitDate(&ret.BenefitDate, true),
+		WithTxID(&ret.TxID, false),
+		WithGenerated(&ret.Generated, false),
 	)
 	assert.Nil(t, err)
 
@@ -73,19 +73,20 @@ func createGoodBenefit(t *testing.T) {
 		ret.CreatedAt = info.CreatedAt
 		ret.UpdatedAt = info.UpdatedAt
 		ret.ID = info.ID
+		ret.EntID = info.EntID
 		assert.Equal(t, info, &ret)
 	}
 
 	handler2, err := NewHandler(
 		context.Background(),
-		WithGoodID(&ret2.GoodID),
-		WithGoodName(&ret2.GoodName),
-		WithAmount(&ret2.Amount),
-		WithState(&ret2.State),
-		WithMessage(&ret2.Message),
-		WithBenefitDate(&ret2.BenefitDate),
-		WithTxID(&ret2.TxID),
-		WithGenerated(&ret2.Generated),
+		WithGoodID(&ret2.GoodID, true),
+		WithGoodName(&ret2.GoodName, true),
+		WithAmount(&ret2.Amount, false),
+		WithState(&ret2.State, true),
+		WithMessage(&ret2.Message, false),
+		WithBenefitDate(&ret2.BenefitDate, true),
+		WithTxID(&ret2.TxID, false),
+		WithGenerated(&ret2.Generated, false),
 	)
 	assert.Nil(t, err)
 
@@ -94,6 +95,7 @@ func createGoodBenefit(t *testing.T) {
 		ret2.CreatedAt = _info.CreatedAt
 		ret2.UpdatedAt = _info.UpdatedAt
 		ret2.ID = _info.ID
+		ret2.EntID = _info.EntID
 		assert.Equal(t, _info, &ret2)
 	}
 }
@@ -102,8 +104,8 @@ func updateGoodBenefit(t *testing.T) {
 	ret.Generated = true
 	handler, err := NewHandler(
 		context.Background(),
-		WithID(&ret.ID),
-		WithGenerated(&ret.Generated),
+		WithID(&ret.ID, true),
+		WithGenerated(&ret.Generated, true),
 	)
 	assert.Nil(t, err)
 
@@ -117,7 +119,7 @@ func updateGoodBenefit(t *testing.T) {
 func getGoodBenefit(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
-		WithID(&ret.ID),
+		WithEntID(&ret.EntID, true),
 	)
 	assert.Nil(t, err)
 
@@ -151,7 +153,7 @@ func getGoodBenefits(t *testing.T) {
 func deleteGoodBenefit(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
-		WithID(&ret.ID),
+		WithID(&ret.ID, true),
 	)
 	assert.Nil(t, err)
 
@@ -167,7 +169,7 @@ func deleteGoodBenefit(t *testing.T) {
 
 	handler2, err := NewHandler(
 		context.Background(),
-		WithID(&ret2.ID),
+		WithID(&ret2.ID, true),
 	)
 	assert.Nil(t, err)
 

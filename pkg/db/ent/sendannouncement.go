@@ -15,13 +15,15 @@ import (
 type SendAnnouncement struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID uuid.UUID `json:"id,omitempty"`
+	ID uint32 `json:"id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt uint32 `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt uint32 `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt uint32 `json:"deleted_at,omitempty"`
+	// EntID holds the value of the "ent_id" field.
+	EntID uuid.UUID `json:"ent_id,omitempty"`
 	// AppID holds the value of the "app_id" field.
 	AppID uuid.UUID `json:"app_id,omitempty"`
 	// UserID holds the value of the "user_id" field.
@@ -37,11 +39,11 @@ func (*SendAnnouncement) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case sendannouncement.FieldCreatedAt, sendannouncement.FieldUpdatedAt, sendannouncement.FieldDeletedAt:
+		case sendannouncement.FieldID, sendannouncement.FieldCreatedAt, sendannouncement.FieldUpdatedAt, sendannouncement.FieldDeletedAt:
 			values[i] = new(sql.NullInt64)
 		case sendannouncement.FieldChannel:
 			values[i] = new(sql.NullString)
-		case sendannouncement.FieldID, sendannouncement.FieldAppID, sendannouncement.FieldUserID, sendannouncement.FieldAnnouncementID:
+		case sendannouncement.FieldEntID, sendannouncement.FieldAppID, sendannouncement.FieldUserID, sendannouncement.FieldAnnouncementID:
 			values[i] = new(uuid.UUID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type SendAnnouncement", columns[i])
@@ -59,11 +61,11 @@ func (sa *SendAnnouncement) assignValues(columns []string, values []interface{})
 	for i := range columns {
 		switch columns[i] {
 		case sendannouncement.FieldID:
-			if value, ok := values[i].(*uuid.UUID); !ok {
-				return fmt.Errorf("unexpected type %T for field id", values[i])
-			} else if value != nil {
-				sa.ID = *value
+			value, ok := values[i].(*sql.NullInt64)
+			if !ok {
+				return fmt.Errorf("unexpected type %T for field id", value)
 			}
+			sa.ID = uint32(value.Int64)
 		case sendannouncement.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -81,6 +83,12 @@ func (sa *SendAnnouncement) assignValues(columns []string, values []interface{})
 				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
 			} else if value.Valid {
 				sa.DeletedAt = uint32(value.Int64)
+			}
+		case sendannouncement.FieldEntID:
+			if value, ok := values[i].(*uuid.UUID); !ok {
+				return fmt.Errorf("unexpected type %T for field ent_id", values[i])
+			} else if value != nil {
+				sa.EntID = *value
 			}
 		case sendannouncement.FieldAppID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
@@ -142,6 +150,9 @@ func (sa *SendAnnouncement) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("deleted_at=")
 	builder.WriteString(fmt.Sprintf("%v", sa.DeletedAt))
+	builder.WriteString(", ")
+	builder.WriteString("ent_id=")
+	builder.WriteString(fmt.Sprintf("%v", sa.EntID))
 	builder.WriteString(", ")
 	builder.WriteString("app_id=")
 	builder.WriteString(fmt.Sprintf("%v", sa.AppID))

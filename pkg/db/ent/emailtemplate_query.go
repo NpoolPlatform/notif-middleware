@@ -14,7 +14,6 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/emailtemplate"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent/predicate"
-	"github.com/google/uuid"
 )
 
 // EmailTemplateQuery is the builder for querying EmailTemplate entities.
@@ -87,8 +86,8 @@ func (etq *EmailTemplateQuery) FirstX(ctx context.Context) *EmailTemplate {
 
 // FirstID returns the first EmailTemplate ID from the query.
 // Returns a *NotFoundError when no EmailTemplate ID was found.
-func (etq *EmailTemplateQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
-	var ids []uuid.UUID
+func (etq *EmailTemplateQuery) FirstID(ctx context.Context) (id uint32, err error) {
+	var ids []uint32
 	if ids, err = etq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -100,7 +99,7 @@ func (etq *EmailTemplateQuery) FirstID(ctx context.Context) (id uuid.UUID, err e
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (etq *EmailTemplateQuery) FirstIDX(ctx context.Context) uuid.UUID {
+func (etq *EmailTemplateQuery) FirstIDX(ctx context.Context) uint32 {
 	id, err := etq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -138,8 +137,8 @@ func (etq *EmailTemplateQuery) OnlyX(ctx context.Context) *EmailTemplate {
 // OnlyID is like Only, but returns the only EmailTemplate ID in the query.
 // Returns a *NotSingularError when more than one EmailTemplate ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (etq *EmailTemplateQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
-	var ids []uuid.UUID
+func (etq *EmailTemplateQuery) OnlyID(ctx context.Context) (id uint32, err error) {
+	var ids []uint32
 	if ids, err = etq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -155,7 +154,7 @@ func (etq *EmailTemplateQuery) OnlyID(ctx context.Context) (id uuid.UUID, err er
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (etq *EmailTemplateQuery) OnlyIDX(ctx context.Context) uuid.UUID {
+func (etq *EmailTemplateQuery) OnlyIDX(ctx context.Context) uint32 {
 	id, err := etq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -181,8 +180,8 @@ func (etq *EmailTemplateQuery) AllX(ctx context.Context) []*EmailTemplate {
 }
 
 // IDs executes the query and returns a list of EmailTemplate IDs.
-func (etq *EmailTemplateQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
-	var ids []uuid.UUID
+func (etq *EmailTemplateQuery) IDs(ctx context.Context) ([]uint32, error) {
+	var ids []uint32
 	if err := etq.Select(emailtemplate.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -190,7 +189,7 @@ func (etq *EmailTemplateQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (etq *EmailTemplateQuery) IDsX(ctx context.Context) []uuid.UUID {
+func (etq *EmailTemplateQuery) IDsX(ctx context.Context) []uint32 {
 	ids, err := etq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -377,7 +376,7 @@ func (etq *EmailTemplateQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   emailtemplate.Table,
 			Columns: emailtemplate.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: emailtemplate.FieldID,
 			},
 		},

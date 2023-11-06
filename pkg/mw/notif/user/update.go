@@ -2,7 +2,6 @@ package user
 
 import (
 	"context"
-	"fmt"
 
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/user"
 	usercrud "github.com/NpoolPlatform/notif-middleware/pkg/crud/notif/user"
@@ -26,10 +25,6 @@ func (h *updateHandler) updateNotifUser(ctx context.Context, cli *ent.Client) er
 }
 
 func (h *Handler) UpdateNotifUser(ctx context.Context) (*npool.NotifUser, error) {
-	if h.ID == nil {
-		return nil, fmt.Errorf("invalid id")
-	}
-
 	handler := &updateHandler{
 		Handler: h,
 	}

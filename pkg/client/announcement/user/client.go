@@ -45,7 +45,7 @@ func CreateAnnouncementUser(ctx context.Context, in *npool.AnnouncementUserReq) 
 	return info.(*npool.AnnouncementUser), nil
 }
 
-func DeleteAnnouncementUser(ctx context.Context, id string) (*npool.AnnouncementUser, error) {
+func DeleteAnnouncementUser(ctx context.Context, id uint32) (*npool.AnnouncementUser, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.DeleteAnnouncementUser(ctx, &npool.DeleteAnnouncementUserRequest{
 			Info: &npool.AnnouncementUserReq{
@@ -86,7 +86,7 @@ func GetAnnouncementUsers(ctx context.Context, conds *npool.Conds, offset, limit
 func GetAnnouncementUser(ctx context.Context, appID, id string) (*npool.AnnouncementUser, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
 		resp, err := cli.GetAnnouncementUser(ctx, &npool.GetAnnouncementUserRequest{
-			ID: id,
+			EntID: id,
 		})
 		if err != nil {
 			return nil, err
@@ -99,9 +99,11 @@ func GetAnnouncementUser(ctx context.Context, appID, id string) (*npool.Announce
 	return info.(*npool.AnnouncementUser), nil
 }
 
-func ExistAnnouncementUserConds(ctx context.Context, conds *npool.ExistAnnouncementUserCondsRequest) (bool, error) {
+func ExistAnnouncementUserConds(ctx context.Context, conds *npool.Conds) (bool, error) {
 	info, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
-		resp, err := cli.ExistAnnouncementUserConds(ctx, conds)
+		resp, err := cli.ExistAnnouncementUserConds(ctx, &npool.ExistAnnouncementUserCondsRequest{
+			Conds: conds,
+		})
 		if err != nil {
 			return nil, fmt.Errorf("fail exist announcement user: %v", err)
 		}

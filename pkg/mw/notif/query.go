@@ -24,6 +24,7 @@ type queryHandler struct {
 func (h *queryHandler) selectNotif(stm *ent.NotifQuery) {
 	h.stm = stm.Select(
 		entnotif.FieldID,
+		entnotif.FieldEntID,
 		entnotif.FieldAppID,
 		entnotif.FieldLangID,
 		entnotif.FieldUserID,
@@ -42,18 +43,17 @@ func (h *queryHandler) selectNotif(stm *ent.NotifQuery) {
 }
 
 func (h *queryHandler) queryNotif(cli *ent.Client) error {
-	if h.ID == nil {
-		return fmt.Errorf("invalid notifid")
+	if h.ID == nil && h.EntID == nil {
+		return fmt.Errorf("invalid id")
 	}
-
-	h.selectNotif(
-		cli.Notif.
-			Query().
-			Where(
-				entnotif.ID(*h.ID),
-				entnotif.DeletedAt(0),
-			),
-	)
+	stm := cli.Notif.Query().Where(entnotif.DeletedAt(0))
+	if h.ID != nil {
+		stm.Where(entnotif.ID(*h.ID))
+	}
+	if h.EntID != nil {
+		stm.Where(entnotif.EntID(*h.EntID))
+	}
+	h.selectNotif(stm)
 	return nil
 }
 

@@ -21,7 +21,7 @@ func (s *Server) GetFrontendTemplate(
 ) {
 	handler, err := frontendtemplate1.NewHandler(
 		ctx,
-		frontendtemplate1.WithID(&in.ID),
+		frontendtemplate1.WithEntID(&in.EntID, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(
@@ -42,40 +42,6 @@ func (s *Server) GetFrontendTemplate(
 	}
 
 	return &npool.GetFrontendTemplateResponse{
-		Info: info,
-	}, nil
-}
-
-func (s *Server) GetFrontendTemplateOnly(
-	ctx context.Context,
-	in *npool.GetFrontendTemplateOnlyRequest,
-) (
-	*npool.GetFrontendTemplateOnlyResponse,
-	error,
-) {
-	handler, err := frontendtemplate1.NewHandler(
-		ctx,
-		frontendtemplate1.WithConds(in.Conds),
-	)
-	if err != nil {
-		logger.Sugar().Errorw(
-			"GetFrontendTemplateOnly",
-			"In", in,
-			"Error", err,
-		)
-		return &npool.GetFrontendTemplateOnlyResponse{}, status.Error(codes.Aborted, err.Error())
-	}
-	info, err := handler.GetFrontendTemplateOnly(ctx)
-	if err != nil {
-		logger.Sugar().Errorw(
-			"GetFrontendTemplateOnly",
-			"In", in,
-			"Error", err,
-		)
-		return &npool.GetFrontendTemplateOnlyResponse{}, status.Error(codes.Aborted, err.Error())
-	}
-
-	return &npool.GetFrontendTemplateOnlyResponse{
 		Info: info,
 	}, nil
 }

@@ -84,6 +84,20 @@ func (rau *ReadAnnouncementUpdate) AddDeletedAt(u int32) *ReadAnnouncementUpdate
 	return rau
 }
 
+// SetEntID sets the "ent_id" field.
+func (rau *ReadAnnouncementUpdate) SetEntID(u uuid.UUID) *ReadAnnouncementUpdate {
+	rau.mutation.SetEntID(u)
+	return rau
+}
+
+// SetNillableEntID sets the "ent_id" field if the given value is not nil.
+func (rau *ReadAnnouncementUpdate) SetNillableEntID(u *uuid.UUID) *ReadAnnouncementUpdate {
+	if u != nil {
+		rau.SetEntID(*u)
+	}
+	return rau
+}
+
 // SetAppID sets the "app_id" field.
 func (rau *ReadAnnouncementUpdate) SetAppID(u uuid.UUID) *ReadAnnouncementUpdate {
 	rau.mutation.SetAppID(u)
@@ -230,7 +244,7 @@ func (rau *ReadAnnouncementUpdate) sqlSave(ctx context.Context) (n int, err erro
 			Table:   readannouncement.Table,
 			Columns: readannouncement.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: readannouncement.FieldID,
 			},
 		},
@@ -282,6 +296,13 @@ func (rau *ReadAnnouncementUpdate) sqlSave(ctx context.Context) (n int, err erro
 			Type:   field.TypeUint32,
 			Value:  value,
 			Column: readannouncement.FieldDeletedAt,
+		})
+	}
+	if value, ok := rau.mutation.EntID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: readannouncement.FieldEntID,
 		})
 	}
 	if value, ok := rau.mutation.AppID(); ok {
@@ -396,6 +417,20 @@ func (rauo *ReadAnnouncementUpdateOne) SetNillableDeletedAt(u *uint32) *ReadAnno
 // AddDeletedAt adds u to the "deleted_at" field.
 func (rauo *ReadAnnouncementUpdateOne) AddDeletedAt(u int32) *ReadAnnouncementUpdateOne {
 	rauo.mutation.AddDeletedAt(u)
+	return rauo
+}
+
+// SetEntID sets the "ent_id" field.
+func (rauo *ReadAnnouncementUpdateOne) SetEntID(u uuid.UUID) *ReadAnnouncementUpdateOne {
+	rauo.mutation.SetEntID(u)
+	return rauo
+}
+
+// SetNillableEntID sets the "ent_id" field if the given value is not nil.
+func (rauo *ReadAnnouncementUpdateOne) SetNillableEntID(u *uuid.UUID) *ReadAnnouncementUpdateOne {
+	if u != nil {
+		rauo.SetEntID(*u)
+	}
 	return rauo
 }
 
@@ -558,7 +593,7 @@ func (rauo *ReadAnnouncementUpdateOne) sqlSave(ctx context.Context) (_node *Read
 			Table:   readannouncement.Table,
 			Columns: readannouncement.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeUint32,
 				Column: readannouncement.FieldID,
 			},
 		},
@@ -627,6 +662,13 @@ func (rauo *ReadAnnouncementUpdateOne) sqlSave(ctx context.Context) (_node *Read
 			Type:   field.TypeUint32,
 			Value:  value,
 			Column: readannouncement.FieldDeletedAt,
+		})
+	}
+	if value, ok := rauo.mutation.EntID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: readannouncement.FieldEntID,
 		})
 	}
 	if value, ok := rauo.mutation.AppID(); ok {

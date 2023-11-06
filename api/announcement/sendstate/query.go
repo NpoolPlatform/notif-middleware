@@ -47,7 +47,7 @@ func (s *Server) GetSendStates(ctx context.Context, in *npool.GetSendStatesReque
 func (s *Server) GetSendState(ctx context.Context, in *npool.GetSendStateRequest) (*npool.GetSendStateResponse, error) {
 	handler, err := amtsend1.NewHandler(
 		ctx,
-		handler1.WithID(&in.ID),
+		handler1.WithEntID(&in.EntID, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

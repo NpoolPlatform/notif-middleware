@@ -10,6 +10,7 @@ import (
 	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/notif/channel"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
+	"github.com/google/uuid"
 )
 
 func (h *Handler) CreateChannel(ctx context.Context) (info *npool.Channel, err error) {
@@ -26,11 +27,16 @@ func (h *Handler) CreateChannel(ctx context.Context) (info *npool.Channel, err e
 		return nil, fmt.Errorf("channel exist")
 	}
 
+	id := uuid.New()
+	if h.EntID == nil {
+		h.EntID = &id
+	}
+
 	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
 		info, err := crud.CreateSet(
 			cli.NotifChannel.Create(),
 			&crud.Req{
-				ID:        h.ID,
+				EntID:     h.EntID,
 				AppID:     h.AppID,
 				Channel:   h.Channel,
 				EventType: h.EventType,

@@ -15,13 +15,15 @@ import (
 type FrontendTemplate struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID uuid.UUID `json:"id,omitempty"`
+	ID uint32 `json:"id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt uint32 `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt uint32 `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt uint32 `json:"deleted_at,omitempty"`
+	// EntID holds the value of the "ent_id" field.
+	EntID uuid.UUID `json:"ent_id,omitempty"`
 	// AppID holds the value of the "app_id" field.
 	AppID uuid.UUID `json:"app_id,omitempty"`
 	// LangID holds the value of the "lang_id" field.
@@ -39,11 +41,11 @@ func (*FrontendTemplate) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case frontendtemplate.FieldCreatedAt, frontendtemplate.FieldUpdatedAt, frontendtemplate.FieldDeletedAt:
+		case frontendtemplate.FieldID, frontendtemplate.FieldCreatedAt, frontendtemplate.FieldUpdatedAt, frontendtemplate.FieldDeletedAt:
 			values[i] = new(sql.NullInt64)
 		case frontendtemplate.FieldUsedFor, frontendtemplate.FieldTitle, frontendtemplate.FieldContent:
 			values[i] = new(sql.NullString)
-		case frontendtemplate.FieldID, frontendtemplate.FieldAppID, frontendtemplate.FieldLangID:
+		case frontendtemplate.FieldEntID, frontendtemplate.FieldAppID, frontendtemplate.FieldLangID:
 			values[i] = new(uuid.UUID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type FrontendTemplate", columns[i])
@@ -61,11 +63,11 @@ func (ft *FrontendTemplate) assignValues(columns []string, values []interface{})
 	for i := range columns {
 		switch columns[i] {
 		case frontendtemplate.FieldID:
-			if value, ok := values[i].(*uuid.UUID); !ok {
-				return fmt.Errorf("unexpected type %T for field id", values[i])
-			} else if value != nil {
-				ft.ID = *value
+			value, ok := values[i].(*sql.NullInt64)
+			if !ok {
+				return fmt.Errorf("unexpected type %T for field id", value)
 			}
+			ft.ID = uint32(value.Int64)
 		case frontendtemplate.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -83,6 +85,12 @@ func (ft *FrontendTemplate) assignValues(columns []string, values []interface{})
 				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
 			} else if value.Valid {
 				ft.DeletedAt = uint32(value.Int64)
+			}
+		case frontendtemplate.FieldEntID:
+			if value, ok := values[i].(*uuid.UUID); !ok {
+				return fmt.Errorf("unexpected type %T for field ent_id", values[i])
+			} else if value != nil {
+				ft.EntID = *value
 			}
 		case frontendtemplate.FieldAppID:
 			if value, ok := values[i].(*uuid.UUID); !ok {
@@ -150,6 +158,9 @@ func (ft *FrontendTemplate) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("deleted_at=")
 	builder.WriteString(fmt.Sprintf("%v", ft.DeletedAt))
+	builder.WriteString(", ")
+	builder.WriteString("ent_id=")
+	builder.WriteString(fmt.Sprintf("%v", ft.EntID))
 	builder.WriteString(", ")
 	builder.WriteString("app_id=")
 	builder.WriteString(fmt.Sprintf("%v", ft.AppID))

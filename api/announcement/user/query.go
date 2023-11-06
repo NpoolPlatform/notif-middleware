@@ -48,7 +48,7 @@ func (s *Server) GetAnnouncementUsers(ctx context.Context, in *npool.GetAnnounce
 func (s *Server) GetAnnouncementUser(ctx context.Context, in *npool.GetAnnouncementUserRequest) (*npool.GetAnnouncementUserResponse, error) {
 	handler, err := amtuser1.NewHandler(
 		ctx,
-		handler1.WithID(&in.ID),
+		handler1.WithEntID(&in.EntID, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

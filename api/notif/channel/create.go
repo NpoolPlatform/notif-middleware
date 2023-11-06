@@ -2,7 +2,6 @@ package channel
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/NpoolPlatform/go-service-framework/pkg/logger"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/channel"
@@ -15,13 +14,18 @@ import (
 func (s *Server) CreateChannel(ctx context.Context, in *npool.CreateChannelRequest) (*npool.CreateChannelResponse, error) {
 	req := in.GetInfo()
 	if req == nil {
-		return nil, fmt.Errorf("invalid arg")
+		logger.Sugar().Errorw(
+			"CreateChannel",
+			"In", in,
+		)
+		return &npool.CreateChannelResponse{}, status.Error(codes.InvalidArgument, "Info is empty")
 	}
 	handler, err := channel1.NewHandler(
 		ctx,
-		channel1.WithAppID(req.AppID),
-		channel1.WithEventType(req.EventType),
-		channel1.WithChannel(req.Channel),
+		channel1.WithEntID(req.EntID, false),
+		channel1.WithAppID(req.AppID, true),
+		channel1.WithEventType(req.EventType, true),
+		channel1.WithChannel(req.Channel, true),
 	)
 	if err != nil {
 		logger.Sugar().Errorw(

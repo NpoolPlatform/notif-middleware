@@ -19,7 +19,7 @@ func (s *Server) GenerateNotifs(ctx context.Context, in *npool.GenerateNotifsReq
 	handler, err := notif1.NewHandler(
 		ctx,
 		notif1.WithAppID(&in.AppID, true),
-		notif1.WithUserID(&in.UserID, true),
+		notif1.WithUserID(in.UserID, false),
 		notif1.WithEventType(&in.EventType, true),
 		notif1.WithExtra(in.Extra, false),
 		notif1.WithVars(in.Vars, false),

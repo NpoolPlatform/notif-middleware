@@ -137,6 +137,7 @@ func WithUsedFor(_usedFor *basetypes.UsedFor, must bool) func(context.Context, *
 		case basetypes.UsedFor_UpdateGoogleAuth:
 		case basetypes.UsedFor_NewLogin:
 		case basetypes.UsedFor_OrderCompleted:
+		case basetypes.UsedFor_ResetPassword:
 		default:
 			return fmt.Errorf("invalid usedfor")
 		}
@@ -270,6 +271,7 @@ func WithReqs(reqs []*npool.SMSTemplateReq, must bool) func(context.Context, *Ha
 				case basetypes.UsedFor_UpdateGoogleAuth:
 				case basetypes.UsedFor_NewLogin:
 				case basetypes.UsedFor_OrderCompleted:
+				case basetypes.UsedFor_ResetPassword:
 				default:
 					return fmt.Errorf("invalid usedfor")
 				}

@@ -356,6 +356,7 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			case int32(basetypes.UsedFor_UpdateGoogleAuth):
 			case int32(basetypes.UsedFor_NewLogin):
 			case int32(basetypes.UsedFor_OrderCompleted):
+			case int32(basetypes.UsedFor_ResetPassword):
 			default:
 				return fmt.Errorf("invalid usedfor")
 			}

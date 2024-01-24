@@ -29,15 +29,19 @@ func (h *updateHandler) updateSMSTemplate(ctx context.Context, cli *ent.Client) 
 }
 
 func (h *Handler) UpdateSMSTemplate(ctx context.Context) (*npool.SMSTemplate, error) {
-	if h.ID == nil {
-		return nil, fmt.Errorf("invalid id")
+	template, err := h.GetSMSTemplate(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if template == nil {
+		return nil, fmt.Errorf("template not found")
 	}
 
 	handler := &updateHandler{
 		Handler: h,
 	}
 
-	err := db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
+	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
 		if err := handler.updateSMSTemplate(_ctx, cli); err != nil {
 			return err
 		}

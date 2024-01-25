@@ -202,3 +202,17 @@ func GenerateNotifs(ctx context.Context, in *npool.GenerateNotifsRequest) ([]*np
 	}
 	return infos.([]*npool.Notif), nil
 }
+
+func GenerateMultiNotifs(ctx context.Context, in *npool.GenerateMultiNotifsRequest) ([]*npool.Notif, error) {
+	infos, err := do(ctx, func(_ctx context.Context, cli npool.MiddlewareClient) (cruder.Any, error) {
+		resp, err := cli.GenerateMultiNotifs(ctx, in)
+		if err != nil {
+			return nil, fmt.Errorf("fail generate notifs: %v", err)
+		}
+		return resp.Infos, nil
+	})
+	if err != nil {
+		return nil, fmt.Errorf("fail generate notifs: %v", err)
+	}
+	return infos.([]*npool.Notif), nil
+}

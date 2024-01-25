@@ -19,7 +19,7 @@ type generateHandler struct {
 	*Handler
 }
 
-func (h *generateHandler) getNotifUsers(ctx context.Context, notifType basetypes.NotifType, eventType basetypes.UsedFor) ([]string, error) {
+func (h *generateHandler) getNotifUsers(ctx context.Context, userID *uuid.UUID, notifType basetypes.NotifType, eventType basetypes.UsedFor) ([]string, error) {
 	userIDs := []string{}
 	const maxLimit = int32(100)
 	switch notifType {
@@ -47,10 +47,10 @@ func (h *generateHandler) getNotifUsers(ctx context.Context, notifType basetypes
 			userIDs = append(userIDs, row.UserID)
 		}
 	case basetypes.NotifType_NotifUnicast:
-		if h.UserID == nil {
+		if userID == nil {
 			return nil, fmt.Errorf("invalid userid")
 		}
-		userID := h.UserID.String()
+		userID := userID.String()
 		userIDs = append(userIDs, userID)
 	default:
 		return nil, fmt.Errorf("invalid notiftype")
@@ -106,7 +106,7 @@ func (h *Handler) GenerateNotifs(ctx context.Context) ([]*npool.Notif, error) {
 	handler := &generateHandler{
 		Handler: h,
 	}
-	userIDs, err := handler.getNotifUsers(ctx, *h.NotifType, *h.EventType)
+	userIDs, err := handler.getNotifUsers(ctx, h.UserID, *h.NotifType, *h.EventType)
 	if err != nil {
 		return nil, err
 	}
@@ -165,7 +165,7 @@ func (h *Handler) GenerateMultiNotifs(ctx context.Context) ([]*npool.Notif, erro
 	reqs := []*npool.NotifReq{}
 
 	for _, req := range h.MultiNotifReqs {
-		userIDs, err := handler.getNotifUsers(ctx, req.NotifType, req.EventType)
+		userIDs, err := handler.getNotifUsers(ctx, req.UserID, req.NotifType, req.EventType)
 		if err != nil {
 			return nil, err
 		}

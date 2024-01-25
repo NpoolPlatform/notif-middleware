@@ -157,6 +157,7 @@ func WithUsedFor(_usedFor *basetypes.UsedFor, must bool) func(context.Context, *
 		case basetypes.UsedFor_UpdateGoogleAuth:
 		case basetypes.UsedFor_NewLogin:
 		case basetypes.UsedFor_OrderCompleted:
+		case basetypes.UsedFor_ResetPassword:
 		default:
 			return fmt.Errorf("invalid usedfor")
 		}
@@ -338,6 +339,7 @@ func WithReqs(reqs []*npool.EmailTemplateReq, must bool) func(context.Context, *
 				case basetypes.UsedFor_UpdateGoogleAuth:
 				case basetypes.UsedFor_NewLogin:
 				case basetypes.UsedFor_OrderCompleted:
+				case basetypes.UsedFor_ResetPassword:
 				default:
 					return fmt.Errorf("invalid usedfor")
 				}
@@ -368,8 +370,7 @@ func WithReqs(reqs []*npool.EmailTemplateReq, must bool) func(context.Context, *
 	}
 }
 
-//nolint:funlen,dupl,gocyclo
-func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
+func WithConds(conds *npool.Conds) func(context.Context, *Handler) error { //nolint
 	return func(ctx context.Context, h *Handler) error {
 		h.Conds = &emailtemplatecrud.Conds{}
 		if conds == nil {
@@ -434,6 +435,7 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			case int32(basetypes.UsedFor_UpdateGoogleAuth):
 			case int32(basetypes.UsedFor_NewLogin):
 			case int32(basetypes.UsedFor_OrderCompleted):
+			case int32(basetypes.UsedFor_ResetPassword):
 			default:
 				return fmt.Errorf("invalid usedfor")
 			}

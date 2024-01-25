@@ -33,15 +33,19 @@ func (h *updateHandler) updateEmailTemplate(ctx context.Context, cli *ent.Client
 }
 
 func (h *Handler) UpdateEmailTemplate(ctx context.Context) (*npool.EmailTemplate, error) {
-	if h.ID == nil {
-		return nil, fmt.Errorf("invalid id")
+	template, err := h.GetEmailTemplate(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if template == nil {
+		return nil, fmt.Errorf("template not found")
 	}
 
 	handler := &updateHandler{
 		Handler: h,
 	}
 
-	err := db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
+	err = db.WithClient(ctx, func(_ctx context.Context, cli *ent.Client) error {
 		if err := handler.updateEmailTemplate(_ctx, cli); err != nil {
 			return err
 		}

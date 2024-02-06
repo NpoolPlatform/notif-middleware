@@ -112,6 +112,8 @@ func WithUsedFor(_usedFor *basetypes.UsedFor, must bool) func(context.Context, *
 		case basetypes.UsedFor_NewLogin:
 		case basetypes.UsedFor_OrderCompleted:
 		case basetypes.UsedFor_ResetPassword:
+		case basetypes.UsedFor_OrderChildsRenewNotify:
+		case basetypes.UsedFor_OrderChildsRenew:
 		default:
 			return fmt.Errorf("invalid %v usedfor", *_usedFor)
 		}

@@ -15,26 +15,27 @@ import (
 )
 
 type Handler struct {
-	ID          *uint32
-	EntID       *uuid.UUID
-	AppID       *uuid.UUID
-	UserID      *uuid.UUID
-	LangID      *uuid.UUID
-	EventID     *uuid.UUID
-	Notified    *bool
-	EventType   *basetypes.UsedFor
-	UseTemplate *bool
-	Title       *string
-	Content     *string
-	Channel     *basetypes.NotifChannel
-	Extra       *string
-	NotifType   *basetypes.NotifType
-	Vars        *templatemwpb.TemplateVars
-	IDs         *[]uuid.UUID
-	Reqs        []*notifcrud.Req
-	Conds       *notifcrud.Conds
-	Offset      int32
-	Limit       int32
+	ID             *uint32
+	EntID          *uuid.UUID
+	AppID          *uuid.UUID
+	UserID         *uuid.UUID
+	LangID         *uuid.UUID
+	EventID        *uuid.UUID
+	Notified       *bool
+	EventType      *basetypes.UsedFor
+	UseTemplate    *bool
+	Title          *string
+	Content        *string
+	Channel        *basetypes.NotifChannel
+	Extra          *string
+	NotifType      *basetypes.NotifType
+	Vars           *templatemwpb.TemplateVars
+	IDs            *[]uuid.UUID
+	Reqs           []*notifcrud.Req
+	MultiNotifReqs []*MultiNotifReq
+	Conds          *notifcrud.Conds
+	Offset         int32
+	Limit          int32
 }
 
 func NewHandler(ctx context.Context, options ...func(context.Context, *Handler) error) (*Handler, error) {
@@ -262,6 +263,8 @@ func WithEventType(eventtype *basetypes.UsedFor, must bool) func(context.Context
 		case basetypes.UsedFor_UpdateGoogleAuth:
 		case basetypes.UsedFor_NewLogin:
 		case basetypes.UsedFor_OrderCompleted:
+		case basetypes.UsedFor_OrderChildsRenewNotify:
+		case basetypes.UsedFor_OrderChildsRenew:
 		default:
 			return fmt.Errorf("invalid eventtype")
 		}
@@ -425,6 +428,8 @@ func WithReqs(reqs []*npool.NotifReq, must bool) func(context.Context, *Handler)
 				case basetypes.UsedFor_UpdateGoogleAuth:
 				case basetypes.UsedFor_NewLogin:
 				case basetypes.UsedFor_OrderCompleted:
+				case basetypes.UsedFor_OrderChildsRenewNotify:
+				case basetypes.UsedFor_OrderChildsRenew:
 				default:
 					return fmt.Errorf("invalid EventType")
 				}
@@ -458,6 +463,54 @@ func WithReqs(reqs []*npool.NotifReq, must bool) func(context.Context, *Handler)
 			_reqs = append(_reqs, _req)
 		}
 		h.Reqs = _reqs
+		return nil
+	}
+}
+
+//nolint:gocyclo
+func WithMultiNotifReqs(reqs []*npool.GenerateMultiNotifsRequest_XNotifReq, must bool) func(context.Context, *Handler) error {
+	return func(ctx context.Context, h *Handler) error {
+		for _, req := range reqs {
+			_req := &MultiNotifReq{
+				Vars:  req.Vars,
+				Extra: req.Extra,
+			}
+			if req.UserID != nil {
+				id, err := uuid.Parse(req.GetUserID())
+				if err != nil {
+					return err
+				}
+				_req.UserID = &id
+			}
+			switch req.GetEventType() {
+			case basetypes.UsedFor_WithdrawalRequest:
+			case basetypes.UsedFor_WithdrawalCompleted:
+			case basetypes.UsedFor_DepositReceived:
+			case basetypes.UsedFor_KYCApproved:
+			case basetypes.UsedFor_KYCRejected:
+			case basetypes.UsedFor_Announcement:
+			case basetypes.UsedFor_GoodBenefit1:
+			case basetypes.UsedFor_UpdateEmail:
+			case basetypes.UsedFor_UpdateMobile:
+			case basetypes.UsedFor_UpdatePassword:
+			case basetypes.UsedFor_UpdateGoogleAuth:
+			case basetypes.UsedFor_NewLogin:
+			case basetypes.UsedFor_OrderCompleted:
+			case basetypes.UsedFor_OrderChildsRenewNotify:
+			case basetypes.UsedFor_OrderChildsRenew:
+			default:
+				return fmt.Errorf("invalid EventType")
+			}
+			_req.EventType = req.EventType
+			switch req.GetNotifType() {
+			case basetypes.NotifType_NotifMulticast:
+			case basetypes.NotifType_NotifUnicast:
+			default:
+				return fmt.Errorf("invalid NotifType")
+			}
+			_req.NotifType = req.NotifType
+			h.MultiNotifReqs = append(h.MultiNotifReqs, _req)
+		}
 		return nil
 	}
 }
@@ -532,6 +585,8 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			case uint32(basetypes.UsedFor_UpdateGoogleAuth):
 			case uint32(basetypes.UsedFor_NewLogin):
 			case uint32(basetypes.UsedFor_OrderCompleted):
+			case uint32(basetypes.UsedFor_OrderChildsRenewNotify):
+			case uint32(basetypes.UsedFor_OrderChildsRenew):
 			default:
 				return fmt.Errorf("invalid EventType")
 			}

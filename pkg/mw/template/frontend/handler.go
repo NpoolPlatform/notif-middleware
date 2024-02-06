@@ -128,6 +128,8 @@ func WithUsedFor(_usedFor *basetypes.UsedFor, must bool) func(context.Context, *
 		case basetypes.UsedFor_NewLogin:
 		case basetypes.UsedFor_OrderCompleted:
 		case basetypes.UsedFor_ResetPassword:
+		case basetypes.UsedFor_OrderChildsRenewNotify:
+		case basetypes.UsedFor_OrderChildsRenew:
 		default:
 			return fmt.Errorf("invalid usedfor")
 		}
@@ -251,6 +253,8 @@ func WithReqs(reqs []*npool.FrontendTemplateReq, must bool) func(context.Context
 				case basetypes.UsedFor_UpdateGoogleAuth:
 				case basetypes.UsedFor_NewLogin:
 				case basetypes.UsedFor_OrderCompleted:
+				case basetypes.UsedFor_OrderChildsRenewNotify:
+				case basetypes.UsedFor_OrderChildsRenew:
 				default:
 					return fmt.Errorf("invalid usedfor")
 				}
@@ -325,6 +329,8 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			case uint32(basetypes.UsedFor_UpdateGoogleAuth):
 			case uint32(basetypes.UsedFor_NewLogin):
 			case uint32(basetypes.UsedFor_OrderCompleted):
+			case uint32(basetypes.UsedFor_OrderChildsRenewNotify):
+			case uint32(basetypes.UsedFor_OrderChildsRenew):
 			default:
 				return fmt.Errorf("invalid usedfor")
 			}
@@ -383,6 +389,8 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 				case uint32(basetypes.UsedFor_UpdateGoogleAuth):
 				case uint32(basetypes.UsedFor_NewLogin):
 				case uint32(basetypes.UsedFor_OrderCompleted):
+				case uint32(basetypes.UsedFor_OrderChildsRenewNotify):
+				case uint32(basetypes.UsedFor_OrderChildsRenew):
 				default:
 					return fmt.Errorf("invalid usedfor")
 				}

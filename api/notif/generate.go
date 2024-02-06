@@ -14,7 +14,6 @@ import (
 	notif1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/notif"
 )
 
-//nolint:funlen,gocyclo
 func (s *Server) GenerateNotifs(ctx context.Context, in *npool.GenerateNotifsRequest) (*npool.GenerateNotifsResponse, error) {
 	handler, err := notif1.NewHandler(
 		ctx,
@@ -43,6 +42,34 @@ func (s *Server) GenerateNotifs(ctx context.Context, in *npool.GenerateNotifsReq
 		return &npool.GenerateNotifsResponse{}, status.Error(codes.Aborted, err.Error())
 	}
 	return &npool.GenerateNotifsResponse{
+		Infos: infos,
+	}, nil
+}
+
+func (s *Server) GenerateMultiNotifs(ctx context.Context, in *npool.GenerateMultiNotifsRequest) (*npool.GenerateMultiNotifsResponse, error) {
+	handler, err := notif1.NewHandler(
+		ctx,
+		notif1.WithAppID(&in.AppID, true),
+		notif1.WithMultiNotifReqs(in.Reqs, true),
+	)
+	if err != nil {
+		logger.Sugar().Errorw(
+			"GenerateMultiNotifs",
+			"In", in,
+			"Error", err,
+		)
+		return &npool.GenerateMultiNotifsResponse{}, status.Error(codes.Aborted, err.Error())
+	}
+	infos, err := handler.GenerateMultiNotifs(ctx)
+	if err != nil {
+		logger.Sugar().Errorw(
+			"GenerateMultiNotifs",
+			"In", in,
+			"Error", err,
+		)
+		return &npool.GenerateMultiNotifsResponse{}, status.Error(codes.Aborted, err.Error())
+	}
+	return &npool.GenerateMultiNotifsResponse{
 		Infos: infos,
 	}, nil
 }

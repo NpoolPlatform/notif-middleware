@@ -138,6 +138,8 @@ func WithUsedFor(_usedFor *basetypes.UsedFor, must bool) func(context.Context, *
 		case basetypes.UsedFor_NewLogin:
 		case basetypes.UsedFor_OrderCompleted:
 		case basetypes.UsedFor_ResetPassword:
+		case basetypes.UsedFor_OrderChildsRenewNotify:
+		case basetypes.UsedFor_OrderChildsRenew:
 		default:
 			return fmt.Errorf("invalid usedfor")
 		}
@@ -272,6 +274,8 @@ func WithReqs(reqs []*npool.SMSTemplateReq, must bool) func(context.Context, *Ha
 				case basetypes.UsedFor_NewLogin:
 				case basetypes.UsedFor_OrderCompleted:
 				case basetypes.UsedFor_ResetPassword:
+				case basetypes.UsedFor_OrderChildsRenewNotify:
+				case basetypes.UsedFor_OrderChildsRenew:
 				default:
 					return fmt.Errorf("invalid usedfor")
 				}
@@ -333,30 +337,32 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 		}
 		if conds.UsedFor != nil {
 			switch conds.GetUsedFor().GetValue() {
-			case int32(basetypes.UsedFor_Signup):
-			case int32(basetypes.UsedFor_Signin):
-			case int32(basetypes.UsedFor_Update):
-			case int32(basetypes.UsedFor_Contact):
-			case int32(basetypes.UsedFor_SetWithdrawAddress):
-			case int32(basetypes.UsedFor_Withdraw):
-			case int32(basetypes.UsedFor_CreateInvitationCode):
-			case int32(basetypes.UsedFor_SetCommission):
-			case int32(basetypes.UsedFor_SetTransferTargetUser):
-			case int32(basetypes.UsedFor_Transfer):
-			case int32(basetypes.UsedFor_WithdrawalRequest):
-			case int32(basetypes.UsedFor_WithdrawalCompleted):
-			case int32(basetypes.UsedFor_DepositReceived):
-			case int32(basetypes.UsedFor_KYCApproved):
-			case int32(basetypes.UsedFor_KYCRejected):
-			case int32(basetypes.UsedFor_Announcement):
-			case int32(basetypes.UsedFor_GoodBenefit1):
-			case int32(basetypes.UsedFor_UpdateEmail):
-			case int32(basetypes.UsedFor_UpdateMobile):
-			case int32(basetypes.UsedFor_UpdatePassword):
-			case int32(basetypes.UsedFor_UpdateGoogleAuth):
-			case int32(basetypes.UsedFor_NewLogin):
-			case int32(basetypes.UsedFor_OrderCompleted):
-			case int32(basetypes.UsedFor_ResetPassword):
+			case uint32(basetypes.UsedFor_Signup):
+			case uint32(basetypes.UsedFor_Signin):
+			case uint32(basetypes.UsedFor_Update):
+			case uint32(basetypes.UsedFor_Contact):
+			case uint32(basetypes.UsedFor_SetWithdrawAddress):
+			case uint32(basetypes.UsedFor_Withdraw):
+			case uint32(basetypes.UsedFor_CreateInvitationCode):
+			case uint32(basetypes.UsedFor_SetCommission):
+			case uint32(basetypes.UsedFor_SetTransferTargetUser):
+			case uint32(basetypes.UsedFor_Transfer):
+			case uint32(basetypes.UsedFor_WithdrawalRequest):
+			case uint32(basetypes.UsedFor_WithdrawalCompleted):
+			case uint32(basetypes.UsedFor_DepositReceived):
+			case uint32(basetypes.UsedFor_KYCApproved):
+			case uint32(basetypes.UsedFor_KYCRejected):
+			case uint32(basetypes.UsedFor_Announcement):
+			case uint32(basetypes.UsedFor_GoodBenefit1):
+			case uint32(basetypes.UsedFor_UpdateEmail):
+			case uint32(basetypes.UsedFor_UpdateMobile):
+			case uint32(basetypes.UsedFor_UpdatePassword):
+			case uint32(basetypes.UsedFor_UpdateGoogleAuth):
+			case uint32(basetypes.UsedFor_NewLogin):
+			case uint32(basetypes.UsedFor_OrderCompleted):
+			case uint32(basetypes.UsedFor_ResetPassword):
+			case uint32(basetypes.UsedFor_OrderChildsRenewNotify):
+			case uint32(basetypes.UsedFor_OrderChildsRenew):
 			default:
 				return fmt.Errorf("invalid usedfor")
 			}

@@ -127,6 +127,7 @@ func WithEventType(_type *basetypes.UsedFor, must bool) func(context.Context, *H
 		case basetypes.UsedFor_OrderCompleted:
 		case basetypes.UsedFor_OrderChildsRenewNotify:
 		case basetypes.UsedFor_OrderChildsRenew:
+		case basetypes.UsedFor_WithdrawReviewNotify:
 		default:
 			return fmt.Errorf("EventType is invalid")
 		}

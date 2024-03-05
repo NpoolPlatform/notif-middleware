@@ -117,6 +117,7 @@ func WithEventType(eventtype *basetypes.UsedFor, must bool) func(context.Context
 		case basetypes.UsedFor_GoodBenefit1:
 		case basetypes.UsedFor_OrderChildsRenewNotify:
 		case basetypes.UsedFor_OrderChildsRenew:
+		case basetypes.UsedFor_WithdrawReviewNotify:
 		default:
 			return fmt.Errorf("invalid eventtype")
 		}
@@ -174,6 +175,7 @@ func WithReqs(reqs []*npool.NotifUserReq, must bool) func(context.Context, *Hand
 				case basetypes.UsedFor_GoodBenefit1:
 				case basetypes.UsedFor_OrderChildsRenewNotify:
 				case basetypes.UsedFor_OrderChildsRenew:
+				case basetypes.UsedFor_WithdrawReviewNotify:
 				default:
 					return fmt.Errorf("invalid usedfor")
 				}
@@ -238,6 +240,7 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			case uint32(basetypes.UsedFor_GoodBenefit1):
 			case uint32(basetypes.UsedFor_OrderChildsRenewNotify):
 			case uint32(basetypes.UsedFor_OrderChildsRenew):
+			case uint32(basetypes.UsedFor_WithdrawReviewNotify):
 			default:
 				return fmt.Errorf("invalid eventtype")
 			}

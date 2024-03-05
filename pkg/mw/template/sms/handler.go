@@ -140,6 +140,7 @@ func WithUsedFor(_usedFor *basetypes.UsedFor, must bool) func(context.Context, *
 		case basetypes.UsedFor_ResetPassword:
 		case basetypes.UsedFor_OrderChildsRenewNotify:
 		case basetypes.UsedFor_OrderChildsRenew:
+		case basetypes.UsedFor_WithdrawReviewNotify:
 		default:
 			return fmt.Errorf("invalid usedfor")
 		}
@@ -276,6 +277,7 @@ func WithReqs(reqs []*npool.SMSTemplateReq, must bool) func(context.Context, *Ha
 				case basetypes.UsedFor_ResetPassword:
 				case basetypes.UsedFor_OrderChildsRenewNotify:
 				case basetypes.UsedFor_OrderChildsRenew:
+				case basetypes.UsedFor_WithdrawReviewNotify:
 				default:
 					return fmt.Errorf("invalid usedfor")
 				}
@@ -363,6 +365,7 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			case uint32(basetypes.UsedFor_ResetPassword):
 			case uint32(basetypes.UsedFor_OrderChildsRenewNotify):
 			case uint32(basetypes.UsedFor_OrderChildsRenew):
+			case uint32(basetypes.UsedFor_WithdrawReviewNotify):
 			default:
 				return fmt.Errorf("invalid usedfor")
 			}

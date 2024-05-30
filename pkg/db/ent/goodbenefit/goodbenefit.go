@@ -22,8 +22,12 @@ const (
 	FieldEntID = "ent_id"
 	// FieldGoodID holds the string denoting the good_id field in the database.
 	FieldGoodID = "good_id"
+	// FieldGoodType holds the string denoting the good_type field in the database.
+	FieldGoodType = "good_type"
 	// FieldGoodName holds the string denoting the good_name field in the database.
 	FieldGoodName = "good_name"
+	// FieldCoinTypeID holds the string denoting the coin_type_id field in the database.
+	FieldCoinTypeID = "coin_type_id"
 	// FieldAmount holds the string denoting the amount field in the database.
 	FieldAmount = "amount"
 	// FieldState holds the string denoting the state field in the database.
@@ -48,7 +52,9 @@ var Columns = []string{
 	FieldDeletedAt,
 	FieldEntID,
 	FieldGoodID,
+	FieldGoodType,
 	FieldGoodName,
+	FieldCoinTypeID,
 	FieldAmount,
 	FieldState,
 	FieldMessage,
@@ -88,8 +94,12 @@ var (
 	DefaultEntID func() uuid.UUID
 	// DefaultGoodID holds the default value on creation for the "good_id" field.
 	DefaultGoodID func() uuid.UUID
+	// DefaultGoodType holds the default value on creation for the "good_type" field.
+	DefaultGoodType string
 	// DefaultGoodName holds the default value on creation for the "good_name" field.
 	DefaultGoodName string
+	// DefaultCoinTypeID holds the default value on creation for the "coin_type_id" field.
+	DefaultCoinTypeID func() uuid.UUID
 	// DefaultAmount holds the default value on creation for the "amount" field.
 	DefaultAmount string
 	// DefaultState holds the default value on creation for the "state" field.

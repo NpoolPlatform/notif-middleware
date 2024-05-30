@@ -26,8 +26,12 @@ type GoodBenefit struct {
 	EntID uuid.UUID `json:"ent_id,omitempty"`
 	// GoodID holds the value of the "good_id" field.
 	GoodID uuid.UUID `json:"good_id,omitempty"`
+	// GoodType holds the value of the "good_type" field.
+	GoodType string `json:"good_type,omitempty"`
 	// GoodName holds the value of the "good_name" field.
 	GoodName string `json:"good_name,omitempty"`
+	// CoinTypeID holds the value of the "coin_type_id" field.
+	CoinTypeID uuid.UUID `json:"coin_type_id,omitempty"`
 	// Amount holds the value of the "amount" field.
 	Amount string `json:"amount,omitempty"`
 	// State holds the value of the "state" field.
@@ -51,9 +55,9 @@ func (*GoodBenefit) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullBool)
 		case goodbenefit.FieldID, goodbenefit.FieldCreatedAt, goodbenefit.FieldUpdatedAt, goodbenefit.FieldDeletedAt, goodbenefit.FieldBenefitDate:
 			values[i] = new(sql.NullInt64)
-		case goodbenefit.FieldGoodName, goodbenefit.FieldAmount, goodbenefit.FieldState, goodbenefit.FieldMessage:
+		case goodbenefit.FieldGoodType, goodbenefit.FieldGoodName, goodbenefit.FieldAmount, goodbenefit.FieldState, goodbenefit.FieldMessage:
 			values[i] = new(sql.NullString)
-		case goodbenefit.FieldEntID, goodbenefit.FieldGoodID, goodbenefit.FieldTxID:
+		case goodbenefit.FieldEntID, goodbenefit.FieldGoodID, goodbenefit.FieldCoinTypeID, goodbenefit.FieldTxID:
 			values[i] = new(uuid.UUID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type GoodBenefit", columns[i])
@@ -106,11 +110,23 @@ func (gb *GoodBenefit) assignValues(columns []string, values []interface{}) erro
 			} else if value != nil {
 				gb.GoodID = *value
 			}
+		case goodbenefit.FieldGoodType:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field good_type", values[i])
+			} else if value.Valid {
+				gb.GoodType = value.String
+			}
 		case goodbenefit.FieldGoodName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field good_name", values[i])
 			} else if value.Valid {
 				gb.GoodName = value.String
+			}
+		case goodbenefit.FieldCoinTypeID:
+			if value, ok := values[i].(*uuid.UUID); !ok {
+				return fmt.Errorf("unexpected type %T for field coin_type_id", values[i])
+			} else if value != nil {
+				gb.CoinTypeID = *value
 			}
 		case goodbenefit.FieldAmount:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -191,8 +207,14 @@ func (gb *GoodBenefit) String() string {
 	builder.WriteString("good_id=")
 	builder.WriteString(fmt.Sprintf("%v", gb.GoodID))
 	builder.WriteString(", ")
+	builder.WriteString("good_type=")
+	builder.WriteString(gb.GoodType)
+	builder.WriteString(", ")
 	builder.WriteString("good_name=")
 	builder.WriteString(gb.GoodName)
+	builder.WriteString(", ")
+	builder.WriteString("coin_type_id=")
+	builder.WriteString(fmt.Sprintf("%v", gb.CoinTypeID))
 	builder.WriteString(", ")
 	builder.WriteString("amount=")
 	builder.WriteString(gb.Amount)

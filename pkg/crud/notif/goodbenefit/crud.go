@@ -4,16 +4,20 @@ import (
 	"fmt"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
+	goodtypes "github.com/NpoolPlatform/message/npool/basetypes/good/v1"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	"github.com/NpoolPlatform/notif-middleware/pkg/db/ent"
 	entgoodbenefit "github.com/NpoolPlatform/notif-middleware/pkg/db/ent/goodbenefit"
+
 	"github.com/google/uuid"
 )
 
 type Req struct {
 	EntID       *uuid.UUID
 	GoodID      *uuid.UUID
+	GoodType    *goodtypes.GoodType
 	GoodName    *string
+	CoinTypeID  *uuid.UUID
 	Amount      *string
 	State       *basetypes.Result
 	Message     *string
@@ -30,8 +34,14 @@ func CreateSet(c *ent.GoodBenefitCreate, req *Req) *ent.GoodBenefitCreate {
 	if req.GoodID != nil {
 		c.SetGoodID(*req.GoodID)
 	}
+	if req.GoodType != nil {
+		c.SetGoodType(req.GoodType.String())
+	}
 	if req.GoodName != nil {
 		c.SetGoodName(*req.GoodName)
+	}
+	if req.CoinTypeID != nil {
+		c.SetCoinTypeID(*req.CoinTypeID)
 	}
 	if req.Amount != nil {
 		c.SetAmount(*req.Amount)
@@ -66,6 +76,8 @@ type Conds struct {
 	ID               *cruder.Cond
 	EntID            *cruder.Cond
 	GoodID           *cruder.Cond
+	GoodType         *cruder.Cond
+	GoodTypes        *cruder.Cond
 	Generated        *cruder.Cond
 	BenefitDateStart *cruder.Cond
 	BenefitDateEnd   *cruder.Cond
@@ -110,6 +122,35 @@ func SetQueryConds(q *ent.GoodBenefitQuery, conds *Conds) (*ent.GoodBenefitQuery
 			q.Where(entgoodbenefit.GoodID(id))
 		default:
 			return nil, fmt.Errorf("invalid good benefit good id op field %s", conds.GoodID.Op)
+		}
+	}
+	if conds.GoodType != nil {
+		_type, ok := conds.GoodType.Val.(goodtypes.GoodType)
+		if !ok {
+			return nil, fmt.Errorf("invalid good benefit good type")
+		}
+		switch conds.GoodType.Op {
+		case cruder.EQ:
+			q.Where(entgoodbenefit.GoodType(_type.String()))
+		default:
+			return nil, fmt.Errorf("invalid good benefit good type op field %s", conds.GoodType.Op)
+		}
+	}
+	if conds.GoodTypes != nil {
+		_types, ok := conds.GoodTypes.Val.([]goodtypes.GoodType)
+		if !ok {
+			return nil, fmt.Errorf("invalid good benefit good types")
+		}
+		switch conds.GoodTypes.Op {
+		case cruder.IN:
+			q.Where(entgoodbenefit.GoodTypeIn(func() (__types []string) {
+				for _, _type := range _types {
+					__types = append(__types, _type.String())
+				}
+				return
+			}()...))
+		default:
+			return nil, fmt.Errorf("invalid good benefit good type op field %s", conds.GoodType.Op)
 		}
 	}
 	if conds.Generated != nil {

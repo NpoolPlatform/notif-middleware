@@ -4324,7 +4324,9 @@ type GoodBenefitMutation struct {
 	adddeleted_at   *int32
 	ent_id          *uuid.UUID
 	good_id         *uuid.UUID
+	good_type       *string
 	good_name       *string
+	coin_type_id    *uuid.UUID
 	amount          *string
 	state           *string
 	message         *string
@@ -4695,6 +4697,55 @@ func (m *GoodBenefitMutation) ResetGoodID() {
 	delete(m.clearedFields, goodbenefit.FieldGoodID)
 }
 
+// SetGoodType sets the "good_type" field.
+func (m *GoodBenefitMutation) SetGoodType(s string) {
+	m.good_type = &s
+}
+
+// GoodType returns the value of the "good_type" field in the mutation.
+func (m *GoodBenefitMutation) GoodType() (r string, exists bool) {
+	v := m.good_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldGoodType returns the old "good_type" field's value of the GoodBenefit entity.
+// If the GoodBenefit object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GoodBenefitMutation) OldGoodType(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldGoodType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldGoodType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldGoodType: %w", err)
+	}
+	return oldValue.GoodType, nil
+}
+
+// ClearGoodType clears the value of the "good_type" field.
+func (m *GoodBenefitMutation) ClearGoodType() {
+	m.good_type = nil
+	m.clearedFields[goodbenefit.FieldGoodType] = struct{}{}
+}
+
+// GoodTypeCleared returns if the "good_type" field was cleared in this mutation.
+func (m *GoodBenefitMutation) GoodTypeCleared() bool {
+	_, ok := m.clearedFields[goodbenefit.FieldGoodType]
+	return ok
+}
+
+// ResetGoodType resets all changes to the "good_type" field.
+func (m *GoodBenefitMutation) ResetGoodType() {
+	m.good_type = nil
+	delete(m.clearedFields, goodbenefit.FieldGoodType)
+}
+
 // SetGoodName sets the "good_name" field.
 func (m *GoodBenefitMutation) SetGoodName(s string) {
 	m.good_name = &s
@@ -4742,6 +4793,55 @@ func (m *GoodBenefitMutation) GoodNameCleared() bool {
 func (m *GoodBenefitMutation) ResetGoodName() {
 	m.good_name = nil
 	delete(m.clearedFields, goodbenefit.FieldGoodName)
+}
+
+// SetCoinTypeID sets the "coin_type_id" field.
+func (m *GoodBenefitMutation) SetCoinTypeID(u uuid.UUID) {
+	m.coin_type_id = &u
+}
+
+// CoinTypeID returns the value of the "coin_type_id" field in the mutation.
+func (m *GoodBenefitMutation) CoinTypeID() (r uuid.UUID, exists bool) {
+	v := m.coin_type_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCoinTypeID returns the old "coin_type_id" field's value of the GoodBenefit entity.
+// If the GoodBenefit object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GoodBenefitMutation) OldCoinTypeID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCoinTypeID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCoinTypeID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCoinTypeID: %w", err)
+	}
+	return oldValue.CoinTypeID, nil
+}
+
+// ClearCoinTypeID clears the value of the "coin_type_id" field.
+func (m *GoodBenefitMutation) ClearCoinTypeID() {
+	m.coin_type_id = nil
+	m.clearedFields[goodbenefit.FieldCoinTypeID] = struct{}{}
+}
+
+// CoinTypeIDCleared returns if the "coin_type_id" field was cleared in this mutation.
+func (m *GoodBenefitMutation) CoinTypeIDCleared() bool {
+	_, ok := m.clearedFields[goodbenefit.FieldCoinTypeID]
+	return ok
+}
+
+// ResetCoinTypeID resets all changes to the "coin_type_id" field.
+func (m *GoodBenefitMutation) ResetCoinTypeID() {
+	m.coin_type_id = nil
+	delete(m.clearedFields, goodbenefit.FieldCoinTypeID)
 }
 
 // SetAmount sets the "amount" field.
@@ -5078,7 +5178,7 @@ func (m *GoodBenefitMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *GoodBenefitMutation) Fields() []string {
-	fields := make([]string, 0, 12)
+	fields := make([]string, 0, 14)
 	if m.created_at != nil {
 		fields = append(fields, goodbenefit.FieldCreatedAt)
 	}
@@ -5094,8 +5194,14 @@ func (m *GoodBenefitMutation) Fields() []string {
 	if m.good_id != nil {
 		fields = append(fields, goodbenefit.FieldGoodID)
 	}
+	if m.good_type != nil {
+		fields = append(fields, goodbenefit.FieldGoodType)
+	}
 	if m.good_name != nil {
 		fields = append(fields, goodbenefit.FieldGoodName)
+	}
+	if m.coin_type_id != nil {
+		fields = append(fields, goodbenefit.FieldCoinTypeID)
 	}
 	if m.amount != nil {
 		fields = append(fields, goodbenefit.FieldAmount)
@@ -5133,8 +5239,12 @@ func (m *GoodBenefitMutation) Field(name string) (ent.Value, bool) {
 		return m.EntID()
 	case goodbenefit.FieldGoodID:
 		return m.GoodID()
+	case goodbenefit.FieldGoodType:
+		return m.GoodType()
 	case goodbenefit.FieldGoodName:
 		return m.GoodName()
+	case goodbenefit.FieldCoinTypeID:
+		return m.CoinTypeID()
 	case goodbenefit.FieldAmount:
 		return m.Amount()
 	case goodbenefit.FieldState:
@@ -5166,8 +5276,12 @@ func (m *GoodBenefitMutation) OldField(ctx context.Context, name string) (ent.Va
 		return m.OldEntID(ctx)
 	case goodbenefit.FieldGoodID:
 		return m.OldGoodID(ctx)
+	case goodbenefit.FieldGoodType:
+		return m.OldGoodType(ctx)
 	case goodbenefit.FieldGoodName:
 		return m.OldGoodName(ctx)
+	case goodbenefit.FieldCoinTypeID:
+		return m.OldCoinTypeID(ctx)
 	case goodbenefit.FieldAmount:
 		return m.OldAmount(ctx)
 	case goodbenefit.FieldState:
@@ -5224,12 +5338,26 @@ func (m *GoodBenefitMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetGoodID(v)
 		return nil
+	case goodbenefit.FieldGoodType:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetGoodType(v)
+		return nil
 	case goodbenefit.FieldGoodName:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetGoodName(v)
+		return nil
+	case goodbenefit.FieldCoinTypeID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCoinTypeID(v)
 		return nil
 	case goodbenefit.FieldAmount:
 		v, ok := value.(string)
@@ -5357,8 +5485,14 @@ func (m *GoodBenefitMutation) ClearedFields() []string {
 	if m.FieldCleared(goodbenefit.FieldGoodID) {
 		fields = append(fields, goodbenefit.FieldGoodID)
 	}
+	if m.FieldCleared(goodbenefit.FieldGoodType) {
+		fields = append(fields, goodbenefit.FieldGoodType)
+	}
 	if m.FieldCleared(goodbenefit.FieldGoodName) {
 		fields = append(fields, goodbenefit.FieldGoodName)
+	}
+	if m.FieldCleared(goodbenefit.FieldCoinTypeID) {
+		fields = append(fields, goodbenefit.FieldCoinTypeID)
 	}
 	if m.FieldCleared(goodbenefit.FieldAmount) {
 		fields = append(fields, goodbenefit.FieldAmount)
@@ -5395,8 +5529,14 @@ func (m *GoodBenefitMutation) ClearField(name string) error {
 	case goodbenefit.FieldGoodID:
 		m.ClearGoodID()
 		return nil
+	case goodbenefit.FieldGoodType:
+		m.ClearGoodType()
+		return nil
 	case goodbenefit.FieldGoodName:
 		m.ClearGoodName()
+		return nil
+	case goodbenefit.FieldCoinTypeID:
+		m.ClearCoinTypeID()
 		return nil
 	case goodbenefit.FieldAmount:
 		m.ClearAmount()
@@ -5439,8 +5579,14 @@ func (m *GoodBenefitMutation) ResetField(name string) error {
 	case goodbenefit.FieldGoodID:
 		m.ResetGoodID()
 		return nil
+	case goodbenefit.FieldGoodType:
+		m.ResetGoodType()
+		return nil
 	case goodbenefit.FieldGoodName:
 		m.ResetGoodName()
+		return nil
+	case goodbenefit.FieldCoinTypeID:
+		m.ResetCoinTypeID()
 		return nil
 	case goodbenefit.FieldAmount:
 		m.ResetAmount()

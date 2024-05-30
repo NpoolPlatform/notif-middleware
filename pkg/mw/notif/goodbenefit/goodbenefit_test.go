@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
+	goodtypes "github.com/NpoolPlatform/message/npool/basetypes/good/v1"
 
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/goodbenefit"
 	"github.com/google/uuid"
@@ -31,7 +32,10 @@ var (
 	yesterday = uint32(time.Now().AddDate(0, 0, -1).Unix())
 	ret       = npool.GoodBenefit{
 		GoodID:      uuid.NewString(),
+		GoodType:    goodtypes.GoodType_PowerRental,
+		GoodTypeStr: goodtypes.GoodType_PowerRental.String(),
 		GoodName:    uuid.NewString(),
+		CoinTypeID:  uuid.NewString(),
 		Amount:      "100",
 		State:       basetypes.Result_Success,
 		StateStr:    basetypes.Result_Success.String(),
@@ -43,7 +47,10 @@ var (
 
 	ret2 = npool.GoodBenefit{
 		GoodID:      uuid.NewString(),
+		GoodType:    goodtypes.GoodType_PowerRental,
+		GoodTypeStr: goodtypes.GoodType_PowerRental.String(),
 		GoodName:    uuid.NewString(),
+		CoinTypeID:  uuid.NewString(),
 		Amount:      "10",
 		State:       basetypes.Result_Success,
 		StateStr:    basetypes.Result_Success.String(),
@@ -58,7 +65,9 @@ func createGoodBenefit(t *testing.T) {
 	handler, err := NewHandler(
 		context.Background(),
 		WithGoodID(&ret.GoodID, true),
+		WithGoodType(&ret.GoodType, true),
 		WithGoodName(&ret.GoodName, true),
+		WithCoinTypeID(&ret.CoinTypeID, true),
 		WithAmount(&ret.Amount, false),
 		WithState(&ret.State, true),
 		WithMessage(&ret.Message, false),
@@ -80,7 +89,9 @@ func createGoodBenefit(t *testing.T) {
 	handler2, err := NewHandler(
 		context.Background(),
 		WithGoodID(&ret2.GoodID, true),
+		WithGoodType(&ret2.GoodType, true),
 		WithGoodName(&ret2.GoodName, true),
+		WithCoinTypeID(&ret2.CoinTypeID, true),
 		WithAmount(&ret2.Amount, false),
 		WithState(&ret2.State, true),
 		WithMessage(&ret2.Message, false),

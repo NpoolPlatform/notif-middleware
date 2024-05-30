@@ -29,11 +29,23 @@ func (GoodBenefit) Fields() []ent.Field {
 		field.
 			UUID("good_id", uuid.UUID{}).
 			Optional().
-			Default(uuid.New),
+			Default(func() uuid.UUID {
+				return uuid.Nil
+			}),
+		field.
+			String("good_type").
+			Optional().
+			Default(""),
 		field.
 			String("good_name").
 			Optional().
 			Default(""),
+		field.
+			UUID("coin_type_id", uuid.UUID{}).
+			Optional().
+			Default(func() uuid.UUID {
+				return uuid.Nil
+			}),
 		field.
 			String("amount").
 			Optional().

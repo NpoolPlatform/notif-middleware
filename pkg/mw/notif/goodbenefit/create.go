@@ -65,7 +65,9 @@ func (h *Handler) CreateGoodBenefit(ctx context.Context) (*npool.GoodBenefit, er
 			&crud.Req{
 				EntID:       h.EntID,
 				GoodID:      h.GoodID,
+				GoodType:    h.GoodType,
 				GoodName:    h.GoodName,
+				CoinTypeID:  h.CoinTypeID,
 				Amount:      amount,
 				State:       h.State,
 				Message:     h.Message,

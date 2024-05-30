@@ -92,6 +92,20 @@ func (gbc *GoodBenefitCreate) SetNillableGoodID(u *uuid.UUID) *GoodBenefitCreate
 	return gbc
 }
 
+// SetGoodType sets the "good_type" field.
+func (gbc *GoodBenefitCreate) SetGoodType(s string) *GoodBenefitCreate {
+	gbc.mutation.SetGoodType(s)
+	return gbc
+}
+
+// SetNillableGoodType sets the "good_type" field if the given value is not nil.
+func (gbc *GoodBenefitCreate) SetNillableGoodType(s *string) *GoodBenefitCreate {
+	if s != nil {
+		gbc.SetGoodType(*s)
+	}
+	return gbc
+}
+
 // SetGoodName sets the "good_name" field.
 func (gbc *GoodBenefitCreate) SetGoodName(s string) *GoodBenefitCreate {
 	gbc.mutation.SetGoodName(s)
@@ -102,6 +116,20 @@ func (gbc *GoodBenefitCreate) SetGoodName(s string) *GoodBenefitCreate {
 func (gbc *GoodBenefitCreate) SetNillableGoodName(s *string) *GoodBenefitCreate {
 	if s != nil {
 		gbc.SetGoodName(*s)
+	}
+	return gbc
+}
+
+// SetCoinTypeID sets the "coin_type_id" field.
+func (gbc *GoodBenefitCreate) SetCoinTypeID(u uuid.UUID) *GoodBenefitCreate {
+	gbc.mutation.SetCoinTypeID(u)
+	return gbc
+}
+
+// SetNillableCoinTypeID sets the "coin_type_id" field if the given value is not nil.
+func (gbc *GoodBenefitCreate) SetNillableCoinTypeID(u *uuid.UUID) *GoodBenefitCreate {
+	if u != nil {
+		gbc.SetCoinTypeID(*u)
 	}
 	return gbc
 }
@@ -310,9 +338,20 @@ func (gbc *GoodBenefitCreate) defaults() error {
 		v := goodbenefit.DefaultGoodID()
 		gbc.mutation.SetGoodID(v)
 	}
+	if _, ok := gbc.mutation.GoodType(); !ok {
+		v := goodbenefit.DefaultGoodType
+		gbc.mutation.SetGoodType(v)
+	}
 	if _, ok := gbc.mutation.GoodName(); !ok {
 		v := goodbenefit.DefaultGoodName
 		gbc.mutation.SetGoodName(v)
+	}
+	if _, ok := gbc.mutation.CoinTypeID(); !ok {
+		if goodbenefit.DefaultCoinTypeID == nil {
+			return fmt.Errorf("ent: uninitialized goodbenefit.DefaultCoinTypeID (forgotten import ent/runtime?)")
+		}
+		v := goodbenefit.DefaultCoinTypeID()
+		gbc.mutation.SetCoinTypeID(v)
 	}
 	if _, ok := gbc.mutation.Amount(); !ok {
 		v := goodbenefit.DefaultAmount
@@ -432,6 +471,14 @@ func (gbc *GoodBenefitCreate) createSpec() (*GoodBenefit, *sqlgraph.CreateSpec) 
 		})
 		_node.GoodID = value
 	}
+	if value, ok := gbc.mutation.GoodType(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: goodbenefit.FieldGoodType,
+		})
+		_node.GoodType = value
+	}
 	if value, ok := gbc.mutation.GoodName(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -439,6 +486,14 @@ func (gbc *GoodBenefitCreate) createSpec() (*GoodBenefit, *sqlgraph.CreateSpec) 
 			Column: goodbenefit.FieldGoodName,
 		})
 		_node.GoodName = value
+	}
+	if value, ok := gbc.mutation.CoinTypeID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: goodbenefit.FieldCoinTypeID,
+		})
+		_node.CoinTypeID = value
 	}
 	if value, ok := gbc.mutation.Amount(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -626,6 +681,24 @@ func (u *GoodBenefitUpsert) ClearGoodID() *GoodBenefitUpsert {
 	return u
 }
 
+// SetGoodType sets the "good_type" field.
+func (u *GoodBenefitUpsert) SetGoodType(v string) *GoodBenefitUpsert {
+	u.Set(goodbenefit.FieldGoodType, v)
+	return u
+}
+
+// UpdateGoodType sets the "good_type" field to the value that was provided on create.
+func (u *GoodBenefitUpsert) UpdateGoodType() *GoodBenefitUpsert {
+	u.SetExcluded(goodbenefit.FieldGoodType)
+	return u
+}
+
+// ClearGoodType clears the value of the "good_type" field.
+func (u *GoodBenefitUpsert) ClearGoodType() *GoodBenefitUpsert {
+	u.SetNull(goodbenefit.FieldGoodType)
+	return u
+}
+
 // SetGoodName sets the "good_name" field.
 func (u *GoodBenefitUpsert) SetGoodName(v string) *GoodBenefitUpsert {
 	u.Set(goodbenefit.FieldGoodName, v)
@@ -641,6 +714,24 @@ func (u *GoodBenefitUpsert) UpdateGoodName() *GoodBenefitUpsert {
 // ClearGoodName clears the value of the "good_name" field.
 func (u *GoodBenefitUpsert) ClearGoodName() *GoodBenefitUpsert {
 	u.SetNull(goodbenefit.FieldGoodName)
+	return u
+}
+
+// SetCoinTypeID sets the "coin_type_id" field.
+func (u *GoodBenefitUpsert) SetCoinTypeID(v uuid.UUID) *GoodBenefitUpsert {
+	u.Set(goodbenefit.FieldCoinTypeID, v)
+	return u
+}
+
+// UpdateCoinTypeID sets the "coin_type_id" field to the value that was provided on create.
+func (u *GoodBenefitUpsert) UpdateCoinTypeID() *GoodBenefitUpsert {
+	u.SetExcluded(goodbenefit.FieldCoinTypeID)
+	return u
+}
+
+// ClearCoinTypeID clears the value of the "coin_type_id" field.
+func (u *GoodBenefitUpsert) ClearCoinTypeID() *GoodBenefitUpsert {
+	u.SetNull(goodbenefit.FieldCoinTypeID)
 	return u
 }
 
@@ -906,6 +997,27 @@ func (u *GoodBenefitUpsertOne) ClearGoodID() *GoodBenefitUpsertOne {
 	})
 }
 
+// SetGoodType sets the "good_type" field.
+func (u *GoodBenefitUpsertOne) SetGoodType(v string) *GoodBenefitUpsertOne {
+	return u.Update(func(s *GoodBenefitUpsert) {
+		s.SetGoodType(v)
+	})
+}
+
+// UpdateGoodType sets the "good_type" field to the value that was provided on create.
+func (u *GoodBenefitUpsertOne) UpdateGoodType() *GoodBenefitUpsertOne {
+	return u.Update(func(s *GoodBenefitUpsert) {
+		s.UpdateGoodType()
+	})
+}
+
+// ClearGoodType clears the value of the "good_type" field.
+func (u *GoodBenefitUpsertOne) ClearGoodType() *GoodBenefitUpsertOne {
+	return u.Update(func(s *GoodBenefitUpsert) {
+		s.ClearGoodType()
+	})
+}
+
 // SetGoodName sets the "good_name" field.
 func (u *GoodBenefitUpsertOne) SetGoodName(v string) *GoodBenefitUpsertOne {
 	return u.Update(func(s *GoodBenefitUpsert) {
@@ -924,6 +1036,27 @@ func (u *GoodBenefitUpsertOne) UpdateGoodName() *GoodBenefitUpsertOne {
 func (u *GoodBenefitUpsertOne) ClearGoodName() *GoodBenefitUpsertOne {
 	return u.Update(func(s *GoodBenefitUpsert) {
 		s.ClearGoodName()
+	})
+}
+
+// SetCoinTypeID sets the "coin_type_id" field.
+func (u *GoodBenefitUpsertOne) SetCoinTypeID(v uuid.UUID) *GoodBenefitUpsertOne {
+	return u.Update(func(s *GoodBenefitUpsert) {
+		s.SetCoinTypeID(v)
+	})
+}
+
+// UpdateCoinTypeID sets the "coin_type_id" field to the value that was provided on create.
+func (u *GoodBenefitUpsertOne) UpdateCoinTypeID() *GoodBenefitUpsertOne {
+	return u.Update(func(s *GoodBenefitUpsert) {
+		s.UpdateCoinTypeID()
+	})
+}
+
+// ClearCoinTypeID clears the value of the "coin_type_id" field.
+func (u *GoodBenefitUpsertOne) ClearCoinTypeID() *GoodBenefitUpsertOne {
+	return u.Update(func(s *GoodBenefitUpsert) {
+		s.ClearCoinTypeID()
 	})
 }
 
@@ -1373,6 +1506,27 @@ func (u *GoodBenefitUpsertBulk) ClearGoodID() *GoodBenefitUpsertBulk {
 	})
 }
 
+// SetGoodType sets the "good_type" field.
+func (u *GoodBenefitUpsertBulk) SetGoodType(v string) *GoodBenefitUpsertBulk {
+	return u.Update(func(s *GoodBenefitUpsert) {
+		s.SetGoodType(v)
+	})
+}
+
+// UpdateGoodType sets the "good_type" field to the value that was provided on create.
+func (u *GoodBenefitUpsertBulk) UpdateGoodType() *GoodBenefitUpsertBulk {
+	return u.Update(func(s *GoodBenefitUpsert) {
+		s.UpdateGoodType()
+	})
+}
+
+// ClearGoodType clears the value of the "good_type" field.
+func (u *GoodBenefitUpsertBulk) ClearGoodType() *GoodBenefitUpsertBulk {
+	return u.Update(func(s *GoodBenefitUpsert) {
+		s.ClearGoodType()
+	})
+}
+
 // SetGoodName sets the "good_name" field.
 func (u *GoodBenefitUpsertBulk) SetGoodName(v string) *GoodBenefitUpsertBulk {
 	return u.Update(func(s *GoodBenefitUpsert) {
@@ -1391,6 +1545,27 @@ func (u *GoodBenefitUpsertBulk) UpdateGoodName() *GoodBenefitUpsertBulk {
 func (u *GoodBenefitUpsertBulk) ClearGoodName() *GoodBenefitUpsertBulk {
 	return u.Update(func(s *GoodBenefitUpsert) {
 		s.ClearGoodName()
+	})
+}
+
+// SetCoinTypeID sets the "coin_type_id" field.
+func (u *GoodBenefitUpsertBulk) SetCoinTypeID(v uuid.UUID) *GoodBenefitUpsertBulk {
+	return u.Update(func(s *GoodBenefitUpsert) {
+		s.SetCoinTypeID(v)
+	})
+}
+
+// UpdateCoinTypeID sets the "coin_type_id" field to the value that was provided on create.
+func (u *GoodBenefitUpsertBulk) UpdateCoinTypeID() *GoodBenefitUpsertBulk {
+	return u.Update(func(s *GoodBenefitUpsert) {
+		s.UpdateCoinTypeID()
+	})
+}
+
+// ClearCoinTypeID clears the value of the "coin_type_id" field.
+func (u *GoodBenefitUpsertBulk) ClearCoinTypeID() *GoodBenefitUpsertBulk {
+	return u.Update(func(s *GoodBenefitUpsert) {
+		s.ClearCoinTypeID()
 	})
 }
 

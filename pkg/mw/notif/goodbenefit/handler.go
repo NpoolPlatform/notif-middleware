@@ -274,10 +274,14 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			h.Conds.BenefitDateEnd = &cruder.Cond{Op: conds.GetBenefitDateEnd().GetOp(), Val: conds.GetBenefitDateEnd().GetValue()}
 		}
 		if conds.GoodType != nil {
-			h.Conds.GoodType = &cruder.Cond{Op: conds.GetGoodType().GetOp(), Val: conds.GetGoodType().GetValue()}
+			h.Conds.GoodType = &cruder.Cond{Op: conds.GetGoodType().GetOp(), Val: goodtypes.GoodType(conds.GetGoodType().GetValue())}
 		}
 		if conds.GoodTypes != nil {
-			h.Conds.GoodTypes = &cruder.Cond{Op: conds.GetGoodTypes().GetOp(), Val: conds.GetGoodTypes().GetValue()}
+			_types := []goodtypes.GoodType{}
+			for _, _type := range conds.GetGoodTypes().GetValue() {
+				_types = append(_types, goodtypes.GoodType(_type))
+			}
+			h.Conds.GoodTypes = &cruder.Cond{Op: conds.GetGoodTypes().GetOp(), Val: _types}
 		}
 		return nil
 	}

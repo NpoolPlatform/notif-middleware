@@ -78,6 +78,7 @@ type Conds struct {
 	GoodID           *cruder.Cond
 	GoodType         *cruder.Cond
 	GoodTypes        *cruder.Cond
+	CoinTypeID       *cruder.Cond
 	Generated        *cruder.Cond
 	BenefitDateStart *cruder.Cond
 	BenefitDateEnd   *cruder.Cond
@@ -151,6 +152,18 @@ func SetQueryConds(q *ent.GoodBenefitQuery, conds *Conds) (*ent.GoodBenefitQuery
 			}()...))
 		default:
 			return nil, fmt.Errorf("invalid good benefit good type op field %s", conds.GoodType.Op)
+		}
+	}
+	if conds.CoinTypeID != nil {
+		id, ok := conds.CoinTypeID.Val.(uuid.UUID)
+		if !ok {
+			return nil, fmt.Errorf("invalid good benefit coin type id")
+		}
+		switch conds.CoinTypeID.Op {
+		case cruder.EQ:
+			q.Where(entgoodbenefit.CoinTypeID(id))
+		default:
+			return nil, fmt.Errorf("invalid good benefit good id op field %s", conds.CoinTypeID.Op)
 		}
 	}
 	if conds.Generated != nil {

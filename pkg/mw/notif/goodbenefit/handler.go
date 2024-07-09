@@ -262,11 +262,16 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			}
 			h.Conds.GoodID = &cruder.Cond{Op: conds.GetGoodID().GetOp(), Val: goodID}
 		}
-
+		if conds.CoinTypeID != nil {
+			goodID, err := uuid.Parse(conds.GetCoinTypeID().GetValue())
+			if err != nil {
+				return err
+			}
+			h.Conds.CoinTypeID = &cruder.Cond{Op: conds.GetCoinTypeID().GetOp(), Val: goodID}
+		}
 		if conds.Generated != nil {
 			h.Conds.Generated = &cruder.Cond{Op: conds.GetGenerated().GetOp(), Val: conds.GetGenerated().GetValue()}
 		}
-
 		if conds.BenefitDateStart != nil {
 			h.Conds.BenefitDateStart = &cruder.Cond{Op: conds.GetBenefitDateStart().GetOp(), Val: conds.GetBenefitDateStart().GetValue()}
 		}

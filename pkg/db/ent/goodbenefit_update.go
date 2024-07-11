@@ -118,6 +118,26 @@ func (gbu *GoodBenefitUpdate) ClearGoodID() *GoodBenefitUpdate {
 	return gbu
 }
 
+// SetGoodType sets the "good_type" field.
+func (gbu *GoodBenefitUpdate) SetGoodType(s string) *GoodBenefitUpdate {
+	gbu.mutation.SetGoodType(s)
+	return gbu
+}
+
+// SetNillableGoodType sets the "good_type" field if the given value is not nil.
+func (gbu *GoodBenefitUpdate) SetNillableGoodType(s *string) *GoodBenefitUpdate {
+	if s != nil {
+		gbu.SetGoodType(*s)
+	}
+	return gbu
+}
+
+// ClearGoodType clears the value of the "good_type" field.
+func (gbu *GoodBenefitUpdate) ClearGoodType() *GoodBenefitUpdate {
+	gbu.mutation.ClearGoodType()
+	return gbu
+}
+
 // SetGoodName sets the "good_name" field.
 func (gbu *GoodBenefitUpdate) SetGoodName(s string) *GoodBenefitUpdate {
 	gbu.mutation.SetGoodName(s)
@@ -135,6 +155,26 @@ func (gbu *GoodBenefitUpdate) SetNillableGoodName(s *string) *GoodBenefitUpdate 
 // ClearGoodName clears the value of the "good_name" field.
 func (gbu *GoodBenefitUpdate) ClearGoodName() *GoodBenefitUpdate {
 	gbu.mutation.ClearGoodName()
+	return gbu
+}
+
+// SetCoinTypeID sets the "coin_type_id" field.
+func (gbu *GoodBenefitUpdate) SetCoinTypeID(u uuid.UUID) *GoodBenefitUpdate {
+	gbu.mutation.SetCoinTypeID(u)
+	return gbu
+}
+
+// SetNillableCoinTypeID sets the "coin_type_id" field if the given value is not nil.
+func (gbu *GoodBenefitUpdate) SetNillableCoinTypeID(u *uuid.UUID) *GoodBenefitUpdate {
+	if u != nil {
+		gbu.SetCoinTypeID(*u)
+	}
+	return gbu
+}
+
+// ClearCoinTypeID clears the value of the "coin_type_id" field.
+func (gbu *GoodBenefitUpdate) ClearCoinTypeID() *GoodBenefitUpdate {
+	gbu.mutation.ClearCoinTypeID()
 	return gbu
 }
 
@@ -425,6 +465,19 @@ func (gbu *GoodBenefitUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: goodbenefit.FieldGoodID,
 		})
 	}
+	if value, ok := gbu.mutation.GoodType(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: goodbenefit.FieldGoodType,
+		})
+	}
+	if gbu.mutation.GoodTypeCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: goodbenefit.FieldGoodType,
+		})
+	}
 	if value, ok := gbu.mutation.GoodName(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -436,6 +489,19 @@ func (gbu *GoodBenefitUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: goodbenefit.FieldGoodName,
+		})
+	}
+	if value, ok := gbu.mutation.CoinTypeID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: goodbenefit.FieldCoinTypeID,
+		})
+	}
+	if gbu.mutation.CoinTypeIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Column: goodbenefit.FieldCoinTypeID,
 		})
 	}
 	if value, ok := gbu.mutation.Amount(); ok {
@@ -633,6 +699,26 @@ func (gbuo *GoodBenefitUpdateOne) ClearGoodID() *GoodBenefitUpdateOne {
 	return gbuo
 }
 
+// SetGoodType sets the "good_type" field.
+func (gbuo *GoodBenefitUpdateOne) SetGoodType(s string) *GoodBenefitUpdateOne {
+	gbuo.mutation.SetGoodType(s)
+	return gbuo
+}
+
+// SetNillableGoodType sets the "good_type" field if the given value is not nil.
+func (gbuo *GoodBenefitUpdateOne) SetNillableGoodType(s *string) *GoodBenefitUpdateOne {
+	if s != nil {
+		gbuo.SetGoodType(*s)
+	}
+	return gbuo
+}
+
+// ClearGoodType clears the value of the "good_type" field.
+func (gbuo *GoodBenefitUpdateOne) ClearGoodType() *GoodBenefitUpdateOne {
+	gbuo.mutation.ClearGoodType()
+	return gbuo
+}
+
 // SetGoodName sets the "good_name" field.
 func (gbuo *GoodBenefitUpdateOne) SetGoodName(s string) *GoodBenefitUpdateOne {
 	gbuo.mutation.SetGoodName(s)
@@ -650,6 +736,26 @@ func (gbuo *GoodBenefitUpdateOne) SetNillableGoodName(s *string) *GoodBenefitUpd
 // ClearGoodName clears the value of the "good_name" field.
 func (gbuo *GoodBenefitUpdateOne) ClearGoodName() *GoodBenefitUpdateOne {
 	gbuo.mutation.ClearGoodName()
+	return gbuo
+}
+
+// SetCoinTypeID sets the "coin_type_id" field.
+func (gbuo *GoodBenefitUpdateOne) SetCoinTypeID(u uuid.UUID) *GoodBenefitUpdateOne {
+	gbuo.mutation.SetCoinTypeID(u)
+	return gbuo
+}
+
+// SetNillableCoinTypeID sets the "coin_type_id" field if the given value is not nil.
+func (gbuo *GoodBenefitUpdateOne) SetNillableCoinTypeID(u *uuid.UUID) *GoodBenefitUpdateOne {
+	if u != nil {
+		gbuo.SetCoinTypeID(*u)
+	}
+	return gbuo
+}
+
+// ClearCoinTypeID clears the value of the "coin_type_id" field.
+func (gbuo *GoodBenefitUpdateOne) ClearCoinTypeID() *GoodBenefitUpdateOne {
+	gbuo.mutation.ClearCoinTypeID()
 	return gbuo
 }
 
@@ -970,6 +1076,19 @@ func (gbuo *GoodBenefitUpdateOne) sqlSave(ctx context.Context) (_node *GoodBenef
 			Column: goodbenefit.FieldGoodID,
 		})
 	}
+	if value, ok := gbuo.mutation.GoodType(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: goodbenefit.FieldGoodType,
+		})
+	}
+	if gbuo.mutation.GoodTypeCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: goodbenefit.FieldGoodType,
+		})
+	}
 	if value, ok := gbuo.mutation.GoodName(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -981,6 +1100,19 @@ func (gbuo *GoodBenefitUpdateOne) sqlSave(ctx context.Context) (_node *GoodBenef
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: goodbenefit.FieldGoodName,
+		})
+	}
+	if value, ok := gbuo.mutation.CoinTypeID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: goodbenefit.FieldCoinTypeID,
+		})
+	}
+	if gbuo.mutation.CoinTypeIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Column: goodbenefit.FieldCoinTypeID,
 		})
 	}
 	if value, ok := gbuo.mutation.Amount(); ok {

@@ -114,10 +114,24 @@ func GoodID(v uuid.UUID) predicate.GoodBenefit {
 	})
 }
 
+// GoodType applies equality check predicate on the "good_type" field. It's identical to GoodTypeEQ.
+func GoodType(v string) predicate.GoodBenefit {
+	return predicate.GoodBenefit(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldGoodType), v))
+	})
+}
+
 // GoodName applies equality check predicate on the "good_name" field. It's identical to GoodNameEQ.
 func GoodName(v string) predicate.GoodBenefit {
 	return predicate.GoodBenefit(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldGoodName), v))
+	})
+}
+
+// CoinTypeID applies equality check predicate on the "coin_type_id" field. It's identical to CoinTypeIDEQ.
+func CoinTypeID(v uuid.UUID) predicate.GoodBenefit {
+	return predicate.GoodBenefit(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldCoinTypeID), v))
 	})
 }
 
@@ -497,6 +511,119 @@ func GoodIDNotNil() predicate.GoodBenefit {
 	})
 }
 
+// GoodTypeEQ applies the EQ predicate on the "good_type" field.
+func GoodTypeEQ(v string) predicate.GoodBenefit {
+	return predicate.GoodBenefit(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldGoodType), v))
+	})
+}
+
+// GoodTypeNEQ applies the NEQ predicate on the "good_type" field.
+func GoodTypeNEQ(v string) predicate.GoodBenefit {
+	return predicate.GoodBenefit(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldGoodType), v))
+	})
+}
+
+// GoodTypeIn applies the In predicate on the "good_type" field.
+func GoodTypeIn(vs ...string) predicate.GoodBenefit {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.GoodBenefit(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldGoodType), v...))
+	})
+}
+
+// GoodTypeNotIn applies the NotIn predicate on the "good_type" field.
+func GoodTypeNotIn(vs ...string) predicate.GoodBenefit {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.GoodBenefit(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldGoodType), v...))
+	})
+}
+
+// GoodTypeGT applies the GT predicate on the "good_type" field.
+func GoodTypeGT(v string) predicate.GoodBenefit {
+	return predicate.GoodBenefit(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldGoodType), v))
+	})
+}
+
+// GoodTypeGTE applies the GTE predicate on the "good_type" field.
+func GoodTypeGTE(v string) predicate.GoodBenefit {
+	return predicate.GoodBenefit(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldGoodType), v))
+	})
+}
+
+// GoodTypeLT applies the LT predicate on the "good_type" field.
+func GoodTypeLT(v string) predicate.GoodBenefit {
+	return predicate.GoodBenefit(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldGoodType), v))
+	})
+}
+
+// GoodTypeLTE applies the LTE predicate on the "good_type" field.
+func GoodTypeLTE(v string) predicate.GoodBenefit {
+	return predicate.GoodBenefit(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldGoodType), v))
+	})
+}
+
+// GoodTypeContains applies the Contains predicate on the "good_type" field.
+func GoodTypeContains(v string) predicate.GoodBenefit {
+	return predicate.GoodBenefit(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldGoodType), v))
+	})
+}
+
+// GoodTypeHasPrefix applies the HasPrefix predicate on the "good_type" field.
+func GoodTypeHasPrefix(v string) predicate.GoodBenefit {
+	return predicate.GoodBenefit(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldGoodType), v))
+	})
+}
+
+// GoodTypeHasSuffix applies the HasSuffix predicate on the "good_type" field.
+func GoodTypeHasSuffix(v string) predicate.GoodBenefit {
+	return predicate.GoodBenefit(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldGoodType), v))
+	})
+}
+
+// GoodTypeIsNil applies the IsNil predicate on the "good_type" field.
+func GoodTypeIsNil() predicate.GoodBenefit {
+	return predicate.GoodBenefit(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldGoodType)))
+	})
+}
+
+// GoodTypeNotNil applies the NotNil predicate on the "good_type" field.
+func GoodTypeNotNil() predicate.GoodBenefit {
+	return predicate.GoodBenefit(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldGoodType)))
+	})
+}
+
+// GoodTypeEqualFold applies the EqualFold predicate on the "good_type" field.
+func GoodTypeEqualFold(v string) predicate.GoodBenefit {
+	return predicate.GoodBenefit(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldGoodType), v))
+	})
+}
+
+// GoodTypeContainsFold applies the ContainsFold predicate on the "good_type" field.
+func GoodTypeContainsFold(v string) predicate.GoodBenefit {
+	return predicate.GoodBenefit(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldGoodType), v))
+	})
+}
+
 // GoodNameEQ applies the EQ predicate on the "good_name" field.
 func GoodNameEQ(v string) predicate.GoodBenefit {
 	return predicate.GoodBenefit(func(s *sql.Selector) {
@@ -607,6 +734,84 @@ func GoodNameEqualFold(v string) predicate.GoodBenefit {
 func GoodNameContainsFold(v string) predicate.GoodBenefit {
 	return predicate.GoodBenefit(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldGoodName), v))
+	})
+}
+
+// CoinTypeIDEQ applies the EQ predicate on the "coin_type_id" field.
+func CoinTypeIDEQ(v uuid.UUID) predicate.GoodBenefit {
+	return predicate.GoodBenefit(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldCoinTypeID), v))
+	})
+}
+
+// CoinTypeIDNEQ applies the NEQ predicate on the "coin_type_id" field.
+func CoinTypeIDNEQ(v uuid.UUID) predicate.GoodBenefit {
+	return predicate.GoodBenefit(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldCoinTypeID), v))
+	})
+}
+
+// CoinTypeIDIn applies the In predicate on the "coin_type_id" field.
+func CoinTypeIDIn(vs ...uuid.UUID) predicate.GoodBenefit {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.GoodBenefit(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldCoinTypeID), v...))
+	})
+}
+
+// CoinTypeIDNotIn applies the NotIn predicate on the "coin_type_id" field.
+func CoinTypeIDNotIn(vs ...uuid.UUID) predicate.GoodBenefit {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.GoodBenefit(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldCoinTypeID), v...))
+	})
+}
+
+// CoinTypeIDGT applies the GT predicate on the "coin_type_id" field.
+func CoinTypeIDGT(v uuid.UUID) predicate.GoodBenefit {
+	return predicate.GoodBenefit(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldCoinTypeID), v))
+	})
+}
+
+// CoinTypeIDGTE applies the GTE predicate on the "coin_type_id" field.
+func CoinTypeIDGTE(v uuid.UUID) predicate.GoodBenefit {
+	return predicate.GoodBenefit(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldCoinTypeID), v))
+	})
+}
+
+// CoinTypeIDLT applies the LT predicate on the "coin_type_id" field.
+func CoinTypeIDLT(v uuid.UUID) predicate.GoodBenefit {
+	return predicate.GoodBenefit(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldCoinTypeID), v))
+	})
+}
+
+// CoinTypeIDLTE applies the LTE predicate on the "coin_type_id" field.
+func CoinTypeIDLTE(v uuid.UUID) predicate.GoodBenefit {
+	return predicate.GoodBenefit(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldCoinTypeID), v))
+	})
+}
+
+// CoinTypeIDIsNil applies the IsNil predicate on the "coin_type_id" field.
+func CoinTypeIDIsNil() predicate.GoodBenefit {
+	return predicate.GoodBenefit(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldCoinTypeID)))
+	})
+}
+
+// CoinTypeIDNotNil applies the NotNil predicate on the "coin_type_id" field.
+func CoinTypeIDNotNil() predicate.GoodBenefit {
+	return predicate.GoodBenefit(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldCoinTypeID)))
 	})
 }
 

@@ -18,6 +18,7 @@ import (
 
 	"github.com/NpoolPlatform/notif-middleware/pkg/testinit"
 
+	goodtypes "github.com/NpoolPlatform/message/npool/basetypes/good/v1"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/goodbenefit"
 	goodbenefit1 "github.com/NpoolPlatform/notif-middleware/pkg/mw/notif/goodbenefit"
@@ -38,7 +39,10 @@ var (
 	yesterday = uint32(time.Now().AddDate(0, 0, -1).Unix())
 	ret       = npool.GoodBenefit{
 		GoodID:      uuid.NewString(),
+		GoodType:    goodtypes.GoodType_PowerRental,
+		GoodTypeStr: goodtypes.GoodType_PowerRental.String(),
 		GoodName:    uuid.NewString(),
+		CoinTypeID:  uuid.NewString(),
 		Amount:      "100",
 		State:       basetypes.Result_Success,
 		StateStr:    basetypes.Result_Success.String(),
@@ -50,7 +54,10 @@ var (
 
 	ret2 = npool.GoodBenefit{
 		GoodID:      uuid.NewString(),
+		GoodType:    goodtypes.GoodType_PowerRental,
+		GoodTypeStr: goodtypes.GoodType_PowerRental.String(),
 		GoodName:    uuid.NewString(),
+		CoinTypeID:  uuid.NewString(),
 		Amount:      "10",
 		State:       basetypes.Result_Success,
 		StateStr:    basetypes.Result_Success.String(),
@@ -64,7 +71,9 @@ var (
 func createGoodBenefit(t *testing.T) {
 	info, err := CreateGoodBenefit(context.Background(), &npool.GoodBenefitReq{
 		GoodID:      &ret.GoodID,
+		GoodType:    &ret.GoodType,
 		GoodName:    &ret.GoodName,
+		CoinTypeID:  &ret.CoinTypeID,
 		Amount:      &ret.Amount,
 		State:       &ret.State,
 		Message:     &ret.Message,
@@ -82,7 +91,9 @@ func createGoodBenefit(t *testing.T) {
 
 	_info, err := CreateGoodBenefit(context.Background(), &npool.GoodBenefitReq{
 		GoodID:      &ret2.GoodID,
+		GoodType:    &ret2.GoodType,
 		GoodName:    &ret2.GoodName,
+		CoinTypeID:  &ret2.CoinTypeID,
 		Amount:      &ret2.Amount,
 		State:       &ret2.State,
 		Message:     &ret2.Message,

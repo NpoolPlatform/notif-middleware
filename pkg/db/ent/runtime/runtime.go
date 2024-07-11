@@ -286,32 +286,40 @@ func init() {
 	goodbenefitDescGoodID := goodbenefitFields[0].Descriptor()
 	// goodbenefit.DefaultGoodID holds the default value on creation for the good_id field.
 	goodbenefit.DefaultGoodID = goodbenefitDescGoodID.Default.(func() uuid.UUID)
+	// goodbenefitDescGoodType is the schema descriptor for good_type field.
+	goodbenefitDescGoodType := goodbenefitFields[1].Descriptor()
+	// goodbenefit.DefaultGoodType holds the default value on creation for the good_type field.
+	goodbenefit.DefaultGoodType = goodbenefitDescGoodType.Default.(string)
 	// goodbenefitDescGoodName is the schema descriptor for good_name field.
-	goodbenefitDescGoodName := goodbenefitFields[1].Descriptor()
+	goodbenefitDescGoodName := goodbenefitFields[2].Descriptor()
 	// goodbenefit.DefaultGoodName holds the default value on creation for the good_name field.
 	goodbenefit.DefaultGoodName = goodbenefitDescGoodName.Default.(string)
+	// goodbenefitDescCoinTypeID is the schema descriptor for coin_type_id field.
+	goodbenefitDescCoinTypeID := goodbenefitFields[3].Descriptor()
+	// goodbenefit.DefaultCoinTypeID holds the default value on creation for the coin_type_id field.
+	goodbenefit.DefaultCoinTypeID = goodbenefitDescCoinTypeID.Default.(func() uuid.UUID)
 	// goodbenefitDescAmount is the schema descriptor for amount field.
-	goodbenefitDescAmount := goodbenefitFields[2].Descriptor()
+	goodbenefitDescAmount := goodbenefitFields[4].Descriptor()
 	// goodbenefit.DefaultAmount holds the default value on creation for the amount field.
 	goodbenefit.DefaultAmount = goodbenefitDescAmount.Default.(string)
 	// goodbenefitDescState is the schema descriptor for state field.
-	goodbenefitDescState := goodbenefitFields[3].Descriptor()
+	goodbenefitDescState := goodbenefitFields[5].Descriptor()
 	// goodbenefit.DefaultState holds the default value on creation for the state field.
 	goodbenefit.DefaultState = goodbenefitDescState.Default.(string)
 	// goodbenefitDescMessage is the schema descriptor for message field.
-	goodbenefitDescMessage := goodbenefitFields[4].Descriptor()
+	goodbenefitDescMessage := goodbenefitFields[6].Descriptor()
 	// goodbenefit.DefaultMessage holds the default value on creation for the message field.
 	goodbenefit.DefaultMessage = goodbenefitDescMessage.Default.(string)
 	// goodbenefitDescBenefitDate is the schema descriptor for benefit_date field.
-	goodbenefitDescBenefitDate := goodbenefitFields[5].Descriptor()
+	goodbenefitDescBenefitDate := goodbenefitFields[7].Descriptor()
 	// goodbenefit.DefaultBenefitDate holds the default value on creation for the benefit_date field.
 	goodbenefit.DefaultBenefitDate = goodbenefitDescBenefitDate.Default.(uint32)
 	// goodbenefitDescTxID is the schema descriptor for tx_id field.
-	goodbenefitDescTxID := goodbenefitFields[6].Descriptor()
+	goodbenefitDescTxID := goodbenefitFields[8].Descriptor()
 	// goodbenefit.DefaultTxID holds the default value on creation for the tx_id field.
 	goodbenefit.DefaultTxID = goodbenefitDescTxID.Default.(func() uuid.UUID)
 	// goodbenefitDescGenerated is the schema descriptor for generated field.
-	goodbenefitDescGenerated := goodbenefitFields[7].Descriptor()
+	goodbenefitDescGenerated := goodbenefitFields[9].Descriptor()
 	// goodbenefit.DefaultGenerated holds the default value on creation for the generated field.
 	goodbenefit.DefaultGenerated = goodbenefitDescGenerated.Default.(bool)
 	notifMixin := schema.Notif{}.Mixin()

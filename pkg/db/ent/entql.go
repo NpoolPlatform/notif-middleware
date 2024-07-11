@@ -136,7 +136,9 @@ var schemaGraph = func() *sqlgraph.Schema {
 			goodbenefit.FieldDeletedAt:   {Type: field.TypeUint32, Column: goodbenefit.FieldDeletedAt},
 			goodbenefit.FieldEntID:       {Type: field.TypeUUID, Column: goodbenefit.FieldEntID},
 			goodbenefit.FieldGoodID:      {Type: field.TypeUUID, Column: goodbenefit.FieldGoodID},
+			goodbenefit.FieldGoodType:    {Type: field.TypeString, Column: goodbenefit.FieldGoodType},
 			goodbenefit.FieldGoodName:    {Type: field.TypeString, Column: goodbenefit.FieldGoodName},
+			goodbenefit.FieldCoinTypeID:  {Type: field.TypeUUID, Column: goodbenefit.FieldCoinTypeID},
 			goodbenefit.FieldAmount:      {Type: field.TypeString, Column: goodbenefit.FieldAmount},
 			goodbenefit.FieldState:       {Type: field.TypeString, Column: goodbenefit.FieldState},
 			goodbenefit.FieldMessage:     {Type: field.TypeString, Column: goodbenefit.FieldMessage},
@@ -746,9 +748,19 @@ func (f *GoodBenefitFilter) WhereGoodID(p entql.ValueP) {
 	f.Where(p.Field(goodbenefit.FieldGoodID))
 }
 
+// WhereGoodType applies the entql string predicate on the good_type field.
+func (f *GoodBenefitFilter) WhereGoodType(p entql.StringP) {
+	f.Where(p.Field(goodbenefit.FieldGoodType))
+}
+
 // WhereGoodName applies the entql string predicate on the good_name field.
 func (f *GoodBenefitFilter) WhereGoodName(p entql.StringP) {
 	f.Where(p.Field(goodbenefit.FieldGoodName))
+}
+
+// WhereCoinTypeID applies the entql [16]byte predicate on the coin_type_id field.
+func (f *GoodBenefitFilter) WhereCoinTypeID(p entql.ValueP) {
+	f.Where(p.Field(goodbenefit.FieldCoinTypeID))
 }
 
 // WhereAmount applies the entql string predicate on the amount field.

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	goodtypes "github.com/NpoolPlatform/message/npool/basetypes/good/v1"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/goodbenefit"
 	crud "github.com/NpoolPlatform/notif-middleware/pkg/crud/notif/goodbenefit"
@@ -24,7 +25,9 @@ func (h *queryHandler) selectGoodBenefit(stm *ent.GoodBenefitQuery) {
 		entgoodbenefit.FieldID,
 		entgoodbenefit.FieldEntID,
 		entgoodbenefit.FieldGoodID,
+		entgoodbenefit.FieldGoodType,
 		entgoodbenefit.FieldGoodName,
+		entgoodbenefit.FieldCoinTypeID,
 		entgoodbenefit.FieldAmount,
 		entgoodbenefit.FieldState,
 		entgoodbenefit.FieldMessage,
@@ -39,6 +42,7 @@ func (h *queryHandler) selectGoodBenefit(stm *ent.GoodBenefitQuery) {
 func (h *queryHandler) formalize() {
 	for _, info := range h.infos {
 		info.State = basetypes.Result(basetypes.Result_value[info.StateStr])
+		info.GoodType = goodtypes.GoodType(goodtypes.GoodType_value[info.GoodTypeStr])
 	}
 }
 

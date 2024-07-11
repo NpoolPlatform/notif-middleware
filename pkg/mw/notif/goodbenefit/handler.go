@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/NpoolPlatform/libent-cruder/pkg/cruder"
+	goodtypes "github.com/NpoolPlatform/message/npool/basetypes/good/v1"
 	basetypes "github.com/NpoolPlatform/message/npool/basetypes/v1"
 	npool "github.com/NpoolPlatform/message/npool/notif/mw/v1/notif/goodbenefit"
 	constant "github.com/NpoolPlatform/notif-middleware/pkg/const"
@@ -18,7 +19,9 @@ type Handler struct {
 	ID          *uint32
 	EntID       *uuid.UUID
 	GoodID      *uuid.UUID
+	GoodType    *goodtypes.GoodType
 	GoodName    *string
+	CoinTypeID  *uuid.UUID
 	Amount      *decimal.Decimal
 	State       *basetypes.Result
 	Message     *string
@@ -88,6 +91,25 @@ func WithGoodID(id *string, must bool) func(context.Context, *Handler) error {
 	}
 }
 
+func WithGoodType(e *goodtypes.GoodType, must bool) func(context.Context, *Handler) error {
+	return func(ctx context.Context, h *Handler) error {
+		if e == nil {
+			if must {
+				return fmt.Errorf("invalid goodtype")
+			}
+			return nil
+		}
+		switch *e {
+		case goodtypes.GoodType_PowerRental:
+		case goodtypes.GoodType_LegacyPowerRental:
+		default:
+			return fmt.Errorf("invalid goodtype")
+		}
+		h.GoodType = e
+		return nil
+	}
+}
+
 func WithGoodName(name *string, must bool) func(context.Context, *Handler) error {
 	return func(ctx context.Context, h *Handler) error {
 		if name == nil {
@@ -100,6 +122,23 @@ func WithGoodName(name *string, must bool) func(context.Context, *Handler) error
 			return fmt.Errorf("invalid good name")
 		}
 		h.GoodName = name
+		return nil
+	}
+}
+
+func WithCoinTypeID(id *string, must bool) func(context.Context, *Handler) error {
+	return func(ctx context.Context, h *Handler) error {
+		if id == nil {
+			if must {
+				return fmt.Errorf("invalid cointypeid")
+			}
+			return nil
+		}
+		_id, err := uuid.Parse(*id)
+		if err != nil {
+			return err
+		}
+		h.CoinTypeID = &_id
 		return nil
 	}
 }
@@ -223,16 +262,31 @@ func WithConds(conds *npool.Conds) func(context.Context, *Handler) error {
 			}
 			h.Conds.GoodID = &cruder.Cond{Op: conds.GetGoodID().GetOp(), Val: goodID}
 		}
-
+		if conds.CoinTypeID != nil {
+			goodID, err := uuid.Parse(conds.GetCoinTypeID().GetValue())
+			if err != nil {
+				return err
+			}
+			h.Conds.CoinTypeID = &cruder.Cond{Op: conds.GetCoinTypeID().GetOp(), Val: goodID}
+		}
 		if conds.Generated != nil {
 			h.Conds.Generated = &cruder.Cond{Op: conds.GetGenerated().GetOp(), Val: conds.GetGenerated().GetValue()}
 		}
-
 		if conds.BenefitDateStart != nil {
 			h.Conds.BenefitDateStart = &cruder.Cond{Op: conds.GetBenefitDateStart().GetOp(), Val: conds.GetBenefitDateStart().GetValue()}
 		}
 		if conds.BenefitDateEnd != nil {
 			h.Conds.BenefitDateEnd = &cruder.Cond{Op: conds.GetBenefitDateEnd().GetOp(), Val: conds.GetBenefitDateEnd().GetValue()}
+		}
+		if conds.GoodType != nil {
+			h.Conds.GoodType = &cruder.Cond{Op: conds.GetGoodType().GetOp(), Val: goodtypes.GoodType(conds.GetGoodType().GetValue())}
+		}
+		if conds.GoodTypes != nil {
+			_types := []goodtypes.GoodType{}
+			for _, _type := range conds.GetGoodTypes().GetValue() {
+				_types = append(_types, goodtypes.GoodType(_type))
+			}
+			h.Conds.GoodTypes = &cruder.Cond{Op: conds.GetGoodTypes().GetOp(), Val: _types}
 		}
 		return nil
 	}
